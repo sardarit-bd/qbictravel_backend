@@ -6,7 +6,11 @@
   "scripts": {
     "start": "node dist/src/server.js",
     "build": "prisma generate && tsc",
-    "dev": "nodemon --exec tsx -r dotenv/config src/server.ts"
+    "dev": "nodemon --exec tsx -r dotenv/config src/server.ts",
+    "seed:admin": "tsx -r dotenv/config prisma/seed.ts",
+    "test": "vitest run",
+    "test:unit": "vitest run src/modules/*/tests/unit",
+    "test:integration": "vitest run src/modules/*/tests/integration"
   },
   "keywords": [],
   "author": "",
