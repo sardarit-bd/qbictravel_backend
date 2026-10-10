@@ -1,4 +1,3 @@
-
 import type { DatabaseProvider } from "./database/database.types.ts";
 
 const requiredEnv = ["DATABASE_URL", "JWT_SECRET"];
@@ -31,6 +30,9 @@ const env = {
   databaseUrl: process.env.DATABASE_URL!,
   jwtSecret: process.env.JWT_SECRET!,
   databaseProvider,
+  frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
+  resetTokenTtlMinutes: Number(process.env.RESET_TOKEN_TTL_MINUTES) || 30,
+  inviteTokenTtlHours: Number(process.env.INVITE_TOKEN_TTL_HOURS) || 72,
 };
 
 export default env;
