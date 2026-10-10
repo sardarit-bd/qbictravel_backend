@@ -2,14 +2,22 @@ import { Request, Response, NextFunction } from "express";
 import { AnySchema } from "yup";
 import AppError from "../utils/AppError.js";
 
+type ValidationSource = "body" | "query" | "params";
+
 const validate =
-  (schema: AnySchema) =>
+  (schema: AnySchema, source: ValidationSource = "body") =>
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      req.body = await schema.validate(req.body, {
+      const value = await schema.validate(req[source], {
         abortEarly: false,
         stripUnknown: true,
       });
+
+      if (source === "body") {
+        req.body = value;
+      } else if (source === "query") {
+        res.locals.query = value;
+      }
 
       next();
     } catch (error: any) {
