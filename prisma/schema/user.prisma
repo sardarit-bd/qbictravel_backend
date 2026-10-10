@@ -1,12 +1,26 @@
 enum UserRole {
-  user
-  solver
+  customer
+  agent
+  staff
+  admin
+}
+
+enum UserStatus {
+  active
+  deactivated
 }
 
 model User {
-  id       String   @id @default(uuid())
-  name     String
-  email    String   @unique
-  password String
-  role     UserRole @default(user)
+  id                  String               @id @default(uuid())
+  name                String
+  email               String               @unique
+  password            String
+  phone               String?
+  role                UserRole             @default(customer)
+  status              UserStatus           @default(active)
+  tokenVersion        Int                  @default(0)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  agentProfile        AgentProfile?
+  passwordResetTokens PasswordResetToken[]
 }
