@@ -10,8 +10,18 @@
 */
 
 export const UserRole = {
-  user: 'user',
-  solver: 'solver'
+  customer: 'customer',
+  agent: 'agent',
+  staff: 'staff',
+  admin: 'admin'
 } as const
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+
+
+export const UserStatus = {
+  active: 'active',
+  deactivated: 'deactivated'
+} as const
+
+export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]

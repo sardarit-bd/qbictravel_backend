@@ -18,6 +18,21 @@ export { Prisma }
 export * as $Enums from './enums.js'
 export * from './enums.js';
 /**
+ * Model AgentProfile
+ * 
+ */
+export type AgentProfile = Prisma.AgentProfileModel
+/**
+ * Model PasswordResetToken
+ * 
+ */
+export type PasswordResetToken = Prisma.PasswordResetTokenModel
+/**
+ * Model RevokedToken
+ * 
+ */
+export type RevokedToken = Prisma.RevokedTokenModel
+/**
  * Model User
  * 
  */
