@@ -8,6 +8,9 @@ import errorHandler from "./shared/errors/errorHandler.js";
 import swaggerUi from "swagger-ui-express";
 import authRoutes from "./modules/auth/authRoutes.js";
 import swaggerSpec from "./config/swagger.js";
+import cookieParser from "cookie-parser";
+import userRoutes from "./modules/user/userRoutes.js";
+import adminRoutes from "./modules/admin/adminRoutes.js";
 const app: Application = express();
 app.use(httpLogger);
 app.use(
@@ -67,6 +70,7 @@ app.use(
 );
 
 app.use(express.json({ limit: "10kb" }));
+app.use(cookieParser());
 app.use(helmet());
 app.use(
   "/api-docs",
@@ -84,7 +88,9 @@ app.get("/", (req: Request, res: Response) => {
   res.send("right think");
 });
 
-app.use("/api/auth", authRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 app.use(errorHandler);
 
