@@ -348,54 +348,52 @@ router.get("/staff", validate(listAgentsQuerySchema, "query"), adminController.l
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  *       409:
- *         $ref:
- *     $ref: '#/components/responses/Conflict'
+ *         $ref: '#/components/responses/Conflict'
 
 */
 router.post("/staff", validate(createStaffSchema), adminController.createStaff);
 
 /**
+ * @openapi
+ * /api/v1/admin/staff/{staffId}:
+ *   patch:
+ *     tags:
+ *       - Admin Staff
+ *     summary: Update staff access or account status
+ *     description: Name, phone and status only. A deactivated staff account is blocked from protected operations immediately.
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - name: staffId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/AdminUpdateUserRequest'
+ *     responses:
+ *       200:
+ *         description: Staff account updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AdminUserResponse'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
 
-@openapi
-/api/v1/admin/staff/{staffId}:
-patch:
-tags:
-  - Admin Staff
-summary: Update staff access or account status
-description: Name, phone and status only. A deactivated staff account is blocked from protected operations immediately.
-security:
-  - bearerAuth: []
-  - cookieAuth: []
-parameters:
-  - name: staffId
-    in: path
-    required: true
-    schema:
-      type: string
-      format: uuid
-requestBody:
-  required: true
-  content:
-    application/json:
-      schema:
-        $ref: '#/components/schemas/AdminUpdateUserRequest'
-responses:
-  200:
-    description: Staff account updated successfully
-    content:
-      application/json:
-        schema:
-          $ref: '#/components/schemas/AdminUserResponse'
-  400:
-    $ref: '#/components/responses/ValidationError'
-  401:
-    $ref: '#/components/responses/Unauthorized'
-  403:
-    $ref: '#/components/responses/Forbidden'
-  404:
-    $ref: '#/components/responses/NotFound'
-
-*/
 router.patch('/staff/:staffId',
 validate(staffIdParamSchema, "params"),
 validate(updateStaffSchema),
