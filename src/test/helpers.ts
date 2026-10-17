@@ -21,10 +21,16 @@ export const resetDatabase = async (): Promise<void> => {
     throw new Error(`Refusing to wipe a non-test database: ${dbPath}`);
   }
 
+  // Delete in reverse order of dependencies to avoid foreign key constraint violations
+  await prisma.servicePricing.deleteMany();
+  await prisma.serviceAvailability.deleteMany();
+  await prisma.service.deleteMany();
+  
   await prisma.revokedToken.deleteMany();
   await prisma.passwordResetToken.deleteMany();
   await prisma.agentProfile.deleteMany();
   await prisma.user.deleteMany();
+  
   vi.mocked(sendEmail).mockClear();
 };
 

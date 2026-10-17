@@ -1,0 +1,53 @@
+enum ServiceType {
+  HOTEL
+  PACKAGE
+  TOUR
+}
+
+enum ServiceStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+}
+
+model Service {
+  id            String                @id @default(uuid())
+  name          String
+  description   String?
+  type          ServiceType
+  status        ServiceStatus         @default(DRAFT)
+  providerName  String?   
+  providerId    String?     
+  metadata      Json?    
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  availability  ServiceAvailability[]
+  pricing       ServicePricing[]
+}
+
+model ServiceAvailability {
+  id                  String    @id @default(uuid())
+  serviceId           String
+  service             Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  date                DateTime  @db.Date
+  isAvailable         Boolean   @default(true)
+  capacity            Int?
+  bookedCount         Int       @default(0)
+  externalReferenceId String?  
+  lastVerifiedAt      DateTime? 
+
+  @@unique([serviceId, date])
+}
+
+model ServicePricing {
+  id              String    @id @default(uuid())
+  serviceId       String
+  service         Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  currency        String    @default("USD")
+  basePrice       Decimal   @db.Decimal(10, 2)
+  discountedPrice Decimal?  @db.Decimal(10, 2)
+  taxRate         Decimal   @default(0) @db.Decimal(5, 2)
+  validFrom       DateTime?
+  validTo         DateTime?
+}

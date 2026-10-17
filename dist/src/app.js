@@ -2,12 +2,15 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import { xss } from "express-xss-sanitizer";
+// import { xss } from "express-xss-sanitizer";
 import httpLogger from "./shared/logger/httpLogger.js";
 import errorHandler from "./shared/errors/errorHandler.js";
 import swaggerUi from "swagger-ui-express";
 import authRoutes from "./modules/auth/authRoutes.js";
 import swaggerSpec from "./config/swagger.js";
+import cookieParser from "cookie-parser";
+import userRoutes from "./modules/user/userRoutes.js";
+import adminRoutes from "./modules/admin/adminRoutes.js";
 const app = express();
 app.use(httpLogger);
 app.use(rateLimit({
@@ -53,7 +56,7 @@ const swaggerCustomCss = `
     box-shadow: none;
   }
 `;
-app.use(xss());
+// app.use(xss());
 app.use(cors({
     origin: ["http://localhost:3000", "http://192.168.0.105:3000"],
     credentials: true,
@@ -61,6 +64,7 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization"],
 }));
 app.use(express.json({ limit: "10kb" }));
+app.use(cookieParser());
 app.use(helmet());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
     customCss: swaggerCustomCss,
@@ -70,8 +74,10 @@ app.get("/api-docs", (req, res) => {
     res.redirect("/api-docs/");
 });
 app.get("/", (req, res) => {
-    res.send("right endpoint");
+    res.send("right think");
 });
-app.use("/api/auth", authRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/admin", adminRoutes);
 app.use(errorHandler);
 export default app;

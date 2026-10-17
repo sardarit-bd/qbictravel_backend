@@ -54,6 +54,9 @@ export const ModelName = {
   AgentProfile: 'AgentProfile',
   PasswordResetToken: 'PasswordResetToken',
   RevokedToken: 'RevokedToken',
+  Service: 'Service',
+  ServiceAvailability: 'ServiceAvailability',
+  ServicePricing: 'ServicePricing',
   User: 'User'
 } as const
 
@@ -104,6 +107,50 @@ export const RevokedTokenScalarFieldEnum = {
 export type RevokedTokenScalarFieldEnum = (typeof RevokedTokenScalarFieldEnum)[keyof typeof RevokedTokenScalarFieldEnum]
 
 
+export const ServiceScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  type: 'type',
+  status: 'status',
+  providerName: 'providerName',
+  providerId: 'providerId',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceScalarFieldEnum = (typeof ServiceScalarFieldEnum)[keyof typeof ServiceScalarFieldEnum]
+
+
+export const ServiceAvailabilityScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
+  date: 'date',
+  isAvailable: 'isAvailable',
+  capacity: 'capacity',
+  bookedCount: 'bookedCount',
+  externalReferenceId: 'externalReferenceId',
+  lastVerifiedAt: 'lastVerifiedAt'
+} as const
+
+export type ServiceAvailabilityScalarFieldEnum = (typeof ServiceAvailabilityScalarFieldEnum)[keyof typeof ServiceAvailabilityScalarFieldEnum]
+
+
+export const ServicePricingScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
+  currency: 'currency',
+  basePrice: 'basePrice',
+  discountedPrice: 'discountedPrice',
+  taxRate: 'taxRate',
+  validFrom: 'validFrom',
+  validTo: 'validTo'
+} as const
+
+export type ServicePricingScalarFieldEnum = (typeof ServicePricingScalarFieldEnum)[keyof typeof ServicePricingScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -128,6 +175,14 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -142,4 +197,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

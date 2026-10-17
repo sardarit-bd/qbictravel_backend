@@ -9,6 +9,24 @@
 * 🟢 You can import this file directly.
 */
 
+export const ServiceType = {
+  HOTEL: 'HOTEL',
+  PACKAGE: 'PACKAGE',
+  TOUR: 'TOUR'
+} as const
+
+export type ServiceType = (typeof ServiceType)[keyof typeof ServiceType]
+
+
+export const ServiceStatus = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED',
+  UNPUBLISHED: 'UNPUBLISHED'
+} as const
+
+export type ServiceStatus = (typeof ServiceStatus)[keyof typeof ServiceStatus]
+
+
 export const UserRole = {
   customer: 'customer',
   agent: 'agent',

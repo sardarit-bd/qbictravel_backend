@@ -11,6 +11,7 @@ import swaggerSpec from "./config/swagger.js";
 import cookieParser from "cookie-parser";
 import userRoutes from "./modules/user/userRoutes.js";
 import adminRoutes from "./modules/admin/adminRoutes.js";
+import serviceRoutes from "./modules/service/serviceRoutes.js";
 const app: Application = express();
 app.use(httpLogger);
 app.use(
@@ -90,6 +91,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1", serviceRoutes);
 app.use("/api/v1/admin", adminRoutes);
 
 app.use(errorHandler);
