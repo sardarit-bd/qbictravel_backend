@@ -23,4 +23,7 @@ model User {
   updatedAt           DateTime             @updatedAt
   agentProfile        AgentProfile?
   passwordResetTokens PasswordResetToken[]
+  customerBookings    Booking[]            @relation("CustomerBookings")
+  agentBookings       Booking[]            @relation("AgentBookings")
+  adminApprovals      PriceApproval[]      @relation("AdminApprovals")
 }

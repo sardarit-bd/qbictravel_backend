@@ -1,0 +1,73 @@
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  AWAITING_APPROVAL
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+enum PricingRuleType {
+  AGENT_DISCOUNT_LIMIT
+}
+
+model PricingRule {
+  id          String          @id @default(uuid())
+  name        String
+  description String?
+  type        PricingRuleType
+  value       Decimal         @db.Decimal(10, 2)
+  agentId     String?
+  serviceId   String?
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+model Booking {
+  id                String               @id @default(uuid())
+  customerId        String
+  customer          User                 @relation("CustomerBookings", fields: [customerId], references: [id])
+  
+  agentId           String?
+  agent             User?                @relation("AgentBookings", fields: [agentId], references: [id])
+  
+  serviceId         String
+  service           Service              @relation(fields: [serviceId], references: [id])
+  
+  availabilityId    String?
+  availability      ServiceAvailability? @relation(fields: [availabilityId], references: [id])
+  
+  basePrice         Decimal              @db.Decimal(10, 2)
+  proposedPrice     Decimal?             @db.Decimal(10, 2)
+  finalPrice        Decimal              @db.Decimal(10, 2)
+  
+  status            BookingStatus        @default(PENDING)
+  requiresApproval  Boolean              @default(false)
+  
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  priceApproval     PriceApproval?
+}
+
+model PriceApproval {
+  id              String          @id @default(uuid())
+  bookingId       String          @unique
+  booking         Booking         @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  requestedPrice  Decimal         @db.Decimal(10, 2)
+  approvedPrice   Decimal?        @db.Decimal(10, 2)
+  status          ApprovalStatus  @default(PENDING)
+  
+  adminId         String?
+  admin           User?           @relation("AdminApprovals", fields: [adminId], references: [id])
+  
+  reviewedAt      DateTime?
+  notes           String?
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}

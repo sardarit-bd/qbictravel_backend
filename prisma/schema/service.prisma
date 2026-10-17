@@ -24,6 +24,7 @@ model Service {
 
   availability  ServiceAvailability[]
   pricing       ServicePricing[]
+  bookings      Booking[]
 }
 
 model ServiceAvailability {
@@ -36,6 +37,7 @@ model ServiceAvailability {
   bookedCount         Int       @default(0)
   externalReferenceId String?  
   lastVerifiedAt      DateTime? 
+  bookings            Booking[]
 
   @@unique([serviceId, date])
 }

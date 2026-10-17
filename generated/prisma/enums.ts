@@ -9,6 +9,32 @@
 * 🟢 You can import this file directly.
 */
 
+export const BookingStatus = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  CANCELLED: 'CANCELLED',
+  AWAITING_APPROVAL: 'AWAITING_APPROVAL'
+} as const
+
+export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus]
+
+
+export const ApprovalStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type ApprovalStatus = (typeof ApprovalStatus)[keyof typeof ApprovalStatus]
+
+
+export const PricingRuleType = {
+  AGENT_DISCOUNT_LIMIT: 'AGENT_DISCOUNT_LIMIT'
+} as const
+
+export type PricingRuleType = (typeof PricingRuleType)[keyof typeof PricingRuleType]
+
+
 export const ServiceType = {
   HOTEL: 'HOTEL',
   PACKAGE: 'PACKAGE',

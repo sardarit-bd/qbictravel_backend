@@ -33,6 +33,21 @@ export type PasswordResetToken = Prisma.PasswordResetTokenModel
  */
 export type RevokedToken = Prisma.RevokedTokenModel
 /**
+ * Model PricingRule
+ * 
+ */
+export type PricingRule = Prisma.PricingRuleModel
+/**
+ * Model Booking
+ * 
+ */
+export type Booking = Prisma.BookingModel
+/**
+ * Model PriceApproval
+ * 
+ */
+export type PriceApproval = Prisma.PriceApprovalModel
+/**
  * Model Service
  * 
  */

@@ -54,6 +54,9 @@ export const ModelName = {
   AgentProfile: 'AgentProfile',
   PasswordResetToken: 'PasswordResetToken',
   RevokedToken: 'RevokedToken',
+  PricingRule: 'PricingRule',
+  Booking: 'Booking',
+  PriceApproval: 'PriceApproval',
   Service: 'Service',
   ServiceAvailability: 'ServiceAvailability',
   ServicePricing: 'ServicePricing',
@@ -105,6 +108,56 @@ export const RevokedTokenScalarFieldEnum = {
 } as const
 
 export type RevokedTokenScalarFieldEnum = (typeof RevokedTokenScalarFieldEnum)[keyof typeof RevokedTokenScalarFieldEnum]
+
+
+export const PricingRuleScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  type: 'type',
+  value: 'value',
+  agentId: 'agentId',
+  serviceId: 'serviceId',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PricingRuleScalarFieldEnum = (typeof PricingRuleScalarFieldEnum)[keyof typeof PricingRuleScalarFieldEnum]
+
+
+export const BookingScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  agentId: 'agentId',
+  serviceId: 'serviceId',
+  availabilityId: 'availabilityId',
+  basePrice: 'basePrice',
+  proposedPrice: 'proposedPrice',
+  finalPrice: 'finalPrice',
+  status: 'status',
+  requiresApproval: 'requiresApproval',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
+
+
+export const PriceApprovalScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  requestedPrice: 'requestedPrice',
+  approvedPrice: 'approvedPrice',
+  status: 'status',
+  adminId: 'adminId',
+  reviewedAt: 'reviewedAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PriceApprovalScalarFieldEnum = (typeof PriceApprovalScalarFieldEnum)[keyof typeof PriceApprovalScalarFieldEnum]
 
 
 export const ServiceScalarFieldEnum = {
