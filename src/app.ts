@@ -17,6 +17,8 @@ import bookingRoutes from "./modules/booking/bookingRoutes.js";
 import paymentRoutes from "./modules/payment/paymentRoutes.js";
 import operationsRoutes from "./modules/operations/operationsRoutes.js";
 import notificationRoutes from "./modules/notification/notificationRoutes.js";
+import commissionRoutes from "./modules/commission/commissionRoutes.js";
+import reportRoutes from "./modules/report/reportRoutes.js";
 const app: Application = express();
 app.use(httpLogger);
 app.use(
@@ -103,6 +105,8 @@ app.use("/api/v1", bookingRoutes);
 app.use("/api/v1", paymentRoutes);
 app.use("/api/v1", operationsRoutes);
 app.use("/api/v1", notificationRoutes);
+app.use("/api/v1", commissionRoutes);
+app.use("/api/v1", reportRoutes);
 app.use(errorHandler);
 
 export default app;
