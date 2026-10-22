@@ -3,6 +3,9 @@ enum BookingStatus {
   CONFIRMED
   CANCELLED
   AWAITING_APPROVAL
+  IN_PROGRESS
+  COMPLETED
+  FAILED
 }
 
 enum ApprovalStatus {
@@ -10,8 +13,21 @@ enum ApprovalStatus {
   APPROVED
   REJECTED
 }
+
 enum PricingRuleType {
   AGENT_DISCOUNT_LIMIT
+}
+
+enum PaymentStatus {
+  UNPAID
+  PARTIALLY_PAID
+  PAID
+}
+
+enum FulfillmentStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  FULFILLED
 }
 
 model PricingRule {
@@ -26,48 +42,67 @@ model PricingRule {
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 }
+
 model Booking {
-  id                String               @id @default(uuid())
-  customerId        String
-  customer          User                 @relation("CustomerBookings", fields: [customerId], references: [id])
-  
-  agentId           String?
-  agent             User?                @relation("AgentBookings", fields: [agentId], references: [id])
-  
-  serviceId         String
-  service           Service              @relation(fields: [serviceId], references: [id])
-  
-  availabilityId    String?
-  availability      ServiceAvailability? @relation(fields: [availabilityId], references: [id])
-  
-  basePrice         Decimal              @db.Decimal(10, 2)
-  proposedPrice     Decimal?             @db.Decimal(10, 2)
-  finalPrice        Decimal              @db.Decimal(10, 2)
-  
-  status            BookingStatus        @default(PENDING)
-  requiresApproval  Boolean              @default(false)
-  
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
+  id         String @id @default(uuid())
+  customerId String
+  customer   User   @relation("CustomerBookings", fields: [customerId], references: [id])
+
+  agentId String?
+  agent   User?   @relation("AgentBookings", fields: [agentId], references: [id])
+
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id])
+
+  availabilityId String?
+  availability   ServiceAvailability? @relation(fields: [availabilityId], references: [id])
+
+  basePrice     Decimal  @db.Decimal(10, 2)
+  proposedPrice Decimal? @db.Decimal(10, 2)
+  finalPrice    Decimal  @db.Decimal(10, 2)
+
+  status           BookingStatus @default(PENDING)
+  requiresApproval Boolean       @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   priceApproval     PriceApproval?
+  paymentStatus     PaymentStatus     @default(UNPAID)
+  fulfillmentStatus FulfillmentStatus @default(NOT_STARTED)
+  notes             String?
+  internalNotes     String?
+  history           BookingHistory[]
 }
 
 model PriceApproval {
-  id              String          @id @default(uuid())
-  bookingId       String          @unique
-  booking         Booking         @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  
-  requestedPrice  Decimal         @db.Decimal(10, 2)
-  approvedPrice   Decimal?        @db.Decimal(10, 2)
-  status          ApprovalStatus  @default(PENDING)
-  
-  adminId         String?
-  admin           User?           @relation("AdminApprovals", fields: [adminId], references: [id])
-  
-  reviewedAt      DateTime?
-  notes           String?
-  
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  id        String  @id @default(uuid())
+  bookingId String  @unique
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  requestedPrice Decimal        @db.Decimal(10, 2)
+  approvedPrice  Decimal?       @db.Decimal(10, 2)
+  status         ApprovalStatus @default(PENDING)
+
+  adminId String?
+  admin   User?   @relation("AdminApprovals", fields: [adminId], references: [id])
+
+  reviewedAt DateTime?
+  notes      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BookingHistory {
+  id        String   @id @default(uuid())
+  bookingId String
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  actorId   String
+  actorRole String
+  action    String
+  changes   Json
+  createdAt DateTime @default(now())
+
+  @@index([bookingId])
 }

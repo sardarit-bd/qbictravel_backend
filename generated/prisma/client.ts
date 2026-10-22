@@ -72,6 +72,11 @@ export type Booking = Prisma.BookingModel
  */
 export type PriceApproval = Prisma.PriceApprovalModel
 /**
+ * Model BookingHistory
+ * 
+ */
+export type BookingHistory = Prisma.BookingHistoryModel
+/**
  * Model Service
  * 
  */

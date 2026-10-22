@@ -57,6 +57,7 @@ export const ModelName = {
   PricingRule: 'PricingRule',
   Booking: 'Booking',
   PriceApproval: 'PriceApproval',
+  BookingHistory: 'BookingHistory',
   Service: 'Service',
   ServiceAvailability: 'ServiceAvailability',
   ServicePricing: 'ServicePricing',
@@ -138,7 +139,11 @@ export const BookingScalarFieldEnum = {
   status: 'status',
   requiresApproval: 'requiresApproval',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  paymentStatus: 'paymentStatus',
+  fulfillmentStatus: 'fulfillmentStatus',
+  notes: 'notes',
+  internalNotes: 'internalNotes'
 } as const
 
 export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
@@ -158,6 +163,19 @@ export const PriceApprovalScalarFieldEnum = {
 } as const
 
 export type PriceApprovalScalarFieldEnum = (typeof PriceApprovalScalarFieldEnum)[keyof typeof PriceApprovalScalarFieldEnum]
+
+
+export const BookingHistoryScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  actorId: 'actorId',
+  actorRole: 'actorRole',
+  action: 'action',
+  changes: 'changes',
+  createdAt: 'createdAt'
+} as const
+
+export type BookingHistoryScalarFieldEnum = (typeof BookingHistoryScalarFieldEnum)[keyof typeof BookingHistoryScalarFieldEnum]
 
 
 export const ServiceScalarFieldEnum = {
@@ -226,6 +244,13 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const NullableJsonNullValueInput = {

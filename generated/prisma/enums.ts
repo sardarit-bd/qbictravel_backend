@@ -13,7 +13,10 @@ export const BookingStatus = {
   PENDING: 'PENDING',
   CONFIRMED: 'CONFIRMED',
   CANCELLED: 'CANCELLED',
-  AWAITING_APPROVAL: 'AWAITING_APPROVAL'
+  AWAITING_APPROVAL: 'AWAITING_APPROVAL',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
 } as const
 
 export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus]
@@ -33,6 +36,24 @@ export const PricingRuleType = {
 } as const
 
 export type PricingRuleType = (typeof PricingRuleType)[keyof typeof PricingRuleType]
+
+
+export const PaymentStatus = {
+  UNPAID: 'UNPAID',
+  PARTIALLY_PAID: 'PARTIALLY_PAID',
+  PAID: 'PAID'
+} as const
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+
+
+export const FulfillmentStatus = {
+  NOT_STARTED: 'NOT_STARTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  FULFILLED: 'FULFILLED'
+} as const
+
+export type FulfillmentStatus = (typeof FulfillmentStatus)[keyof typeof FulfillmentStatus]
 
 
 export const ServiceType = {

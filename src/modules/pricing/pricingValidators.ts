@@ -20,3 +20,34 @@ export const updatePricingRuleSchema = yup.object({
 export const pricingRuleIdParamSchema = yup.object({
   ruleId: yup.string().uuid("Invalid pricing rule ID").required("Pricing rule ID is required"),
 });
+
+const maxTwoDecimals = (value?: number | null) =>
+  value === undefined || value === null || Math.round(value * 100) / 100 === value;
+
+export const bookingIdParamSchema = yup.object({
+  bookingId: yup.string().uuid("Invalid booking ID").required("Booking ID is required"),
+});
+
+export const proposeBookingPriceSchema = yup.object({
+  price: yup
+    .number()
+    .typeError("Price must be a number")
+    .moreThan(0, "Price must be greater than 0")
+    .test("max-two-decimals", "Price can have at most 2 decimal places", maxTwoDecimals)
+    .required("Price is required"),
+  notes: yup.string().trim().max(500, "Notes must be at most 500 characters").optional(),
+});
+
+export const reviewPriceApprovalSchema = yup.object({
+  decision: yup
+    .string()
+    .oneOf(["APPROVED", "REJECTED"], "Decision must be APPROVED or REJECTED")
+    .required("Decision is required"),
+  approvedPrice: yup
+    .number()
+    .typeError("Approved price must be a number")
+    .moreThan(0, "Approved price must be greater than 0")
+    .test("max-two-decimals", "Approved price can have at most 2 decimal places", maxTwoDecimals)
+    .optional(),
+  notes: yup.string().trim().max(500, "Notes must be at most 500 characters").optional(),
+});

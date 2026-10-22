@@ -39,3 +39,36 @@ export const getAgentPricingLimits = async (req: Request, res: Response, next: N
     next(error);
   }
 };
+
+export const proposeBookingPrice = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const booking = await pricingService.proposeBookingPrice(
+      req.user!.id,
+      req.params.bookingId as string,
+      req.body,
+    );
+    const message = booking.requiresApproval
+      ? "Price submitted for administrative approval"
+      : "Negotiated price accepted";
+    sendResponse(res, 200, true, message, booking);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const reviewPriceApproval = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const booking = await pricingService.reviewPriceApproval(
+      req.user!.id,
+      req.params.bookingId as string,
+      req.body,
+    );
+    const message =
+      booking.priceApproval?.status === "APPROVED"
+        ? "Price approved successfully"
+        : "Price rejected successfully";
+    sendResponse(res, 200, true, message, booking);
+  } catch (error) {
+    next(error);
+  }
+};

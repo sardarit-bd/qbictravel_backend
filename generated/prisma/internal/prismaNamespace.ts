@@ -403,6 +403,7 @@ export const ModelName = {
   PricingRule: 'PricingRule',
   Booking: 'Booking',
   PriceApproval: 'PriceApproval',
+  BookingHistory: 'BookingHistory',
   Service: 'Service',
   ServiceAvailability: 'ServiceAvailability',
   ServicePricing: 'ServicePricing',
@@ -422,7 +423,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "agentProfile" | "passwordResetToken" | "revokedToken" | "pricingRule" | "booking" | "priceApproval" | "service" | "serviceAvailability" | "servicePricing" | "user"
+    modelProps: "agentProfile" | "passwordResetToken" | "revokedToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "service" | "serviceAvailability" | "servicePricing" | "user"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -870,6 +871,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    BookingHistory: {
+      payload: Prisma.$BookingHistoryPayload<ExtArgs>
+      fields: Prisma.BookingHistoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BookingHistoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingHistoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BookingHistoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingHistoryPayload>
+        }
+        findFirst: {
+          args: Prisma.BookingHistoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingHistoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BookingHistoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingHistoryPayload>
+        }
+        findMany: {
+          args: Prisma.BookingHistoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingHistoryPayload>[]
+        }
+        create: {
+          args: Prisma.BookingHistoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingHistoryPayload>
+        }
+        createMany: {
+          args: Prisma.BookingHistoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BookingHistoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingHistoryPayload>[]
+        }
+        delete: {
+          args: Prisma.BookingHistoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingHistoryPayload>
+        }
+        update: {
+          args: Prisma.BookingHistoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingHistoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.BookingHistoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BookingHistoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BookingHistoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingHistoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.BookingHistoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingHistoryPayload>
+        }
+        aggregate: {
+          args: Prisma.BookingHistoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBookingHistory>
+        }
+        groupBy: {
+          args: Prisma.BookingHistoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BookingHistoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BookingHistoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BookingHistoryCountAggregateOutputType> | number
+        }
+      }
+    }
     Service: {
       payload: Prisma.$ServicePayload<ExtArgs>
       fields: Prisma.ServiceFieldRefs
@@ -1264,7 +1339,11 @@ export const BookingScalarFieldEnum = {
   status: 'status',
   requiresApproval: 'requiresApproval',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  paymentStatus: 'paymentStatus',
+  fulfillmentStatus: 'fulfillmentStatus',
+  notes: 'notes',
+  internalNotes: 'internalNotes'
 } as const
 
 export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
@@ -1284,6 +1363,19 @@ export const PriceApprovalScalarFieldEnum = {
 } as const
 
 export type PriceApprovalScalarFieldEnum = (typeof PriceApprovalScalarFieldEnum)[keyof typeof PriceApprovalScalarFieldEnum]
+
+
+export const BookingHistoryScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  actorId: 'actorId',
+  actorRole: 'actorRole',
+  action: 'action',
+  changes: 'changes',
+  createdAt: 'createdAt'
+} as const
+
+export type BookingHistoryScalarFieldEnum = (typeof BookingHistoryScalarFieldEnum)[keyof typeof BookingHistoryScalarFieldEnum]
 
 
 export const ServiceScalarFieldEnum = {
@@ -1352,6 +1444,13 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const NullableJsonNullValueInput = {
@@ -1471,6 +1570,34 @@ export type ListEnumBookingStatusFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'PaymentStatus'
+ */
+export type EnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentStatus[]'
+ */
+export type ListEnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'FulfillmentStatus'
+ */
+export type EnumFulfillmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FulfillmentStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'FulfillmentStatus[]'
+ */
+export type ListEnumFulfillmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FulfillmentStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'ApprovalStatus'
  */
 export type EnumApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalStatus'>
@@ -1481,6 +1608,20 @@ export type EnumApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$P
  * Reference to a field of type 'ApprovalStatus[]'
  */
 export type ListEnumApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -1509,20 +1650,6 @@ export type EnumServiceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'ServiceStatus[]'
  */
 export type ListEnumServiceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceStatus[]'>
-    
-
-
-/**
- * Reference to a field of type 'Json'
- */
-export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-/**
- * Reference to a field of type 'QueryMode'
- */
-export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -1738,6 +1865,7 @@ export type GlobalOmitConfig = {
   pricingRule?: Prisma.PricingRuleOmit
   booking?: Prisma.BookingOmit
   priceApproval?: Prisma.PriceApprovalOmit
+  bookingHistory?: Prisma.BookingHistoryOmit
   service?: Prisma.ServiceOmit
   serviceAvailability?: Prisma.ServiceAvailabilityOmit
   servicePricing?: Prisma.ServicePricingOmit

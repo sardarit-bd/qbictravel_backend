@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import request from "supertest";
 import app from "../../../../app.js";
 import * as pricingService from "../../pricingService.js";
-
 vi.mock("../../pricingService.js");
 vi.mock("../../../../shared/middleware/authMiddleware.js", () => ({
   default: (req: any, _res: any, next: any) => {
@@ -83,3 +82,6 @@ describe("Pricing API Integration", () => {
     });
   });
 });
+
+const BOOKING_ID = "11111111-1111-4111-8111-111111111111";
+

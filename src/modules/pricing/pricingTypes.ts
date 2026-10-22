@@ -34,3 +34,14 @@ export interface AgentPricingLimit {
   maxDiscountPercentage: number;
   applicableRuleId: string | null;
 }
+
+export interface ProposeBookingPriceInput {
+  price: number;
+  notes?: string;
+}
+
+export interface ReviewPriceApprovalInput {
+  decision: "APPROVED" | "REJECTED";
+  approvedPrice?: number;
+  notes?: string;
+}
