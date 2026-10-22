@@ -8,7 +8,7 @@ import type {
   RecordPaymentInput,
   VerifyPaymentInput,
 } from "./paymentTypes.js";
-
+import * as notificationService from "../notification/notificationService.js";
 const toCents = (value: unknown): number => Math.round(Number(value) * 100);
 
 const PAYABLE_BOOKING_STATUSES: string[] = ["PENDING", "CONFIRMED"];
@@ -153,6 +153,11 @@ export const verifyPayment = async (adminId: string, paymentId: string, input: V
     throw new AppError("The payment was changed by someone else. Please reload and retry.", 409);
   }
 
+    await notificationService.notifyPaymentDecision(
+    payment.bookingId,
+    input.decision === "VERIFIED" ? "CONFIRMED" : "REJECTED",
+  );
+
   return mapPayment(updated);
 };
 
@@ -205,6 +210,8 @@ export const recordPayment = async (adminId: string, paymentId: string, input: R
   if (!updated) {
     throw new AppError("The payment was changed by someone else. Please reload and retry.", 409);
   }
+
+    await notificationService.notifyPaymentDecision(payment.bookingId, "CONFIRMED");
 
   return mapPayment(updated);
 };

@@ -2,6 +2,7 @@ import AppError from "../../shared/utils/AppError.js";
 import { prisma } from "../../lib/prisma.js";
 import * as bookingRepository from "./bookingRepository.js";
 import * as pricingService from "../pricing/pricingService.js";
+import * as notificationService from "../notification/notificationService.js";
 import type {
   CreateBookingInput,
   UpdateBookingPriceInput,
@@ -35,6 +36,20 @@ export const createBooking = async (
   isAgent: boolean,
   actorId: string,
 ): Promise<BookingResponse> => {
+  if (isAgent) {
+    const customer = await bookingRepository.findActiveCustomer(input.customerId);
+    if (!customer) {
+      throw new AppError("Customer not found", 404);
+    }
+  } else {
+    if (input.customerId !== actorId) {
+      throw new AppError("Customers can only create bookings for themselves", 403);
+    }
+    if (input.agentId) {
+      throw new AppError("Customers cannot assign an agent", 403);
+    }
+  }
+
   const service = await prisma.service.findUnique({
     where: { id: input.serviceId },
     include: { pricing: true },
@@ -104,9 +119,11 @@ export const createBooking = async (
   if (requiresApproval && proposedPrice !== undefined) {
     await bookingRepository.createPriceApproval(booking.id, proposedPrice);
     const updated = await bookingRepository.findBookingById(booking.id);
+    await notificationService.notifyBookingCreated(booking.id);
     return mapBookingToResponse(updated);
   }
 
+  await notificationService.notifyBookingCreated(booking.id);
   return mapBookingToResponse(booking);
 };
 
@@ -146,7 +163,7 @@ export const updateAgentBookingPrice = async (
     status = "CONFIRMED";
   }
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     await tx.booking.update({
       where: { id: bookingId },
       data: {
@@ -194,6 +211,9 @@ export const updateAgentBookingPrice = async (
     });
     return mapBookingToResponse(updated);
   });
+
+  await notificationService.notifyBookingStatusChanged(bookingId);
+  return result;
 };
 
 export const reviewBookingPrice = async (
@@ -219,6 +239,7 @@ export const reviewBookingPrice = async (
         notes: input.notes,
       },
     );
+    await notificationService.notifyBookingStatusChanged(bookingId);
     return mapBookingToResponse(updated);
   }
 
@@ -227,5 +248,6 @@ export const reviewBookingPrice = async (
     adminId,
     input.notes,
   );
+  await notificationService.notifyBookingStatusChanged(bookingId);
   return mapBookingToResponse(rejected);
 };

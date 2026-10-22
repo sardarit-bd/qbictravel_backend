@@ -90,8 +90,14 @@ export const createPriceApproval = async (bookingId: string, requestedPrice: num
   return prisma.priceApproval.create({
     data: {
       bookingId,
-      requestedPrice: requestedPrice, // Pass number directly
+      requestedPrice: requestedPrice,
       status: "PENDING",
     },
+  });
+};
+export const findActiveCustomer = async (customerId: string) => {
+  return prisma.user.findFirst({
+    where: { id: customerId, role: "customer", status: "active" },
+    select: { id: true },
   });
 };

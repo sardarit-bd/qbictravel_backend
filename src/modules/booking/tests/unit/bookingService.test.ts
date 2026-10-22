@@ -6,6 +6,7 @@ import { prisma } from "../../../../lib/prisma.js";
 import AppError from "../../../../shared/utils/AppError.js";
 
 // Explicitly mock prisma to ensure methods are vi.fn()
+vi.mock("../../../notification/notificationService.js");
 vi.mock("../../../../lib/prisma.js", () => ({
   prisma: {
     service: {
@@ -61,6 +62,23 @@ describe("Booking Service", () => {
   });
 
   describe("createBooking (Agent)", () => {
+    beforeEach(() => {
+      (bookingRepository.findActiveCustomer as any).mockResolvedValue({ id: "c1" });
+    });
+
+    it("should check that the customer exists and is active", async () => {
+      (prisma.service.findUnique as any).mockResolvedValue({
+        id: "s1",
+        pricing: [{ basePrice: 100, validFrom: null, validTo: null }],
+      });
+
+      await expect(
+        bookingService.createBooking({ customerId: "c1", serviceId: "s1" }, true, "a1")
+      ).rejects.toThrow();
+
+      expect(bookingRepository.findActiveCustomer).toHaveBeenCalledWith("c1");
+    });
+
     it("should throw 400 if agent does not provide proposed price", async () => {
       (prisma.service.findUnique as any).mockResolvedValue({
         id: "s1",

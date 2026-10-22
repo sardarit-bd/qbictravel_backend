@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import AppError from "../../../../shared/utils/AppError.js";
 import * as operationsRepository from "../../operationsRepository.js";
 import * as operationsService from "../../operationsService.js";
-
+vi.mock("../../../notification/notificationService.js");
 vi.mock("../../operationsRepository.js");
 
 const repo = vi.mocked(operationsRepository);

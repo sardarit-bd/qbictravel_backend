@@ -10,7 +10,7 @@ import type {
   OperationalFilters,
   UpdateOperationalStatusInput,
 } from "./operationsTypes.js";
-
+import * as notificationService from "../notification/notificationService.js";
 interface Transition {
   from: FulfillmentStatusValue;
   to: FulfillmentStatusValue;
@@ -113,6 +113,8 @@ export const updateOperationalStatus = async (
   if (!updated) {
     throw new AppError("The booking was changed by someone else. Please reload and retry.", 409);
   }
+
+    await notificationService.notifyOperationalUpdate(bookingId);
 
   return updated;
 };
