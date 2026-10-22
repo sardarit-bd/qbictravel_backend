@@ -1,7 +1,7 @@
 import { prisma } from "../../lib/prisma.js";
 import AppError from "../../shared/utils/AppError.js";
 import type { PaymentFilters, PaymentMethodValue } from "./paymentTypes.js";
-
+import { createCommissionForBooking } from "../commission/commissionRepository.js";
 type HistoryChanges = Record<string, string | number | boolean | null>;
 
 const ACTIVE_STATUSES: ("INITIATED" | "SUBMITTED" | "VERIFIED")[] = ["INITIATED", "SUBMITTED", "VERIFIED"];
@@ -162,6 +162,8 @@ export const transitionPayment = async (params: {
       if (booking.count === 0) {
         throw new AppError("The booking can no longer accept this payment", 409);
       }
+
+      await createCommissionForBooking(tx, params.bookingId);
     }
 
     await tx.bookingHistory.create({
