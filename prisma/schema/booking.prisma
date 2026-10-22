@@ -73,6 +73,11 @@ model Booking {
   notes             String?
   internalNotes     String?
   history           BookingHistory[]
+
+  assignedStaffId String?
+  assignedStaff   User?       @relation("StaffAssignments", fields: [assignedStaffId], references: [id])
+  payments        Payment[]
+  commission      Commission?
 }
 
 model PriceApproval {

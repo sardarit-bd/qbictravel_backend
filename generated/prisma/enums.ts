@@ -56,6 +56,51 @@ export const FulfillmentStatus = {
 export type FulfillmentStatus = (typeof FulfillmentStatus)[keyof typeof FulfillmentStatus]
 
 
+export const CommissionRateType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED: 'FIXED'
+} as const
+
+export type CommissionRateType = (typeof CommissionRateType)[keyof typeof CommissionRateType]
+
+
+export const CommissionStatus = {
+  ACTIVE: 'ACTIVE',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type CommissionStatus = (typeof CommissionStatus)[keyof typeof CommissionStatus]
+
+
+export const NotificationEvent = {
+  BOOKING_CONFIRMATION: 'BOOKING_CONFIRMATION',
+  BOOKING_STATUS_CHANGE: 'BOOKING_STATUS_CHANGE',
+  PAYMENT_CONFIRMATION: 'PAYMENT_CONFIRMATION',
+  OPERATIONAL_UPDATE: 'OPERATIONAL_UPDATE'
+} as const
+
+export type NotificationEvent = (typeof NotificationEvent)[keyof typeof NotificationEvent]
+
+
+export const PaymentMethod = {
+  BANK_TRANSFER: 'BANK_TRANSFER',
+  CASH: 'CASH',
+  OTHER: 'OTHER'
+} as const
+
+export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
+
+
+export const PaymentRecordStatus = {
+  INITIATED: 'INITIATED',
+  SUBMITTED: 'SUBMITTED',
+  VERIFIED: 'VERIFIED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type PaymentRecordStatus = (typeof PaymentRecordStatus)[keyof typeof PaymentRecordStatus]
+
+
 export const ServiceType = {
   HOTEL: 'HOTEL',
   PACKAGE: 'PACKAGE',

@@ -261,6 +261,13 @@ export type UserWhereInput = {
   customerBookings?: Prisma.BookingListRelationFilter
   agentBookings?: Prisma.BookingListRelationFilter
   adminApprovals?: Prisma.PriceApprovalListRelationFilter
+  customerPayments?: Prisma.PaymentListRelationFilter
+  reviewedPayments?: Prisma.PaymentListRelationFilter
+  assignedBookings?: Prisma.BookingListRelationFilter
+  commissionRules?: Prisma.CommissionRuleListRelationFilter
+  agentCommissions?: Prisma.CommissionListRelationFilter
+  commissionAdjustments?: Prisma.CommissionAdjustmentListRelationFilter
+  notificationSettings?: Prisma.NotificationSettingListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -279,6 +286,13 @@ export type UserOrderByWithRelationInput = {
   customerBookings?: Prisma.BookingOrderByRelationAggregateInput
   agentBookings?: Prisma.BookingOrderByRelationAggregateInput
   adminApprovals?: Prisma.PriceApprovalOrderByRelationAggregateInput
+  customerPayments?: Prisma.PaymentOrderByRelationAggregateInput
+  reviewedPayments?: Prisma.PaymentOrderByRelationAggregateInput
+  assignedBookings?: Prisma.BookingOrderByRelationAggregateInput
+  commissionRules?: Prisma.CommissionRuleOrderByRelationAggregateInput
+  agentCommissions?: Prisma.CommissionOrderByRelationAggregateInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentOrderByRelationAggregateInput
+  notificationSettings?: Prisma.NotificationSettingOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -300,6 +314,13 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   customerBookings?: Prisma.BookingListRelationFilter
   agentBookings?: Prisma.BookingListRelationFilter
   adminApprovals?: Prisma.PriceApprovalListRelationFilter
+  customerPayments?: Prisma.PaymentListRelationFilter
+  reviewedPayments?: Prisma.PaymentListRelationFilter
+  assignedBookings?: Prisma.BookingListRelationFilter
+  commissionRules?: Prisma.CommissionRuleListRelationFilter
+  agentCommissions?: Prisma.CommissionListRelationFilter
+  commissionAdjustments?: Prisma.CommissionAdjustmentListRelationFilter
+  notificationSettings?: Prisma.NotificationSettingListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -352,6 +373,13 @@ export type UserCreateInput = {
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -370,6 +398,13 @@ export type UserUncheckedCreateInput = {
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
 export type UserUpdateInput = {
@@ -388,6 +423,13 @@ export type UserUpdateInput = {
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -406,6 +448,13 @@ export type UserUncheckedUpdateInput = {
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -544,6 +593,12 @@ export type UserCreateNestedOneWithoutAgentBookingsInput = {
   connect?: Prisma.UserWhereUniqueInput
 }
 
+export type UserCreateNestedOneWithoutAssignedBookingsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAssignedBookingsInput, Prisma.UserUncheckedCreateWithoutAssignedBookingsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignedBookingsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
 export type UserUpdateOneRequiredWithoutCustomerBookingsNestedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutCustomerBookingsInput, Prisma.UserUncheckedCreateWithoutCustomerBookingsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutCustomerBookingsInput
@@ -562,6 +617,16 @@ export type UserUpdateOneWithoutAgentBookingsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAgentBookingsInput, Prisma.UserUpdateWithoutAgentBookingsInput>, Prisma.UserUncheckedUpdateWithoutAgentBookingsInput>
 }
 
+export type UserUpdateOneWithoutAssignedBookingsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAssignedBookingsInput, Prisma.UserUncheckedCreateWithoutAssignedBookingsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignedBookingsInput
+  upsert?: Prisma.UserUpsertWithoutAssignedBookingsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAssignedBookingsInput, Prisma.UserUpdateWithoutAssignedBookingsInput>, Prisma.UserUncheckedUpdateWithoutAssignedBookingsInput>
+}
+
 export type UserCreateNestedOneWithoutAdminApprovalsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutAdminApprovalsInput, Prisma.UserUncheckedCreateWithoutAdminApprovalsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutAdminApprovalsInput
@@ -576,6 +641,94 @@ export type UserUpdateOneWithoutAdminApprovalsNestedInput = {
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAdminApprovalsInput, Prisma.UserUpdateWithoutAdminApprovalsInput>, Prisma.UserUncheckedUpdateWithoutAdminApprovalsInput>
+}
+
+export type UserCreateNestedOneWithoutCommissionRulesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommissionRulesInput, Prisma.UserUncheckedCreateWithoutCommissionRulesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommissionRulesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCommissionRulesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommissionRulesInput, Prisma.UserUncheckedCreateWithoutCommissionRulesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommissionRulesInput
+  upsert?: Prisma.UserUpsertWithoutCommissionRulesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCommissionRulesInput, Prisma.UserUpdateWithoutCommissionRulesInput>, Prisma.UserUncheckedUpdateWithoutCommissionRulesInput>
+}
+
+export type UserCreateNestedOneWithoutAgentCommissionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAgentCommissionsInput, Prisma.UserUncheckedCreateWithoutAgentCommissionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAgentCommissionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutAgentCommissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAgentCommissionsInput, Prisma.UserUncheckedCreateWithoutAgentCommissionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAgentCommissionsInput
+  upsert?: Prisma.UserUpsertWithoutAgentCommissionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAgentCommissionsInput, Prisma.UserUpdateWithoutAgentCommissionsInput>, Prisma.UserUncheckedUpdateWithoutAgentCommissionsInput>
+}
+
+export type UserCreateNestedOneWithoutCommissionAdjustmentsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommissionAdjustmentsInput, Prisma.UserUncheckedCreateWithoutCommissionAdjustmentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommissionAdjustmentsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCommissionAdjustmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommissionAdjustmentsInput, Prisma.UserUncheckedCreateWithoutCommissionAdjustmentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommissionAdjustmentsInput
+  upsert?: Prisma.UserUpsertWithoutCommissionAdjustmentsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCommissionAdjustmentsInput, Prisma.UserUpdateWithoutCommissionAdjustmentsInput>, Prisma.UserUncheckedUpdateWithoutCommissionAdjustmentsInput>
+}
+
+export type UserCreateNestedOneWithoutNotificationSettingsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationSettingsInput, Prisma.UserUncheckedCreateWithoutNotificationSettingsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationSettingsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutNotificationSettingsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationSettingsInput, Prisma.UserUncheckedCreateWithoutNotificationSettingsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationSettingsInput
+  upsert?: Prisma.UserUpsertWithoutNotificationSettingsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationSettingsInput, Prisma.UserUpdateWithoutNotificationSettingsInput>, Prisma.UserUncheckedUpdateWithoutNotificationSettingsInput>
+}
+
+export type UserCreateNestedOneWithoutCustomerPaymentsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCustomerPaymentsInput, Prisma.UserUncheckedCreateWithoutCustomerPaymentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCustomerPaymentsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutReviewedPaymentsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReviewedPaymentsInput, Prisma.UserUncheckedCreateWithoutReviewedPaymentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReviewedPaymentsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCustomerPaymentsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCustomerPaymentsInput, Prisma.UserUncheckedCreateWithoutCustomerPaymentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCustomerPaymentsInput
+  upsert?: Prisma.UserUpsertWithoutCustomerPaymentsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCustomerPaymentsInput, Prisma.UserUpdateWithoutCustomerPaymentsInput>, Prisma.UserUncheckedUpdateWithoutCustomerPaymentsInput>
+}
+
+export type UserUpdateOneWithoutReviewedPaymentsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReviewedPaymentsInput, Prisma.UserUncheckedCreateWithoutReviewedPaymentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReviewedPaymentsInput
+  upsert?: Prisma.UserUpsertWithoutReviewedPaymentsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReviewedPaymentsInput, Prisma.UserUpdateWithoutReviewedPaymentsInput>, Prisma.UserUncheckedUpdateWithoutReviewedPaymentsInput>
 }
 
 export type EnumUserRoleFieldUpdateOperationsInput = {
@@ -601,6 +754,13 @@ export type UserCreateWithoutAgentProfileInput = {
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
 }
 
 export type UserUncheckedCreateWithoutAgentProfileInput = {
@@ -618,6 +778,13 @@ export type UserUncheckedCreateWithoutAgentProfileInput = {
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
 export type UserCreateOrConnectWithoutAgentProfileInput = {
@@ -651,6 +818,13 @@ export type UserUpdateWithoutAgentProfileInput = {
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAgentProfileInput = {
@@ -668,6 +842,13 @@ export type UserUncheckedUpdateWithoutAgentProfileInput = {
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
 export type UserCreateWithoutPasswordResetTokensInput = {
@@ -685,6 +866,13 @@ export type UserCreateWithoutPasswordResetTokensInput = {
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
 }
 
 export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
@@ -702,6 +890,13 @@ export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
 export type UserCreateOrConnectWithoutPasswordResetTokensInput = {
@@ -735,6 +930,13 @@ export type UserUpdateWithoutPasswordResetTokensInput = {
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
@@ -752,6 +954,13 @@ export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
 export type UserCreateWithoutCustomerBookingsInput = {
@@ -769,6 +978,13 @@ export type UserCreateWithoutCustomerBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
 }
 
 export type UserUncheckedCreateWithoutCustomerBookingsInput = {
@@ -786,6 +1002,13 @@ export type UserUncheckedCreateWithoutCustomerBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
 export type UserCreateOrConnectWithoutCustomerBookingsInput = {
@@ -808,6 +1031,13 @@ export type UserCreateWithoutAgentBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
 }
 
 export type UserUncheckedCreateWithoutAgentBookingsInput = {
@@ -825,11 +1055,71 @@ export type UserUncheckedCreateWithoutAgentBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
 export type UserCreateOrConnectWithoutAgentBookingsInput = {
   where: Prisma.UserWhereUniqueInput
   create: Prisma.XOR<Prisma.UserCreateWithoutAgentBookingsInput, Prisma.UserUncheckedCreateWithoutAgentBookingsInput>
+}
+
+export type UserCreateWithoutAssignedBookingsInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
+  agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutAssignedBookingsInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
+  agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutAssignedBookingsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAssignedBookingsInput, Prisma.UserUncheckedCreateWithoutAssignedBookingsInput>
 }
 
 export type UserUpsertWithoutCustomerBookingsInput = {
@@ -858,6 +1148,13 @@ export type UserUpdateWithoutCustomerBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCustomerBookingsInput = {
@@ -875,6 +1172,13 @@ export type UserUncheckedUpdateWithoutCustomerBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
 export type UserUpsertWithoutAgentBookingsInput = {
@@ -903,6 +1207,13 @@ export type UserUpdateWithoutAgentBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAgentBookingsInput = {
@@ -920,6 +1231,72 @@ export type UserUncheckedUpdateWithoutAgentBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUpsertWithoutAssignedBookingsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAssignedBookingsInput, Prisma.UserUncheckedUpdateWithoutAssignedBookingsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAssignedBookingsInput, Prisma.UserUncheckedCreateWithoutAssignedBookingsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAssignedBookingsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAssignedBookingsInput, Prisma.UserUncheckedUpdateWithoutAssignedBookingsInput>
+}
+
+export type UserUpdateWithoutAssignedBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
+  agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAssignedBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
+  agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
 export type UserCreateWithoutAdminApprovalsInput = {
@@ -937,6 +1314,13 @@ export type UserCreateWithoutAdminApprovalsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
 }
 
 export type UserUncheckedCreateWithoutAdminApprovalsInput = {
@@ -954,6 +1338,13 @@ export type UserUncheckedCreateWithoutAdminApprovalsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
 export type UserCreateOrConnectWithoutAdminApprovalsInput = {
@@ -987,6 +1378,13 @@ export type UserUpdateWithoutAdminApprovalsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAdminApprovalsInput = {
@@ -1004,6 +1402,685 @@ export type UserUncheckedUpdateWithoutAdminApprovalsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserCreateWithoutCommissionRulesInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
+  agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutCommissionRulesInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
+  agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutCommissionRulesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommissionRulesInput, Prisma.UserUncheckedCreateWithoutCommissionRulesInput>
+}
+
+export type UserUpsertWithoutCommissionRulesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCommissionRulesInput, Prisma.UserUncheckedUpdateWithoutCommissionRulesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommissionRulesInput, Prisma.UserUncheckedCreateWithoutCommissionRulesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCommissionRulesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCommissionRulesInput, Prisma.UserUncheckedUpdateWithoutCommissionRulesInput>
+}
+
+export type UserUpdateWithoutCommissionRulesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
+  agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCommissionRulesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
+  agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserCreateWithoutAgentCommissionsInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
+  agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutAgentCommissionsInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
+  agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutAgentCommissionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAgentCommissionsInput, Prisma.UserUncheckedCreateWithoutAgentCommissionsInput>
+}
+
+export type UserUpsertWithoutAgentCommissionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAgentCommissionsInput, Prisma.UserUncheckedUpdateWithoutAgentCommissionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAgentCommissionsInput, Prisma.UserUncheckedCreateWithoutAgentCommissionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAgentCommissionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAgentCommissionsInput, Prisma.UserUncheckedUpdateWithoutAgentCommissionsInput>
+}
+
+export type UserUpdateWithoutAgentCommissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
+  agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAgentCommissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
+  agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserCreateWithoutCommissionAdjustmentsInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
+  agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutCommissionAdjustmentsInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
+  agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutCommissionAdjustmentsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommissionAdjustmentsInput, Prisma.UserUncheckedCreateWithoutCommissionAdjustmentsInput>
+}
+
+export type UserUpsertWithoutCommissionAdjustmentsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCommissionAdjustmentsInput, Prisma.UserUncheckedUpdateWithoutCommissionAdjustmentsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommissionAdjustmentsInput, Prisma.UserUncheckedCreateWithoutCommissionAdjustmentsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCommissionAdjustmentsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCommissionAdjustmentsInput, Prisma.UserUncheckedUpdateWithoutCommissionAdjustmentsInput>
+}
+
+export type UserUpdateWithoutCommissionAdjustmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
+  agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCommissionAdjustmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
+  agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserCreateWithoutNotificationSettingsInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
+  agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+}
+
+export type UserUncheckedCreateWithoutNotificationSettingsInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
+  agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+}
+
+export type UserCreateOrConnectWithoutNotificationSettingsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationSettingsInput, Prisma.UserUncheckedCreateWithoutNotificationSettingsInput>
+}
+
+export type UserUpsertWithoutNotificationSettingsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutNotificationSettingsInput, Prisma.UserUncheckedUpdateWithoutNotificationSettingsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationSettingsInput, Prisma.UserUncheckedCreateWithoutNotificationSettingsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutNotificationSettingsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutNotificationSettingsInput, Prisma.UserUncheckedUpdateWithoutNotificationSettingsInput>
+}
+
+export type UserUpdateWithoutNotificationSettingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
+  agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+}
+
+export type UserUncheckedUpdateWithoutNotificationSettingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
+  agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+}
+
+export type UserCreateWithoutCustomerPaymentsInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
+  agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutCustomerPaymentsInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
+  agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutCustomerPaymentsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCustomerPaymentsInput, Prisma.UserUncheckedCreateWithoutCustomerPaymentsInput>
+}
+
+export type UserCreateWithoutReviewedPaymentsInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
+  agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutReviewedPaymentsInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
+  agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutReviewedPaymentsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutReviewedPaymentsInput, Prisma.UserUncheckedCreateWithoutReviewedPaymentsInput>
+}
+
+export type UserUpsertWithoutCustomerPaymentsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCustomerPaymentsInput, Prisma.UserUncheckedUpdateWithoutCustomerPaymentsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCustomerPaymentsInput, Prisma.UserUncheckedCreateWithoutCustomerPaymentsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCustomerPaymentsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCustomerPaymentsInput, Prisma.UserUncheckedUpdateWithoutCustomerPaymentsInput>
+}
+
+export type UserUpdateWithoutCustomerPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
+  agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCustomerPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
+  agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUpsertWithoutReviewedPaymentsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutReviewedPaymentsInput, Prisma.UserUncheckedUpdateWithoutReviewedPaymentsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutReviewedPaymentsInput, Prisma.UserUncheckedCreateWithoutReviewedPaymentsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutReviewedPaymentsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutReviewedPaymentsInput, Prisma.UserUncheckedUpdateWithoutReviewedPaymentsInput>
+}
+
+export type UserUpdateWithoutReviewedPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
+  agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutReviewedPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
+  agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
 
@@ -1016,6 +2093,13 @@ export type UserCountOutputType = {
   customerBookings: number
   agentBookings: number
   adminApprovals: number
+  customerPayments: number
+  reviewedPayments: number
+  assignedBookings: number
+  commissionRules: number
+  agentCommissions: number
+  commissionAdjustments: number
+  notificationSettings: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1023,6 +2107,13 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   customerBookings?: boolean | UserCountOutputTypeCountCustomerBookingsArgs
   agentBookings?: boolean | UserCountOutputTypeCountAgentBookingsArgs
   adminApprovals?: boolean | UserCountOutputTypeCountAdminApprovalsArgs
+  customerPayments?: boolean | UserCountOutputTypeCountCustomerPaymentsArgs
+  reviewedPayments?: boolean | UserCountOutputTypeCountReviewedPaymentsArgs
+  assignedBookings?: boolean | UserCountOutputTypeCountAssignedBookingsArgs
+  commissionRules?: boolean | UserCountOutputTypeCountCommissionRulesArgs
+  agentCommissions?: boolean | UserCountOutputTypeCountAgentCommissionsArgs
+  commissionAdjustments?: boolean | UserCountOutputTypeCountCommissionAdjustmentsArgs
+  notificationSettings?: boolean | UserCountOutputTypeCountNotificationSettingsArgs
 }
 
 /**
@@ -1063,6 +2154,55 @@ export type UserCountOutputTypeCountAdminApprovalsArgs<ExtArgs extends runtime.T
   where?: Prisma.PriceApprovalWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCustomerPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountReviewedPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAssignedBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookingWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCommissionRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CommissionRuleWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAgentCommissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CommissionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCommissionAdjustmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CommissionAdjustmentWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountNotificationSettingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NotificationSettingWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1080,6 +2220,13 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   customerBookings?: boolean | Prisma.User$customerBookingsArgs<ExtArgs>
   agentBookings?: boolean | Prisma.User$agentBookingsArgs<ExtArgs>
   adminApprovals?: boolean | Prisma.User$adminApprovalsArgs<ExtArgs>
+  customerPayments?: boolean | Prisma.User$customerPaymentsArgs<ExtArgs>
+  reviewedPayments?: boolean | Prisma.User$reviewedPaymentsArgs<ExtArgs>
+  assignedBookings?: boolean | Prisma.User$assignedBookingsArgs<ExtArgs>
+  commissionRules?: boolean | Prisma.User$commissionRulesArgs<ExtArgs>
+  agentCommissions?: boolean | Prisma.User$agentCommissionsArgs<ExtArgs>
+  commissionAdjustments?: boolean | Prisma.User$commissionAdjustmentsArgs<ExtArgs>
+  notificationSettings?: boolean | Prisma.User$notificationSettingsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1129,6 +2276,13 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   customerBookings?: boolean | Prisma.User$customerBookingsArgs<ExtArgs>
   agentBookings?: boolean | Prisma.User$agentBookingsArgs<ExtArgs>
   adminApprovals?: boolean | Prisma.User$adminApprovalsArgs<ExtArgs>
+  customerPayments?: boolean | Prisma.User$customerPaymentsArgs<ExtArgs>
+  reviewedPayments?: boolean | Prisma.User$reviewedPaymentsArgs<ExtArgs>
+  assignedBookings?: boolean | Prisma.User$assignedBookingsArgs<ExtArgs>
+  commissionRules?: boolean | Prisma.User$commissionRulesArgs<ExtArgs>
+  agentCommissions?: boolean | Prisma.User$agentCommissionsArgs<ExtArgs>
+  commissionAdjustments?: boolean | Prisma.User$commissionAdjustmentsArgs<ExtArgs>
+  notificationSettings?: boolean | Prisma.User$notificationSettingsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1142,6 +2296,13 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     customerBookings: Prisma.$BookingPayload<ExtArgs>[]
     agentBookings: Prisma.$BookingPayload<ExtArgs>[]
     adminApprovals: Prisma.$PriceApprovalPayload<ExtArgs>[]
+    customerPayments: Prisma.$PaymentPayload<ExtArgs>[]
+    reviewedPayments: Prisma.$PaymentPayload<ExtArgs>[]
+    assignedBookings: Prisma.$BookingPayload<ExtArgs>[]
+    commissionRules: Prisma.$CommissionRulePayload<ExtArgs>[]
+    agentCommissions: Prisma.$CommissionPayload<ExtArgs>[]
+    commissionAdjustments: Prisma.$CommissionAdjustmentPayload<ExtArgs>[]
+    notificationSettings: Prisma.$NotificationSettingPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1553,6 +2714,13 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   customerBookings<T extends Prisma.User$customerBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$customerBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   agentBookings<T extends Prisma.User$agentBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$agentBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   adminApprovals<T extends Prisma.User$adminApprovalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$adminApprovalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PriceApprovalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  customerPayments<T extends Prisma.User$customerPaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$customerPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reviewedPayments<T extends Prisma.User$reviewedPaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reviewedPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  assignedBookings<T extends Prisma.User$assignedBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignedBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  commissionRules<T extends Prisma.User$commissionRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$commissionRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  agentCommissions<T extends Prisma.User$agentCommissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$agentCommissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  commissionAdjustments<T extends Prisma.User$commissionAdjustmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$commissionAdjustmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionAdjustmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notificationSettings<T extends Prisma.User$notificationSettingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationSettingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationSettingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2097,6 +3265,174 @@ export type User$adminApprovalsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.PriceApprovalScalarFieldEnum | Prisma.PriceApprovalScalarFieldEnum[]
+}
+
+/**
+ * User.customerPayments
+ */
+export type User$customerPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Payment
+   */
+  select?: Prisma.PaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Payment
+   */
+  omit?: Prisma.PaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentInclude<ExtArgs> | null
+  where?: Prisma.PaymentWhereInput
+  orderBy?: Prisma.PaymentOrderByWithRelationInput | Prisma.PaymentOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentScalarFieldEnum | Prisma.PaymentScalarFieldEnum[]
+}
+
+/**
+ * User.reviewedPayments
+ */
+export type User$reviewedPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Payment
+   */
+  select?: Prisma.PaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Payment
+   */
+  omit?: Prisma.PaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentInclude<ExtArgs> | null
+  where?: Prisma.PaymentWhereInput
+  orderBy?: Prisma.PaymentOrderByWithRelationInput | Prisma.PaymentOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentScalarFieldEnum | Prisma.PaymentScalarFieldEnum[]
+}
+
+/**
+ * User.assignedBookings
+ */
+export type User$assignedBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Booking
+   */
+  select?: Prisma.BookingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Booking
+   */
+  omit?: Prisma.BookingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookingInclude<ExtArgs> | null
+  where?: Prisma.BookingWhereInput
+  orderBy?: Prisma.BookingOrderByWithRelationInput | Prisma.BookingOrderByWithRelationInput[]
+  cursor?: Prisma.BookingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookingScalarFieldEnum | Prisma.BookingScalarFieldEnum[]
+}
+
+/**
+ * User.commissionRules
+ */
+export type User$commissionRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CommissionRule
+   */
+  select?: Prisma.CommissionRuleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CommissionRule
+   */
+  omit?: Prisma.CommissionRuleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommissionRuleInclude<ExtArgs> | null
+  where?: Prisma.CommissionRuleWhereInput
+  orderBy?: Prisma.CommissionRuleOrderByWithRelationInput | Prisma.CommissionRuleOrderByWithRelationInput[]
+  cursor?: Prisma.CommissionRuleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CommissionRuleScalarFieldEnum | Prisma.CommissionRuleScalarFieldEnum[]
+}
+
+/**
+ * User.agentCommissions
+ */
+export type User$agentCommissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Commission
+   */
+  select?: Prisma.CommissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Commission
+   */
+  omit?: Prisma.CommissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommissionInclude<ExtArgs> | null
+  where?: Prisma.CommissionWhereInput
+  orderBy?: Prisma.CommissionOrderByWithRelationInput | Prisma.CommissionOrderByWithRelationInput[]
+  cursor?: Prisma.CommissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CommissionScalarFieldEnum | Prisma.CommissionScalarFieldEnum[]
+}
+
+/**
+ * User.commissionAdjustments
+ */
+export type User$commissionAdjustmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CommissionAdjustment
+   */
+  select?: Prisma.CommissionAdjustmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CommissionAdjustment
+   */
+  omit?: Prisma.CommissionAdjustmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommissionAdjustmentInclude<ExtArgs> | null
+  where?: Prisma.CommissionAdjustmentWhereInput
+  orderBy?: Prisma.CommissionAdjustmentOrderByWithRelationInput | Prisma.CommissionAdjustmentOrderByWithRelationInput[]
+  cursor?: Prisma.CommissionAdjustmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CommissionAdjustmentScalarFieldEnum | Prisma.CommissionAdjustmentScalarFieldEnum[]
+}
+
+/**
+ * User.notificationSettings
+ */
+export type User$notificationSettingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the NotificationSetting
+   */
+  select?: Prisma.NotificationSettingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the NotificationSetting
+   */
+  omit?: Prisma.NotificationSettingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationSettingInclude<ExtArgs> | null
+  where?: Prisma.NotificationSettingWhereInput
+  orderBy?: Prisma.NotificationSettingOrderByWithRelationInput | Prisma.NotificationSettingOrderByWithRelationInput[]
+  cursor?: Prisma.NotificationSettingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationSettingScalarFieldEnum | Prisma.NotificationSettingScalarFieldEnum[]
 }
 
 /**

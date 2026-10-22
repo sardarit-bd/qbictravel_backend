@@ -58,6 +58,11 @@ export const ModelName = {
   Booking: 'Booking',
   PriceApproval: 'PriceApproval',
   BookingHistory: 'BookingHistory',
+  CommissionRule: 'CommissionRule',
+  Commission: 'Commission',
+  CommissionAdjustment: 'CommissionAdjustment',
+  NotificationSetting: 'NotificationSetting',
+  Payment: 'Payment',
   Service: 'Service',
   ServiceAvailability: 'ServiceAvailability',
   ServicePricing: 'ServicePricing',
@@ -143,7 +148,8 @@ export const BookingScalarFieldEnum = {
   paymentStatus: 'paymentStatus',
   fulfillmentStatus: 'fulfillmentStatus',
   notes: 'notes',
-  internalNotes: 'internalNotes'
+  internalNotes: 'internalNotes',
+  assignedStaffId: 'assignedStaffId'
 } as const
 
 export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
@@ -176,6 +182,80 @@ export const BookingHistoryScalarFieldEnum = {
 } as const
 
 export type BookingHistoryScalarFieldEnum = (typeof BookingHistoryScalarFieldEnum)[keyof typeof BookingHistoryScalarFieldEnum]
+
+
+export const CommissionRuleScalarFieldEnum = {
+  id: 'id',
+  rateType: 'rateType',
+  rateValue: 'rateValue',
+  isActive: 'isActive',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type CommissionRuleScalarFieldEnum = (typeof CommissionRuleScalarFieldEnum)[keyof typeof CommissionRuleScalarFieldEnum]
+
+
+export const CommissionScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  agentId: 'agentId',
+  ruleId: 'ruleId',
+  rateType: 'rateType',
+  rateValue: 'rateValue',
+  baseAmount: 'baseAmount',
+  amount: 'amount',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CommissionScalarFieldEnum = (typeof CommissionScalarFieldEnum)[keyof typeof CommissionScalarFieldEnum]
+
+
+export const CommissionAdjustmentScalarFieldEnum = {
+  id: 'id',
+  commissionId: 'commissionId',
+  adminId: 'adminId',
+  previousAmount: 'previousAmount',
+  newAmount: 'newAmount',
+  reason: 'reason',
+  createdAt: 'createdAt'
+} as const
+
+export type CommissionAdjustmentScalarFieldEnum = (typeof CommissionAdjustmentScalarFieldEnum)[keyof typeof CommissionAdjustmentScalarFieldEnum]
+
+
+export const NotificationSettingScalarFieldEnum = {
+  id: 'id',
+  event: 'event',
+  enabled: 'enabled',
+  updatedById: 'updatedById',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NotificationSettingScalarFieldEnum = (typeof NotificationSettingScalarFieldEnum)[keyof typeof NotificationSettingScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  customerId: 'customerId',
+  amount: 'amount',
+  method: 'method',
+  status: 'status',
+  reference: 'reference',
+  receiptNote: 'receiptNote',
+  submittedAt: 'submittedAt',
+  receivedAt: 'receivedAt',
+  reviewedById: 'reviewedById',
+  reviewedAt: 'reviewedAt',
+  reviewNotes: 'reviewNotes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
 export const ServiceScalarFieldEnum = {

@@ -404,6 +404,11 @@ export const ModelName = {
   Booking: 'Booking',
   PriceApproval: 'PriceApproval',
   BookingHistory: 'BookingHistory',
+  CommissionRule: 'CommissionRule',
+  Commission: 'Commission',
+  CommissionAdjustment: 'CommissionAdjustment',
+  NotificationSetting: 'NotificationSetting',
+  Payment: 'Payment',
   Service: 'Service',
   ServiceAvailability: 'ServiceAvailability',
   ServicePricing: 'ServicePricing',
@@ -423,7 +428,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "agentProfile" | "passwordResetToken" | "revokedToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "service" | "serviceAvailability" | "servicePricing" | "user"
+    modelProps: "agentProfile" | "passwordResetToken" | "revokedToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "commissionRule" | "commission" | "commissionAdjustment" | "notificationSetting" | "payment" | "service" | "serviceAvailability" | "servicePricing" | "user"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -945,6 +950,376 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CommissionRule: {
+      payload: Prisma.$CommissionRulePayload<ExtArgs>
+      fields: Prisma.CommissionRuleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CommissionRuleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRulePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CommissionRuleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRulePayload>
+        }
+        findFirst: {
+          args: Prisma.CommissionRuleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRulePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CommissionRuleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRulePayload>
+        }
+        findMany: {
+          args: Prisma.CommissionRuleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRulePayload>[]
+        }
+        create: {
+          args: Prisma.CommissionRuleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRulePayload>
+        }
+        createMany: {
+          args: Prisma.CommissionRuleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CommissionRuleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRulePayload>[]
+        }
+        delete: {
+          args: Prisma.CommissionRuleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRulePayload>
+        }
+        update: {
+          args: Prisma.CommissionRuleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRulePayload>
+        }
+        deleteMany: {
+          args: Prisma.CommissionRuleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CommissionRuleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CommissionRuleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRulePayload>[]
+        }
+        upsert: {
+          args: Prisma.CommissionRuleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRulePayload>
+        }
+        aggregate: {
+          args: Prisma.CommissionRuleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCommissionRule>
+        }
+        groupBy: {
+          args: Prisma.CommissionRuleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CommissionRuleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CommissionRuleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CommissionRuleCountAggregateOutputType> | number
+        }
+      }
+    }
+    Commission: {
+      payload: Prisma.$CommissionPayload<ExtArgs>
+      fields: Prisma.CommissionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CommissionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CommissionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionPayload>
+        }
+        findFirst: {
+          args: Prisma.CommissionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CommissionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionPayload>
+        }
+        findMany: {
+          args: Prisma.CommissionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionPayload>[]
+        }
+        create: {
+          args: Prisma.CommissionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionPayload>
+        }
+        createMany: {
+          args: Prisma.CommissionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CommissionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionPayload>[]
+        }
+        delete: {
+          args: Prisma.CommissionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionPayload>
+        }
+        update: {
+          args: Prisma.CommissionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionPayload>
+        }
+        deleteMany: {
+          args: Prisma.CommissionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CommissionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CommissionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionPayload>[]
+        }
+        upsert: {
+          args: Prisma.CommissionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionPayload>
+        }
+        aggregate: {
+          args: Prisma.CommissionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCommission>
+        }
+        groupBy: {
+          args: Prisma.CommissionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CommissionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CommissionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CommissionCountAggregateOutputType> | number
+        }
+      }
+    }
+    CommissionAdjustment: {
+      payload: Prisma.$CommissionAdjustmentPayload<ExtArgs>
+      fields: Prisma.CommissionAdjustmentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CommissionAdjustmentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionAdjustmentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CommissionAdjustmentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionAdjustmentPayload>
+        }
+        findFirst: {
+          args: Prisma.CommissionAdjustmentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionAdjustmentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CommissionAdjustmentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionAdjustmentPayload>
+        }
+        findMany: {
+          args: Prisma.CommissionAdjustmentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionAdjustmentPayload>[]
+        }
+        create: {
+          args: Prisma.CommissionAdjustmentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionAdjustmentPayload>
+        }
+        createMany: {
+          args: Prisma.CommissionAdjustmentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CommissionAdjustmentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionAdjustmentPayload>[]
+        }
+        delete: {
+          args: Prisma.CommissionAdjustmentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionAdjustmentPayload>
+        }
+        update: {
+          args: Prisma.CommissionAdjustmentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionAdjustmentPayload>
+        }
+        deleteMany: {
+          args: Prisma.CommissionAdjustmentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CommissionAdjustmentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CommissionAdjustmentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionAdjustmentPayload>[]
+        }
+        upsert: {
+          args: Prisma.CommissionAdjustmentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionAdjustmentPayload>
+        }
+        aggregate: {
+          args: Prisma.CommissionAdjustmentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCommissionAdjustment>
+        }
+        groupBy: {
+          args: Prisma.CommissionAdjustmentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CommissionAdjustmentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CommissionAdjustmentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CommissionAdjustmentCountAggregateOutputType> | number
+        }
+      }
+    }
+    NotificationSetting: {
+      payload: Prisma.$NotificationSettingPayload<ExtArgs>
+      fields: Prisma.NotificationSettingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NotificationSettingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationSettingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NotificationSettingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationSettingPayload>
+        }
+        findFirst: {
+          args: Prisma.NotificationSettingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationSettingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NotificationSettingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationSettingPayload>
+        }
+        findMany: {
+          args: Prisma.NotificationSettingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationSettingPayload>[]
+        }
+        create: {
+          args: Prisma.NotificationSettingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationSettingPayload>
+        }
+        createMany: {
+          args: Prisma.NotificationSettingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NotificationSettingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationSettingPayload>[]
+        }
+        delete: {
+          args: Prisma.NotificationSettingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationSettingPayload>
+        }
+        update: {
+          args: Prisma.NotificationSettingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationSettingPayload>
+        }
+        deleteMany: {
+          args: Prisma.NotificationSettingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NotificationSettingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NotificationSettingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationSettingPayload>[]
+        }
+        upsert: {
+          args: Prisma.NotificationSettingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationSettingPayload>
+        }
+        aggregate: {
+          args: Prisma.NotificationSettingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNotificationSetting>
+        }
+        groupBy: {
+          args: Prisma.NotificationSettingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NotificationSettingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NotificationSettingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NotificationSettingCountAggregateOutputType> | number
+        }
+      }
+    }
+    Payment: {
+      payload: Prisma.$PaymentPayload<ExtArgs>
+      fields: Prisma.PaymentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PaymentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PaymentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>
+        }
+        findFirst: {
+          args: Prisma.PaymentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PaymentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>
+        }
+        findMany: {
+          args: Prisma.PaymentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>[]
+        }
+        create: {
+          args: Prisma.PaymentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>
+        }
+        createMany: {
+          args: Prisma.PaymentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PaymentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>[]
+        }
+        delete: {
+          args: Prisma.PaymentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>
+        }
+        update: {
+          args: Prisma.PaymentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>
+        }
+        deleteMany: {
+          args: Prisma.PaymentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PaymentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PaymentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>[]
+        }
+        upsert: {
+          args: Prisma.PaymentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>
+        }
+        aggregate: {
+          args: Prisma.PaymentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePayment>
+        }
+        groupBy: {
+          args: Prisma.PaymentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PaymentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PaymentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PaymentCountAggregateOutputType> | number
+        }
+      }
+    }
     Service: {
       payload: Prisma.$ServicePayload<ExtArgs>
       fields: Prisma.ServiceFieldRefs
@@ -1343,7 +1718,8 @@ export const BookingScalarFieldEnum = {
   paymentStatus: 'paymentStatus',
   fulfillmentStatus: 'fulfillmentStatus',
   notes: 'notes',
-  internalNotes: 'internalNotes'
+  internalNotes: 'internalNotes',
+  assignedStaffId: 'assignedStaffId'
 } as const
 
 export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
@@ -1376,6 +1752,80 @@ export const BookingHistoryScalarFieldEnum = {
 } as const
 
 export type BookingHistoryScalarFieldEnum = (typeof BookingHistoryScalarFieldEnum)[keyof typeof BookingHistoryScalarFieldEnum]
+
+
+export const CommissionRuleScalarFieldEnum = {
+  id: 'id',
+  rateType: 'rateType',
+  rateValue: 'rateValue',
+  isActive: 'isActive',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type CommissionRuleScalarFieldEnum = (typeof CommissionRuleScalarFieldEnum)[keyof typeof CommissionRuleScalarFieldEnum]
+
+
+export const CommissionScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  agentId: 'agentId',
+  ruleId: 'ruleId',
+  rateType: 'rateType',
+  rateValue: 'rateValue',
+  baseAmount: 'baseAmount',
+  amount: 'amount',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CommissionScalarFieldEnum = (typeof CommissionScalarFieldEnum)[keyof typeof CommissionScalarFieldEnum]
+
+
+export const CommissionAdjustmentScalarFieldEnum = {
+  id: 'id',
+  commissionId: 'commissionId',
+  adminId: 'adminId',
+  previousAmount: 'previousAmount',
+  newAmount: 'newAmount',
+  reason: 'reason',
+  createdAt: 'createdAt'
+} as const
+
+export type CommissionAdjustmentScalarFieldEnum = (typeof CommissionAdjustmentScalarFieldEnum)[keyof typeof CommissionAdjustmentScalarFieldEnum]
+
+
+export const NotificationSettingScalarFieldEnum = {
+  id: 'id',
+  event: 'event',
+  enabled: 'enabled',
+  updatedById: 'updatedById',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NotificationSettingScalarFieldEnum = (typeof NotificationSettingScalarFieldEnum)[keyof typeof NotificationSettingScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  customerId: 'customerId',
+  amount: 'amount',
+  method: 'method',
+  status: 'status',
+  reference: 'reference',
+  receiptNote: 'receiptNote',
+  submittedAt: 'submittedAt',
+  receivedAt: 'receivedAt',
+  reviewedById: 'reviewedById',
+  reviewedAt: 'reviewedAt',
+  reviewNotes: 'reviewNotes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
 export const ServiceScalarFieldEnum = {
@@ -1626,6 +2076,76 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'CommissionRateType'
+ */
+export type EnumCommissionRateTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CommissionRateType'>
+    
+
+
+/**
+ * Reference to a field of type 'CommissionRateType[]'
+ */
+export type ListEnumCommissionRateTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CommissionRateType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'CommissionStatus'
+ */
+export type EnumCommissionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CommissionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'CommissionStatus[]'
+ */
+export type ListEnumCommissionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CommissionStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'NotificationEvent'
+ */
+export type EnumNotificationEventFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationEvent'>
+    
+
+
+/**
+ * Reference to a field of type 'NotificationEvent[]'
+ */
+export type ListEnumNotificationEventFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationEvent[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentMethod'
+ */
+export type EnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMethod'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentMethod[]'
+ */
+export type ListEnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMethod[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentRecordStatus'
+ */
+export type EnumPaymentRecordStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentRecordStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentRecordStatus[]'
+ */
+export type ListEnumPaymentRecordStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentRecordStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'ServiceType'
  */
 export type EnumServiceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceType'>
@@ -1866,6 +2386,11 @@ export type GlobalOmitConfig = {
   booking?: Prisma.BookingOmit
   priceApproval?: Prisma.PriceApprovalOmit
   bookingHistory?: Prisma.BookingHistoryOmit
+  commissionRule?: Prisma.CommissionRuleOmit
+  commission?: Prisma.CommissionOmit
+  commissionAdjustment?: Prisma.CommissionAdjustmentOmit
+  notificationSetting?: Prisma.NotificationSettingOmit
+  payment?: Prisma.PaymentOmit
   service?: Prisma.ServiceOmit
   serviceAvailability?: Prisma.ServiceAvailabilityOmit
   servicePricing?: Prisma.ServicePricingOmit

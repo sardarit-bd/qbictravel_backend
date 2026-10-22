@@ -1,0 +1,15 @@
+enum NotificationEvent {
+  BOOKING_CONFIRMATION
+  BOOKING_STATUS_CHANGE
+  PAYMENT_CONFIRMATION
+  OPERATIONAL_UPDATE
+}
+
+model NotificationSetting {
+  id          String            @id @default(uuid())
+  event       NotificationEvent @unique
+  enabled     Boolean           @default(true)
+  updatedById String?
+  updatedBy   User?             @relation("NotificationSettingEditor", fields: [updatedById], references: [id])
+  updatedAt   DateTime          @updatedAt
+}

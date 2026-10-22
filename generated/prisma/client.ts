@@ -77,6 +77,31 @@ export type PriceApproval = Prisma.PriceApprovalModel
  */
 export type BookingHistory = Prisma.BookingHistoryModel
 /**
+ * Model CommissionRule
+ * 
+ */
+export type CommissionRule = Prisma.CommissionRuleModel
+/**
+ * Model Commission
+ * 
+ */
+export type Commission = Prisma.CommissionModel
+/**
+ * Model CommissionAdjustment
+ * 
+ */
+export type CommissionAdjustment = Prisma.CommissionAdjustmentModel
+/**
+ * Model NotificationSetting
+ * 
+ */
+export type NotificationSetting = Prisma.NotificationSettingModel
+/**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel
+/**
  * Model Service
  * 
  */

@@ -14,6 +14,8 @@ import adminRoutes from "./modules/admin/adminRoutes.js";
 import serviceRoutes from "./modules/service/serviceRoutes.js";
 import pricingRoutes from "./modules/pricing/pricingRoutes.js";
 import bookingRoutes from "./modules/booking/bookingRoutes.js";
+import paymentRoutes from "./modules/payment/paymentRoutes.js";
+import operationsRoutes from "./modules/operations/operationsRoutes.js";
 const app: Application = express();
 app.use(httpLogger);
 app.use(
@@ -97,6 +99,8 @@ app.use("/api/v1", serviceRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1", pricingRoutes);
 app.use("/api/v1", bookingRoutes);
+app.use("/api/v1", paymentRoutes);
+app.use("/api/v1", operationsRoutes);
 app.use(errorHandler);
 
 export default app;
