@@ -58,6 +58,37 @@ const options: swaggerJsdoc.Options = {
           in: "query",
           schema: { type: "string", enum: ["active", "deactivated"] },
         },
+                ReportFromParam: {
+          name: "from",
+          in: "query",
+          description: "Start of range (ISO date or date-time), applied to the booking creation date",
+          schema: { type: "string" },
+        },
+        ReportToParam: {
+          name: "to",
+          in: "query",
+          description: "End of range (ISO date or date-time). A date-only value includes the whole day.",
+          schema: { type: "string" },
+        },
+        ReportBookingStatusParam: {
+          name: "status",
+          in: "query",
+          schema: {
+            type: "string",
+            enum: ["PENDING", "CONFIRMED", "CANCELLED", "AWAITING_APPROVAL", "IN_PROGRESS", "COMPLETED", "FAILED"],
+          },
+        },
+        ReportServiceTypeParam: {
+          name: "serviceType",
+          in: "query",
+          description: "Service category (must match an existing service type)",
+          schema: { type: "string" },
+        },
+        ReportAgentIdParam: {
+          name: "agentId",
+          in: "query",
+          schema: { type: "string", format: "uuid" },
+        },
       },
       responses: {
         ValidationError: errorResponse("Validation error"),
