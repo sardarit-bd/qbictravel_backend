@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { vi } from "vitest";
 
-dotenv.config({ path: ".env.test", override: true, quiet: true });
+dotenv.config({ path: ".env.test", quiet: true });
 console.log("Vitest DB config:", {
   user: process.env.DATABASE_URL
     ? new URL(process.env.DATABASE_URL).username
