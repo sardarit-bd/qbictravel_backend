@@ -1,7 +1,7 @@
 import env from "../../config/env.js";
 import sendResponse from "../../shared/utils/response.js";
 import { getOwnProfile } from "../user/userService.js";
-import { registerUser, loginUser, logoutUser, forgotPassword as forgotPasswordService, resetPassword as resetPasswordService, } from "./authService.js";
+import { registerUser, loginUser, logoutUser, forgotPassword as forgotPasswordService, resetPassword as resetPasswordService, validateInvitationToken, } from "./authService.js";
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 const cookieOptions = {
     httpOnly: true,
@@ -57,6 +57,25 @@ export const resetPassword = async (req, res, next) => {
     try {
         await resetPasswordService(req.body);
         sendResponse(res, 200, true, "Password has been reset successfully");
+    }
+    catch (error) {
+        next(error);
+    }
+};
+export const validateInvitation = async (req, res, next) => {
+    try {
+        const token = req.query.token || (req.body && req.body.token);
+        const result = await validateInvitationToken(token);
+        sendResponse(res, 200, true, "Invitation token is valid", result);
+    }
+    catch (error) {
+        next(error);
+    }
+};
+export const setupPassword = async (req, res, next) => {
+    try {
+        await resetPasswordService(req.body);
+        sendResponse(res, 200, true, "Account password has been established successfully. You may now sign in.");
     }
     catch (error) {
         next(error);

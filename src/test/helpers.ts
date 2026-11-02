@@ -22,6 +22,9 @@ export const resetDatabase = async (): Promise<void> => {
   }
 
   // Delete in reverse order of dependencies to avoid foreign key constraint violations
+  await prisma.staffPermission.deleteMany();
+  await prisma.mediaUploadAuth.deleteMany();
+  await prisma.media.deleteMany();
   await prisma.payment.deleteMany();
   await prisma.bookingHistory.deleteMany();
   await prisma.priceApproval.deleteMany();

@@ -126,3 +126,34 @@ export const pricingUpdateSchema = yup.object({
   validFrom: yup.string().optional(),
   validTo: yup.string().optional(),
 });
+
+export const getAdminServicesQuerySchema = yup.object({
+  page: yup
+    .number()
+    .transform((val, orig) => (orig === "" || orig === undefined ? undefined : Number(orig)))
+    .integer("Page must be an integer")
+    .min(1, "Page must be at least 1")
+    .optional(),
+  limit: yup
+    .number()
+    .transform((val, orig) => (orig === "" || orig === undefined ? undefined : Number(orig)))
+    .integer("Limit must be an integer")
+    .min(1, "Limit must be at least 1")
+    .max(100, "Limit cannot exceed 100")
+    .optional(),
+  type: yup.string().oneOf(["HOTEL", "PACKAGE", "TOUR"] as ServiceType[], "Invalid service type").optional(),
+  status: yup.string().oneOf(["DRAFT", "PUBLISHED", "UNPUBLISHED"] as ServiceStatus[], "Invalid service status").optional(),
+  search: yup.string().trim().optional(),
+  q: yup.string().trim().optional(),
+  sortBy: yup.string().oneOf(["name", "createdAt", "updatedAt", "status", "relevance"], "Invalid sort field").optional(),
+  sortOrder: yup.string().oneOf(["asc", "desc"], "Sort order must be 'asc' or 'desc'").optional(),
+});
+
+export const bulkUpdateServiceStatusSchema = yup.object({
+  serviceIds: yup
+    .array()
+    .of(yup.string().trim().uuid("Invalid service ID format").required("Service ID is required"))
+    .min(1, "At least one service ID must be provided")
+    .required("serviceIds array is required"),
+  status: serviceStatusSchema,
+});

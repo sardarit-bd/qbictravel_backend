@@ -7,9 +7,23 @@ export interface AdminUser {
   phone: string | null;
   role: UserRole;
   status: UserStatus;
+  deletedAt?: Date | null;
+  invitationStatus?: "none" | "pending" | "expired" | "completed";
+  canResendInvitation?: boolean;
   createdAt: Date;
   updatedAt: Date;
   agentProfile: { agencyName: string | null } | null;
+  businessOverview?: {
+    totalBookings: number;
+    pendingBookings: number;
+    confirmedBookings: number;
+    completedBookings: number;
+    cancelledBookings: number;
+    totalCommission: number;
+    paidCommission: number;
+    pendingCommission: number;
+    activeCommissionsCount: number;
+  };
 }
 
 export interface ListUsersQuery {

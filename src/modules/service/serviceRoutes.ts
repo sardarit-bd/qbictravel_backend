@@ -1,7 +1,7 @@
 import { Router } from "express";
 import validate from "../../shared/middleware/validate.js";
 import authMiddleware from "../../shared/middleware/authMiddleware.js";
-import requireRole from "../../shared/middleware/requireRole.js";
+import requirePermission from "../../shared/middleware/requirePermission.js";
 
 import * as serviceController from "./serviceController.js";
 import {
@@ -10,6 +10,8 @@ import {
   updateServiceStatusSchema,
   availabilityUpdateSchema,
   pricingUpdateSchema,
+  getAdminServicesQuerySchema,
+  bulkUpdateServiceStatusSchema,
 } from "./serviceValidators.js";
 
 const router = Router();
@@ -131,7 +133,42 @@ router.get("/services/:serviceId/pricing", serviceController.getServicePricing);
  *       403:
  *         description: Forbidden
  */
-router.get("/admin/services", authMiddleware, requireRole("admin"), serviceController.getAdminServices);
+router.get("/admin/services", authMiddleware, requirePermission("tours.view"), validate(getAdminServicesQuerySchema, "query"), serviceController.getAdminServices);
+
+/**
+ * @openapi
+ * /api/v1/admin/services/bulk-status:
+ *   patch:
+ *     tags:
+ *       - Services (Admin)
+ *     summary: Bulk update status of multiple services
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - serviceIds
+ *               - status
+ *             properties:
+ *               serviceIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               status:
+ *                 $ref: '#/components/schemas/ServiceStatus'
+ *     responses:
+ *       200:
+ *         description: Status updated for matching services
+ *       400:
+ *         description: Validation error
+ *       401/403:
+ *         description: Unauthorized/Forbidden
+ */
+router.patch("/admin/services/bulk-status", authMiddleware, requirePermission("tours.edit"), validate(bulkUpdateServiceStatusSchema), serviceController.bulkUpdateServiceStatus);
 
 /**
  * @openapi
@@ -156,7 +193,7 @@ router.get("/admin/services", authMiddleware, requireRole("admin"), serviceContr
  *       401/403:
  *         description: Unauthorized/Forbidden
  */
-router.post("/admin/services", authMiddleware, requireRole("admin"), validate(createServiceSchema), serviceController.createService);
+router.post("/admin/services", authMiddleware, requirePermission("tours.create"), validate(createServiceSchema), serviceController.createService);
 
 /**
  * @openapi
@@ -179,7 +216,7 @@ router.post("/admin/services", authMiddleware, requireRole("admin"), validate(cr
  *       404:
  *         description: Service not found
  */
-router.get("/admin/services/:serviceId", authMiddleware, requireRole("admin"), serviceController.getAdminService);
+router.get("/admin/services/:serviceId", authMiddleware, requirePermission("tours.view"), serviceController.getAdminService);
 
 /**
  * @openapi
@@ -220,7 +257,7 @@ router.get("/admin/services/:serviceId", authMiddleware, requireRole("admin"), s
  *       200:
  *         description: Service updated successfully
  */
-router.patch("/admin/services/:serviceId", authMiddleware, requireRole("admin"), validate(updateServiceSchema), serviceController.updateService);
+router.patch("/admin/services/:serviceId", authMiddleware, requirePermission("tours.edit"), validate(updateServiceSchema), serviceController.updateService);
 
 /**
  * @openapi
@@ -247,7 +284,7 @@ router.patch("/admin/services/:serviceId", authMiddleware, requireRole("admin"),
  *       200:
  *         description: Service status updated successfully
  */
-router.patch("/admin/services/:serviceId/status", authMiddleware, requireRole("admin"), validate(updateServiceStatusSchema), serviceController.updateServiceStatus);
+router.patch("/admin/services/:serviceId/status", authMiddleware, requirePermission("tours.edit"), validate(updateServiceStatusSchema), serviceController.updateServiceStatus);
 
 /**
  * @openapi
@@ -267,7 +304,7 @@ router.patch("/admin/services/:serviceId/status", authMiddleware, requireRole("a
  *       200:
  *         description: Availability overview
  */
-router.get("/admin/availability", authMiddleware, requireRole("admin"), serviceController.getAdminAvailability);
+router.get("/admin/availability", authMiddleware, requirePermission("tours.view"), serviceController.getAdminAvailability);
 
 /**
  * @openapi
@@ -294,7 +331,7 @@ router.get("/admin/availability", authMiddleware, requireRole("admin"), serviceC
  *       200:
  *         description: Availability updated successfully
  */
-router.put("/admin/services/:serviceId/availability", authMiddleware, requireRole("admin"), validate(availabilityUpdateSchema), serviceController.updateAdminAvailability);
+router.put("/admin/services/:serviceId/availability", authMiddleware, requirePermission("tours.edit"), validate(availabilityUpdateSchema), serviceController.updateAdminAvailability);
 
 /**
  * @openapi
@@ -315,7 +352,7 @@ router.put("/admin/services/:serviceId/availability", authMiddleware, requireRol
  *       200:
  *         description: Pricing settings
  */
-router.get("/admin/services/:serviceId/pricing", authMiddleware, requireRole("admin"), serviceController.getAdminPricing);
+router.get("/admin/services/:serviceId/pricing", authMiddleware, requirePermission("tours.view"), serviceController.getAdminPricing);
 
 /**
  * @openapi
@@ -342,6 +379,6 @@ router.get("/admin/services/:serviceId/pricing", authMiddleware, requireRole("ad
  *       200:
  *         description: Pricing updated successfully
  */
-router.put("/admin/services/:serviceId/pricing", authMiddleware, requireRole("admin"), validate(pricingUpdateSchema), serviceController.updateAdminPricing);
+router.put("/admin/services/:serviceId/pricing", authMiddleware, requirePermission("tours.edit"), validate(pricingUpdateSchema), serviceController.updateAdminPricing);
 
 export default router;

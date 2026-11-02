@@ -3,6 +3,7 @@ import * as bookingController from "./bookingController.js";
 import validate from "../../shared/middleware/validate.js";
 import authMiddleware from "../../shared/middleware/authMiddleware.js";
 import requireRole from "../../shared/middleware/requireRole.js";
+import requirePermission from "../../shared/middleware/requirePermission.js";
 import {
   createBookingSchema,
   updateBookingPriceSchema,
@@ -191,7 +192,7 @@ router.patch(
 router.post(
   "/admin/bookings/:bookingId/price-approvals",
   authMiddleware,
-  requireRole("admin"),
+  requirePermission("bookings.approve_price"),
   validate(bookingIdParamSchema, "params"),
   validate(reviewBookingPriceSchema),
   bookingController.reviewBookingPrice

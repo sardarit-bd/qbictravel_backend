@@ -4,6 +4,22 @@ import type { PaginationMeta, PaginatedResult } from "../../types/common.js";
 export type ServiceType = "HOTEL" | "PACKAGE" | "TOUR";
 export type ServiceStatus = "DRAFT" | "PUBLISHED" | "UNPUBLISHED";
 
+export interface ServicePricingSummary {
+  currency: string;
+  basePrice: number;
+  discountedPrice: number | null;
+  taxRate: number;
+  validFrom: Date | null;
+  validTo: Date | null;
+}
+
+export interface ServiceAvailabilitySummary {
+  availableDateCount: number;
+  unavailableDateCount: number;
+  totalCapacity: number | null;
+  bookedCount: number;
+}
+
 export interface ServiceRecord {
   id: string;
   name: string;
@@ -15,6 +31,9 @@ export interface ServiceRecord {
   metadata: Prisma.JsonValue;
   createdAt: Date;
   updatedAt: Date;
+  pricingSummary?: ServicePricingSummary | null;
+  availabilitySummary?: ServiceAvailabilitySummary | null;
+  relevanceScore?: number;
 }
 
 export interface ServiceAvailabilityRecord {
@@ -42,6 +61,7 @@ export interface ServicePricingRecord {
 export interface ServiceDetail extends ServiceRecord {
   availability: ServiceAvailabilityRecord[];
   pricing: ServicePricingRecord[];
+  media?: any[];
 }
 
 export interface CreateServiceInput {
@@ -82,8 +102,29 @@ export interface PricingUpdateInput {
   validTo?: string;
 }
 
+export type ServiceSortField = "name" | "createdAt" | "updatedAt" | "status" | "relevance";
+export type SortOrder = "asc" | "desc";
+
 export interface GetServicesQuery {
   page?: number;
   limit?: number;
   type?: ServiceType;
+  status?: ServiceStatus;
+  search?: string;
+  q?: string;
+  sortBy?: ServiceSortField;
+  sortOrder?: SortOrder;
+}
+
+export interface BulkUpdateServiceStatusInput {
+  serviceIds: string[];
+  status: ServiceStatus;
+}
+
+export interface BulkUpdateServiceStatusResult {
+  updatedCount: number;
+  requestedCount: number;
+  updatedIds: string[];
+  notFoundIds: string[];
+  status: ServiceStatus;
 }

@@ -14,12 +14,78 @@ const adminUserSelect = {
   phone: true,
   role: true,
   status: true,
+  deletedAt: true,
   createdAt: true,
   updatedAt: true,
   agentProfile: { select: { agencyName: true } },
+  passwordResetTokens: {
+    select: {
+      id: true,
+      expiresAt: true,
+      usedAt: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: "desc" as const },
+    take: 1,
+  },
 } as const;
 
+type DbUserWithTokens = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  role: AdminUser["role"];
+  status: AdminUser["status"];
+  deletedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  agentProfile: { agencyName: string | null } | null;
+  passwordResetTokens: Array<{
+    id: string;
+    expiresAt: Date;
+    usedAt: Date | null;
+    createdAt: Date;
+  }>;
+};
+
+const formatAdminUser = (user: DbUserWithTokens): AdminUser => {
+  const latestToken = user.passwordResetTokens?.[0];
+  let invitationStatus: "none" | "pending" | "expired" | "completed" = "none";
+  let canResendInvitation = false;
+
+  if (user.role === "staff" || user.role === "agent") {
+    if (latestToken) {
+      if (latestToken.usedAt !== null) {
+        invitationStatus = "completed";
+      } else if (new Date(latestToken.expiresAt) > new Date()) {
+        invitationStatus = "pending";
+        canResendInvitation = true;
+      } else {
+        invitationStatus = "expired";
+        canResendInvitation = true;
+      }
+    }
+  }
+
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    role: user.role,
+    status: user.status,
+    deletedAt: user.deletedAt,
+    invitationStatus,
+    canResendInvitation,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+    agentProfile: user.agentProfile,
+  };
+};
+
 const buildWhere = ({ role, status, search }: ListUsersQuery) => ({
+  deletedAt: null,
   ...(role ? { role } : {}),
   ...(status ? { status } : {}),
   ...(search
@@ -49,7 +115,7 @@ export const listUsers = async (
   ]);
 
   return {
-    items,
+    items: items.map(formatAdminUser),
     pagination: {
       page: query.page,
       limit: query.limit,
@@ -60,7 +126,12 @@ export const listUsers = async (
 };
 
 export const findUserById = async (id: string): Promise<AdminUser | null> => {
-  return db.user.findUnique({ where: { id }, select: adminUserSelect });
+  const user = await db.user.findFirst({
+    where: { id, deletedAt: null },
+    select: adminUserSelect,
+  });
+
+  return user ? formatAdminUser(user) : null;
 };
 
 export const updateUser = async (
@@ -69,7 +140,7 @@ export const updateUser = async (
 ): Promise<AdminUser> => {
   const { agencyName, ...userFields } = data;
 
-  return db.user.update({
+  const updated = await db.user.update({
     where: { id },
     data: {
       ...userFields,
@@ -86,12 +157,14 @@ export const updateUser = async (
     },
     select: adminUserSelect,
   });
+
+  return formatAdminUser(updated);
 };
 
 export const createAccount = async (
   data: CreateAccountInput,
 ): Promise<AdminUser> => {
-  return db.user.create({
+  const created = await db.user.create({
     data: {
       name: data.name,
       email: data.email,
@@ -103,5 +176,34 @@ export const createAccount = async (
         : {}),
     },
     select: adminUserSelect,
+  });
+
+  return formatAdminUser(created);
+};
+
+export const deleteUser = async (userId: string): Promise<AdminUser> => {
+  return db.$transaction(async (tx) => {
+    // 1. Invalidate active reset/setup tokens
+    await tx.passwordResetToken.deleteMany({
+      where: { userId },
+    });
+
+    // 2. Clear staff permissions if any
+    await tx.staffPermission.deleteMany({
+      where: { userId },
+    });
+
+    // 3. Increment tokenVersion and soft-delete user
+    const updated = await tx.user.update({
+      where: { id: userId },
+      data: {
+        deletedAt: new Date(),
+        status: "deactivated",
+        tokenVersion: { increment: 1 },
+      },
+      select: adminUserSelect,
+    });
+
+    return formatAdminUser(updated);
   });
 };
