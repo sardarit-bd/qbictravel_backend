@@ -38,6 +38,8 @@ model User {
   mediaUploadAuths      MediaUploadAuth[]
   staffPermissions      StaffPermission[]      @relation("UserStaffPermissions")
   grantedPermissions    StaffPermission[]      @relation("PermissionAssignedBy")
+  editedSettings        SystemSetting[]        @relation("SettingEditor")
+  settingAuditLogs      SettingAuditLog[]      @relation("SettingAuditActor")
 
   @@index([deletedAt])
 }

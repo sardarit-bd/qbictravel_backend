@@ -18,7 +18,10 @@ export interface MailDeliveryResult {
   rejected?: string[];
 }
 
+import { getRuntimeSmtpConfig } from "../../modules/setting/settingRuntimeConfig.js";
+
 let cachedTransporter: Transporter | null = null;
+let cachedTransporterFingerprint = "";
 
 export const getTransporter = (): Transporter | null => {
   if (!env.smtpHost) {
@@ -43,16 +46,61 @@ export const getTransporter = (): Transporter | null => {
   return cachedTransporter;
 };
 
+export const getDynamicTransporter = async (): Promise<{
+  transporter: Transporter | null;
+  fromHeader: string;
+  enabled: boolean;
+}> => {
+  const smtpConfig = await getRuntimeSmtpConfig();
+  if (!smtpConfig.enabled || !smtpConfig.host) {
+    return {
+      transporter: null,
+      fromHeader: `"${smtpConfig.fromName || env.smtpFromName}" <${smtpConfig.fromEmail || env.smtpFromEmail}>`,
+      enabled: smtpConfig.enabled,
+    };
+  }
+
+  const fingerprint = `${smtpConfig.host}:${smtpConfig.port}:${smtpConfig.secure}:${smtpConfig.user}:${smtpConfig.pass}`;
+  if (cachedTransporter && cachedTransporterFingerprint === fingerprint) {
+    return {
+      transporter: cachedTransporter,
+      fromHeader: `"${smtpConfig.fromName}" <${smtpConfig.fromEmail}>`,
+      enabled: true,
+    };
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: smtpConfig.host,
+    port: smtpConfig.port,
+    secure: smtpConfig.secure,
+    auth: smtpConfig.user
+      ? {
+          user: smtpConfig.user,
+          pass: smtpConfig.pass,
+        }
+      : undefined,
+  } as any);
+
+  cachedTransporter = transporter;
+  cachedTransporterFingerprint = fingerprint;
+
+  return {
+    transporter,
+    fromHeader: `"${smtpConfig.fromName}" <${smtpConfig.fromEmail}>`,
+    enabled: true,
+  };
+};
+
 export const resetTransporter = (): void => {
   cachedTransporter = null;
+  cachedTransporterFingerprint = "";
 };
 
 export const sendEmail = async (message: MailMessage): Promise<MailDeliveryResult> => {
-  const transporter = getTransporter();
+  const { transporter, fromHeader } = await getDynamicTransporter();
 
   if (transporter) {
     try {
-      const fromHeader = `"${env.smtpFromName}" <${env.smtpFromEmail}>`;
       const info = await transporter.sendMail({
         from: fromHeader,
         to: message.to,

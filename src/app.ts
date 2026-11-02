@@ -22,6 +22,7 @@ import reportRoutes from "./modules/report/reportRoutes.js";
 import mediaRoutes from "./modules/media/mediaRoutes.js";
 import permissionRoutes, { myPermissionsRouter } from "./modules/permission/permissionRoutes.js";
 import agentRoutes from "./modules/agent/agentRoutes.js";
+import settingRoutes from "./modules/setting/settingRoutes.js";
 const app: Application = express();
 app.use(httpLogger);
 app.use(
@@ -115,6 +116,7 @@ app.use("/api/v1", operationsRoutes);
 app.use("/api/v1", notificationRoutes);
 app.use("/api/v1", commissionRoutes);
 app.use("/api/v1", reportRoutes);
+app.use("/api/v1", settingRoutes);
 app.use(errorHandler);
 
 export default app;
