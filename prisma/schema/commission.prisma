@@ -1,0 +1,54 @@
+enum CommissionRateType {
+  PERCENTAGE
+  FIXED
+}
+
+enum CommissionStatus {
+  ACTIVE
+  CANCELLED
+}
+
+model CommissionRule {
+  id          String             @id @default(uuid())
+  rateType    CommissionRateType
+  rateValue   Decimal            @db.Decimal(10, 2)
+  isActive    Boolean            @default(true)
+  createdById String
+  createdBy   User               @relation("CommissionRuleAuthor", fields: [createdById], references: [id])
+  createdAt   DateTime           @default(now())
+  commissions Commission[]
+}
+
+model Commission {
+  id           String             @id @default(uuid())
+  bookingId    String             @unique
+  booking      Booking            @relation(fields: [bookingId], references: [id])
+  agentId      String
+  agent        User               @relation("AgentCommissions", fields: [agentId], references: [id])
+  ruleId       String
+  rule         CommissionRule     @relation(fields: [ruleId], references: [id])
+  rateType     CommissionRateType
+  rateValue    Decimal            @db.Decimal(10, 2)
+  baseAmount   Decimal            @db.Decimal(10, 2)
+  amount       Decimal            @db.Decimal(10, 2)
+  status       CommissionStatus   @default(ACTIVE)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  adjustments  CommissionAdjustment[]
+
+  @@index([agentId])
+}
+
+model CommissionAdjustment {
+  id             String     @id @default(uuid())
+  commissionId   String
+  commission     Commission @relation(fields: [commissionId], references: [id])
+  adminId        String
+  admin          User       @relation("CommissionAdjustments", fields: [adminId], references: [id])
+  previousAmount Decimal    @db.Decimal(10, 2)
+  newAmount      Decimal    @db.Decimal(10, 2)
+  reason         String
+  createdAt      DateTime   @default(now())
+
+  @@index([commissionId])
+}
