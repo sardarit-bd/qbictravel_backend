@@ -3,6 +3,7 @@ import * as paymentController from "./paymentController.js";
 import validate from "../../shared/middleware/validate.js";
 import authMiddleware from "../../shared/middleware/authMiddleware.js";
 import requireRole from "../../shared/middleware/requireRole.js";
+import requirePermission from "../../shared/middleware/requirePermission.js";
 import {
   createPaymentSchema,
   paymentBookingIdParamSchema,
@@ -132,7 +133,7 @@ router.get(
 router.get(
   "/admin/payments",
   authMiddleware,
-  requireRole("admin"),
+  requirePermission("payments.view"),
   paymentController.listAdminPayments
 );
 
@@ -152,7 +153,7 @@ router.get(
 router.get(
   "/admin/payments/:paymentId",
   authMiddleware,
-  requireRole("admin"),
+  requirePermission("payments.view"),
   validate(paymentIdParamSchema, "params"),
   paymentController.getAdminPayment
 );
@@ -185,7 +186,7 @@ router.get(
 router.post(
   "/admin/payments/:paymentId/verify",
   authMiddleware,
-  requireRole("admin"),
+  requirePermission("payments.verify"),
   validate(paymentIdParamSchema, "params"),
   validate(verifyPaymentSchema),
   paymentController.verifyPayment
@@ -218,7 +219,7 @@ router.post(
 router.post(
   "/admin/payments/:paymentId/record",
   authMiddleware,
-  requireRole("admin"),
+  requirePermission("payments.record"),
   validate(paymentIdParamSchema, "params"),
   validate(recordPaymentSchema),
   paymentController.recordPayment

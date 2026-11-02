@@ -100,4 +100,29 @@ describe("Service Service", () => {
       });
     });
   });
+
+  describe("bulkUpdateServicesStatus", () => {
+    it("should delegate bulk update to repository and return result", async () => {
+      const mockResult = {
+        updatedCount: 2,
+        requestedCount: 2,
+        updatedIds: ["1", "2"],
+        notFoundIds: [],
+        status: "PUBLISHED" as const,
+      };
+
+      mockedRepo.bulkUpdateServiceStatus.mockResolvedValue(mockResult);
+
+      const result = await serviceService.bulkUpdateServicesStatus({
+        serviceIds: ["1", "2"],
+        status: "PUBLISHED",
+      });
+
+      expect(result).toEqual(mockResult);
+      expect(mockedRepo.bulkUpdateServiceStatus).toHaveBeenCalledWith({
+        serviceIds: ["1", "2"],
+        status: "PUBLISHED",
+      });
+    });
+  });
 });

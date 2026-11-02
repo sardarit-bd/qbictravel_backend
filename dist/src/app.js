@@ -14,11 +14,20 @@ import adminRoutes from "./modules/admin/adminRoutes.js";
 import serviceRoutes from "./modules/service/serviceRoutes.js";
 import pricingRoutes from "./modules/pricing/pricingRoutes.js";
 import bookingRoutes from "./modules/booking/bookingRoutes.js";
+import paymentRoutes from "./modules/payment/paymentRoutes.js";
+import operationsRoutes from "./modules/operations/operationsRoutes.js";
+import notificationRoutes from "./modules/notification/notificationRoutes.js";
+import commissionRoutes from "./modules/commission/commissionRoutes.js";
+import reportRoutes from "./modules/report/reportRoutes.js";
+import mediaRoutes from "./modules/media/mediaRoutes.js";
+import permissionRoutes, { myPermissionsRouter } from "./modules/permission/permissionRoutes.js";
+import agentRoutes from "./modules/agent/agentRoutes.js";
 const app = express();
 app.use(httpLogger);
 app.use(rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,
+    skip: () => process.env.NODE_ENV === "test",
 }));
 const swaggerCustomCss = `
   body {
@@ -79,11 +88,20 @@ app.get("/api-docs", (req, res) => {
 app.get("/", (req, res) => {
     res.send("right think");
 });
+app.use("/api/v1/auth", myPermissionsRouter);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1", serviceRoutes);
+app.use("/api/v1/admin/media", mediaRoutes);
+app.use("/api/v1/admin", permissionRoutes);
 app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/agent", agentRoutes);
 app.use("/api/v1", pricingRoutes);
 app.use("/api/v1", bookingRoutes);
+app.use("/api/v1", paymentRoutes);
+app.use("/api/v1", operationsRoutes);
+app.use("/api/v1", notificationRoutes);
+app.use("/api/v1", commissionRoutes);
+app.use("/api/v1", reportRoutes);
 app.use(errorHandler);
 export default app;

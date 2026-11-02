@@ -19,6 +19,7 @@ model User {
   role                  UserRole               @default(customer)
   status                UserStatus             @default(active)
   tokenVersion          Int                    @default(0)
+  deletedAt             DateTime?
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
   agentProfile          AgentProfile?
@@ -33,4 +34,10 @@ model User {
   agentCommissions      Commission[]           @relation("AgentCommissions")
   commissionAdjustments CommissionAdjustment[] @relation("CommissionAdjustments")
   notificationSettings  NotificationSetting[]  @relation("NotificationSettingEditor")
+  uploadedMedia         Media[]
+  mediaUploadAuths      MediaUploadAuth[]
+  staffPermissions      StaffPermission[]      @relation("UserStaffPermissions")
+  grantedPermissions    StaffPermission[]      @relation("PermissionAssignedBy")
+
+  @@index([deletedAt])
 }

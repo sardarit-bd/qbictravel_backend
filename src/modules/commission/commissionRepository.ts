@@ -19,7 +19,18 @@ const commissionSelect = {
   createdAt: true,
   updatedAt: true,
   agent: { select: { id: true, name: true } },
-  booking: { select: { id: true, serviceId: true, status: true, paymentStatus: true, finalPrice: true } },
+  booking: {
+    select: {
+      id: true,
+      serviceId: true,
+      status: true,
+      paymentStatus: true,
+      finalPrice: true,
+      service: { select: { id: true, name: true } },
+      customer: { select: { id: true, name: true, email: true } },
+      availability: { select: { id: true, date: true } },
+    },
+  },
 } as const;
 
 const commissionDetailSelect = {

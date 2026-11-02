@@ -8,6 +8,7 @@ import type {
   AvailabilityUpdateInput,
   PricingUpdateInput,
   GetServicesQuery,
+  BulkUpdateServiceStatusInput,
 } from "./serviceTypes.js";
 
 export const getServices = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -56,13 +57,29 @@ export const getServicePricing = async (req: Request, res: Response, next: NextF
 
 export const getAdminServices = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const rawQuery = (res.locals.query || req.query) as any;
     const query: GetServicesQuery = {
-      page: req.query.page ? Number(req.query.page) : undefined,
-      limit: req.query.limit ? Number(req.query.limit) : undefined,
-      type: req.query.type as any,
+      page: rawQuery.page !== undefined ? Number(rawQuery.page) : undefined,
+      limit: rawQuery.limit !== undefined ? Number(rawQuery.limit) : undefined,
+      type: rawQuery.type as any,
+      status: rawQuery.status as any,
+      search: (rawQuery.search || rawQuery.q) as string | undefined,
+      q: rawQuery.q as string | undefined,
+      sortBy: rawQuery.sortBy as any,
+      sortOrder: rawQuery.sortOrder as any,
     };
     const result = await serviceService.getAdminServices(query);
     sendResponse(res, 200, true, "Admin services retrieved successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const bulkUpdateServiceStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const data: BulkUpdateServiceStatusInput = req.body;
+    const result = await serviceService.bulkUpdateServicesStatus(data);
+    sendResponse(res, 200, true, "Services status updated successfully", result);
   } catch (error) {
     next(error);
   }

@@ -7,6 +7,7 @@ import type {
   AvailabilityUpdateInput,
   PricingUpdateInput,
   GetServicesQuery,
+  BulkUpdateServiceStatusInput,
 } from "./serviceTypes.js";
 
 export const getPublishedServices = async (query: GetServicesQuery) => {
@@ -63,4 +64,8 @@ export const updateServiceAvailabilityManual = async (id: string, data: Availabi
 export const updateServicePricingManual = async (id: string, data: PricingUpdateInput) => {
   await getServiceDetails(id, true);
   return serviceRepository.upsertServicePricing(id, data);
+};
+
+export const bulkUpdateServicesStatus = async (data: BulkUpdateServiceStatusInput) => {
+  return serviceRepository.bulkUpdateServiceStatus(data);
 };

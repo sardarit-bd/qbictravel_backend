@@ -72,4 +72,5 @@ export interface SetupEmailTarget {
   id: string;
   name: string;
   email: string;
+  role?: string;
 }

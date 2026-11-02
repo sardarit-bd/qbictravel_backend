@@ -365,3 +365,114 @@ describe("staff", () => {
     expect(res.status).toBe(404);
   });
 });
+
+describe("user deletion", () => {
+  it("soft-deletes a user and excludes them from user lists and login", async () => {
+    const targetUser = await createUser({ role: "customer", name: "Target Customer" });
+
+    const delRes = await adminSession.delete(`${ADMIN}/users/${targetUser.id}`);
+    expect(delRes.status).toBe(200);
+    expect(delRes.body.data.id).toBe(targetUser.id);
+    expect(delRes.body.data.status).toBe("deactivated");
+    expect(delRes.body.data.deletedAt).toBeTruthy();
+
+    // Verify excluded from listUsers
+    const listRes = await adminSession.get(`${ADMIN}/users`);
+    expect(listRes.status).toBe(200);
+    const found = listRes.body.data.items.find((u: any) => u.id === targetUser.id);
+    expect(found).toBeUndefined();
+
+    // Verify cannot log in
+    const loginRes = await api()
+      .post("/api/v1/auth/login")
+      .send({ email: targetUser.email, password: TEST_PASSWORD });
+    expect(loginRes.status).toBe(401);
+  });
+
+  it("prevents self-deletion by admin with 400", async () => {
+    const res = await adminSession.delete(`${ADMIN}/users/${admin.id}`);
+    expect(res.status).toBe(400);
+    expect(res.body.message).toMatch(/cannot delete your own account/i);
+  });
+
+  it("prevents unauthorized deletion by staff with 403", async () => {
+    const staff = await createUser({ role: "staff" });
+    const staffSession = await loginAgent(staff.email);
+    const targetUser = await createUser({ role: "customer" });
+
+    const res = await staffSession.delete(`${ADMIN}/users/${targetUser.id}`);
+    expect(res.status).toBe(403);
+  });
+});
+
+describe("invitation flow & password setup", () => {
+  it("allows complete staff onboarding flow: invite -> verify -> setup password -> login", async () => {
+    // 1. Admin invites staff
+    const inviteRes = await adminSession
+      .post(`${ADMIN}/staff`)
+      .send({ name: "Invited Staff", email: "invited-staff@example.com" });
+    expect(inviteRes.status).toBe(201);
+    const staffId = inviteRes.body.data.id;
+
+    const token = lastEmailToken();
+    expect(token).toBeTruthy();
+
+    // 2. Staff verifies invitation token
+    const verifyRes = await api()
+      .get(`/api/v1/auth/invitation/verify?token=${token}`);
+    expect(verifyRes.status).toBe(200);
+    expect(verifyRes.body.data.valid).toBe(true);
+    expect(verifyRes.body.data.user).toMatchObject({
+      name: "Invited Staff",
+      email: "invited-staff@example.com",
+      role: "staff",
+    });
+
+    // 3. Staff sets password
+    const setupRes = await api()
+      .post("/api/v1/auth/setup-password")
+      .send({ token, password: "NewStrongPassword123" });
+    expect(setupRes.status).toBe(200);
+
+    // 4. Token cannot be reused
+    const reuseRes = await api()
+      .get(`/api/v1/auth/invitation/verify?token=${token}`);
+    expect(reuseRes.status).toBe(400);
+
+    // 5. Staff can log in with new password
+    const loginRes = await api()
+      .post("/api/v1/auth/login")
+      .send({ email: "invited-staff@example.com", password: "NewStrongPassword123" });
+    expect(loginRes.status).toBe(200);
+    expect(loginRes.body.data.role).toBe("staff");
+  });
+
+  it("resends invitation and invalidates previous token", async () => {
+    // 1. Admin invites staff
+    const inviteRes = await adminSession
+      .post(`${ADMIN}/staff`)
+      .send({ name: "Resend Staff", email: "resend-staff@example.com" });
+    expect(inviteRes.status).toBe(201);
+    const staffId = inviteRes.body.data.id;
+    const firstToken = lastEmailToken();
+
+    // 2. Admin resends invitation
+    const resendRes = await adminSession
+      .post(`${ADMIN}/staff/${staffId}/resend-invitation`);
+    expect(resendRes.status).toBe(200);
+    const secondToken = lastEmailToken();
+    expect(secondToken).toBeTruthy();
+    expect(secondToken).not.toBe(firstToken);
+
+    // 3. First token is invalidated
+    const oldTokenRes = await api()
+      .get(`/api/v1/auth/invitation/verify?token=${firstToken}`);
+    expect(oldTokenRes.status).toBe(400);
+
+    // 4. Second token is valid
+    const newTokenRes = await api()
+      .get(`/api/v1/auth/invitation/verify?token=${secondToken}`);
+    expect(newTokenRes.status).toBe(200);
+    expect(newTokenRes.body.data.valid).toBe(true);
+  });
+});

@@ -64,7 +64,7 @@ describe("notificationService booking notifications", () => {
     vi.resetAllMocks();
     repo.findSetting.mockResolvedValue(null);
     repo.findBookingRecipients.mockResolvedValue(makeBooking());
-    send.mockResolvedValue(undefined);
+    send.mockResolvedValue({ success: true, messageId: "msg-1" });
   });
 
   it("emails the customer and the agent when no setting is stored", async () => {

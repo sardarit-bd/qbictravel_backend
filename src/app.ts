@@ -19,12 +19,16 @@ import operationsRoutes from "./modules/operations/operationsRoutes.js";
 import notificationRoutes from "./modules/notification/notificationRoutes.js";
 import commissionRoutes from "./modules/commission/commissionRoutes.js";
 import reportRoutes from "./modules/report/reportRoutes.js";
+import mediaRoutes from "./modules/media/mediaRoutes.js";
+import permissionRoutes, { myPermissionsRouter } from "./modules/permission/permissionRoutes.js";
+import agentRoutes from "./modules/agent/agentRoutes.js";
 const app: Application = express();
 app.use(httpLogger);
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,
+    skip: () => process.env.NODE_ENV === "test",
   }),
 );
 const swaggerCustomCss = `
@@ -96,10 +100,14 @@ app.get("/", (req: Request, res: Response) => {
   res.send("right think");
 });
 
+app.use("/api/v1/auth", myPermissionsRouter);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1", serviceRoutes);
+app.use("/api/v1/admin/media", mediaRoutes);
+app.use("/api/v1/admin", permissionRoutes);
 app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/agent", agentRoutes);
 app.use("/api/v1", pricingRoutes);
 app.use("/api/v1", bookingRoutes);
 app.use("/api/v1", paymentRoutes);

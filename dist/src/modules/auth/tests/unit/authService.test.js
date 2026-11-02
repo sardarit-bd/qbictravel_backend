@@ -144,6 +144,9 @@ describe("resetPassword", () => {
             id: "t1",
             userId: "u1",
             userStatus: "active",
+            userName: "John",
+            userEmail: "john@example.com",
+            userRole: "staff",
         });
         repo.resetPasswordWithToken.mockResolvedValue(true);
         await resetPassword({ token: "raw-token", password: "newSecret456" });
@@ -161,6 +164,9 @@ describe("resetPassword", () => {
             id: "t1",
             userId: "u1",
             userStatus: "deactivated",
+            userName: "John",
+            userEmail: "john@example.com",
+            userRole: "staff",
         });
         await expect(resetPassword({ token: "raw-token", password: "newSecret456" })).rejects.toMatchObject({ statusCode: 400 });
         expect(repo.resetPasswordWithToken).not.toHaveBeenCalled();
@@ -170,6 +176,9 @@ describe("resetPassword", () => {
             id: "t1",
             userId: "u1",
             userStatus: "active",
+            userName: "John",
+            userEmail: "john@example.com",
+            userRole: "staff",
         });
         repo.resetPasswordWithToken.mockResolvedValue(false);
         await expect(resetPassword({ token: "raw-token", password: "newSecret456" })).rejects.toMatchObject({ statusCode: 400 });

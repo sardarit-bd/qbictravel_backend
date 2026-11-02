@@ -3,6 +3,7 @@ import * as operationsController from "./operationsController.js";
 import validate from "../../shared/middleware/validate.js";
 import authMiddleware from "../../shared/middleware/authMiddleware.js";
 import requireRole from "../../shared/middleware/requireRole.js";
+import requirePermission from "../../shared/middleware/requirePermission.js";
 import {
   adminUpdateOperationalStatusSchema,
   assignBookingSchema,
@@ -108,7 +109,7 @@ router.patch(
 router.get(
   "/admin/operations/bookings",
   authMiddleware,
-  requireRole("admin"),
+  requirePermission("bookings.view"),
   operationsController.listAdminBookings
 );
 
@@ -140,7 +141,7 @@ router.get(
 router.patch(
   "/admin/operations/bookings/:bookingId/assignment",
   authMiddleware,
-  requireRole("admin"),
+  requirePermission("bookings.assign"),
   validate(operationsBookingIdParamSchema, "params"),
   validate(assignBookingSchema),
   operationsController.assignBooking
@@ -175,7 +176,7 @@ router.patch(
 router.patch(
   "/admin/operations/bookings/:bookingId/status",
   authMiddleware,
-  requireRole("admin"),
+  requirePermission("bookings.update_status"),
   validate(operationsBookingIdParamSchema, "params"),
   validate(adminUpdateOperationalStatusSchema),
   operationsController.updateAdminBookingStatus

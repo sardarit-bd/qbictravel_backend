@@ -10,6 +10,7 @@ import type {
 import * as authRepository from "../auth/authRepository.js";
 import { sendAccountSetupEmail } from "../auth/authService.js";
 import * as adminRepository from "./adminRepository.js";
+import { getAgentOverview } from "../agent/agentRepository.js";
 import type {
   AdminUser,
   CreateAccountInput,
@@ -101,7 +102,12 @@ export const getAgent = async (agentId: string): Promise<AdminUser> => {
     throw new AppError("Agent not found", 404);
   }
 
-  return user;
+  const businessOverview = await getAgentOverview(agentId);
+
+  return {
+    ...user,
+    businessOverview,
+  };
 };
 
 export const createAgent = async (
@@ -147,4 +153,48 @@ export const updateStaff = async (
   assertNotSelfStatusChange(actor, staffId, input);
 
   return adminRepository.updateUser(staffId, input);
+};
+
+export const deleteUser = async (
+  actor: AuthenticatedUser,
+  userId: string,
+): Promise<AdminUser> => {
+  const user = await getUser(userId);
+
+  if (actor.id === userId) {
+    throw new AppError("You cannot delete your own account", 400);
+  }
+
+  logger.info(
+    { adminId: actor.id, deletedUserId: userId, role: user.role },
+    "User soft-deleted successfully",
+  );
+
+  return adminRepository.deleteUser(userId);
+};
+
+export const resendInvitation = async (
+  actor: AuthenticatedUser,
+  userId: string,
+): Promise<{ success: boolean; message: string }> => {
+  const user = await getUser(userId);
+
+  if (user.role !== "staff" && user.role !== "agent") {
+    throw new AppError("Invitation can only be sent to staff or agent accounts", 400);
+  }
+
+  try {
+    await sendAccountSetupEmail(user);
+    logger.info(
+      { adminId: actor.id, targetUserId: userId, role: user.role },
+      "Resent invitation email successfully",
+    );
+    return { success: true, message: "Invitation email resent successfully" };
+  } catch (error) {
+    logger.error(
+      { err: error, adminId: actor.id, targetUserId: userId },
+      "Failed to resend invitation email",
+    );
+    throw new AppError("Failed to deliver invitation email. Please check SMTP settings.", 502);
+  }
 };

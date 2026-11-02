@@ -94,3 +94,23 @@ export const updateStaff = async (req: Request, res: Response, next: NextFunctio
     next(error);
   }
 };
+
+export const deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = (req.params.userId || req.params.id) as string;
+    const deleted = await adminService.deleteUser(req.user!, userId);
+    sendResponse(res, 200, true, "User deleted successfully", deleted);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resendInvitation = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = (req.params.staffId || req.params.userId || req.params.id) as string;
+    const result = await adminService.resendInvitation(req.user!, userId);
+    sendResponse(res, 200, true, result.message, result);
+  } catch (error) {
+    next(error);
+  }
+};

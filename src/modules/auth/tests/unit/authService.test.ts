@@ -209,6 +209,9 @@ describe("resetPassword", () => {
       id: "t1",
       userId: "u1",
       userStatus: "active",
+      userName: "John",
+      userEmail: "john@example.com",
+      userRole: "staff",
     });
     repo.resetPasswordWithToken.mockResolvedValue(true);
 
@@ -235,6 +238,9 @@ describe("resetPassword", () => {
       id: "t1",
       userId: "u1",
       userStatus: "deactivated",
+      userName: "John",
+      userEmail: "john@example.com",
+      userRole: "staff",
     });
 
     await expect(
@@ -248,6 +254,9 @@ describe("resetPassword", () => {
       id: "t1",
       userId: "u1",
       userStatus: "active",
+      userName: "John",
+      userEmail: "john@example.com",
+      userRole: "staff",
     });
     repo.resetPasswordWithToken.mockResolvedValue(false);
 

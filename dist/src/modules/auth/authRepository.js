@@ -11,20 +11,20 @@ const authRecordSelect = {
     tokenVersion: true,
 };
 export const findUserByEmail = async (email) => {
-    return db.user.findUnique({
-        where: { email },
+    return db.user.findFirst({
+        where: { email, deletedAt: null },
         select: authRecordSelect,
     });
 };
 export const findAuthUserById = async (id) => {
-    return db.user.findUnique({
-        where: { id },
+    return db.user.findFirst({
+        where: { id, deletedAt: null },
         select: authRecordSelect,
     });
 };
 export const findUserWithPassword = async (email) => {
-    return db.user.findUnique({
-        where: { email },
+    return db.user.findFirst({
+        where: { email, deletedAt: null },
         select: { ...authRecordSelect, password: true },
     });
 };
@@ -68,13 +68,37 @@ export const replacePasswordResetToken = async (data) => {
 };
 export const findActivePasswordResetToken = async (tokenHash) => {
     const record = await db.passwordResetToken.findFirst({
-        where: { tokenHash, usedAt: null, expiresAt: { gt: new Date() } },
-        select: { id: true, userId: true, user: { select: { status: true } } },
+        where: {
+            tokenHash,
+            usedAt: null,
+            expiresAt: { gt: new Date() },
+            user: { deletedAt: null },
+        },
+        select: {
+            id: true,
+            userId: true,
+            user: {
+                select: {
+                    name: true,
+                    email: true,
+                    role: true,
+                    status: true,
+                    deletedAt: true,
+                },
+            },
+        },
     });
-    if (!record) {
+    if (!record || record.user.deletedAt !== null) {
         return null;
     }
-    return { id: record.id, userId: record.userId, userStatus: record.user.status };
+    return {
+        id: record.id,
+        userId: record.userId,
+        userStatus: record.user.status,
+        userName: record.user.name,
+        userEmail: record.user.email,
+        userRole: record.user.role,
+    };
 };
 export const resetPasswordWithToken = async (data) => {
     return db.$transaction(async (tx) => {

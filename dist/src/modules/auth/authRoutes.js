@@ -155,6 +155,47 @@ router.post("/forgot-password", authRateLimiter, validate(forgotPasswordSchema),
 router.post("/reset-password", authRateLimiter, validate(resetPasswordSchema), authController.resetPassword);
 /**
  * @openapi
+ * /api/v1/auth/invitation/verify:
+ *   get:
+ *     tags:
+ *       - Auth
+ *     summary: Verify staff or agent invitation token
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Invitation token is valid
+ *       400:
+ *         description: Invalid or expired token
+ */
+router.get("/invitation/verify", authRateLimiter, authController.validateInvitation);
+router.get("/invitation", authRateLimiter, authController.validateInvitation);
+/**
+ * @openapi
+ * /api/v1/auth/setup-password:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Set password for an invited staff or agent account
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ResetPasswordRequest'
+ *     responses:
+ *       200:
+ *         description: Password established successfully
+ *       400:
+ *         description: Validation error or invalid token
+ */
+router.post("/setup-password", authRateLimiter, validate(resetPasswordSchema), authController.setupPassword);
+/**
+ * @openapi
  * /api/v1/auth/me:
  *   get:
  *     tags:

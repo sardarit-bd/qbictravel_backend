@@ -25,6 +25,12 @@ model Service {
   availability  ServiceAvailability[]
   pricing       ServicePricing[]
   bookings      Booking[]
+  media         Media[]
+
+  @@index([status])
+  @@index([type])
+  @@index([updatedAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
 }
 
 model ServiceAvailability {

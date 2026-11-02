@@ -3,7 +3,10 @@ import { Router } from "express";
 import * as adminController from "./adminController.js";
 import validate from "../../shared/middleware/validate.js";
 import authMiddleware from "../../shared/middleware/authMiddleware.js";
-import requireRole from "../../shared/middleware/requireRole.js";
+import requirePermission from "../../shared/middleware/requirePermission.js";
+import { checkStaffPermission } from "../permission/permissionRepository.js";
+import AppError from "../../shared/utils/AppError.js";
+import type { Request, Response, NextFunction } from "express";
 import {
   agentIdParamSchema,
   createAgentSchema,
@@ -19,7 +22,71 @@ import {
 
 const router = Router();
 
-router.use(authMiddleware, requireRole("admin"));
+router.use(authMiddleware);
+
+/**
+ * Middleware enforcing users.edit and/or users.deactivate depending on request body fields.
+ */
+const requireUserUpdatePermission = async (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+): Promise<void> => {
+  if (!req.user) {
+    return next(new AppError("Unauthorized", 401));
+  }
+
+  // Admin bypass
+  if (req.user.role === "admin") {
+    return next();
+  }
+
+  // Non-staff isolation
+  if (req.user.role !== "staff") {
+    return next(new AppError("Forbidden: insufficient permissions", 403));
+  }
+
+  try {
+    const isStatusUpdate = req.body && req.body.status !== undefined;
+    const isProfileUpdate =
+      req.body &&
+      (req.body.name !== undefined ||
+        req.body.phoneNumber !== undefined ||
+        req.body.tier !== undefined ||
+        req.body.commissionRate !== undefined);
+
+    if (isStatusUpdate) {
+      const canDeactivate = await checkStaffPermission(
+        req.user.id,
+        "users.deactivate"
+      );
+      if (!canDeactivate) {
+        return next(
+          new AppError(
+            "Forbidden: insufficient permissions to change account status",
+            403
+          )
+        );
+      }
+    }
+
+    if (isProfileUpdate || !isStatusUpdate) {
+      const canEdit = await checkStaffPermission(req.user.id, "users.edit");
+      if (!canEdit) {
+        return next(
+          new AppError(
+            "Forbidden: insufficient permissions to update account details",
+            403
+          )
+        );
+      }
+    }
+
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+};
 
 /**
  * @openapi
@@ -55,7 +122,12 @@ router.use(authMiddleware, requireRole("admin"));
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-router.get("/users", validate(listUsersQuerySchema, "query"), adminController.listUsers);
+router.get(
+  "/users",
+  requirePermission("users.view"),
+  validate(listUsersQuerySchema, "query"),
+  adminController.listUsers
+);
 
 /**
  * @openapi
@@ -90,7 +162,12 @@ router.get("/users", validate(listUsersQuerySchema, "query"), adminController.li
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-router.get("/users/:userId", validate(userIdParamSchema, "params"), adminController.getUser);
+router.get(
+  "/users/:userId",
+  requirePermission("users.view"),
+  validate(userIdParamSchema, "params"),
+  adminController.getUser
+);
 
 /**
  * @openapi
@@ -134,10 +211,75 @@ router.get("/users/:userId", validate(userIdParamSchema, "params"), adminControl
  */
 router.patch(
   "/users/:userId",
+  requireUserUpdatePermission,
   validate(userIdParamSchema, "params"),
   validate(updateUserSchema),
   adminController.updateUser,
 );
+
+/**
+ * @openapi
+ * /api/v1/admin/users/{userId}:
+ *   delete:
+ *     tags:
+ *       - Admin Users
+ *     summary: Soft-delete/archive a user account
+ *     description: Soft-deletes user, revokes active sessions, and cleans up staff permissions while preserving financial/booking records.
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *       400:
+ *         description: Self-deletion attempt or invalid ID
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+router.delete(
+  "/users/:userId",
+  requirePermission("users.delete"),
+  validate(userIdParamSchema, "params"),
+  adminController.deleteUser,
+);
+
+/**
+ * @openapi
+ * /api/v1/admin/users/{userId}/resend-invitation:
+ *   post:
+ *     tags:
+ *       - Admin Users
+ *     summary: Resend invitation email
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Invitation email resent successfully
+ */
+router.post(
+  "/users/:userId/resend-invitation",
+  requirePermission("users.invite_staff"),
+  validate(userIdParamSchema, "params"),
+  adminController.resendInvitation,
+);
+
 
 /**
  * @openapi
@@ -172,7 +314,12 @@ router.patch(
  *       409:
  *         $ref: '#/components/responses/Conflict'
  */
-router.post("/agents", validate(createAgentSchema), adminController.createAgent);
+router.post(
+  "/agents",
+  requirePermission("users.invite_agent"),
+  validate(createAgentSchema),
+  adminController.createAgent
+);
 
 /**
  * @openapi
@@ -203,7 +350,12 @@ router.post("/agents", validate(createAgentSchema), adminController.createAgent)
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-router.get("/agents", validate(listAgentsQuerySchema, "query"), adminController.listAgents);
+router.get(
+  "/agents",
+  requirePermission("users.view"),
+  validate(listAgentsQuerySchema, "query"),
+  adminController.listAgents
+);
 
 /**
  * @openapi
@@ -238,7 +390,12 @@ router.get("/agents", validate(listAgentsQuerySchema, "query"), adminController.
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-router.get("/agents/:agentId", validate(agentIdParamSchema, "params"), adminController.getAgent);
+router.get(
+  "/agents/:agentId",
+  requirePermission("users.view"),
+  validate(agentIdParamSchema, "params"),
+  adminController.getAgent
+);
 
 /**
  * @openapi
@@ -281,6 +438,7 @@ router.get("/agents/:agentId", validate(agentIdParamSchema, "params"), adminCont
  */
 router.patch(
   "/agents/:agentId",
+  requireUserUpdatePermission,
   validate(agentIdParamSchema, "params"),
   validate(updateAgentSchema),
   adminController.updateAgent,
@@ -315,7 +473,12 @@ router.patch(
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-router.get("/staff", validate(listAgentsQuerySchema, "query"), adminController.listStaff);
+router.get(
+  "/staff",
+  requirePermission("users.view"),
+  validate(listAgentsQuerySchema, "query"),
+  adminController.listStaff
+);
 
 /**
  * @openapi
@@ -351,7 +514,12 @@ router.get("/staff", validate(listAgentsQuerySchema, "query"), adminController.l
  *         $ref: '#/components/responses/Conflict'
 
 */
-router.post("/staff", validate(createStaffSchema), adminController.createStaff);
+router.post(
+  "/staff",
+  requirePermission("users.invite_staff"),
+  validate(createStaffSchema),
+  adminController.createStaff
+);
 
 /**
  * @openapi
@@ -394,10 +562,39 @@ router.post("/staff", validate(createStaffSchema), adminController.createStaff);
  *         $ref: '#/components/responses/NotFound'
  */
 
-router.patch('/staff/:staffId',
-validate(staffIdParamSchema, "params"),
-validate(updateStaffSchema),
-adminController.updateStaff,
+router.patch(
+  '/staff/:staffId',
+  requireUserUpdatePermission,
+  validate(staffIdParamSchema, "params"),
+  validate(updateStaffSchema),
+  adminController.updateStaff,
+);
+
+/**
+ * @openapi
+ * /api/v1/admin/staff/{staffId}/resend-invitation:
+ *   post:
+ *     tags:
+ *       - Admin Staff
+ *     summary: Resend invitation email to staff member
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - name: staffId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Staff invitation resent successfully
+ */
+router.post(
+  '/staff/:staffId/resend-invitation',
+  requirePermission("users.invite_staff"),
+  validate(staffIdParamSchema, "params"),
+  adminController.resendInvitation,
 );
 
 export default router;

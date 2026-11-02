@@ -8,6 +8,7 @@ import {
   logoutUser,
   forgotPassword as forgotPasswordService,
   resetPassword as resetPasswordService,
+  validateInvitationToken,
 } from "./authService.js";
 
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
@@ -100,6 +101,38 @@ export const resetPassword = async (
     await resetPasswordService(req.body);
 
     sendResponse(res, 200, true, "Password has been reset successfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const validateInvitation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const token = (req.query.token as string) || (req.body && req.body.token);
+    const result = await validateInvitationToken(token);
+    sendResponse(res, 200, true, "Invitation token is valid", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const setupPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    await resetPasswordService(req.body);
+    sendResponse(
+      res,
+      200,
+      true,
+      "Account password has been established successfully. You may now sign in.",
+    );
   } catch (error) {
     next(error);
   }
