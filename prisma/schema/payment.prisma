@@ -1,0 +1,40 @@
+enum PaymentMethod {
+  BANK_TRANSFER
+  CASH
+  OTHER
+}
+
+enum PaymentRecordStatus {
+  INITIATED
+  SUBMITTED
+  VERIFIED
+  REJECTED
+}
+
+model Payment {
+  id         String  @id @default(uuid())
+  bookingId  String
+  booking    Booking @relation(fields: [bookingId], references: [id])
+  customerId String
+  customer   User    @relation("CustomerPayments", fields: [customerId], references: [id])
+
+  amount      Decimal             @db.Decimal(10, 2)
+  method      PaymentMethod
+  status      PaymentRecordStatus @default(INITIATED)
+  reference   String?
+  receiptNote String?
+  submittedAt DateTime?
+  receivedAt  DateTime?
+
+  reviewedById String?
+  reviewedBy   User?     @relation("PaymentReviews", fields: [reviewedById], references: [id])
+  reviewedAt   DateTime?
+  reviewNotes  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([method, reference])
+  @@index([bookingId])
+  @@index([customerId])
+}

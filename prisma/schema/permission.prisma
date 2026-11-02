@@ -1,0 +1,23 @@
+model Permission {
+  id          String            @id
+  name        String
+  module      String
+  description String?
+  createdAt   DateTime          @default(now())
+  staff       StaffPermission[]
+}
+
+model StaffPermission {
+  id           String     @id @default(uuid())
+  userId       String
+  permissionId String
+  assignedById String?
+  createdAt    DateTime   @default(now())
+  user         User       @relation("UserStaffPermissions", fields: [userId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  assignedBy   User?      @relation("PermissionAssignedBy", fields: [assignedById], references: [id], onDelete: SetNull)
+
+  @@unique([userId, permissionId])
+  @@index([userId])
+  @@index([permissionId])
+}

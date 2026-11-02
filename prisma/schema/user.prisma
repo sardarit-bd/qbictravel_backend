@@ -1,0 +1,43 @@
+enum UserRole {
+  customer
+  agent
+  staff
+  admin
+}
+
+enum UserStatus {
+  active
+  deactivated
+}
+
+model User {
+  id                    String                 @id @default(uuid())
+  name                  String
+  email                 String                 @unique
+  password              String
+  phone                 String?
+  role                  UserRole               @default(customer)
+  status                UserStatus             @default(active)
+  tokenVersion          Int                    @default(0)
+  deletedAt             DateTime?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  agentProfile          AgentProfile?
+  passwordResetTokens   PasswordResetToken[]
+  customerBookings      Booking[]              @relation("CustomerBookings")
+  agentBookings         Booking[]              @relation("AgentBookings")
+  adminApprovals        PriceApproval[]        @relation("AdminApprovals")
+  customerPayments      Payment[]              @relation("CustomerPayments")
+  reviewedPayments      Payment[]              @relation("PaymentReviews")
+  assignedBookings      Booking[]              @relation("StaffAssignments")
+  commissionRules       CommissionRule[]       @relation("CommissionRuleAuthor")
+  agentCommissions      Commission[]           @relation("AgentCommissions")
+  commissionAdjustments CommissionAdjustment[] @relation("CommissionAdjustments")
+  notificationSettings  NotificationSetting[]  @relation("NotificationSettingEditor")
+  uploadedMedia         Media[]
+  mediaUploadAuths      MediaUploadAuth[]
+  staffPermissions      StaffPermission[]      @relation("UserStaffPermissions")
+  grantedPermissions    StaffPermission[]      @relation("PermissionAssignedBy")
+
+  @@index([deletedAt])
+}

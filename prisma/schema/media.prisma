@@ -1,0 +1,39 @@
+model Media {
+  id               String    @id @default(uuid())
+  assetId          String    @unique
+  publicId         String    @unique
+  secureUrl        String
+  originalFilename String?
+  format           String
+  resourceType     String    @default("image")
+  width            Int?
+  height           Int?
+  bytes            Int
+  folder           String
+  uploadedById     String
+  uploadedBy       User      @relation(fields: [uploadedById], references: [id])
+  serviceId        String?
+  service          Service?  @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([uploadedById])
+  @@index([serviceId])
+  @@index([createdAt(sort: Desc)])
+}
+
+model MediaUploadAuth {
+  id         String    @id @default(uuid())
+  tokenHash  String    @unique
+  publicId   String    @unique
+  folder     String
+  adminId    String
+  admin      User      @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  consumedAt DateTime?
+  expiresAt  DateTime
+  createdAt  DateTime  @default(now())
+
+  @@index([adminId])
+  @@index([publicId])
+  @@index([expiresAt])
+}
