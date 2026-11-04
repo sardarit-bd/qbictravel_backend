@@ -26,7 +26,7 @@ const router = Router();
  *       401: { $ref: '#/components/responses/Unauthorized' }
  *       403: { $ref: '#/components/responses/Forbidden' }
  */
-router.get("/admin/reports/bookings", authMiddleware, requirePermission("reports.view"), reportController.adminBookingsReport);
+router.get("/admin/reports/bookings", authMiddleware, requirePermission("dashboard.view"), requirePermission("reports.view"), reportController.adminBookingsReport);
 
 /**
  * @openapi
@@ -47,7 +47,7 @@ router.get("/admin/reports/bookings", authMiddleware, requirePermission("reports
  *       401: { $ref: '#/components/responses/Unauthorized' }
  *       403: { $ref: '#/components/responses/Forbidden' }
  */
-router.get("/admin/reports/revenue", authMiddleware, requirePermission("reports.view"), reportController.adminRevenueReport);
+router.get("/admin/reports/revenue", authMiddleware, requirePermission("dashboard.view"), requirePermission("reports.view"), reportController.adminRevenueReport);
 
 /**
  * @openapi
@@ -68,7 +68,7 @@ router.get("/admin/reports/revenue", authMiddleware, requirePermission("reports.
  *       401: { $ref: '#/components/responses/Unauthorized' }
  *       403: { $ref: '#/components/responses/Forbidden' }
  */
-router.get("/admin/reports/payments", authMiddleware, requirePermission("reports.view"), reportController.adminPaymentsReport);
+router.get("/admin/reports/payments", authMiddleware, requirePermission("dashboard.view"), requirePermission("reports.view"), reportController.adminPaymentsReport);
 
 /**
  * @openapi
@@ -91,7 +91,7 @@ router.get("/admin/reports/payments", authMiddleware, requirePermission("reports
  *       401: { $ref: '#/components/responses/Unauthorized' }
  *       403: { $ref: '#/components/responses/Forbidden' }
  */
-router.get("/admin/reports/services", authMiddleware, requirePermission("reports.view"), reportController.adminServicesReport);
+router.get("/admin/reports/services", authMiddleware, requirePermission("dashboard.view"), requirePermission("reports.view"), reportController.adminServicesReport);
 
 /**
  * @openapi
@@ -137,7 +137,7 @@ router.get("/admin/reports/agents", authMiddleware, requirePermission("reports.v
  *       401: { $ref: '#/components/responses/Unauthorized' }
  *       403: { $ref: '#/components/responses/Forbidden' }
  */
-router.get("/admin/reports/commissions", authMiddleware, requirePermission("reports.view"), reportController.adminCommissionsReport);
+router.get("/admin/reports/commissions", authMiddleware, requireRole("admin"), reportController.adminCommissionsReport);
 
 /**
  * @openapi
