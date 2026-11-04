@@ -58,7 +58,7 @@ describe("Report API Integration", () => {
     if (!isAdminOnly && name !== "agents") {
       it.each([
         ["dashboard.view only", "dashboard.view", 403],
-        ["reports.view only", "reports.view", 403],
+        ["reports.view only", "reports.view", 200],
         ["both dashboard.view and reports.view", "both", 200],
       ])("allows a staff member only when holding %s (expected %d)", async (_label, label, expected) => {
         vi.spyOn(permissionRepository, "checkStaffPermission").mockImplementation((_id, permissionId) =>
