@@ -13,10 +13,16 @@ import {
 
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
-const cookieOptions = {
+const isProduction = env.nodeEnv === "production";
+
+const cookieOptions: {
+  httpOnly: boolean;
+  secure: boolean;
+  sameSite: "none" | "lax";
+} = {
   httpOnly: true,
-  secure: env.nodeEnv === "production",
-  sameSite: "lax" as const,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
 };
 
 export const register = async (

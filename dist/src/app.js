@@ -71,8 +71,14 @@ const swaggerCustomCss = `
   }
 `;
 // app.use(xss());
+const ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://192.168.0.105:3000",
+    "https://phukettours.com",
+    "https://www.phukettours.com",
+];
 app.use(cors({
-    origin: ["http://localhost:3000", "http://192.168.0.105:3000"],
+    origin: ALLOWED_ORIGINS,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
