@@ -275,7 +275,7 @@ router.delete(
  */
 router.post(
   "/users/:userId/resend-invitation",
-  requirePermission("users.invite_staff"),
+  requirePermission("users.invite_agent"),
   validate(userIdParamSchema, "params"),
   adminController.resendInvitation,
 );

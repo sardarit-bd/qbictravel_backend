@@ -44,18 +44,47 @@ export const findPublishedServices = async (
     where.type = query.type;
   }
 
+  // Search: match on name, description, or metadata (destination, tourType, etc.)
+  if (query.search && query.search.trim()) {
+    const term = query.search.trim();
+    where.OR = [
+      { name: { contains: term, mode: "insensitive" } },
+      { description: { contains: term, mode: "insensitive" } },
+      { metadata: { path: ["destination"], string_contains: term } },
+      { metadata: { path: ["tourType"], string_contains: term } },
+    ];
+  }
+
   const [items, total] = await Promise.all([
     db.service.findMany({
       where,
       skip,
       take: limit,
       orderBy: { createdAt: "desc" },
+      include: {
+        pricing: { orderBy: { validFrom: "desc" } },
+      },
     }),
     db.service.count({ where }),
   ]);
 
+  // Populate pricingSummary from the included pricing array.
+  const records: ServiceRecord[] = items.map((item: any) => ({
+    id: item.id,
+    name: item.name,
+    description: item.description,
+    type: item.type,
+    status: item.status,
+    providerName: item.providerName,
+    providerId: item.providerId,
+    metadata: item.metadata,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+    pricingSummary: computePricingSummary(item.pricing),
+  }));
+
   return {
-    items,
+    items: records,
     pagination: {
       page,
       limit,

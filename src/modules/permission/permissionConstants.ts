@@ -13,6 +13,7 @@ export const PERMISSION_MODULES = [
   "payments",
   "media",
   "reports",
+  "settings",
 ] as const;
 
 export type PermissionModule = (typeof PERMISSION_MODULES)[number];
@@ -156,6 +157,50 @@ export const SUPPORTED_PERMISSIONS: readonly PermissionDefinition[] = [
     name: "View Reports",
     module: "reports",
     description: "Access booking volume, revenue analytics, payment reconciliation, and commission reports",
+  },
+
+  // System Settings & Configuration
+  {
+    id: "settings.view",
+    name: "View System Settings",
+    module: "settings",
+    description: "Inspect platform configuration, integration summaries, and audit logs",
+  },
+  {
+    id: "settings.general.manage",
+    name: "Manage General Settings",
+    module: "settings",
+    description: "Update platform name, contact details, currency, and general preferences",
+  },
+  {
+    id: "settings.payment.manage",
+    name: "Manage Payment Gateways",
+    module: "settings",
+    description: "Configure and update payment gateway credentials and operating mode",
+  },
+  {
+    id: "settings.webhook.manage",
+    name: "Manage Webhook Configuration",
+    module: "settings",
+    description: "Configure webhook signing secrets, endpoints, and event verification",
+  },
+  {
+    id: "settings.cloudinary.manage",
+    name: "Manage Cloudinary Settings",
+    module: "settings",
+    description: "Configure Cloudinary API credentials, folders, and connection verification",
+  },
+  {
+    id: "settings.smtp.manage",
+    name: "Manage Email & SMTP",
+    module: "settings",
+    description: "Configure SMTP host credentials, test connections, and send test emails",
+  },
+  {
+    id: "settings.audit.view",
+    name: "View Settings Audit Log",
+    module: "settings",
+    description: "Inspect sensitive configuration audit logs and historical changes",
   },
 ] as const;
 

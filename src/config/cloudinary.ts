@@ -14,10 +14,23 @@ export interface CloudinaryConfig {
   apiSecret: string;
 }
 
+let dynamicCloudinaryConfig: CloudinaryConfig | null = null;
+
+export const setDynamicCloudinaryConfig = (config: CloudinaryConfig | null): void => {
+  dynamicCloudinaryConfig = config;
+};
+
 /**
- * Checks if all required Cloudinary environment variables are present and non-empty.
+ * Checks if all required Cloudinary environment variables or runtime settings are present and non-empty.
  */
 export const isCloudinaryConfigured = (): boolean => {
+  if (dynamicCloudinaryConfig) {
+    return Boolean(
+      dynamicCloudinaryConfig.cloudName?.trim() &&
+        dynamicCloudinaryConfig.apiKey?.trim() &&
+        dynamicCloudinaryConfig.apiSecret?.trim()
+    );
+  }
   const { CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } =
     process.env;
   return Boolean(
@@ -29,9 +42,14 @@ export const isCloudinaryConfigured = (): boolean => {
 
 /**
  * Returns the Cloudinary credentials safely.
+ * Precedence: Runtime database configuration -> environment variables.
  * Throws a 503 AppError if configuration is missing, ensuring secrets are never leaked or undefined.
  */
 export const getCloudinaryConfig = (): CloudinaryConfig => {
+  if (dynamicCloudinaryConfig && isCloudinaryConfigured()) {
+    return dynamicCloudinaryConfig;
+  }
+
   const { CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } =
     process.env;
 

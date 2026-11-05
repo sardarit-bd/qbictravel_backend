@@ -17,6 +17,7 @@ export const getServices = async (req: Request, res: Response, next: NextFunctio
       page: req.query.page ? Number(req.query.page) : undefined,
       limit: req.query.limit ? Number(req.query.limit) : undefined,
       type: req.query.type as any,
+      search: (req.query.search || req.query.q) as string | undefined,
     };
     const result = await serviceService.getPublishedServices(query);
     sendResponse(res, 200, true, "Services retrieved successfully", result);

@@ -137,7 +137,7 @@ router.get("/admin/reports/agents", authMiddleware, requirePermission("reports.v
  *       401: { $ref: '#/components/responses/Unauthorized' }
  *       403: { $ref: '#/components/responses/Forbidden' }
  */
-router.get("/admin/reports/commissions", authMiddleware, requirePermission("reports.view"), reportController.adminCommissionsReport);
+router.get("/admin/reports/commissions", authMiddleware, requireRole("admin"), reportController.adminCommissionsReport);
 
 /**
  * @openapi

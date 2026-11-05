@@ -1,21 +1,21 @@
 model Media {
-  id               String    @id @default(uuid())
-  assetId          String    @unique
-  publicId         String    @unique
+  id               String   @id @default(uuid())
+  assetId          String   @unique
+  publicId         String   @unique
   secureUrl        String
   originalFilename String?
   format           String
-  resourceType     String    @default("image")
+  resourceType     String   @default("image")
   width            Int?
   height           Int?
   bytes            Int
   folder           String
   uploadedById     String
-  uploadedBy       User      @relation(fields: [uploadedById], references: [id])
   serviceId        String?
-  service          Service?  @relation(fields: [serviceId], references: [id], onDelete: SetNull)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  service          Service? @relation(fields: [serviceId], references: [id])
+  uploadedBy       User     @relation(fields: [uploadedById], references: [id])
 
   @@index([uploadedById])
   @@index([serviceId])
@@ -28,10 +28,10 @@ model MediaUploadAuth {
   publicId   String    @unique
   folder     String
   adminId    String
-  admin      User      @relation(fields: [adminId], references: [id], onDelete: Cascade)
   consumedAt DateTime?
   expiresAt  DateTime
   createdAt  DateTime  @default(now())
+  admin      User      @relation(fields: [adminId], references: [id], onDelete: Cascade)
 
   @@index([adminId])
   @@index([publicId])
