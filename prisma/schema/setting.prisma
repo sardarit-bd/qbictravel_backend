@@ -2,14 +2,14 @@ model SystemSetting {
   id             String   @id @default(uuid())
   category       String
   key            String   @unique
-  value          String?  @db.Text
+  value          String?
   isSecret       Boolean  @default(false)
-  encryptedValue String?  @db.Text
+  encryptedValue String?
   description    String?
   updatedById    String?
-  updatedBy      User?    @relation("SettingEditor", fields: [updatedById], references: [id], onDelete: SetNull)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  updatedBy      User?    @relation("SettingEditor", fields: [updatedById], references: [id])
 
   @@index([category])
 }
@@ -20,13 +20,13 @@ model SettingAuditLog {
   action     String
   status     String   @default("SUCCESS")
   actorId    String?
-  actor      User?    @relation("SettingAuditActor", fields: [actorId], references: [id], onDelete: SetNull)
   actorName  String
   actorEmail String
   ipAddress  String?
   userAgent  String?
-  metadata   String?  @db.Text
+  metadata   String?
   createdAt  DateTime @default(now())
+  actor      User?    @relation("SettingAuditActor", fields: [actorId], references: [id])
 
   @@index([category])
   @@index([actorId])

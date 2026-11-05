@@ -8,7 +8,7 @@ vi.mock("../../operationsService.js");
 vi.mock("../../../../shared/middleware/authMiddleware.js", () => ({
   default: (req: any, _res: any, next: any) => {
     const role = req.headers["x-mock-role"] as string;
-    req.user = { id: `${role}-1`, role };
+    req.user = { id: `${role}-1`, role, name: "Mock User", email: `${role}@test.local` };
     next();
   },
 }));

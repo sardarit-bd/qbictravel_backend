@@ -73,6 +73,24 @@ export const loginAgent = async (email: string) => {
   return agent;
 };
 
+/**
+ * Generic authenticated client for any role. Logs the user in via the
+ * standard /auth/login endpoint (cookie-based session) and returns a
+ * supertest agent carrying that session.
+ */
+export const login = async (email: string) => {
+  const client = request.agent(app);
+  const res = await client
+    .post("/api/v1/auth/login")
+    .send({ email, password: TEST_PASSWORD });
+
+  if (res.status !== 200) {
+    throw new Error(`Test login failed (${res.status}): ${res.text}`);
+  }
+
+  return client;
+};
+
 export const tokenFromResponse = (res: request.Response): string => {
   const cookies = ([] as string[]).concat(res.headers["set-cookie"] ?? []);
   const match = cookies.join(";").match(/token=([^;]+)/);

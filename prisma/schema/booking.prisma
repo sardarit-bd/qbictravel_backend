@@ -1,3 +1,73 @@
+model PricingRule {
+  id          String          @id @default(uuid())
+  name        String
+  description String?
+  type        PricingRuleType
+  value       Decimal         @db.Decimal(10, 2)
+  agentId     String?
+  serviceId   String?
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model Booking {
+  id                String               @id @default(uuid())
+  customerId        String
+  agentId           String?
+  serviceId         String
+  availabilityId    String?
+  basePrice         Decimal              @db.Decimal(10, 2)
+  proposedPrice     Decimal?             @db.Decimal(10, 2)
+  finalPrice        Decimal              @db.Decimal(10, 2)
+  status            BookingStatus        @default(PENDING)
+  requiresApproval  Boolean              @default(false)
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  paymentStatus     PaymentStatus        @default(UNPAID)
+  fulfillmentStatus FulfillmentStatus    @default(NOT_STARTED)
+  notes             String?
+  internalNotes     String?
+  assignedStaffId   String?
+  agent             User?                @relation("AgentBookings", fields: [agentId], references: [id])
+  assignedStaff     User?                @relation("StaffAssignments", fields: [assignedStaffId], references: [id])
+  availability      ServiceAvailability? @relation(fields: [availabilityId], references: [id])
+  customer          User                 @relation("CustomerBookings", fields: [customerId], references: [id])
+  service           Service              @relation(fields: [serviceId], references: [id])
+  history           BookingHistory[]
+  commission        Commission?
+  payments          Payment[]
+  priceApproval     PriceApproval?
+}
+
+model PriceApproval {
+  id             String         @id @default(uuid())
+  bookingId      String         @unique
+  requestedPrice Decimal        @db.Decimal(10, 2)
+  approvedPrice  Decimal?       @db.Decimal(10, 2)
+  status         ApprovalStatus @default(PENDING)
+  adminId        String?
+  reviewedAt     DateTime?
+  notes          String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  admin          User?          @relation("AdminApprovals", fields: [adminId], references: [id])
+  booking        Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
+
+model BookingHistory {
+  id        String   @id @default(uuid())
+  bookingId String
+  actorId   String
+  actorRole String
+  action    String
+  changes   Json
+  createdAt DateTime @default(now())
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+}
+
 enum BookingStatus {
   PENDING
   CONFIRMED
@@ -28,86 +98,4 @@ enum FulfillmentStatus {
   NOT_STARTED
   IN_PROGRESS
   FULFILLED
-}
-
-model PricingRule {
-  id          String          @id @default(uuid())
-  name        String
-  description String?
-  type        PricingRuleType
-  value       Decimal         @db.Decimal(10, 2)
-  agentId     String?
-  serviceId   String?
-  isActive    Boolean         @default(true)
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-}
-
-model Booking {
-  id         String @id @default(uuid())
-  customerId String
-  customer   User   @relation("CustomerBookings", fields: [customerId], references: [id])
-
-  agentId String?
-  agent   User?   @relation("AgentBookings", fields: [agentId], references: [id])
-
-  serviceId String
-  service   Service @relation(fields: [serviceId], references: [id])
-
-  availabilityId String?
-  availability   ServiceAvailability? @relation(fields: [availabilityId], references: [id])
-
-  basePrice     Decimal  @db.Decimal(10, 2)
-  proposedPrice Decimal? @db.Decimal(10, 2)
-  finalPrice    Decimal  @db.Decimal(10, 2)
-
-  status           BookingStatus @default(PENDING)
-  requiresApproval Boolean       @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  priceApproval     PriceApproval?
-  paymentStatus     PaymentStatus     @default(UNPAID)
-  fulfillmentStatus FulfillmentStatus @default(NOT_STARTED)
-  notes             String?
-  internalNotes     String?
-  history           BookingHistory[]
-
-  assignedStaffId String?
-  assignedStaff   User?       @relation("StaffAssignments", fields: [assignedStaffId], references: [id])
-  payments        Payment[]
-  commission      Commission?
-}
-
-model PriceApproval {
-  id        String  @id @default(uuid())
-  bookingId String  @unique
-  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-
-  requestedPrice Decimal        @db.Decimal(10, 2)
-  approvedPrice  Decimal?       @db.Decimal(10, 2)
-  status         ApprovalStatus @default(PENDING)
-
-  adminId String?
-  admin   User?   @relation("AdminApprovals", fields: [adminId], references: [id])
-
-  reviewedAt DateTime?
-  notes      String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model BookingHistory {
-  id        String   @id @default(uuid())
-  bookingId String
-  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  actorId   String
-  actorRole String
-  action    String
-  changes   Json
-  createdAt DateTime @default(now())
-
-  @@index([bookingId])
 }

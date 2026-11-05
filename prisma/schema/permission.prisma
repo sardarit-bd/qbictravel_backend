@@ -13,9 +13,9 @@ model StaffPermission {
   permissionId String
   assignedById String?
   createdAt    DateTime   @default(now())
-  user         User       @relation("UserStaffPermissions", fields: [userId], references: [id], onDelete: Cascade)
+  assignedBy   User?      @relation("PermissionAssignedBy", fields: [assignedById], references: [id])
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-  assignedBy   User?      @relation("PermissionAssignedBy", fields: [assignedById], references: [id], onDelete: SetNull)
+  user         User       @relation("UserStaffPermissions", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, permissionId])
   @@index([userId])

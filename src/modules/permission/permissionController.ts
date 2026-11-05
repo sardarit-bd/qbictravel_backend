@@ -58,7 +58,17 @@ export const getMyPermissions = async (
   try {
     const { id, role } = req.user!;
     const effective = await permissionService.getEffectivePermissions(id, role);
-    sendResponse(res, 200, true, "Effective permissions retrieved successfully", effective);
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("Pragma", "no-cache");
+    res.statusCode = 200;
+    res.end(
+      JSON.stringify({
+        success: true,
+        message: "Effective permissions retrieved successfully",
+        data: effective,
+      }),
+    );
   } catch (error) {
     next(error);
   }

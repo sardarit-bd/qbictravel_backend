@@ -175,6 +175,41 @@ describe("GET /auth/me", () => {
     const res = await agent.get(ME);
     expect(res.status).toBe(403);
   });
+
+  it("returns Cache-Control: no-store to prevent conditional 304 responses", async () => {
+    const user = await createUser({ role: "admin" });
+    const agent = await loginAgent(user.email);
+
+    const res = await agent.get(ME);
+
+    expect(res.status).toBe(200);
+    expect(res.headers["cache-control"]).toEqual("no-store");
+    expect(res.headers["pragma"]).toEqual("no-cache");
+    expect(res.headers["etag"]).toBeUndefined();
+  });
+
+  it("does not return 304 on a repeated request with the prior ETag", async () => {
+    const user = await createUser({ role: "admin" });
+    const agent = await loginAgent(user.email);
+
+    const first = await agent.get(ME);
+
+    expect(first.status).toBe(200);
+    expect(first.headers["cache-control"]).toEqual("no-store");
+    expect(first.headers["etag"]).toBeUndefined();
+
+    // Even if a stale or synthetic If-None-Match is sent, the endpoint must
+    // never return 304 because no ETag is present on the response.
+    const second = await agent
+      .get(ME)
+      .set("If-None-Match", `"stale-etag-${Math.random()}"`);
+
+    expect(second.status).toBe(200);
+    expect(second.headers["cache-control"]).toEqual("no-store");
+    expect(second.headers["etag"]).toBeUndefined();
+    expect(second.body.success).toBe(true);
+    expect(second.body.data.role).toBe("admin");
+  });
 });
 
 describe("POST /auth/logout", () => {

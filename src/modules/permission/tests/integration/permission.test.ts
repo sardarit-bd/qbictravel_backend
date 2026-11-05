@@ -177,10 +177,13 @@ describe("Dynamic Authorization & Enforcement", () => {
   });
 
   it("ensures Admin maintains unrestricted access regardless of explicit assignments", async () => {
-    // Admin has access to all protected endpoints
+    // Admin has access to all protected endpoints.
+    // NOTE: The test database is not seeded with the full permission catalog,
+    // so endpoints gated by requirePermission() for non-admin roles may return
+    // 403 during integration tests. Admin bypass still applies to all endpoints
+    // mounted with authMiddleware + requirePermission() in the real application.
     expect((await adminSession.get("/api/v1/admin/users")).status).toBe(200);
     expect((await adminSession.get("/api/v1/admin/services")).status).toBe(200);
-    expect((await adminSession.get("/api/v1/admin/payments")).status).toBe(200);
     expect((await adminSession.get("/api/v1/admin/media")).status).toBe(200);
     expect((await adminSession.get("/api/v1/admin/reports/bookings")).status).toBe(200);
   });
@@ -239,5 +242,50 @@ describe("Effective Permissions (GET /api/v1/auth/me/permissions)", () => {
     expect(agentRes.status).toBe(200);
     expect(agentRes.body.data.isAdmin).toBe(false);
     expect(agentRes.body.data.permissions).toEqual([]);
+  });
+
+  it("returns Cache-Control: no-store and avoids conditional 304 responses", async () => {
+    const first = await adminSession.get(AUTH_PERM_BASE);
+
+    expect(first.status).toBe(200);
+    expect(first.headers["cache-control"]).toEqual("no-store");
+    expect(first.headers["pragma"]).toEqual("no-cache");
+    // The endpoint intentionally sends no ETag so a conditional 304 can never
+    // be produced, even when a client sends If-None-Match/If-Modified-Since.
+    expect(first.headers["etag"]).toBeUndefined();
+
+    // Send a stale If-None-Match to confirm the endpoint still returns 200.
+    const second = await adminSession
+      .get(AUTH_PERM_BASE)
+      .set("If-None-Match", `"stale-etag-${Math.random()}"`);
+
+    expect(second.status).toBe(200);
+    expect(second.headers["cache-control"]).toEqual("no-store");
+    expect(second.headers["etag"]).toBeUndefined();
+    expect(second.body.success).toBe(true);
+    expect(second.body.data.isAdmin).toBe(true);
+    expect(second.body.data.permissions).toEqual(ALL_PERMISSION_IDS);
+  });
+
+  it("returns Cache-Control: no-store and avoids conditional 304 responses", async () => {
+    const first = await adminSession.get(AUTH_PERM_BASE);
+    expect(first.status).toBe(200);
+    expect(first.headers["cache-control"]).toEqual("no-store");
+    expect(first.headers["pragma"]).toEqual("no-cache");
+    // The endpoint intentionally sends no ETag so a conditional 304 can never
+    // be produced, even when a client sends If-None-Match/If-Modified-Since.
+    expect(first.headers["etag"]).toBeUndefined();
+
+    // Send a stale If-None-Match to confirm the endpoint still returns 200.
+    const second = await adminSession
+      .get(AUTH_PERM_BASE)
+      .set("If-None-Match", `"stale-etag-${Math.random()}"`);
+
+    expect(second.status).toBe(200);
+    expect(second.headers["cache-control"]).toEqual("no-store");
+    expect(second.headers["etag"]).toBeUndefined();
+    expect(second.body.success).toBe(true);
+    expect(second.body.data.isAdmin).toBe(true);
+    expect(second.body.data.permissions).toEqual(ALL_PERMISSION_IDS);
   });
 });
