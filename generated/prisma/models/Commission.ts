@@ -272,8 +272,8 @@ export type CommissionWhereInput = {
   status?: Prisma.EnumCommissionStatusFilter<"Commission"> | $Enums.CommissionStatus
   createdAt?: Prisma.DateTimeFilter<"Commission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Commission"> | Date | string
-  booking?: Prisma.XOR<Prisma.BookingScalarRelationFilter, Prisma.BookingWhereInput>
   agent?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  booking?: Prisma.XOR<Prisma.BookingScalarRelationFilter, Prisma.BookingWhereInput>
   rule?: Prisma.XOR<Prisma.CommissionRuleScalarRelationFilter, Prisma.CommissionRuleWhereInput>
   adjustments?: Prisma.CommissionAdjustmentListRelationFilter
 }
@@ -290,8 +290,8 @@ export type CommissionOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  booking?: Prisma.BookingOrderByWithRelationInput
   agent?: Prisma.UserOrderByWithRelationInput
+  booking?: Prisma.BookingOrderByWithRelationInput
   rule?: Prisma.CommissionRuleOrderByWithRelationInput
   adjustments?: Prisma.CommissionAdjustmentOrderByRelationAggregateInput
 }
@@ -311,8 +311,8 @@ export type CommissionWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumCommissionStatusFilter<"Commission"> | $Enums.CommissionStatus
   createdAt?: Prisma.DateTimeFilter<"Commission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Commission"> | Date | string
-  booking?: Prisma.XOR<Prisma.BookingScalarRelationFilter, Prisma.BookingWhereInput>
   agent?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  booking?: Prisma.XOR<Prisma.BookingScalarRelationFilter, Prisma.BookingWhereInput>
   rule?: Prisma.XOR<Prisma.CommissionRuleScalarRelationFilter, Prisma.CommissionRuleWhereInput>
   adjustments?: Prisma.CommissionAdjustmentListRelationFilter
 }, "id" | "bookingId">
@@ -362,8 +362,8 @@ export type CommissionCreateInput = {
   status?: $Enums.CommissionStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  booking: Prisma.BookingCreateNestedOneWithoutCommissionInput
   agent: Prisma.UserCreateNestedOneWithoutAgentCommissionsInput
+  booking: Prisma.BookingCreateNestedOneWithoutCommissionInput
   rule: Prisma.CommissionRuleCreateNestedOneWithoutCommissionsInput
   adjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutCommissionInput
 }
@@ -392,8 +392,8 @@ export type CommissionUpdateInput = {
   status?: Prisma.EnumCommissionStatusFieldUpdateOperationsInput | $Enums.CommissionStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  booking?: Prisma.BookingUpdateOneRequiredWithoutCommissionNestedInput
   agent?: Prisma.UserUpdateOneRequiredWithoutAgentCommissionsNestedInput
+  booking?: Prisma.BookingUpdateOneRequiredWithoutCommissionNestedInput
   rule?: Prisma.CommissionRuleUpdateOneRequiredWithoutCommissionsNestedInput
   adjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutCommissionNestedInput
 }
@@ -741,8 +741,8 @@ export type CommissionCreateWithoutRuleInput = {
   status?: $Enums.CommissionStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  booking: Prisma.BookingCreateNestedOneWithoutCommissionInput
   agent: Prisma.UserCreateNestedOneWithoutAgentCommissionsInput
+  booking: Prisma.BookingCreateNestedOneWithoutCommissionInput
   adjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutCommissionInput
 }
 
@@ -812,8 +812,8 @@ export type CommissionCreateWithoutAdjustmentsInput = {
   status?: $Enums.CommissionStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  booking: Prisma.BookingCreateNestedOneWithoutCommissionInput
   agent: Prisma.UserCreateNestedOneWithoutAgentCommissionsInput
+  booking: Prisma.BookingCreateNestedOneWithoutCommissionInput
   rule: Prisma.CommissionRuleCreateNestedOneWithoutCommissionsInput
 }
 
@@ -856,8 +856,8 @@ export type CommissionUpdateWithoutAdjustmentsInput = {
   status?: Prisma.EnumCommissionStatusFieldUpdateOperationsInput | $Enums.CommissionStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  booking?: Prisma.BookingUpdateOneRequiredWithoutCommissionNestedInput
   agent?: Prisma.UserUpdateOneRequiredWithoutAgentCommissionsNestedInput
+  booking?: Prisma.BookingUpdateOneRequiredWithoutCommissionNestedInput
   rule?: Prisma.CommissionRuleUpdateOneRequiredWithoutCommissionsNestedInput
 }
 
@@ -951,8 +951,8 @@ export type CommissionUpdateWithoutRuleInput = {
   status?: Prisma.EnumCommissionStatusFieldUpdateOperationsInput | $Enums.CommissionStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  booking?: Prisma.BookingUpdateOneRequiredWithoutCommissionNestedInput
   agent?: Prisma.UserUpdateOneRequiredWithoutAgentCommissionsNestedInput
+  booking?: Prisma.BookingUpdateOneRequiredWithoutCommissionNestedInput
   adjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutCommissionNestedInput
 }
 
@@ -1080,8 +1080,8 @@ export type CommissionSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   agent?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   rule?: boolean | Prisma.CommissionRuleDefaultArgs<ExtArgs>
   adjustments?: boolean | Prisma.Commission$adjustmentsArgs<ExtArgs>
   _count?: boolean | Prisma.CommissionCountOutputTypeDefaultArgs<ExtArgs>
@@ -1099,8 +1099,8 @@ export type CommissionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   agent?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   rule?: boolean | Prisma.CommissionRuleDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["commission"]>
 
@@ -1116,8 +1116,8 @@ export type CommissionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   agent?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   rule?: boolean | Prisma.CommissionRuleDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["commission"]>
 
@@ -1137,28 +1137,28 @@ export type CommissionSelectScalar = {
 
 export type CommissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "bookingId" | "agentId" | "ruleId" | "rateType" | "rateValue" | "baseAmount" | "amount" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["commission"]>
 export type CommissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   agent?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   rule?: boolean | Prisma.CommissionRuleDefaultArgs<ExtArgs>
   adjustments?: boolean | Prisma.Commission$adjustmentsArgs<ExtArgs>
   _count?: boolean | Prisma.CommissionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CommissionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   agent?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   rule?: boolean | Prisma.CommissionRuleDefaultArgs<ExtArgs>
 }
 export type CommissionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   agent?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   rule?: boolean | Prisma.CommissionRuleDefaultArgs<ExtArgs>
 }
 
 export type $CommissionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Commission"
   objects: {
-    booking: Prisma.$BookingPayload<ExtArgs>
     agent: Prisma.$UserPayload<ExtArgs>
+    booking: Prisma.$BookingPayload<ExtArgs>
     rule: Prisma.$CommissionRulePayload<ExtArgs>
     adjustments: Prisma.$CommissionAdjustmentPayload<ExtArgs>[]
   }
@@ -1568,8 +1568,8 @@ readonly fields: CommissionFieldRefs;
  */
 export interface Prisma__CommissionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  booking<T extends Prisma.BookingDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BookingDefaultArgs<ExtArgs>>): Prisma.Prisma__BookingClient<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   agent<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  booking<T extends Prisma.BookingDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BookingDefaultArgs<ExtArgs>>): Prisma.Prisma__BookingClient<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   rule<T extends Prisma.CommissionRuleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommissionRuleDefaultArgs<ExtArgs>>): Prisma.Prisma__CommissionRuleClient<runtime.Types.Result.GetResult<Prisma.$CommissionRulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   adjustments<T extends Prisma.Commission$adjustmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Commission$adjustmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionAdjustmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**

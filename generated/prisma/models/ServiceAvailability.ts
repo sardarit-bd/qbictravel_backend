@@ -244,8 +244,8 @@ export type ServiceAvailabilityWhereInput = {
   bookedCount?: Prisma.IntFilter<"ServiceAvailability"> | number
   externalReferenceId?: Prisma.StringNullableFilter<"ServiceAvailability"> | string | null
   lastVerifiedAt?: Prisma.DateTimeNullableFilter<"ServiceAvailability"> | Date | string | null
-  service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
   bookings?: Prisma.BookingListRelationFilter
+  service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
 }
 
 export type ServiceAvailabilityOrderByWithRelationInput = {
@@ -257,8 +257,8 @@ export type ServiceAvailabilityOrderByWithRelationInput = {
   bookedCount?: Prisma.SortOrder
   externalReferenceId?: Prisma.SortOrderInput | Prisma.SortOrder
   lastVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  service?: Prisma.ServiceOrderByWithRelationInput
   bookings?: Prisma.BookingOrderByRelationAggregateInput
+  service?: Prisma.ServiceOrderByWithRelationInput
 }
 
 export type ServiceAvailabilityWhereUniqueInput = Prisma.AtLeast<{
@@ -274,8 +274,8 @@ export type ServiceAvailabilityWhereUniqueInput = Prisma.AtLeast<{
   bookedCount?: Prisma.IntFilter<"ServiceAvailability"> | number
   externalReferenceId?: Prisma.StringNullableFilter<"ServiceAvailability"> | string | null
   lastVerifiedAt?: Prisma.DateTimeNullableFilter<"ServiceAvailability"> | Date | string | null
-  service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
   bookings?: Prisma.BookingListRelationFilter
+  service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
 }, "id" | "serviceId_date">
 
 export type ServiceAvailabilityOrderByWithAggregationInput = {
@@ -316,8 +316,8 @@ export type ServiceAvailabilityCreateInput = {
   bookedCount?: number
   externalReferenceId?: string | null
   lastVerifiedAt?: Date | string | null
-  service: Prisma.ServiceCreateNestedOneWithoutAvailabilityInput
   bookings?: Prisma.BookingCreateNestedManyWithoutAvailabilityInput
+  service: Prisma.ServiceCreateNestedOneWithoutAvailabilityInput
 }
 
 export type ServiceAvailabilityUncheckedCreateInput = {
@@ -340,8 +340,8 @@ export type ServiceAvailabilityUpdateInput = {
   bookedCount?: Prisma.IntFieldUpdateOperationsInput | number
   externalReferenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service?: Prisma.ServiceUpdateOneRequiredWithoutAvailabilityNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutAvailabilityNestedInput
+  service?: Prisma.ServiceUpdateOneRequiredWithoutAvailabilityNestedInput
 }
 
 export type ServiceAvailabilityUncheckedUpdateInput = {
@@ -713,8 +713,8 @@ export type ServiceAvailabilitySelect<ExtArgs extends runtime.Types.Extensions.I
   bookedCount?: boolean
   externalReferenceId?: boolean
   lastVerifiedAt?: boolean
-  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
   bookings?: boolean | Prisma.ServiceAvailability$bookingsArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ServiceAvailabilityCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["serviceAvailability"]>
 
@@ -755,8 +755,8 @@ export type ServiceAvailabilitySelectScalar = {
 
 export type ServiceAvailabilityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "serviceId" | "date" | "isAvailable" | "capacity" | "bookedCount" | "externalReferenceId" | "lastVerifiedAt", ExtArgs["result"]["serviceAvailability"]>
 export type ServiceAvailabilityInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
   bookings?: boolean | Prisma.ServiceAvailability$bookingsArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ServiceAvailabilityCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ServiceAvailabilityIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -769,8 +769,8 @@ export type ServiceAvailabilityIncludeUpdateManyAndReturn<ExtArgs extends runtim
 export type $ServiceAvailabilityPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ServiceAvailability"
   objects: {
-    service: Prisma.$ServicePayload<ExtArgs>
     bookings: Prisma.$BookingPayload<ExtArgs>[]
+    service: Prisma.$ServicePayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1175,8 +1175,8 @@ readonly fields: ServiceAvailabilityFieldRefs;
  */
 export interface Prisma__ServiceAvailabilityClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  service<T extends Prisma.ServiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceDefaultArgs<ExtArgs>>): Prisma.Prisma__ServiceClient<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   bookings<T extends Prisma.ServiceAvailability$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceAvailability$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  service<T extends Prisma.ServiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceDefaultArgs<ExtArgs>>): Prisma.Prisma__ServiceClient<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

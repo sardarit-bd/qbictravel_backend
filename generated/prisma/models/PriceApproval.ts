@@ -260,8 +260,8 @@ export type PriceApprovalWhereInput = {
   notes?: Prisma.StringNullableFilter<"PriceApproval"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PriceApproval"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PriceApproval"> | Date | string
-  booking?: Prisma.XOR<Prisma.BookingScalarRelationFilter, Prisma.BookingWhereInput>
   admin?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  booking?: Prisma.XOR<Prisma.BookingScalarRelationFilter, Prisma.BookingWhereInput>
 }
 
 export type PriceApprovalOrderByWithRelationInput = {
@@ -275,8 +275,8 @@ export type PriceApprovalOrderByWithRelationInput = {
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  booking?: Prisma.BookingOrderByWithRelationInput
   admin?: Prisma.UserOrderByWithRelationInput
+  booking?: Prisma.BookingOrderByWithRelationInput
 }
 
 export type PriceApprovalWhereUniqueInput = Prisma.AtLeast<{
@@ -293,8 +293,8 @@ export type PriceApprovalWhereUniqueInput = Prisma.AtLeast<{
   notes?: Prisma.StringNullableFilter<"PriceApproval"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PriceApproval"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PriceApproval"> | Date | string
-  booking?: Prisma.XOR<Prisma.BookingScalarRelationFilter, Prisma.BookingWhereInput>
   admin?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  booking?: Prisma.XOR<Prisma.BookingScalarRelationFilter, Prisma.BookingWhereInput>
 }, "id" | "bookingId">
 
 export type PriceApprovalOrderByWithAggregationInput = {
@@ -340,8 +340,8 @@ export type PriceApprovalCreateInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  booking: Prisma.BookingCreateNestedOneWithoutPriceApprovalInput
   admin?: Prisma.UserCreateNestedOneWithoutAdminApprovalsInput
+  booking: Prisma.BookingCreateNestedOneWithoutPriceApprovalInput
 }
 
 export type PriceApprovalUncheckedCreateInput = {
@@ -366,8 +366,8 @@ export type PriceApprovalUpdateInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  booking?: Prisma.BookingUpdateOneRequiredWithoutPriceApprovalNestedInput
   admin?: Prisma.UserUpdateOneWithoutAdminApprovalsNestedInput
+  booking?: Prisma.BookingUpdateOneRequiredWithoutPriceApprovalNestedInput
 }
 
 export type PriceApprovalUncheckedUpdateInput = {
@@ -753,8 +753,8 @@ export type PriceApprovalSelect<ExtArgs extends runtime.Types.Extensions.Interna
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   admin?: boolean | Prisma.PriceApproval$adminArgs<ExtArgs>
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["priceApproval"]>
 
 export type PriceApprovalSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -768,8 +768,8 @@ export type PriceApprovalSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   admin?: boolean | Prisma.PriceApproval$adminArgs<ExtArgs>
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["priceApproval"]>
 
 export type PriceApprovalSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -783,8 +783,8 @@ export type PriceApprovalSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   admin?: boolean | Prisma.PriceApproval$adminArgs<ExtArgs>
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["priceApproval"]>
 
 export type PriceApprovalSelectScalar = {
@@ -802,23 +802,23 @@ export type PriceApprovalSelectScalar = {
 
 export type PriceApprovalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "bookingId" | "requestedPrice" | "approvedPrice" | "status" | "adminId" | "reviewedAt" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["priceApproval"]>
 export type PriceApprovalInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   admin?: boolean | Prisma.PriceApproval$adminArgs<ExtArgs>
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
 }
 export type PriceApprovalIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   admin?: boolean | Prisma.PriceApproval$adminArgs<ExtArgs>
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
 }
 export type PriceApprovalIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   admin?: boolean | Prisma.PriceApproval$adminArgs<ExtArgs>
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
 }
 
 export type $PriceApprovalPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PriceApproval"
   objects: {
-    booking: Prisma.$BookingPayload<ExtArgs>
     admin: Prisma.$UserPayload<ExtArgs> | null
+    booking: Prisma.$BookingPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1225,8 +1225,8 @@ readonly fields: PriceApprovalFieldRefs;
  */
 export interface Prisma__PriceApprovalClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  booking<T extends Prisma.BookingDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BookingDefaultArgs<ExtArgs>>): Prisma.Prisma__BookingClient<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   admin<T extends Prisma.PriceApproval$adminArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PriceApproval$adminArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  booking<T extends Prisma.BookingDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BookingDefaultArgs<ExtArgs>>): Prisma.Prisma__BookingClient<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

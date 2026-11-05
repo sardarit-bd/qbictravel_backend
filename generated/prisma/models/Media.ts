@@ -304,8 +304,8 @@ export type MediaWhereInput = {
   serviceId?: Prisma.StringNullableFilter<"Media"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Media"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Media"> | Date | string
-  uploadedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   service?: Prisma.XOR<Prisma.ServiceNullableScalarRelationFilter, Prisma.ServiceWhereInput> | null
+  uploadedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type MediaOrderByWithRelationInput = {
@@ -324,8 +324,8 @@ export type MediaOrderByWithRelationInput = {
   serviceId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  uploadedBy?: Prisma.UserOrderByWithRelationInput
   service?: Prisma.ServiceOrderByWithRelationInput
+  uploadedBy?: Prisma.UserOrderByWithRelationInput
 }
 
 export type MediaWhereUniqueInput = Prisma.AtLeast<{
@@ -347,8 +347,8 @@ export type MediaWhereUniqueInput = Prisma.AtLeast<{
   serviceId?: Prisma.StringNullableFilter<"Media"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Media"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Media"> | Date | string
-  uploadedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   service?: Prisma.XOR<Prisma.ServiceNullableScalarRelationFilter, Prisma.ServiceWhereInput> | null
+  uploadedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id" | "assetId" | "publicId">
 
 export type MediaOrderByWithAggregationInput = {
@@ -409,8 +409,8 @@ export type MediaCreateInput = {
   folder: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  uploadedBy: Prisma.UserCreateNestedOneWithoutUploadedMediaInput
   service?: Prisma.ServiceCreateNestedOneWithoutMediaInput
+  uploadedBy: Prisma.UserCreateNestedOneWithoutUploadedMediaInput
 }
 
 export type MediaUncheckedCreateInput = {
@@ -445,8 +445,8 @@ export type MediaUpdateInput = {
   folder?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  uploadedBy?: Prisma.UserUpdateOneRequiredWithoutUploadedMediaNestedInput
   service?: Prisma.ServiceUpdateOneWithoutMediaNestedInput
+  uploadedBy?: Prisma.UserUpdateOneRequiredWithoutUploadedMediaNestedInput
 }
 
 export type MediaUncheckedUpdateInput = {
@@ -990,8 +990,8 @@ export type MediaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   serviceId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   service?: boolean | Prisma.Media$serviceArgs<ExtArgs>
+  uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["media"]>
 
 export type MediaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1010,8 +1010,8 @@ export type MediaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   serviceId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   service?: boolean | Prisma.Media$serviceArgs<ExtArgs>
+  uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["media"]>
 
 export type MediaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1030,8 +1030,8 @@ export type MediaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   serviceId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   service?: boolean | Prisma.Media$serviceArgs<ExtArgs>
+  uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["media"]>
 
 export type MediaSelectScalar = {
@@ -1054,23 +1054,23 @@ export type MediaSelectScalar = {
 
 export type MediaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "assetId" | "publicId" | "secureUrl" | "originalFilename" | "format" | "resourceType" | "width" | "height" | "bytes" | "folder" | "uploadedById" | "serviceId" | "createdAt" | "updatedAt", ExtArgs["result"]["media"]>
 export type MediaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   service?: boolean | Prisma.Media$serviceArgs<ExtArgs>
+  uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type MediaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   service?: boolean | Prisma.Media$serviceArgs<ExtArgs>
+  uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type MediaIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   service?: boolean | Prisma.Media$serviceArgs<ExtArgs>
+  uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $MediaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Media"
   objects: {
-    uploadedBy: Prisma.$UserPayload<ExtArgs>
     service: Prisma.$ServicePayload<ExtArgs> | null
+    uploadedBy: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1482,8 +1482,8 @@ readonly fields: MediaFieldRefs;
  */
 export interface Prisma__MediaClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  uploadedBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   service<T extends Prisma.Media$serviceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Media$serviceArgs<ExtArgs>>): Prisma.Prisma__ServiceClient<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  uploadedBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

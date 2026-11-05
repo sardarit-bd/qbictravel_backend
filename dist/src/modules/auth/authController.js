@@ -84,7 +84,15 @@ export const setupPassword = async (req, res, next) => {
 export const me = async (req, res, next) => {
     try {
         const profile = await getOwnProfile(req.user.id);
-        sendResponse(res, 200, true, "Profile retrieved successfully", profile);
+        res.setHeader("Content-Type", "application/json; charset=utf-8");
+        res.setHeader("Cache-Control", "no-store");
+        res.setHeader("Pragma", "no-cache");
+        res.statusCode = 200;
+        res.end(JSON.stringify({
+            success: true,
+            message: "Profile retrieved successfully",
+            data: profile,
+        }));
     }
     catch (error) {
         next(error);

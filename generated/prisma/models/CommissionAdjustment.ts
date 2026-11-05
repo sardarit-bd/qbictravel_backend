@@ -236,8 +236,8 @@ export type CommissionAdjustmentWhereInput = {
   newAmount?: Prisma.DecimalFilter<"CommissionAdjustment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   reason?: Prisma.StringFilter<"CommissionAdjustment"> | string
   createdAt?: Prisma.DateTimeFilter<"CommissionAdjustment"> | Date | string
-  commission?: Prisma.XOR<Prisma.CommissionScalarRelationFilter, Prisma.CommissionWhereInput>
   admin?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  commission?: Prisma.XOR<Prisma.CommissionScalarRelationFilter, Prisma.CommissionWhereInput>
 }
 
 export type CommissionAdjustmentOrderByWithRelationInput = {
@@ -248,8 +248,8 @@ export type CommissionAdjustmentOrderByWithRelationInput = {
   newAmount?: Prisma.SortOrder
   reason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  commission?: Prisma.CommissionOrderByWithRelationInput
   admin?: Prisma.UserOrderByWithRelationInput
+  commission?: Prisma.CommissionOrderByWithRelationInput
 }
 
 export type CommissionAdjustmentWhereUniqueInput = Prisma.AtLeast<{
@@ -263,8 +263,8 @@ export type CommissionAdjustmentWhereUniqueInput = Prisma.AtLeast<{
   newAmount?: Prisma.DecimalFilter<"CommissionAdjustment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   reason?: Prisma.StringFilter<"CommissionAdjustment"> | string
   createdAt?: Prisma.DateTimeFilter<"CommissionAdjustment"> | Date | string
-  commission?: Prisma.XOR<Prisma.CommissionScalarRelationFilter, Prisma.CommissionWhereInput>
   admin?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  commission?: Prisma.XOR<Prisma.CommissionScalarRelationFilter, Prisma.CommissionWhereInput>
 }, "id">
 
 export type CommissionAdjustmentOrderByWithAggregationInput = {
@@ -301,8 +301,8 @@ export type CommissionAdjustmentCreateInput = {
   newAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
   reason: string
   createdAt?: Date | string
-  commission: Prisma.CommissionCreateNestedOneWithoutAdjustmentsInput
   admin: Prisma.UserCreateNestedOneWithoutCommissionAdjustmentsInput
+  commission: Prisma.CommissionCreateNestedOneWithoutAdjustmentsInput
 }
 
 export type CommissionAdjustmentUncheckedCreateInput = {
@@ -321,8 +321,8 @@ export type CommissionAdjustmentUpdateInput = {
   newAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   reason?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  commission?: Prisma.CommissionUpdateOneRequiredWithoutAdjustmentsNestedInput
   admin?: Prisma.UserUpdateOneRequiredWithoutCommissionAdjustmentsNestedInput
+  commission?: Prisma.CommissionUpdateOneRequiredWithoutAdjustmentsNestedInput
 }
 
 export type CommissionAdjustmentUncheckedUpdateInput = {
@@ -680,8 +680,8 @@ export type CommissionAdjustmentSelect<ExtArgs extends runtime.Types.Extensions.
   newAmount?: boolean
   reason?: boolean
   createdAt?: boolean
-  commission?: boolean | Prisma.CommissionDefaultArgs<ExtArgs>
   admin?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  commission?: boolean | Prisma.CommissionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["commissionAdjustment"]>
 
 export type CommissionAdjustmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -692,8 +692,8 @@ export type CommissionAdjustmentSelectCreateManyAndReturn<ExtArgs extends runtim
   newAmount?: boolean
   reason?: boolean
   createdAt?: boolean
-  commission?: boolean | Prisma.CommissionDefaultArgs<ExtArgs>
   admin?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  commission?: boolean | Prisma.CommissionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["commissionAdjustment"]>
 
 export type CommissionAdjustmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -704,8 +704,8 @@ export type CommissionAdjustmentSelectUpdateManyAndReturn<ExtArgs extends runtim
   newAmount?: boolean
   reason?: boolean
   createdAt?: boolean
-  commission?: boolean | Prisma.CommissionDefaultArgs<ExtArgs>
   admin?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  commission?: boolean | Prisma.CommissionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["commissionAdjustment"]>
 
 export type CommissionAdjustmentSelectScalar = {
@@ -720,23 +720,23 @@ export type CommissionAdjustmentSelectScalar = {
 
 export type CommissionAdjustmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "commissionId" | "adminId" | "previousAmount" | "newAmount" | "reason" | "createdAt", ExtArgs["result"]["commissionAdjustment"]>
 export type CommissionAdjustmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  commission?: boolean | Prisma.CommissionDefaultArgs<ExtArgs>
   admin?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  commission?: boolean | Prisma.CommissionDefaultArgs<ExtArgs>
 }
 export type CommissionAdjustmentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  commission?: boolean | Prisma.CommissionDefaultArgs<ExtArgs>
   admin?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  commission?: boolean | Prisma.CommissionDefaultArgs<ExtArgs>
 }
 export type CommissionAdjustmentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  commission?: boolean | Prisma.CommissionDefaultArgs<ExtArgs>
   admin?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  commission?: boolean | Prisma.CommissionDefaultArgs<ExtArgs>
 }
 
 export type $CommissionAdjustmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CommissionAdjustment"
   objects: {
-    commission: Prisma.$CommissionPayload<ExtArgs>
     admin: Prisma.$UserPayload<ExtArgs>
+    commission: Prisma.$CommissionPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1140,8 +1140,8 @@ readonly fields: CommissionAdjustmentFieldRefs;
  */
 export interface Prisma__CommissionAdjustmentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  commission<T extends Prisma.CommissionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommissionDefaultArgs<ExtArgs>>): Prisma.Prisma__CommissionClient<runtime.Types.Result.GetResult<Prisma.$CommissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   admin<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  commission<T extends Prisma.CommissionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommissionDefaultArgs<ExtArgs>>): Prisma.Prisma__CommissionClient<runtime.Types.Result.GetResult<Prisma.$CommissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

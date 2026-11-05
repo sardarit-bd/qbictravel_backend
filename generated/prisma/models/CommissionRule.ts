@@ -224,8 +224,8 @@ export type CommissionRuleWhereInput = {
   isActive?: Prisma.BoolFilter<"CommissionRule"> | boolean
   createdById?: Prisma.StringFilter<"CommissionRule"> | string
   createdAt?: Prisma.DateTimeFilter<"CommissionRule"> | Date | string
-  createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   commissions?: Prisma.CommissionListRelationFilter
+  createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type CommissionRuleOrderByWithRelationInput = {
@@ -235,8 +235,8 @@ export type CommissionRuleOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  createdBy?: Prisma.UserOrderByWithRelationInput
   commissions?: Prisma.CommissionOrderByRelationAggregateInput
+  createdBy?: Prisma.UserOrderByWithRelationInput
 }
 
 export type CommissionRuleWhereUniqueInput = Prisma.AtLeast<{
@@ -249,8 +249,8 @@ export type CommissionRuleWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"CommissionRule"> | boolean
   createdById?: Prisma.StringFilter<"CommissionRule"> | string
   createdAt?: Prisma.DateTimeFilter<"CommissionRule"> | Date | string
-  createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   commissions?: Prisma.CommissionListRelationFilter
+  createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type CommissionRuleOrderByWithAggregationInput = {
@@ -285,8 +285,8 @@ export type CommissionRuleCreateInput = {
   rateValue: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
-  createdBy: Prisma.UserCreateNestedOneWithoutCommissionRulesInput
   commissions?: Prisma.CommissionCreateNestedManyWithoutRuleInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCommissionRulesInput
 }
 
 export type CommissionRuleUncheckedCreateInput = {
@@ -305,8 +305,8 @@ export type CommissionRuleUpdateInput = {
   rateValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.UserUpdateOneRequiredWithoutCommissionRulesNestedInput
   commissions?: Prisma.CommissionUpdateManyWithoutRuleNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCommissionRulesNestedInput
 }
 
 export type CommissionRuleUncheckedUpdateInput = {
@@ -635,8 +635,8 @@ export type CommissionRuleSelect<ExtArgs extends runtime.Types.Extensions.Intern
   isActive?: boolean
   createdById?: boolean
   createdAt?: boolean
-  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   commissions?: boolean | Prisma.CommissionRule$commissionsArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.CommissionRuleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["commissionRule"]>
 
@@ -671,8 +671,8 @@ export type CommissionRuleSelectScalar = {
 
 export type CommissionRuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "rateType" | "rateValue" | "isActive" | "createdById" | "createdAt", ExtArgs["result"]["commissionRule"]>
 export type CommissionRuleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   commissions?: boolean | Prisma.CommissionRule$commissionsArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.CommissionRuleCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CommissionRuleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -685,8 +685,8 @@ export type CommissionRuleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Typ
 export type $CommissionRulePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CommissionRule"
   objects: {
-    createdBy: Prisma.$UserPayload<ExtArgs>
     commissions: Prisma.$CommissionPayload<ExtArgs>[]
+    createdBy: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1089,8 +1089,8 @@ readonly fields: CommissionRuleFieldRefs;
  */
 export interface Prisma__CommissionRuleClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   commissions<T extends Prisma.CommissionRule$commissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommissionRule$commissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
