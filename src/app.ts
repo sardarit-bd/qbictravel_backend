@@ -79,7 +79,13 @@ const ALLOWED_ORIGINS = [
   "http://192.168.0.105:3000",
   "https://phukettours.com",
   "https://www.phukettours.com",
+  "http://72.61.112.137",
 ];
+
+// If FRONTEND_URL is set in environment (e.g., custom deployed frontend), ensure it is included
+if (process.env.FRONTEND_URL && !ALLOWED_ORIGINS.includes(process.env.FRONTEND_URL)) {
+  ALLOWED_ORIGINS.push(process.env.FRONTEND_URL);
+}
 
 app.use(
   cors({
