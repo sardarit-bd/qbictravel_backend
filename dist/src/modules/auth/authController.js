@@ -3,10 +3,11 @@ import sendResponse from "../../shared/utils/response.js";
 import { getOwnProfile } from "../user/userService.js";
 import { registerUser, loginUser, logoutUser, forgotPassword as forgotPasswordService, resetPassword as resetPasswordService, validateInvitationToken, } from "./authService.js";
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+const isProduction = env.nodeEnv === "production";
 const cookieOptions = {
     httpOnly: true,
-    secure: env.nodeEnv === "production",
-    sameSite: "lax",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
 };
 export const register = async (req, res, next) => {
     try {
