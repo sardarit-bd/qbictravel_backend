@@ -30,7 +30,7 @@ const env = {
   databaseUrl: process.env.DATABASE_URL!,
   jwtSecret: process.env.JWT_SECRET!,
   databaseProvider,
-  frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
+  frontendUrl: (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/+$/, ""),
   resetTokenTtlMinutes: Number(process.env.RESET_TOKEN_TTL_MINUTES) || 30,
   inviteTokenTtlHours: Number(process.env.INVITE_TOKEN_TTL_HOURS) || 72,
   smtpHost: process.env.SMTP_HOST || "",
