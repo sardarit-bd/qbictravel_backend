@@ -10,7 +10,9 @@ import {
   logoutUser,
   registerUser,
   resetPassword,
+  sendAccountSetupEmail,
 } from "../../authService.js";
+import env from "../../../../config/env.js";
 
 vi.mock("../../authRepository.js");
 
@@ -263,5 +265,51 @@ describe("resetPassword", () => {
     await expect(
       resetPassword({ token: "raw-token", password: "newSecret456" }),
     ).rejects.toMatchObject({ statusCode: 400 });
+  });
+});
+
+describe("sendAccountSetupEmail", () => {
+  it("generates correct setup-account URL using env.frontendUrl for staff", async () => {
+    repo.replacePasswordResetToken.mockResolvedValue();
+
+    await sendAccountSetupEmail({
+      id: "staff-123",
+      name: "Staff Member",
+      email: "staff@example.com",
+      role: "staff",
+    });
+
+    expect(sendEmail).toHaveBeenCalledTimes(1);
+    const mail = vi.mocked(sendEmail).mock.calls[0]![0];
+    expect(mail.to).toBe("staff@example.com");
+    expect(mail.subject).toBe("Welcome to PhuketTours — Set Up Your Staff Account");
+
+    const expectedUrlPrefix = `${env.frontendUrl}/setup-account?token=`;
+    expect(mail.text).toContain(expectedUrlPrefix);
+    expect(mail.html).toContain(expectedUrlPrefix);
+
+    const tokenMatch = mail.text.match(/token=([a-f0-9]{64})/);
+    expect(tokenMatch).toBeTruthy();
+    expect(mail.text).toContain(`${expectedUrlPrefix}${tokenMatch![1]}`);
+  });
+
+  it("generates correct setup-account URL using env.frontendUrl for agent", async () => {
+    repo.replacePasswordResetToken.mockResolvedValue();
+
+    await sendAccountSetupEmail({
+      id: "agent-123",
+      name: "Agent Member",
+      email: "agent@example.com",
+      role: "agent",
+    });
+
+    expect(sendEmail).toHaveBeenCalledTimes(1);
+    const mail = vi.mocked(sendEmail).mock.calls[0]![0];
+    expect(mail.to).toBe("agent@example.com");
+    expect(mail.subject).toBe("Welcome to PhuketTours Partner Portal — Set Up Your Account");
+
+    const expectedUrlPrefix = `${env.frontendUrl}/setup-account?token=`;
+    expect(mail.text).toContain(expectedUrlPrefix);
+    expect(mail.html).toContain(expectedUrlPrefix);
   });
 });
