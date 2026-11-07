@@ -24,15 +24,6 @@ import permissionRoutes, { myPermissionsRouter } from "./modules/permission/perm
 import agentRoutes from "./modules/agent/agentRoutes.js";
 import settingRoutes from "./modules/setting/settingRoutes.js";
 import customerRoutes from "./modules/customer/customerRoutes.js";
-const app: Application = express();
-app.use(httpLogger);
-app.use(
-  rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    skip: () => process.env.NODE_ENV === "test",
-  }),
-);
 const swaggerCustomCss = `
   body {
     background-color: #0000;
@@ -72,7 +63,10 @@ const swaggerCustomCss = `
     box-shadow: none;
   }
 `;
-// app.use(xss());
+
+const app: Application = express();
+app.set("trust proxy", 1);
+app.use(httpLogger);
 
 const ALLOWED_ORIGINS = [
   "http://localhost:3000",
@@ -87,12 +81,25 @@ if (process.env.FRONTEND_URL && !ALLOWED_ORIGINS.includes(process.env.FRONTEND_U
   ALLOWED_ORIGINS.push(process.env.FRONTEND_URL);
 }
 
+// 1. CORS middleware must execute BEFORE all rate limiters and route handlers
+// to ensure every response (including 429 Too Many Requests) includes CORS headers.
 app.use(
   cors({
     origin: ALLOWED_ORIGINS,
     credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
+
+// 2. Global rate limiter (skips preflight OPTIONS requests)
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 1000,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req) => process.env.NODE_ENV === "test" || req.method === "OPTIONS",
   }),
 );
 

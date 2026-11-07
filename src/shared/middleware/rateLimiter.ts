@@ -6,7 +6,7 @@ export const authRateLimiter = rateLimit({
   limit: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => env.nodeEnv === "test",
+  skip: (req) => env.nodeEnv === "test" || req.method === "OPTIONS",
   message: {
     success: false,
     message: "Too many attempts, please try again later",
