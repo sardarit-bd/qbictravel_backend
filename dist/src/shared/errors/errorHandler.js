@@ -25,10 +25,13 @@ const isPrismaError = (err) => {
 const errorHandler = (err, req, res, next) => {
     // 1. If it's a known operational application error
     if (err instanceof AppError) {
-        // 4xx errors are safe to return to the caller
-        if (err.statusCode < 500) {
-            sendResponse(res, err.statusCode, false, err.message);
-            return;
+        // Check if it's a Prisma / database leak
+        if (!isPrismaError(err)) {
+            // 4xx errors as well as known operational 502 Bad Gateway / 503 Service Unavailable are safe to return
+            if (err.statusCode < 500 || err.statusCode === 502 || err.statusCode === 503) {
+                sendResponse(res, err.statusCode, false, err.message);
+                return;
+            }
         }
     }
     // 2. For database/Prisma errors or internal server errors:

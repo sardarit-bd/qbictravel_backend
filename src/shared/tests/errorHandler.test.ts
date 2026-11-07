@@ -57,6 +57,30 @@ describe("Backend Error Handler", () => {
     });
   });
 
+  it("returns operational 502 Bad Gateway and 503 Service Unavailable AppError messages directly", () => {
+    const { req, res, next, getStatus, getJson } = createMockReqRes();
+    const error503 = new AppError("Cloudinary media service is not configured", 503);
+
+    errorHandler(error503, req, res, next);
+
+    expect(getStatus()).toBe(503);
+    expect(getJson()).toEqual({
+      success: false,
+      message: "Cloudinary media service is not configured",
+      data: null,
+    });
+
+    const error502 = new AppError("Failed to delete asset from Cloudinary", 502);
+    errorHandler(error502, req, res, next);
+
+    expect(getStatus()).toBe(502);
+    expect(getJson()).toEqual({
+      success: false,
+      message: "Failed to delete asset from Cloudinary",
+      data: null,
+    });
+  });
+
   it("masks Prisma error message and returns 500 Internal Server Error", () => {
     const { req, res, next, getStatus, getJson } = createMockReqRes();
     const prismaError = new Error(
