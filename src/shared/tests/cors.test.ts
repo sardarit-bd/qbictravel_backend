@@ -77,5 +77,51 @@ describe("CORS Configuration Integration Tests", () => {
       expect(res.headers["access-control-allow-origin"]).toBe(allowedOrigin);
       expect(res.headers["access-control-allow-credentials"]).toBe("true");
     });
+
+    it("includes CORS headers on rate-limited 429 responses", async () => {
+      const express = (await import("express")).default;
+      const rateLimit = (await import("express-rate-limit")).default;
+      const cors = (await import("cors")).default;
+
+      // Create a test app simulating app.ts middleware order: CORS first, then Rate Limiter
+      const testApp = express();
+      testApp.use(
+        cors({
+          origin: [allowedOrigin],
+          credentials: true,
+        }),
+      );
+      testApp.use(
+        rateLimit({
+          windowMs: 60 * 1000,
+          max: 1,
+          skip: (req) => req.method === "OPTIONS",
+        }),
+      );
+      testApp.get("/api/v1/test-limit", (req, res) => res.json({ success: true }));
+
+      // Request 1: 200 OK with CORS
+      const res1 = await request(testApp)
+        .get("/api/v1/test-limit")
+        .set("Origin", allowedOrigin);
+      expect(res1.status).toBe(200);
+      expect(res1.headers["access-control-allow-origin"]).toBe(allowedOrigin);
+
+      // Request 2: 429 Too Many Requests with CORS headers preserved
+      const res2 = await request(testApp)
+        .get("/api/v1/test-limit")
+        .set("Origin", allowedOrigin);
+      expect(res2.status).toBe(429);
+      expect(res2.headers["access-control-allow-origin"]).toBe(allowedOrigin);
+      expect(res2.headers["access-control-allow-credentials"]).toBe("true");
+
+      // OPTIONS preflight should still work and bypass rate limit
+      const resOptions = await request(testApp)
+        .options("/api/v1/test-limit")
+        .set("Origin", allowedOrigin)
+        .set("Access-Control-Request-Method", "GET");
+      expect(resOptions.status).toBe(204);
+      expect(resOptions.headers["access-control-allow-origin"]).toBe(allowedOrigin);
+    });
   });
 });
