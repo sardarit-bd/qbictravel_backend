@@ -501,4 +501,66 @@ describe("Stripe Payment Recovery & Reconciliation Unit Tests", () => {
     expect(payment.status).toBe("SUBMITTED");
     expect(payment.amount).toBe(3500);
   });
+
+  // 13. Customer cannot reconcile another customer's payment (Access Control)
+  it("rejects reconciliation when a customer attempts to reconcile another customer's payment", async () => {
+    vi.spyOn(paymentRepository, "findPaymentById").mockResolvedValue({
+      id: "p_victim_01",
+      customerId: "c_victim_01",
+      bookingId: "b_victim_01",
+      method: "STRIPE",
+      status: "INITIATED",
+    } as any);
+
+    await expect(
+      paymentService.reconcileStripePayment("p_victim_01", {
+        id: "c_attacker_02",
+        role: "customer",
+      }),
+    ).rejects.toThrow("Payment not found");
+  });
+
+  // 14. Session creation passes idempotencyKey to StripeClient
+  it("passes unique payment idempotencyKey to Stripe client when creating session", async () => {
+    const customerId = "c1";
+    const bookingId = "b1";
+    const paymentId = "p_idem_01";
+
+    const createCheckoutMock = vi.fn().mockResolvedValue({
+      id: "cs_idem_01",
+      url: "https://checkout.stripe.com/pay/cs_idem_01",
+    });
+
+    paymentService.setStripeClient({
+      createCheckoutSession: createCheckoutMock,
+      retrieveCheckoutSession: vi.fn(),
+      expireCheckoutSession: vi.fn(),
+      retrievePaymentIntent: vi.fn(),
+    });
+
+    vi.spyOn(paymentRepository, "findBookingForPayment").mockResolvedValue({
+      id: bookingId,
+      customerId,
+      status: "PENDING",
+      requiresApproval: false,
+      paymentStatus: "UNPAID",
+      currency: "THB",
+      finalPrice: 1000 as any,
+    } as any);
+
+    vi.spyOn(paymentRepository, "createOrGetStripePayment").mockResolvedValue({
+      payment: { id: paymentId, status: "INITIATED", amount: 1000, currency: "THB" } as any,
+      isAlreadyVerified: false,
+      isExistingActive: false,
+    });
+    vi.spyOn(paymentRepository, "updatePaymentStripeSession").mockResolvedValue({} as any);
+
+    await paymentService.createStripeCheckoutSession(customerId, { bookingId });
+
+    expect(createCheckoutMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        idempotencyKey: `checkout_${paymentId}`,
+      }),
+    );
+  });
 });

@@ -110,6 +110,7 @@ export interface IStripeClient {
     successUrl: string;
     cancelUrl: string;
     expiresAt?: number;
+    idempotencyKey?: string;
   }): Promise<StripeCheckoutSessionResponse>;
 
   retrieveCheckoutSession(sessionId: string): Promise<StripeCheckoutSessionResponse>;
@@ -131,7 +132,12 @@ export class StripeHttpClient implements IStripeClient {
     this.apiKey = apiKey || process.env.STRIPE_SECRET_KEY || "";
   }
 
-  private async request<T>(endpoint: string, method = "GET", bodyParams?: Record<string, any>): Promise<T> {
+  private async request<T>(
+    endpoint: string,
+    method = "GET",
+    bodyParams?: Record<string, any>,
+    idempotencyKey?: string,
+  ): Promise<T> {
     if (!this.apiKey) {
       throw new Error("STRIPE_SECRET_KEY is not configured");
     }
@@ -140,6 +146,10 @@ export class StripeHttpClient implements IStripeClient {
       Authorization: `Bearer ${this.apiKey}`,
       "Stripe-Version": "2024-12-18.acacia",
     };
+
+    if (idempotencyKey) {
+      headers["Idempotency-Key"] = idempotencyKey;
+    }
 
     let body: string | undefined;
     if (bodyParams && (method === "POST" || method === "PUT")) {
@@ -188,6 +198,7 @@ export class StripeHttpClient implements IStripeClient {
     successUrl: string;
     cancelUrl: string;
     expiresAt?: number;
+    idempotencyKey?: string;
   }): Promise<StripeCheckoutSessionResponse> {
     const body: Record<string, any> = {
       mode: "payment",
@@ -195,6 +206,7 @@ export class StripeHttpClient implements IStripeClient {
       currency: params.currency.toLowerCase(),
       success_url: params.successUrl,
       cancel_url: params.cancelUrl,
+      "payment_method_types[0]": "card",
       "metadata[bookingId]": params.bookingId,
       "metadata[customerId]": params.customerId,
       "line_items[0][price_data][currency]": params.currency.toLowerCase(),
@@ -210,7 +222,12 @@ export class StripeHttpClient implements IStripeClient {
       body.expires_at = params.expiresAt;
     }
 
-    return this.request<StripeCheckoutSessionResponse>("/checkout/sessions", "POST", body);
+    return this.request<StripeCheckoutSessionResponse>(
+      "/checkout/sessions",
+      "POST",
+      body,
+      params.idempotencyKey,
+    );
   }
 
   async retrieveCheckoutSession(sessionId: string): Promise<StripeCheckoutSessionResponse> {

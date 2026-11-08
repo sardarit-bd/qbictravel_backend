@@ -148,6 +148,27 @@ router.get(
 
 /**
  * @openapi
+ * /api/v1/customer/payments/{paymentId}/reconcile:
+ *   post:
+ *     tags: [Customer Payments]
+ *     summary: Customer returns from Stripe Checkout to verify and reconcile own payment status
+ *     security: [{ bearerAuth: [] }, { cookieAuth: [] }]
+ *     parameters:
+ *       - { name: paymentId, in: path, required: true, schema: { type: string, format: uuid } }
+ *     responses:
+ *       200: { description: Payment reconciled }
+ *       404: { $ref: '#/components/responses/NotFound' }
+ */
+router.post(
+  "/customer/payments/:paymentId/reconcile",
+  authMiddleware,
+  requireRole("customer"),
+  validate(paymentIdParamSchema, "params"),
+  paymentController.reconcilePayment
+);
+
+/**
+ * @openapi
  * /api/v1/agent/payments:
  *   get:
  *     tags: [Agent Payments]

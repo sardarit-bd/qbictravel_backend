@@ -156,6 +156,7 @@ export const createStripeCheckoutSession = async (
     serviceTitle,
     successUrl,
     cancelUrl,
+    idempotencyKey: `checkout_${payment.id}`,
   });
 
   await paymentRepository.updatePaymentStripeSession(payment.id, session.id, session.payment_intent);
@@ -386,8 +387,16 @@ export const handleStripeWebhook = async (
  * Used for recovering missed webhooks, checking status on user return from Checkout,
  * or periodic reconciliation jobs.
  */
-export const reconcileStripePayment = async (paymentId: string): Promise<PaymentReconciliationResult> => {
+export const reconcileStripePayment = async (
+  paymentId: string,
+  requester?: { id: string; role: string },
+): Promise<PaymentReconciliationResult> => {
   const payment = await getPaymentOr404(paymentId);
+
+  // If customer is requesting reconciliation, verify ownership
+  if (requester && requester.role === "customer" && payment.customerId !== requester.id) {
+    throw new AppError("Payment not found", 404);
+  }
 
   if (payment.method !== "STRIPE") {
     throw new AppError("Only Stripe payments can be reconciled against Stripe API", 400);

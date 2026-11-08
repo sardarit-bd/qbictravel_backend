@@ -46,7 +46,8 @@ export const handleStripeWebhook = async (req: Request, res: Response, next: Nex
 
 export const reconcilePayment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const result = await paymentService.reconcileStripePayment(req.params.paymentId as string);
+    const requester = req.user ? { id: req.user.id, role: req.user.role } : undefined;
+    const result = await paymentService.reconcileStripePayment(req.params.paymentId as string, requester);
     sendResponse(res, 200, true, "Payment reconciled successfully", result);
   } catch (error) {
     next(error);
