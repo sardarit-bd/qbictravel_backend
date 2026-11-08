@@ -28,6 +28,7 @@ const createBooking = (overrides: BookingOverrides = {}) =>
     data: {
       customerId,
       serviceId,
+      currency: "THB",
       basePrice: 500,
       finalPrice: 450,
       status: "CONFIRMED",

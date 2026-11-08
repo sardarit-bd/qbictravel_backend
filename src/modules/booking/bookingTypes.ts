@@ -24,6 +24,7 @@ export interface BookingResponse {
   agentId: string | null;
   serviceId: string;
   availabilityId: string | null;
+  currency: string;
   basePrice: number; 
   proposedPrice: number | null;
   finalPrice: number; 

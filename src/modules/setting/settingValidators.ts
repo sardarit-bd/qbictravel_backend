@@ -4,7 +4,6 @@ export const updateGeneralSettingsSchema = yup.object({
   platformName: yup.string().trim().min(2, "Platform name must be at least 2 characters").max(100).optional(),
   supportEmail: yup.string().trim().email("Invalid support email address").optional(),
   supportPhone: yup.string().trim().min(5, "Support phone must be at least 5 characters").max(30).optional(),
-  defaultCurrency: yup.string().trim().length(3, "Currency code must be exactly 3 characters (e.g. THB)").optional(),
   timezone: yup.string().trim().min(2, "Timezone is required").max(100).optional(),
   defaultLanguage: yup.string().trim().min(2, "Language code must be at least 2 characters").max(10).optional(),
   maintenanceMode: yup.boolean().optional(),

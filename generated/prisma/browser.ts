@@ -88,6 +88,21 @@ export type NotificationSetting = Prisma.NotificationSettingModel
  */
 export type Payment = Prisma.PaymentModel
 /**
+ * Model StripeWebhookEvent
+ * 
+ */
+export type StripeWebhookEvent = Prisma.StripeWebhookEventModel
+/**
+ * Model OutboxMessage
+ * 
+ */
+export type OutboxMessage = Prisma.OutboxMessageModel
+/**
+ * Model PaymentRefund
+ * 
+ */
+export type PaymentRefund = Prisma.PaymentRefundModel
+/**
  * Model Permission
  * 
  */

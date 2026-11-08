@@ -85,7 +85,8 @@ export type NotificationEvent = (typeof NotificationEvent)[keyof typeof Notifica
 export const PaymentMethod = {
   BANK_TRANSFER: 'BANK_TRANSFER',
   CASH: 'CASH',
-  OTHER: 'OTHER'
+  OTHER: 'OTHER',
+  STRIPE: 'STRIPE'
 } as const
 
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
@@ -95,10 +96,58 @@ export const PaymentRecordStatus = {
   INITIATED: 'INITIATED',
   SUBMITTED: 'SUBMITTED',
   VERIFIED: 'VERIFIED',
-  REJECTED: 'REJECTED'
+  REJECTED: 'REJECTED',
+  PROCESSING: 'PROCESSING',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED',
+  REQUIRES_ACTION: 'REQUIRES_ACTION',
+  REFUNDED: 'REFUNDED',
+  PARTIALLY_REFUNDED: 'PARTIALLY_REFUNDED',
+  DISPUTED: 'DISPUTED'
 } as const
 
 export type PaymentRecordStatus = (typeof PaymentRecordStatus)[keyof typeof PaymentRecordStatus]
+
+
+export const WebhookEventStatus = {
+  RECEIVED: 'RECEIVED',
+  PROCESSING: 'PROCESSING',
+  PROCESSED: 'PROCESSED',
+  FAILED: 'FAILED',
+  IGNORED: 'IGNORED'
+} as const
+
+export type WebhookEventStatus = (typeof WebhookEventStatus)[keyof typeof WebhookEventStatus]
+
+
+export const OutboxTopic = {
+  CALCULATE_COMMISSION: 'CALCULATE_COMMISSION',
+  SEND_BOOKING_VOUCHER_EMAIL: 'SEND_BOOKING_VOUCHER_EMAIL',
+  SEND_ADMIN_PAYMENT_ALERT: 'SEND_ADMIN_PAYMENT_ALERT',
+  RECONCILE_PAYMENT: 'RECONCILE_PAYMENT'
+} as const
+
+export type OutboxTopic = (typeof OutboxTopic)[keyof typeof OutboxTopic]
+
+
+export const OutboxStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
+} as const
+
+export type OutboxStatus = (typeof OutboxStatus)[keyof typeof OutboxStatus]
+
+
+export const RefundStatus = {
+  PENDING: 'PENDING',
+  SUCCEEDED: 'SUCCEEDED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type RefundStatus = (typeof RefundStatus)[keyof typeof RefundStatus]
 
 
 export const ServiceType = {

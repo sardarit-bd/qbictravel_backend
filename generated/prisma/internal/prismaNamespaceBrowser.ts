@@ -65,6 +65,9 @@ export const ModelName = {
   MediaUploadAuth: 'MediaUploadAuth',
   NotificationSetting: 'NotificationSetting',
   Payment: 'Payment',
+  StripeWebhookEvent: 'StripeWebhookEvent',
+  OutboxMessage: 'OutboxMessage',
+  PaymentRefund: 'PaymentRefund',
   Permission: 'Permission',
   StaffPermission: 'StaffPermission',
   Service: 'Service',
@@ -144,6 +147,7 @@ export const BookingScalarFieldEnum = {
   agentId: 'agentId',
   serviceId: 'serviceId',
   availabilityId: 'availabilityId',
+  currency: 'currency',
   basePrice: 'basePrice',
   proposedPrice: 'proposedPrice',
   finalPrice: 'finalPrice',
@@ -283,9 +287,13 @@ export const PaymentScalarFieldEnum = {
   bookingId: 'bookingId',
   customerId: 'customerId',
   amount: 'amount',
+  currency: 'currency',
   method: 'method',
   status: 'status',
   reference: 'reference',
+  stripeSessionId: 'stripeSessionId',
+  stripePaymentIntentId: 'stripePaymentIntentId',
+  failureReason: 'failureReason',
   receiptNote: 'receiptNote',
   submittedAt: 'submittedAt',
   receivedAt: 'receivedAt',
@@ -297,6 +305,61 @@ export const PaymentScalarFieldEnum = {
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const StripeWebhookEventScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  status: 'status',
+  payload: 'payload',
+  bookingId: 'bookingId',
+  paymentId: 'paymentId',
+  attempts: 'attempts',
+  lastError: 'lastError',
+  lockedAt: 'lockedAt',
+  lockedBy: 'lockedBy',
+  receivedAt: 'receivedAt',
+  processedAt: 'processedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StripeWebhookEventScalarFieldEnum = (typeof StripeWebhookEventScalarFieldEnum)[keyof typeof StripeWebhookEventScalarFieldEnum]
+
+
+export const OutboxMessageScalarFieldEnum = {
+  id: 'id',
+  topic: 'topic',
+  payload: 'payload',
+  status: 'status',
+  attempts: 'attempts',
+  lastError: 'lastError',
+  lockedAt: 'lockedAt',
+  lockedBy: 'lockedBy',
+  scheduledAt: 'scheduledAt',
+  processedAt: 'processedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OutboxMessageScalarFieldEnum = (typeof OutboxMessageScalarFieldEnum)[keyof typeof OutboxMessageScalarFieldEnum]
+
+
+export const PaymentRefundScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  stripeRefundId: 'stripeRefundId',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  reason: 'reason',
+  failureReason: 'failureReason',
+  initiatedById: 'initiatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentRefundScalarFieldEnum = (typeof PaymentRefundScalarFieldEnum)[keyof typeof PaymentRefundScalarFieldEnum]
 
 
 export const PermissionScalarFieldEnum = {

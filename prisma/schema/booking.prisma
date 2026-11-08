@@ -17,6 +17,7 @@ model Booking {
   agentId           String?
   serviceId         String
   availabilityId    String?
+  currency          String
   basePrice         Decimal              @db.Decimal(10, 2)
   proposedPrice     Decimal?             @db.Decimal(10, 2)
   finalPrice        Decimal              @db.Decimal(10, 2)
@@ -38,6 +39,7 @@ model Booking {
   commission        Commission?
   payments          Payment[]
   priceApproval     PriceApproval?
+  stripeWebhookEvents StripeWebhookEvent[]
 }
 
 model PriceApproval {

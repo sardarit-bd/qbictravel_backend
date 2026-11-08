@@ -411,6 +411,9 @@ export const ModelName = {
   MediaUploadAuth: 'MediaUploadAuth',
   NotificationSetting: 'NotificationSetting',
   Payment: 'Payment',
+  StripeWebhookEvent: 'StripeWebhookEvent',
+  OutboxMessage: 'OutboxMessage',
+  PaymentRefund: 'PaymentRefund',
   Permission: 'Permission',
   StaffPermission: 'StaffPermission',
   Service: 'Service',
@@ -434,7 +437,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "agentProfile" | "passwordResetToken" | "revokedToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "commissionRule" | "commission" | "commissionAdjustment" | "media" | "mediaUploadAuth" | "notificationSetting" | "payment" | "permission" | "staffPermission" | "service" | "serviceAvailability" | "servicePricing" | "systemSetting" | "settingAuditLog" | "user"
+    modelProps: "agentProfile" | "passwordResetToken" | "revokedToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "commissionRule" | "commission" | "commissionAdjustment" | "media" | "mediaUploadAuth" | "notificationSetting" | "payment" | "stripeWebhookEvent" | "outboxMessage" | "paymentRefund" | "permission" | "staffPermission" | "service" | "serviceAvailability" | "servicePricing" | "systemSetting" | "settingAuditLog" | "user"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1474,6 +1477,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    StripeWebhookEvent: {
+      payload: Prisma.$StripeWebhookEventPayload<ExtArgs>
+      fields: Prisma.StripeWebhookEventFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StripeWebhookEventFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StripeWebhookEventFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>
+        }
+        findFirst: {
+          args: Prisma.StripeWebhookEventFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StripeWebhookEventFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>
+        }
+        findMany: {
+          args: Prisma.StripeWebhookEventFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>[]
+        }
+        create: {
+          args: Prisma.StripeWebhookEventCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>
+        }
+        createMany: {
+          args: Prisma.StripeWebhookEventCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StripeWebhookEventCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>[]
+        }
+        delete: {
+          args: Prisma.StripeWebhookEventDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>
+        }
+        update: {
+          args: Prisma.StripeWebhookEventUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>
+        }
+        deleteMany: {
+          args: Prisma.StripeWebhookEventDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StripeWebhookEventUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StripeWebhookEventUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>[]
+        }
+        upsert: {
+          args: Prisma.StripeWebhookEventUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>
+        }
+        aggregate: {
+          args: Prisma.StripeWebhookEventAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStripeWebhookEvent>
+        }
+        groupBy: {
+          args: Prisma.StripeWebhookEventGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StripeWebhookEventGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StripeWebhookEventCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StripeWebhookEventCountAggregateOutputType> | number
+        }
+      }
+    }
+    OutboxMessage: {
+      payload: Prisma.$OutboxMessagePayload<ExtArgs>
+      fields: Prisma.OutboxMessageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OutboxMessageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutboxMessagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OutboxMessageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutboxMessagePayload>
+        }
+        findFirst: {
+          args: Prisma.OutboxMessageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutboxMessagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OutboxMessageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutboxMessagePayload>
+        }
+        findMany: {
+          args: Prisma.OutboxMessageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutboxMessagePayload>[]
+        }
+        create: {
+          args: Prisma.OutboxMessageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutboxMessagePayload>
+        }
+        createMany: {
+          args: Prisma.OutboxMessageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OutboxMessageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutboxMessagePayload>[]
+        }
+        delete: {
+          args: Prisma.OutboxMessageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutboxMessagePayload>
+        }
+        update: {
+          args: Prisma.OutboxMessageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutboxMessagePayload>
+        }
+        deleteMany: {
+          args: Prisma.OutboxMessageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OutboxMessageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OutboxMessageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutboxMessagePayload>[]
+        }
+        upsert: {
+          args: Prisma.OutboxMessageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutboxMessagePayload>
+        }
+        aggregate: {
+          args: Prisma.OutboxMessageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOutboxMessage>
+        }
+        groupBy: {
+          args: Prisma.OutboxMessageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OutboxMessageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OutboxMessageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OutboxMessageCountAggregateOutputType> | number
+        }
+      }
+    }
+    PaymentRefund: {
+      payload: Prisma.$PaymentRefundPayload<ExtArgs>
+      fields: Prisma.PaymentRefundFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PaymentRefundFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentRefundPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PaymentRefundFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentRefundPayload>
+        }
+        findFirst: {
+          args: Prisma.PaymentRefundFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentRefundPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PaymentRefundFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentRefundPayload>
+        }
+        findMany: {
+          args: Prisma.PaymentRefundFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentRefundPayload>[]
+        }
+        create: {
+          args: Prisma.PaymentRefundCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentRefundPayload>
+        }
+        createMany: {
+          args: Prisma.PaymentRefundCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PaymentRefundCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentRefundPayload>[]
+        }
+        delete: {
+          args: Prisma.PaymentRefundDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentRefundPayload>
+        }
+        update: {
+          args: Prisma.PaymentRefundUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentRefundPayload>
+        }
+        deleteMany: {
+          args: Prisma.PaymentRefundDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PaymentRefundUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PaymentRefundUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentRefundPayload>[]
+        }
+        upsert: {
+          args: Prisma.PaymentRefundUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentRefundPayload>
+        }
+        aggregate: {
+          args: Prisma.PaymentRefundAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePaymentRefund>
+        }
+        groupBy: {
+          args: Prisma.PaymentRefundGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PaymentRefundGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PaymentRefundCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PaymentRefundCountAggregateOutputType> | number
+        }
+      }
+    }
     Permission: {
       payload: Prisma.$PermissionPayload<ExtArgs>
       fields: Prisma.PermissionFieldRefs
@@ -2158,6 +2383,7 @@ export const BookingScalarFieldEnum = {
   agentId: 'agentId',
   serviceId: 'serviceId',
   availabilityId: 'availabilityId',
+  currency: 'currency',
   basePrice: 'basePrice',
   proposedPrice: 'proposedPrice',
   finalPrice: 'finalPrice',
@@ -2297,9 +2523,13 @@ export const PaymentScalarFieldEnum = {
   bookingId: 'bookingId',
   customerId: 'customerId',
   amount: 'amount',
+  currency: 'currency',
   method: 'method',
   status: 'status',
   reference: 'reference',
+  stripeSessionId: 'stripeSessionId',
+  stripePaymentIntentId: 'stripePaymentIntentId',
+  failureReason: 'failureReason',
   receiptNote: 'receiptNote',
   submittedAt: 'submittedAt',
   receivedAt: 'receivedAt',
@@ -2311,6 +2541,61 @@ export const PaymentScalarFieldEnum = {
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const StripeWebhookEventScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  status: 'status',
+  payload: 'payload',
+  bookingId: 'bookingId',
+  paymentId: 'paymentId',
+  attempts: 'attempts',
+  lastError: 'lastError',
+  lockedAt: 'lockedAt',
+  lockedBy: 'lockedBy',
+  receivedAt: 'receivedAt',
+  processedAt: 'processedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StripeWebhookEventScalarFieldEnum = (typeof StripeWebhookEventScalarFieldEnum)[keyof typeof StripeWebhookEventScalarFieldEnum]
+
+
+export const OutboxMessageScalarFieldEnum = {
+  id: 'id',
+  topic: 'topic',
+  payload: 'payload',
+  status: 'status',
+  attempts: 'attempts',
+  lastError: 'lastError',
+  lockedAt: 'lockedAt',
+  lockedBy: 'lockedBy',
+  scheduledAt: 'scheduledAt',
+  processedAt: 'processedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OutboxMessageScalarFieldEnum = (typeof OutboxMessageScalarFieldEnum)[keyof typeof OutboxMessageScalarFieldEnum]
+
+
+export const PaymentRefundScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  stripeRefundId: 'stripeRefundId',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  reason: 'reason',
+  failureReason: 'failureReason',
+  initiatedById: 'initiatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentRefundScalarFieldEnum = (typeof PaymentRefundScalarFieldEnum)[keyof typeof PaymentRefundScalarFieldEnum]
 
 
 export const PermissionScalarFieldEnum = {
@@ -2701,6 +2986,62 @@ export type ListEnumPaymentRecordStatusFieldRefInput<$PrismaModel> = FieldRefInp
 
 
 /**
+ * Reference to a field of type 'WebhookEventStatus'
+ */
+export type EnumWebhookEventStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WebhookEventStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'WebhookEventStatus[]'
+ */
+export type ListEnumWebhookEventStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WebhookEventStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'OutboxTopic'
+ */
+export type EnumOutboxTopicFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OutboxTopic'>
+    
+
+
+/**
+ * Reference to a field of type 'OutboxTopic[]'
+ */
+export type ListEnumOutboxTopicFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OutboxTopic[]'>
+    
+
+
+/**
+ * Reference to a field of type 'OutboxStatus'
+ */
+export type EnumOutboxStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OutboxStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'OutboxStatus[]'
+ */
+export type ListEnumOutboxStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OutboxStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'RefundStatus'
+ */
+export type EnumRefundStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RefundStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'RefundStatus[]'
+ */
+export type ListEnumRefundStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RefundStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'ServiceType'
  */
 export type EnumServiceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceType'>
@@ -2934,6 +3275,9 @@ export type GlobalOmitConfig = {
   mediaUploadAuth?: Prisma.MediaUploadAuthOmit
   notificationSetting?: Prisma.NotificationSettingOmit
   payment?: Prisma.PaymentOmit
+  stripeWebhookEvent?: Prisma.StripeWebhookEventOmit
+  outboxMessage?: Prisma.OutboxMessageOmit
+  paymentRefund?: Prisma.PaymentRefundOmit
   permission?: Prisma.PermissionOmit
   staffPermission?: Prisma.StaffPermissionOmit
   service?: Prisma.ServiceOmit
