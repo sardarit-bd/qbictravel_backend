@@ -24,6 +24,7 @@ const createService = () =>
 const createBooking = (overrides: Record<string, unknown> = {}) =>
   prisma.booking.create({
     data: {
+      currency: "THB",
       basePrice: 1200,
       finalPrice: 1200,
       status: "CONFIRMED",
