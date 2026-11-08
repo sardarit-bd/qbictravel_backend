@@ -1,32 +1,104 @@
 model Payment {
-  id           String              @id @default(uuid())
-  bookingId    String
-  customerId   String
-  amount       Decimal             @db.Decimal(10, 2)
-  method       PaymentMethod
-  status       PaymentRecordStatus @default(INITIATED)
-  reference    String?
-  receiptNote  String?
-  submittedAt  DateTime?
-  receivedAt   DateTime?
-  reviewedById String?
-  reviewedAt   DateTime?
-  reviewNotes  String?
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
-  booking      Booking             @relation(fields: [bookingId], references: [id])
-  customer     User                @relation("CustomerPayments", fields: [customerId], references: [id])
-  reviewedBy   User?               @relation("PaymentReviews", fields: [reviewedById], references: [id])
+  id                    String              @id @default(uuid())
+  bookingId             String
+  customerId            String
+  amount                Decimal             @db.Decimal(10, 2)
+  currency              String
+  method                PaymentMethod
+  status                PaymentRecordStatus @default(INITIATED)
+  reference             String?
+  stripeSessionId       String?
+  stripePaymentIntentId String?
+  failureReason         String?
+  receiptNote           String?
+  submittedAt           DateTime?
+  receivedAt            DateTime?
+  reviewedById          String?
+  reviewedAt            DateTime?
+  reviewNotes           String?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  booking               Booking             @relation(fields: [bookingId], references: [id])
+  customer              User                @relation("CustomerPayments", fields: [customerId], references: [id])
+  reviewedBy            User?               @relation("PaymentReviews", fields: [reviewedById], references: [id])
+  refunds               PaymentRefund[]
+  stripeWebhookEvents   StripeWebhookEvent[]
 
   @@unique([method, reference])
   @@index([bookingId])
   @@index([customerId])
+  @@index([stripeSessionId])
+  @@index([stripePaymentIntentId])
+  @@index([status])
+}
+
+model StripeWebhookEvent {
+  id          String             @id // Stripe event ID (evt_...)
+  type        String             // e.g. checkout.session.completed
+  status      WebhookEventStatus @default(RECEIVED)
+  payload     Json
+  bookingId   String?
+  paymentId   String?
+  attempts    Int                @default(0)
+  lastError   String?
+  lockedAt    DateTime?
+  lockedBy    String?
+  receivedAt  DateTime           @default(now())
+  processedAt DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  booking     Booking?           @relation(fields: [bookingId], references: [id])
+  payment     Payment?           @relation(fields: [paymentId], references: [id])
+
+  @@index([status])
+  @@index([bookingId])
+  @@index([paymentId])
+  @@index([type])
+  @@index([lockedAt])
+}
+
+model OutboxMessage {
+  id          String       @id @default(uuid())
+  topic       OutboxTopic
+  payload     Json
+  status      OutboxStatus @default(PENDING)
+  attempts    Int          @default(0)
+  lastError   String?
+  lockedAt    DateTime?
+  lockedBy    String?
+  scheduledAt DateTime     @default(now())
+  processedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([status, scheduledAt])
+  @@index([lockedAt])
+}
+
+model PaymentRefund {
+  id             String       @id @default(uuid())
+  paymentId      String
+  stripeRefundId String       @unique // e.g. re_...
+  amount         Decimal      @db.Decimal(10, 2)
+  currency       String       @default("USD")
+  status         RefundStatus @default(PENDING)
+  reason         String?
+  failureReason  String?
+  initiatedById  String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  payment        Payment      @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+  initiatedBy    User?        @relation("RefundInitiators", fields: [initiatedById], references: [id])
+
+  @@index([paymentId])
+  @@index([status])
 }
 
 enum PaymentMethod {
   BANK_TRANSFER
   CASH
   OTHER
+  STRIPE
 }
 
 enum PaymentRecordStatus {
@@ -34,4 +106,40 @@ enum PaymentRecordStatus {
   SUBMITTED
   VERIFIED
   REJECTED
+  PROCESSING
+  FAILED
+  CANCELLED
+  REQUIRES_ACTION
+  REFUNDED
+  PARTIALLY_REFUNDED
+  DISPUTED
+}
+
+enum WebhookEventStatus {
+  RECEIVED
+  PROCESSING
+  PROCESSED
+  FAILED
+  IGNORED
+}
+
+enum OutboxTopic {
+  CALCULATE_COMMISSION
+  SEND_BOOKING_VOUCHER_EMAIL
+  SEND_ADMIN_PAYMENT_ALERT
+  RECONCILE_PAYMENT
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum RefundStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELLED
 }

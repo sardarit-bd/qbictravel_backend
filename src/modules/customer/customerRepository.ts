@@ -32,6 +32,7 @@ const customerBookingSelect = {
   status: true,
   paymentStatus: true,
   fulfillmentStatus: true,
+  currency: true,
   basePrice: true,
   finalPrice: true,
   notes: true,

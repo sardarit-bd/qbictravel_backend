@@ -31,6 +31,7 @@ const createBooking = (overrides: BookingOverrides = {}) =>
       customerId,
       agentId: null,
       serviceId,
+      currency: "THB",
       basePrice: 500,
       finalPrice: 450,
       status: "CONFIRMED",
@@ -41,6 +42,7 @@ const createBooking = (overrides: BookingOverrides = {}) =>
 type PaymentOverrides = Partial<{
   customerId: string;
   amount: number;
+  currency: string;
   method: "BANK_TRANSFER" | "CASH" | "OTHER";
   status: "INITIATED" | "SUBMITTED" | "VERIFIED" | "REJECTED";
   reference: string | null;
@@ -52,6 +54,7 @@ const createPaymentRow = (bookingId: string, overrides: PaymentOverrides = {}) =
       bookingId,
       customerId,
       amount: 450,
+      currency: "THB",
       method: "BANK_TRANSFER",
       status: "SUBMITTED",
       reference: null,

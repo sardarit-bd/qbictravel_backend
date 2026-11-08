@@ -60,16 +60,25 @@ export const createBooking = async (
   }
 
   const now = new Date();
-  const activePricing = service.pricing.find(
+  const activePricings = service.pricing.filter(
     (p) =>
       (!p.validFrom || p.validFrom <= now) && (!p.validTo || p.validTo >= now),
   );
 
-  if (!activePricing) {
+  if (activePricings.length === 0) {
     throw new AppError("Service has no active pricing", 400);
   }
 
+  if (activePricings.length > 1) {
+    throw new AppError(
+      "Service has multiple active pricing tiers. Please contact support.",
+      409,
+    );
+  }
+
+  const activePricing = activePricings[0]!;
   const basePrice = Number(activePricing.basePrice);
+  const currency = activePricing.currency;
   let finalPrice = basePrice;
   let proposedPrice = input.proposedPrice
     ? Number(input.proposedPrice)
@@ -109,6 +118,7 @@ export const createBooking = async (
   const booking = await bookingRepository.createBooking({
     ...input,
     agentId: isAgent ? actorId : input.agentId,
+    currency,
     basePrice,
     proposedPrice,
     finalPrice,

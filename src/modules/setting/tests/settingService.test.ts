@@ -75,7 +75,6 @@ describe("Setting Service Unit Tests", () => {
         {
           platformName: "Phuket Luxury Tours",
           supportEmail: "help@phukettours.com",
-          defaultCurrency: "thb",
           maintenanceMode: false,
         },
         mockActor
@@ -85,12 +84,6 @@ describe("Setting Service Unit Tests", () => {
         "GENERAL",
         "general.platform_name",
         "Phuket Luxury Tours",
-        mockActor.id
-      );
-      expect(repo.setPlaintextSetting).toHaveBeenCalledWith(
-        "GENERAL",
-        "general.default_currency",
-        "THB",
         mockActor.id
       );
       expect(repo.logSettingAudit).toHaveBeenCalledWith(

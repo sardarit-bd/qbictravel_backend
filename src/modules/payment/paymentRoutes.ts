@@ -6,6 +6,7 @@ import requireRole from "../../shared/middleware/requireRole.js";
 import requirePermission from "../../shared/middleware/requirePermission.js";
 import {
   createPaymentSchema,
+  createStripeSessionSchema,
   paymentBookingIdParamSchema,
   paymentIdParamSchema,
   recordPaymentSchema,
@@ -32,7 +33,7 @@ const router = Router();
  *             type: object
  *             required: [method]
  *             properties:
- *               method: { type: string, enum: [BANK_TRANSFER, CASH, OTHER] }
+ *               method: { type: string, enum: [BANK_TRANSFER, CASH, OTHER, STRIPE] }
  *               reference: { type: string, description: "Transaction or receipt reference. Makes the payment SUBMITTED." }
  *               receiptNote: { type: string }
  *     responses:
@@ -48,6 +49,59 @@ router.post(
   validate(paymentBookingIdParamSchema, "params"),
   validate(createPaymentSchema),
   paymentController.createPayment
+);
+
+/**
+ * @openapi
+ * /api/v1/bookings/{bookingId}/stripe-session:
+ *   post:
+ *     tags: [Customer Payments]
+ *     summary: Create or retrieve a Stripe Checkout Session for a booking
+ *     security: [{ bearerAuth: [] }, { cookieAuth: [] }]
+ *     parameters:
+ *       - { name: bookingId, in: path, required: true, schema: { type: string, format: uuid } }
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               successUrl: { type: string, format: uri }
+ *               cancelUrl: { type: string, format: uri }
+ *     responses:
+ *       200: { description: Stripe checkout session initialized }
+ *       400: { $ref: '#/components/responses/ValidationError' }
+ *       404: { $ref: '#/components/responses/NotFound' }
+ *       409: { description: Booking not payable or already paid }
+ */
+router.post(
+  "/bookings/:bookingId/stripe-session",
+  authMiddleware,
+  requireRole("customer"),
+  validate(paymentBookingIdParamSchema, "params"),
+  validate(createStripeSessionSchema),
+  paymentController.createStripeSession
+);
+
+/**
+ * @openapi
+ * /api/v1/payments/{paymentId}/reconcile:
+ *   post:
+ *     tags: [Admin Payments]
+ *     summary: Reconcile a Stripe payment record against Stripe authoritative state
+ *     security: [{ bearerAuth: [] }, { cookieAuth: [] }]
+ *     parameters:
+ *       - { name: paymentId, in: path, required: true, schema: { type: string, format: uuid } }
+ *     responses:
+ *       200: { description: Payment reconciled }
+ *       404: { $ref: '#/components/responses/NotFound' }
+ */
+router.post(
+  "/payments/:paymentId/reconcile",
+  authMiddleware,
+  requirePermission("payments.verify"),
+  validate(paymentIdParamSchema, "params"),
+  paymentController.reconcilePayment
 );
 
 /**
@@ -90,6 +144,27 @@ router.get(
   requireRole("customer"),
   validate(paymentIdParamSchema, "params"),
   paymentController.getCustomerPayment
+);
+
+/**
+ * @openapi
+ * /api/v1/customer/payments/{paymentId}/reconcile:
+ *   post:
+ *     tags: [Customer Payments]
+ *     summary: Customer returns from Stripe Checkout to verify and reconcile own payment status
+ *     security: [{ bearerAuth: [] }, { cookieAuth: [] }]
+ *     parameters:
+ *       - { name: paymentId, in: path, required: true, schema: { type: string, format: uuid } }
+ *     responses:
+ *       200: { description: Payment reconciled }
+ *       404: { $ref: '#/components/responses/NotFound' }
+ */
+router.post(
+  "/customer/payments/:paymentId/reconcile",
+  authMiddleware,
+  requireRole("customer"),
+  validate(paymentIdParamSchema, "params"),
+  paymentController.reconcilePayment
 );
 
 /**

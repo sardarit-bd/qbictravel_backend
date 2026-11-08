@@ -18,6 +18,11 @@ export const createPaymentSchema = yup.object({
   receiptNote: yup.string().trim().max(500, "Receipt note must be at most 500 characters").optional(),
 });
 
+export const createStripeSessionSchema = yup.object({
+  successUrl: yup.string().url("Invalid success URL").optional(),
+  cancelUrl: yup.string().url("Invalid cancel URL").optional(),
+});
+
 export const verifyPaymentSchema = yup.object({
   decision: yup
     .string()

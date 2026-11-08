@@ -80,7 +80,6 @@ export interface UpdateGeneralSettingsInput {
   platformName?: string;
   supportEmail?: string;
   supportPhone?: string;
-  defaultCurrency?: string;
   timezone?: string;
   defaultLanguage?: string;
   maintenanceMode?: boolean;

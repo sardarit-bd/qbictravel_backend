@@ -110,6 +110,7 @@ describe("Agent Portal API Integration Tests", () => {
         agentId: agentA.id,
         customerId: customer.id,
         serviceId: service.id,
+        currency: "THB",
         basePrice: 1500,
         finalPrice: 1500,
         status: "CONFIRMED",

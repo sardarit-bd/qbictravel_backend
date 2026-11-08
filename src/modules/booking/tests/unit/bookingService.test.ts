@@ -59,6 +59,33 @@ describe("Booking Service", () => {
         expect.objectContaining({ basePrice: 100, finalPrice: 100, status: "PENDING" })
       );
     });
+
+    it("should throw 400 when service has zero active pricing tiers", async () => {
+      (prisma.service.findUnique as any).mockResolvedValue({
+        id: "s1",
+        pricing: [],
+      });
+
+      await expect(
+        bookingService.createBooking({ customerId: "c1", serviceId: "s1" }, false, "c1")
+      ).rejects.toThrow(new AppError("Service has no active pricing", 400));
+    });
+
+    it("should throw 409 when service has multiple active pricing tiers", async () => {
+      (prisma.service.findUnique as any).mockResolvedValue({
+        id: "s1",
+        pricing: [
+          { basePrice: 100, currency: "USD", validFrom: null, validTo: null },
+          { basePrice: 120, currency: "THB", validFrom: null, validTo: null },
+        ],
+      });
+
+      await expect(
+        bookingService.createBooking({ customerId: "c1", serviceId: "s1" }, false, "c1")
+      ).rejects.toThrow(
+        new AppError("Service has multiple active pricing tiers. Please contact support.", 409)
+      );
+    });
   });
 
   describe("createBooking (Agent)", () => {

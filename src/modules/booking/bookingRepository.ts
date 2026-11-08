@@ -2,6 +2,7 @@ import { prisma } from "../../lib/prisma.js";
 import type { CreateBookingInput } from "./bookingTypes.js";
 
 export const createBooking = async (input: CreateBookingInput & { 
+  currency: string;
   basePrice: number; 
   finalPrice: number; 
   status: string; 
@@ -13,6 +14,7 @@ export const createBooking = async (input: CreateBookingInput & {
       agentId: input.agentId || null,
       serviceId: input.serviceId,
       availabilityId: input.availabilityId || null,
+      currency: input.currency,
       basePrice: input.basePrice, // Pass number directly
       proposedPrice: input.proposedPrice !== undefined ? Number(input.proposedPrice) : null,
       finalPrice: input.finalPrice,

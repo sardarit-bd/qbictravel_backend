@@ -227,9 +227,6 @@ export const updateGeneralSettings = async (
   if (input.supportPhone !== undefined) {
     updates.push(repo.setPlaintextSetting("GENERAL", "general.support_phone", input.supportPhone.trim(), actor.id));
   }
-  if (input.defaultCurrency !== undefined) {
-    updates.push(repo.setPlaintextSetting("GENERAL", "general.default_currency", input.defaultCurrency.trim().toUpperCase(), actor.id));
-  }
   if (input.timezone !== undefined) {
     updates.push(repo.setPlaintextSetting("GENERAL", "general.timezone", input.timezone.trim(), actor.id));
   }
