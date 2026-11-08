@@ -39,6 +39,7 @@ const agentBookingSelect = {
   status: true,
   paymentStatus: true,
   fulfillmentStatus: true,
+  currency: true,
   basePrice: true,
   proposedPrice: true,
   finalPrice: true,
