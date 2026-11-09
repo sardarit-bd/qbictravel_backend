@@ -9,6 +9,7 @@ import {
   forgotPassword as forgotPasswordService,
   resetPassword as resetPasswordService,
   validateInvitationToken,
+  validateResetPasswordToken,
 } from "./authService.js";
 
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
@@ -107,6 +108,20 @@ export const resetPassword = async (
     await resetPasswordService(req.body);
 
     sendResponse(res, 200, true, "Password has been reset successfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const validateResetToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const token = (req.query.token as string) || (req.body && req.body.token);
+    const result = await validateResetPasswordToken(token);
+    sendResponse(res, 200, true, "Password reset token is valid", result);
   } catch (error) {
     next(error);
   }
