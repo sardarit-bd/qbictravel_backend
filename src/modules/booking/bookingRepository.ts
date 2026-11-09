@@ -147,6 +147,13 @@ const adminReservationSelect = {
       date: true,
     },
   },
+  assignedStaffId: true,
+  assignedStaff: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
   payments: {
     select: {
       id: true,

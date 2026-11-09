@@ -3,8 +3,12 @@ import request from "supertest";
 import app from "../../../../app.js";
 import AppError from "../../../../shared/utils/AppError.js";
 import * as operationsService from "../../operationsService.js";
+import * as permissionRepository from "../../../permission/permissionRepository.js";
 
 vi.mock("../../operationsService.js");
+vi.mock("../../../permission/permissionRepository.js", () => ({
+  checkStaffPermission: vi.fn().mockResolvedValue(false),
+}));
 vi.mock("../../../../shared/middleware/authMiddleware.js", () => ({
   default: (req: any, _res: any, next: any) => {
     const role = req.headers["x-mock-role"] as string;
