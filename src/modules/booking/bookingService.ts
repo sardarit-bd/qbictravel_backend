@@ -333,6 +333,25 @@ export const updateAgentBookingPrice = async (
       where: { id: bookingId },
       include: { priceApproval: true },
     });
+
+    if (tx.bookingHistory) {
+      await tx.bookingHistory.create({
+        data: {
+          bookingId,
+          actorId,
+          actorRole: "agent",
+          action: requiresApproval ? "PRICE_APPROVAL_REQUESTED" : "PRICE_UPDATED",
+          changes: {
+            previousStatus: booking.status,
+            newStatus: status,
+            previousPrice: Number(booking.finalPrice),
+            proposedPrice,
+            requiresApproval,
+          },
+        },
+      });
+    }
+
     return mapBookingToResponse(updated);
   });
 
@@ -440,4 +459,52 @@ export const reviewPendingReservation = async (
     if (err instanceof AppError) throw err;
     throw new AppError(err.message || "Failed to reject booking", 400);
   }
+};
+
+export const getAdminBookingHistory = async (
+  bookingId: string,
+  query: Record<string, unknown>
+) => {
+  const { page, limit, skip } = parsePagination({ limit: 50, ...query });
+  const result = await bookingRepository.findBookingHistory({
+    bookingId,
+    skip,
+    take: limit,
+  });
+
+  if (!result) {
+    throw new AppError("Booking not found", 404);
+  }
+
+  return {
+    items: result.items,
+    page,
+    limit,
+    total: result.total,
+  };
+};
+
+export const getStaffBookingHistory = async (
+  staffId: string,
+  bookingId: string,
+  query: Record<string, unknown>
+) => {
+  const { page, limit, skip } = parsePagination({ limit: 50, ...query });
+  const result = await bookingRepository.findBookingHistory({
+    bookingId,
+    skip,
+    take: limit,
+    assignedStaffId: staffId,
+  });
+
+  if (!result) {
+    throw new AppError("Booking not found", 404);
+  }
+
+  return {
+    items: result.items,
+    page,
+    limit,
+    total: result.total,
+  };
 };

@@ -8,23 +8,44 @@ export const createBooking = async (input: CreateBookingInput & {
   status: string; 
   requiresApproval: boolean 
 }) => {
-  return prisma.booking.create({
-    data: {
-      customerId: input.customerId,
-      agentId: input.agentId || null,
-      serviceId: input.serviceId,
-      availabilityId: input.availabilityId || null,
-      currency: input.currency,
-      basePrice: input.basePrice, // Pass number directly
-      proposedPrice: input.proposedPrice !== undefined ? Number(input.proposedPrice) : null,
-      finalPrice: input.finalPrice,
-      status: input.status as any,
-      requiresApproval: input.requiresApproval,
-      notes: input.notes || null,
-    },
-    include: {
-      priceApproval: true,
-    },
+  return prisma.$transaction(async (tx) => {
+    const created = await tx.booking.create({
+      data: {
+        customerId: input.customerId,
+        agentId: input.agentId || null,
+        serviceId: input.serviceId,
+        availabilityId: input.availabilityId || null,
+        currency: input.currency,
+        basePrice: input.basePrice, // Pass number directly
+        proposedPrice: input.proposedPrice !== undefined ? Number(input.proposedPrice) : null,
+        finalPrice: input.finalPrice,
+        status: input.status as any,
+        requiresApproval: input.requiresApproval,
+        notes: input.notes || null,
+      },
+      include: {
+        priceApproval: true,
+      },
+    });
+
+    await tx.bookingHistory.create({
+      data: {
+        bookingId: created.id,
+        actorId: input.agentId || input.customerId,
+        actorRole: input.agentId ? "agent" : "customer",
+        action: "BOOKING_CREATED",
+        changes: {
+          status: input.status,
+          basePrice: input.basePrice,
+          finalPrice: input.finalPrice,
+          currency: input.currency,
+          requiresApproval: input.requiresApproval,
+          notes: input.notes || null,
+        },
+      },
+    });
+
+    return created;
   });
 };
 
@@ -39,6 +60,11 @@ export const findBookingById = async (bookingId: string) => {
 
 export const updateBookingPriceApproval = async (bookingId: string, input: { approvedPrice: number; adminId: string; notes?: string }) => {
   return prisma.$transaction(async (tx) => {
+    const existing = await tx.booking.findUnique({
+      where: { id: bookingId },
+      select: { status: true, finalPrice: true, proposedPrice: true, currency: true },
+    });
+
     await tx.priceApproval.update({
       where: { bookingId },
       data: {
@@ -50,7 +76,7 @@ export const updateBookingPriceApproval = async (bookingId: string, input: { app
       },
     });
 
-    return tx.booking.update({
+    const updated = await tx.booking.update({
       where: { id: bookingId },
       data: {
         finalPrice: input.approvedPrice,
@@ -61,11 +87,35 @@ export const updateBookingPriceApproval = async (bookingId: string, input: { app
         priceApproval: true,
       },
     });
+
+    await tx.bookingHistory.create({
+      data: {
+        bookingId,
+        actorId: input.adminId,
+        actorRole: "admin",
+        action: "PRICE_APPROVED",
+        changes: {
+          previousStatus: existing?.status ?? "AWAITING_APPROVAL",
+          newStatus: "CONFIRMED",
+          previousPrice: existing ? Number(existing.finalPrice) : null,
+          approvedPrice: input.approvedPrice,
+          currency: existing?.currency ?? null,
+          notes: input.notes || null,
+        },
+      },
+    });
+
+    return updated;
   });
 };
 
 export const rejectPriceApproval = async (bookingId: string, adminId: string, notes?: string) => {
   return prisma.$transaction(async (tx) => {
+    const existing = await tx.booking.findUnique({
+      where: { id: bookingId },
+      select: { status: true, finalPrice: true, proposedPrice: true, currency: true },
+    });
+
     await tx.priceApproval.update({
       where: { bookingId },
       data: {
@@ -76,7 +126,7 @@ export const rejectPriceApproval = async (bookingId: string, adminId: string, no
       },
     });
 
-    return tx.booking.update({
+    const updated = await tx.booking.update({
       where: { id: bookingId },
       data: {
         status: "CANCELLED",
@@ -86,6 +136,24 @@ export const rejectPriceApproval = async (bookingId: string, adminId: string, no
         priceApproval: true,
       },
     });
+
+    await tx.bookingHistory.create({
+      data: {
+        bookingId,
+        actorId: adminId,
+        actorRole: "admin",
+        action: "PRICE_REJECTED",
+        changes: {
+          previousStatus: existing?.status ?? "AWAITING_APPROVAL",
+          newStatus: "CANCELLED",
+          proposedPrice: existing?.proposedPrice != null ? Number(existing.proposedPrice) : null,
+          currency: existing?.currency ?? null,
+          notes: notes || null,
+        },
+      },
+    });
+
+    return updated;
   });
 };
 
@@ -319,4 +387,106 @@ export const rejectPendingBooking = async (params: {
 
     return updated;
   });
+};
+
+export const findBookingHistory = async (params: {
+  bookingId: string;
+  skip: number;
+  take: number;
+  assignedStaffId?: string;
+}) => {
+  const booking = await prisma.booking.findFirst({
+    where: {
+      id: params.bookingId,
+      ...(params.assignedStaffId ? { assignedStaffId: params.assignedStaffId } : {}),
+    },
+    select: { id: true },
+  });
+
+  if (!booking) {
+    return null;
+  }
+
+  const [rawItems, total] = await Promise.all([
+    prisma.bookingHistory.findMany({
+      where: { bookingId: params.bookingId },
+      orderBy: { createdAt: "desc" },
+      skip: params.skip,
+      take: params.take,
+    }),
+    prisma.bookingHistory.count({
+      where: { bookingId: params.bookingId },
+    }),
+  ]);
+
+  // Collect all referenced user IDs (actors and staff in changes) to resolve human-readable names safely
+  const userIdsSet = new Set<string>();
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+  for (const item of rawItems) {
+    if (item.actorId && uuidRegex.test(item.actorId)) {
+      userIdsSet.add(item.actorId);
+    }
+    const changes = item.changes as Record<string, any> | null;
+    if (changes && typeof changes === "object") {
+      if (typeof changes.previousStaffId === "string" && uuidRegex.test(changes.previousStaffId)) {
+        userIdsSet.add(changes.previousStaffId);
+      }
+      if (typeof changes.newStaffId === "string" && uuidRegex.test(changes.newStaffId)) {
+        userIdsSet.add(changes.newStaffId);
+      }
+    }
+  }
+
+  const userIds = Array.from(userIdsSet);
+  const users =
+    userIds.length > 0
+      ? await prisma.user.findMany({
+          where: { id: { in: userIds } },
+          select: { id: true, name: true, role: true },
+        })
+      : [];
+
+  const userMap = new Map<string, { id: string; name: string | null; role: string }>();
+  for (const u of users) {
+    userMap.set(u.id, u);
+  }
+
+  const items = rawItems.map((item) => {
+    const actorUser = userMap.get(item.actorId);
+    const changes =
+      item.changes && typeof item.changes === "object"
+        ? { ...(item.changes as Record<string, any>) }
+        : {};
+
+    // Enrich staff names if not already stored in changes
+    if (changes.previousStaffId && !changes.previousStaffName) {
+      const prevStaff = userMap.get(changes.previousStaffId);
+      if (prevStaff?.name) {
+        changes.previousStaffName = prevStaff.name;
+      }
+    }
+    if (changes.newStaffId && !changes.newStaffName) {
+      const nextStaff = userMap.get(changes.newStaffId);
+      if (nextStaff?.name) {
+        changes.newStaffName = nextStaff.name;
+      }
+    }
+
+    const isSystemAction =
+      item.action.startsWith("STRIPE_") || item.action === "BOOKING_AUTO_CONFIRMED";
+
+    return {
+      id: item.id,
+      bookingId: item.bookingId,
+      actorId: item.actorId,
+      actorName: actorUser?.name || (isSystemAction ? "System (Stripe)" : null),
+      actorRole: item.actorRole,
+      action: item.action,
+      changes,
+      createdAt: item.createdAt,
+    };
+  });
+
+  return { items, total };
 };

@@ -79,5 +79,58 @@ describe("Admin Pending Reservations Service Unit Tests", () => {
       ).rejects.toThrow("Booking not found");
     });
   });
+
+  describe("getAdminBookingHistory & getStaffBookingHistory", () => {
+    it("retrieves paginated booking history with actor info", async () => {
+      const mockHistory = {
+        items: [
+          {
+            id: "h-1",
+            bookingId: "b-1",
+            actorId: "admin-1",
+            actorName: "Admin User",
+            actorRole: "admin",
+            action: "BOOKING_CONFIRMED",
+            changes: { previousStatus: "PENDING", newStatus: "CONFIRMED", notes: "Approved" },
+            createdAt: new Date("2026-11-09T10:00:00Z"),
+          },
+        ],
+        total: 1,
+      };
+
+      vi.spyOn(bookingRepository, "findBookingHistory").mockResolvedValue(mockHistory as any);
+
+      const res = await bookingService.getAdminBookingHistory("b-1", { page: 1, limit: 25 });
+      expect(res.items).toHaveLength(1);
+      expect(res.items[0].action).toBe("BOOKING_CONFIRMED");
+      expect(res.items[0].actorName).toBe("Admin User");
+      expect(res.page).toBe(1);
+      expect(res.limit).toBe(25);
+      expect(res.total).toBe(1);
+    });
+
+    it("throws 404 when booking history is requested for a non-existent booking", async () => {
+      vi.spyOn(bookingRepository, "findBookingHistory").mockResolvedValue(null);
+
+      await expect(
+        bookingService.getAdminBookingHistory("b-missing", {})
+      ).rejects.toThrow("Booking not found");
+    });
+
+    it("restricts staff booking history to bookings assigned to that staff member", async () => {
+      vi.spyOn(bookingRepository, "findBookingHistory").mockResolvedValue(null);
+
+      await expect(
+        bookingService.getStaffBookingHistory("staff-other", "b-1", {})
+      ).rejects.toThrow("Booking not found");
+
+      expect(bookingRepository.findBookingHistory).toHaveBeenCalledWith(
+        expect.objectContaining({
+          bookingId: "b-1",
+          assignedStaffId: "staff-other",
+        })
+      );
+    });
+  });
 });
 

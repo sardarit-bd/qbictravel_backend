@@ -63,6 +63,7 @@ export const findBookingForTransition = async (bookingId: string) => {
       fulfillmentStatus: true,
       paymentStatus: true,
       assignedStaffId: true,
+      assignedStaff: { select: { id: true, name: true } },
     },
   });
 };

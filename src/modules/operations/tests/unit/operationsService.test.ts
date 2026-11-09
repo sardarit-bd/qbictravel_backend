@@ -175,12 +175,20 @@ describe("operationsService.assignBooking", () => {
   });
 
   it("assigns a staff member and records the previous one", async () => {
-    repo.findBookingForTransition.mockResolvedValue(makeBooking({ assignedStaffId: "old-staff" }));
+    repo.findBookingForTransition.mockResolvedValue(
+      makeBooking({ assignedStaffId: "old-staff", assignedStaff: { id: "old-staff", name: "Old Staff" } }),
+    );
     await operationsService.assignBooking(ADMIN_ID, BOOKING_ID, { staffId: STAFF_ID, notes: "Handover" });
     expect(repo.applyAssignment).toHaveBeenCalledWith(
       expect.objectContaining({
         staffId: STAFF_ID,
-        changes: expect.objectContaining({ previousStaffId: "old-staff", newStaffId: STAFF_ID }),
+        changes: expect.objectContaining({
+          previousStaffId: "old-staff",
+          previousStaffName: "Old Staff",
+          newStaffId: STAFF_ID,
+          newStaffName: "Staff",
+          notes: "Handover",
+        }),
       }),
     );
   });

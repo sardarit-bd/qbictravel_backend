@@ -126,12 +126,16 @@ export const assignBooking = async (adminId: string, bookingId: string, input: A
     throw new AppError("Booking not found", 404);
   }
 
+  let newStaffName: string | null = null;
   if (input.staffId) {
     const staff = await operationsRepository.findActiveStaff(input.staffId);
     if (!staff) {
       throw new AppError("Staff user not found or inactive", 400);
     }
+    newStaffName = staff.name ?? null;
   }
+
+  const previousStaffName = (booking as any).assignedStaff?.name ?? null;
 
   const updated = await operationsRepository.applyAssignment({
     bookingId,
@@ -139,7 +143,9 @@ export const assignBooking = async (adminId: string, bookingId: string, input: A
     adminId,
     changes: {
       previousStaffId: booking.assignedStaffId,
+      previousStaffName,
       newStaffId: input.staffId,
+      newStaffName,
       notes: input.notes ?? null,
     },
   });

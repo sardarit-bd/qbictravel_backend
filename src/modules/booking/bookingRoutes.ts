@@ -319,4 +319,82 @@ router.post(
   bookingController.reviewPendingReservation
 );
 
+/**
+ * @openapi
+ * /api/v1/admin/bookings/{bookingId}/history:
+ *   get:
+ *     tags:
+ *       - Admin Bookings
+ *     summary: Retrieve chronological activity history for a booking
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - name: bookingId
+ *         in: path
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, minimum: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, minimum: 1, maximum: 100 }
+ *     responses:
+ *       200:
+ *         description: Booking activity history retrieved successfully
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+router.get(
+  "/admin/bookings/:bookingId/history",
+  authMiddleware,
+  requirePermission("bookings.view"),
+  validate(bookingIdParamSchema, "params"),
+  bookingController.getAdminBookingHistory
+);
+
+/**
+ * @openapi
+ * /api/v1/staff/operations/bookings/{bookingId}/history:
+ *   get:
+ *     tags:
+ *       - Staff Operations
+ *     summary: Retrieve chronological activity history for an assigned booking
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - name: bookingId
+ *         in: path
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, minimum: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, minimum: 1, maximum: 100 }
+ *     responses:
+ *       200:
+ *         description: Booking activity history retrieved successfully
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+router.get(
+  "/staff/operations/bookings/:bookingId/history",
+  authMiddleware,
+  requireRole("staff"),
+  validate(bookingIdParamSchema, "params"),
+  bookingController.getStaffBookingHistory
+);
+
 export default router;

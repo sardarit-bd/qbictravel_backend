@@ -70,3 +70,28 @@ export const reviewPendingReservation = async (req: Request, res: Response, next
     next(error);
   }
 };
+
+export const getAdminBookingHistory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await bookingService.getAdminBookingHistory(
+      req.params.bookingId as string,
+      req.query
+    );
+    sendResponse(res, 200, true, "Booking history retrieved successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getStaffBookingHistory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await bookingService.getStaffBookingHistory(
+      req.user!.id,
+      req.params.bookingId as string,
+      req.query
+    );
+    sendResponse(res, 200, true, "Booking history retrieved successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
