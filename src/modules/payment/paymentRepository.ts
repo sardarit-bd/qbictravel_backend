@@ -46,6 +46,7 @@ export const findBookingForPayment = async (bookingId: string) => {
     select: {
       id: true,
       customerId: true,
+      agentId: true,
       status: true,
       requiresApproval: true,
       paymentStatus: true,
@@ -677,6 +678,10 @@ export const verifyStripePaymentAtomically = async (params: {
       topic: "CALCULATE_COMMISSION",
       payload: { bookingId: params.bookingId, paymentId: payment.id },
     });
+
+    if (tx.commission && tx.commissionRule) {
+      await createCommissionForBooking(tx, params.bookingId);
+    }
 
     await enqueueOutboxMessage(tx, {
       topic: "SEND_BOOKING_VOUCHER_EMAIL",

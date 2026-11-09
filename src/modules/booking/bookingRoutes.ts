@@ -152,6 +152,14 @@ router.patch(
   bookingController.updateBookingPrice
 );
 
+router.get(
+  "/agent/bookings/:bookingId/history",
+  authMiddleware,
+  requireRole("agent"),
+  validate(bookingIdParamSchema, "params"),
+  bookingController.getAgentBookingHistory
+);
+
 /**
  * @openapi
  * /api/v1/admin/bookings/{bookingId}/price-approvals:

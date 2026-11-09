@@ -51,6 +51,7 @@ const listWithFilters = async (base: PaymentFilters, query: Record<string, unkno
     ...base,
     status: parseEnumQuery(query.status, PAYMENT_RECORD_STATUSES, "status"),
     method: parseEnumQuery(query.method, PAYMENT_METHODS, "method"),
+    ...(query.bookingId ? { bookingId: parseUuidQuery(query.bookingId, "bookingId") } : {}),
     ...(allowIdFilters
       ? {
           bookingId: parseUuidQuery(query.bookingId, "bookingId"),
@@ -444,6 +445,11 @@ export const reconcileStripePayment = async (
     throw new AppError("Payment not found", 404);
   }
 
+  // If agent is requesting reconciliation, verify booking ownership
+  if (requester && requester.role === "agent" && payment.booking?.agentId !== requester.id) {
+    throw new AppError("Payment not found", 404);
+  }
+
   if (payment.method !== "STRIPE") {
     throw new AppError("Only Stripe payments can be reconciled against Stripe API", 400);
   }
@@ -585,6 +591,148 @@ export const createPayment = async (customerId: string, bookingId: string, input
   }
 
   return mapPayment(payment);
+};
+
+export const createAgentPayment = async (agentId: string, bookingId: string, input: CreatePaymentInput) => {
+  const booking = await paymentRepository.findBookingForPayment(bookingId);
+
+  if (!booking || (booking as any).agentId !== agentId) {
+    throw new AppError("Booking not found", 404);
+  }
+
+  if (booking.requiresApproval || !PAYABLE_BOOKING_STATUSES.includes(booking.status)) {
+    throw new AppError("This booking cannot accept a payment in its current state", 409);
+  }
+
+  if (booking.paymentStatus !== "UNPAID") {
+    throw new AppError("This booking is already paid", 409);
+  }
+
+  const amountCents = toCents(booking.finalPrice);
+  if (amountCents <= 0) {
+    throw new AppError("This booking has no payable amount", 409);
+  }
+
+  let payment;
+  try {
+    payment = await paymentRepository.createPaymentIfNoneActive({
+      bookingId,
+      customerId: booking.customerId,
+      amount: amountCents / 100,
+      currency: booking.currency,
+      method: input.method,
+      status: input.reference ? "SUBMITTED" : "INITIATED",
+      reference: input.reference,
+      receiptNote: input.receiptNote,
+    });
+  } catch (error) {
+    if (hasCode(error, "P2002")) {
+      throw new AppError("This payment reference has already been used", 409);
+    }
+    if (hasCode(error, "P2034")) {
+      throw new AppError("The payment could not be created right now. Please retry.", 409);
+    }
+    throw error;
+  }
+
+  if (!payment) {
+    throw new AppError("This booking already has an active payment", 409);
+  }
+
+  return mapPayment(payment);
+};
+
+export const createAgentStripeCheckoutSession = async (
+  agentId: string,
+  input: CreateStripeSessionInput,
+): Promise<StripeCheckoutSessionResult> => {
+  const booking = await paymentRepository.findBookingForPayment(input.bookingId);
+
+  if (!booking || (booking as any).agentId !== agentId) {
+    throw new AppError("Booking not found", 404);
+  }
+
+  if (booking.requiresApproval || !PAYABLE_BOOKING_STATUSES.includes(booking.status)) {
+    throw new AppError("This booking cannot accept a payment in its current state", 409);
+  }
+
+  if (booking.paymentStatus === "PAID") {
+    throw new AppError("This booking is already paid", 409);
+  }
+
+  const finalPrice = Number(booking.finalPrice);
+  if (finalPrice <= 0) {
+    throw new AppError("This booking has no payable amount", 409);
+  }
+
+  const amountMinor = toStripeAmount(finalPrice, booking.currency);
+  const { successUrl, cancelUrl } = resolveStripeSessionUrls(booking.id, {
+    successUrl: input.successUrl,
+    cancelUrl: input.cancelUrl,
+  });
+
+  const { payment, isAlreadyVerified, isExistingActive } = await paymentRepository.createOrGetStripePayment({
+    bookingId: booking.id,
+    customerId: booking.customerId,
+    amount: finalPrice,
+    currency: booking.currency,
+  });
+
+  if (isAlreadyVerified) {
+    throw new AppError("This booking is already paid", 409);
+  }
+
+  if (isExistingActive && payment.stripeSessionId) {
+    try {
+      const existingSession = await activeStripeClient.retrieveCheckoutSession(payment.stripeSessionId);
+      if (existingSession.status === "open") {
+        return {
+          sessionId: existingSession.id,
+          sessionUrl: existingSession.url,
+          paymentId: payment.id,
+          amount: finalPrice,
+          currency: booking.currency,
+          status: payment.status,
+        };
+      }
+      if (existingSession.status === "expired") {
+        await paymentRepository.updateStripePaymentStatus({
+          paymentId: payment.id,
+          bookingId: booking.id,
+          status: "CANCELLED",
+          failureReason: "Stripe checkout session expired",
+        });
+      }
+    } catch (err: any) {
+      logger.warn({ err: err.message, sessionId: payment.stripeSessionId }, "Could not retrieve existing Stripe session");
+    }
+  }
+
+  const serviceTitle = (booking as any).service?.name || "Tour Experience";
+  const customerEmail = (booking as any).customer?.email;
+
+  const session = await activeStripeClient.createCheckoutSession({
+    bookingId: booking.id,
+    customerId: booking.customerId,
+    amountMinor,
+    currency: booking.currency,
+    customerEmail,
+    serviceTitle,
+    successUrl,
+    cancelUrl,
+    idempotencyKey: `checkout_${payment.id}`,
+  });
+
+  await paymentRepository.updatePaymentStripeSession(payment.id, session.id, session.payment_intent);
+
+  return {
+    sessionId: session.id,
+    sessionUrl: session.url,
+    paymentId: payment.id,
+    amount: finalPrice,
+    currency: booking.currency,
+    status: "INITIATED",
+  };
 };
 
 export const listCustomerPayments = async (customerId: string, query: Record<string, unknown>) =>

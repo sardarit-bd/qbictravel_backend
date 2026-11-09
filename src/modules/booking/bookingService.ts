@@ -508,3 +508,28 @@ export const getStaffBookingHistory = async (
     total: result.total,
   };
 };
+
+export const getAgentBookingHistory = async (
+  agentId: string,
+  bookingId: string,
+  query: Record<string, unknown>
+) => {
+  const { page, limit, skip } = parsePagination({ limit: 50, ...query });
+  const result = await bookingRepository.findBookingHistory({
+    bookingId,
+    skip,
+    take: limit,
+    agentId,
+  });
+
+  if (!result) {
+    throw new AppError("Booking not found", 404);
+  }
+
+  return {
+    items: result.items,
+    page,
+    limit,
+    total: result.total,
+  };
+};

@@ -188,6 +188,32 @@ router.get(
   paymentController.listAgentPayments
 );
 
+router.post(
+  "/agent/bookings/:bookingId/payments",
+  authMiddleware,
+  requireRole("agent"),
+  validate(paymentBookingIdParamSchema, "params"),
+  validate(createPaymentSchema),
+  paymentController.createAgentPayment
+);
+
+router.post(
+  "/agent/bookings/:bookingId/stripe-session",
+  authMiddleware,
+  requireRole("agent"),
+  validate(paymentBookingIdParamSchema, "params"),
+  validate(createStripeSessionSchema),
+  paymentController.createAgentStripeSession
+);
+
+router.post(
+  "/agent/payments/:paymentId/reconcile",
+  authMiddleware,
+  requireRole("agent"),
+  validate(paymentIdParamSchema, "params"),
+  paymentController.reconcilePayment
+);
+
 /**
  * @openapi
  * /api/v1/admin/payments:

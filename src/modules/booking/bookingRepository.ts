@@ -137,6 +137,13 @@ export const rejectPriceApproval = async (bookingId: string, adminId: string, no
       },
     });
 
+    if (tx.commission) {
+      await tx.commission.updateMany({
+        where: { bookingId, status: "ACTIVE" },
+        data: { status: "CANCELLED" },
+      });
+    }
+
     await tx.bookingHistory.create({
       data: {
         bookingId,
@@ -371,6 +378,13 @@ export const rejectPendingBooking = async (params: {
       select: adminReservationSelect,
     });
 
+    if (tx.commission) {
+      await tx.commission.updateMany({
+        where: { bookingId: params.bookingId, status: "ACTIVE" },
+        data: { status: "CANCELLED" },
+      });
+    }
+
     await tx.bookingHistory.create({
       data: {
         bookingId: params.bookingId,
@@ -394,11 +408,13 @@ export const findBookingHistory = async (params: {
   skip: number;
   take: number;
   assignedStaffId?: string;
+  agentId?: string;
 }) => {
   const booking = await prisma.booking.findFirst({
     where: {
       id: params.bookingId,
       ...(params.assignedStaffId ? { assignedStaffId: params.assignedStaffId } : {}),
+      ...(params.agentId ? { agentId: params.agentId } : {}),
     },
     select: { id: true },
   });

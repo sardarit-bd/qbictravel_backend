@@ -1,4 +1,7 @@
+import bcrypt from "bcryptjs";
+import { randomBytes } from "node:crypto";
 import { prisma } from "../../lib/prisma.js";
+import AppError from "../../shared/utils/AppError.js";
 
 export type AgentBookingStatus =
   | "PENDING"
@@ -25,7 +28,21 @@ export interface ListAgentBookingsParams {
   page?: number;
   limit?: number;
   status?: string;
+  paymentStatus?: string;
+  fulfillmentStatus?: string;
   search?: string;
+}
+
+export interface ListAgentCustomersParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
+export interface CreateAgentCustomerInput {
+  name: string;
+  email: string;
+  phone?: string | null;
 }
 
 export interface UpdateAgentProfileInput {
@@ -47,6 +64,15 @@ const agentBookingSelect = {
   notes: true,
   createdAt: true,
   updatedAt: true,
+  assignedStaffId: true,
+  assignedStaff: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+    },
+  },
   service: {
     select: {
       id: true,
@@ -68,6 +94,20 @@ const agentBookingSelect = {
       phone: true,
     },
   },
+  payments: {
+    select: {
+      id: true,
+      amount: true,
+      currency: true,
+      method: true,
+      status: true,
+      reference: true,
+      stripeSessionId: true,
+      receivedAt: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: "desc" as const },
+  },
   priceApproval: {
     select: {
       id: true,
@@ -86,6 +126,52 @@ const agentBookingSelect = {
     },
   },
 } as const;
+
+const parseTravelDateFromNotes = (notes?: string | null): string | null => {
+  if (!notes || typeof notes !== "string") return null;
+  const match = notes.match(/Travel Date:\s*([0-9]{4}-[0-9]{2}-[0-9]{2})/i);
+  return match ? match[1]! : null;
+};
+
+const formatAgentBookingItem = (b: any) => {
+  const fallbackDate = parseTravelDateFromNotes(b.notes);
+  const availability =
+    b.availability && b.availability.date
+      ? b.availability
+      : fallbackDate
+        ? { id: `notes-date-${b.id}`, date: new Date(fallbackDate) }
+        : null;
+
+  return {
+    ...b,
+    availability,
+    basePrice: Number(b.basePrice),
+    proposedPrice: b.proposedPrice !== null ? Number(b.proposedPrice) : null,
+    finalPrice: Number(b.finalPrice),
+    payments: Array.isArray(b.payments)
+      ? b.payments.map((p: any) => ({
+          ...p,
+          amount: Number(p.amount),
+        }))
+      : [],
+    priceApproval: b.priceApproval
+      ? {
+          ...b.priceApproval,
+          requestedPrice: Number(b.priceApproval.requestedPrice),
+          approvedPrice:
+            b.priceApproval.approvedPrice !== null
+              ? Number(b.priceApproval.approvedPrice)
+              : null,
+        }
+      : null,
+    commission: b.commission
+      ? {
+          ...b.commission,
+          amount: Number(b.commission.amount),
+        }
+      : null,
+  };
+};
 
 export const getAgentOverview = async (agentId: string): Promise<AgentOverviewMetrics> => {
   const [
@@ -132,6 +218,7 @@ export const getAgentOverview = async (agentId: string): Promise<AgentOverviewMe
         amount: true,
         booking: {
           select: {
+            status: true,
             paymentStatus: true,
           },
         },
@@ -142,8 +229,13 @@ export const getAgentOverview = async (agentId: string): Promise<AgentOverviewMe
   let totalCommission = 0;
   let paidCommission = 0;
   let pendingCommission = 0;
+  let activeCount = 0;
 
   for (const c of commissions) {
+    if (c.booking?.status === "CANCELLED" || c.booking?.status === "FAILED") {
+      continue;
+    }
+    activeCount += 1;
     const val = Number(c.amount);
     totalCommission += val;
     if (c.booking?.paymentStatus === "PAID") {
@@ -162,7 +254,7 @@ export const getAgentOverview = async (agentId: string): Promise<AgentOverviewMe
     totalCommission: Math.round(totalCommission * 100) / 100,
     paidCommission: Math.round(paidCommission * 100) / 100,
     pendingCommission: Math.round(pendingCommission * 100) / 100,
-    activeCommissionsCount: commissions.length,
+    activeCommissionsCount: activeCount,
   };
 };
 
@@ -182,6 +274,14 @@ export const listAgentBookings = async (
     where.status = params.status;
   }
 
+  if (params.paymentStatus && params.paymentStatus !== "ALL") {
+    where.paymentStatus = params.paymentStatus;
+  }
+
+  if (params.fulfillmentStatus && params.fulfillmentStatus !== "ALL") {
+    where.fulfillmentStatus = params.fulfillmentStatus;
+  }
+
   if (params.search && params.search.trim()) {
     const query = params.search.trim();
     where.OR = [
@@ -189,6 +289,7 @@ export const listAgentBookings = async (
       { customer: { name: { contains: query, mode: "insensitive" } } },
       { customer: { email: { contains: query, mode: "insensitive" } } },
       { service: { name: { contains: query, mode: "insensitive" } } },
+      { notes: { contains: query, mode: "insensitive" } },
     ];
   }
 
@@ -203,28 +304,7 @@ export const listAgentBookings = async (
     prisma.booking.count({ where }),
   ]);
 
-  const formattedItems = items.map((b) => ({
-    ...b,
-    basePrice: Number(b.basePrice),
-    proposedPrice: b.proposedPrice !== null ? Number(b.proposedPrice) : null,
-    finalPrice: Number(b.finalPrice),
-    priceApproval: b.priceApproval
-      ? {
-          ...b.priceApproval,
-          requestedPrice: Number(b.priceApproval.requestedPrice),
-          approvedPrice:
-            b.priceApproval.approvedPrice !== null
-              ? Number(b.priceApproval.approvedPrice)
-              : null,
-        }
-      : null,
-    commission: b.commission
-      ? {
-          ...b.commission,
-          amount: Number(b.commission.amount),
-        }
-      : null,
-  }));
+  const formattedItems = items.map(formatAgentBookingItem);
 
   return {
     items: formattedItems,
@@ -248,28 +328,164 @@ export const findAgentBookingById = async (agentId: string, bookingId: string) =
 
   if (!booking) return null;
 
-  return {
-    ...booking,
-    basePrice: Number(booking.basePrice),
-    proposedPrice: booking.proposedPrice !== null ? Number(booking.proposedPrice) : null,
-    finalPrice: Number(booking.finalPrice),
-    priceApproval: booking.priceApproval
-      ? {
-          ...booking.priceApproval,
-          requestedPrice: Number(booking.priceApproval.requestedPrice),
-          approvedPrice:
-            booking.priceApproval.approvedPrice !== null
-              ? Number(booking.priceApproval.approvedPrice)
-              : null,
-        }
-      : null,
-    commission: booking.commission
-      ? {
-          ...booking.commission,
-          amount: Number(booking.commission.amount),
-        }
-      : null,
+  return formatAgentBookingItem(booking);
+};
+
+export const listAgentCustomers = async (
+  agentId: string,
+  params: ListAgentCustomersParams
+) => {
+  const page = Math.max(1, Number(params.page) || 1);
+  const limit = Math.max(1, Math.min(100, Number(params.limit) || 20));
+  const skip = (page - 1) * limit;
+
+  const where: any = {
+    role: "customer",
+    status: "active",
+    deletedAt: null,
+    customerBookings: {
+      some: { agentId },
+    },
   };
+
+  if (params.search && params.search.trim()) {
+    const q = params.search.trim();
+    where.AND = [
+      {
+        OR: [
+          { name: { contains: q, mode: "insensitive" } },
+          { email: { contains: q, mode: "insensitive" } },
+          { phone: { contains: q, mode: "insensitive" } },
+        ],
+      },
+    ];
+  }
+
+  const [items, total] = await Promise.all([
+    prisma.user.findMany({
+      where,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        createdAt: true,
+        _count: {
+          select: {
+            customerBookings: {
+              where: { agentId },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
+    }),
+    prisma.user.count({ where }),
+  ]);
+
+  return {
+    items: items.map((u) => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      phone: u.phone,
+      createdAt: u.createdAt,
+      bookingsCount: u._count.customerBookings,
+    })),
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
+export const createOrResolveAgentCustomer = async (
+  _agentId: string,
+  input: CreateAgentCustomerInput
+) => {
+  const email = input.email.trim().toLowerCase();
+  const name = input.name.trim();
+  const phone = input.phone?.trim() || null;
+
+  const existing = await prisma.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      role: true,
+      status: true,
+      deletedAt: true,
+      createdAt: true,
+    },
+  });
+
+  if (existing) {
+    if (existing.role !== "customer") {
+      throw new AppError(
+        "This email belongs to a non-customer account. Please enter the traveler's email address.",
+        409
+      );
+    }
+    if (existing.status !== "active" || existing.deletedAt !== null) {
+      throw new AppError("This customer account is inactive.", 409);
+    }
+
+    // Update phone or name if customer had missing phone
+    const shouldUpdate = (phone && !existing.phone) || (name && name !== existing.name);
+    if (shouldUpdate) {
+      const updated = await prisma.user.update({
+        where: { id: existing.id },
+        data: {
+          ...(name ? { name } : {}),
+          ...(phone && !existing.phone ? { phone } : {}),
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          createdAt: true,
+        },
+      });
+      return updated;
+    }
+
+    return {
+      id: existing.id,
+      name: existing.name,
+      email: existing.email,
+      phone: existing.phone,
+      createdAt: existing.createdAt,
+    };
+  }
+
+  const randomPassword = await bcrypt.hash(randomBytes(24).toString("hex"), 10);
+
+  const created = await prisma.user.create({
+    data: {
+      name,
+      email,
+      phone,
+      password: randomPassword,
+      role: "customer",
+      status: "active",
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      createdAt: true,
+    },
+  });
+
+  return created;
 };
 
 export const findAgentProfile = async (agentId: string) => {

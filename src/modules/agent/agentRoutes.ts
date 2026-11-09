@@ -5,6 +5,7 @@ import requireRole from "../../shared/middleware/requireRole.js";
 import validate from "../../shared/middleware/validate.js";
 import {
   bookingIdParamSchema,
+  createAgentCustomerSchema,
   updateAgentProfileSchema,
 } from "./agentValidators.js";
 
@@ -109,6 +110,14 @@ router.patch(
   "/profile",
   validate(updateAgentProfileSchema),
   agentController.updateProfile
+);
+
+router.get("/customers", agentController.listCustomers);
+
+router.post(
+  "/customers",
+  validate(createAgentCustomerSchema),
+  agentController.createCustomer
 );
 
 export default router;

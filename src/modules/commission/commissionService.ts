@@ -59,7 +59,19 @@ const listWithFilters = async (base: CommissionFilters, query: Record<string, un
   };
 
   const { items, total } = await commissionRepository.listCommissions(filters, skip, limit);
-  return { items: items.map(mapCommission), page, limit, total };
+  const totalPages = Math.ceil(total / limit);
+  return {
+    items: items.map(mapCommission),
+    page,
+    limit,
+    total,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages,
+    },
+  };
 };
 
 export const listAgentCommissions = async (agentId: string, query: Record<string, unknown>) =>
