@@ -6,6 +6,11 @@ export interface CreateBookingInput {
   serviceId: string;
   availabilityId?: string;
   proposedPrice?: number | string;
+  travelDate?: string;
+  adults?: number;
+  children?: number;
+  infants?: number;
+  notes?: string;
 }
 
 export interface UpdateBookingPriceInput {

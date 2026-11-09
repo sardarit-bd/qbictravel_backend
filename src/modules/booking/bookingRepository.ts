@@ -20,6 +20,7 @@ export const createBooking = async (input: CreateBookingInput & {
       finalPrice: input.finalPrice,
       status: input.status as any,
       requiresApproval: input.requiresApproval,
+      notes: input.notes || null,
     },
     include: {
       priceApproval: true,

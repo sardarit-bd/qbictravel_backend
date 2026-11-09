@@ -60,6 +60,62 @@ describe("Booking Service", () => {
       );
     });
 
+    it("should calculate multi-guest pricing and structured notes when guest quantities and travelDate are provided", async () => {
+      (prisma.service.findUnique as any).mockResolvedValue({
+        id: "s1",
+        metadata: {
+          pricingTiers: [
+            { tierName: "Adult", price: 120 },
+            { tierName: "Child (4-11)", price: 80 },
+            { tierName: "Infant (0-3)", price: 0 },
+          ],
+        },
+        pricing: [
+          {
+            basePrice: 120,
+            discountedPrice: 100,
+            currency: "USD",
+            validFrom: null,
+            validTo: null,
+          },
+        ],
+      });
+
+      const mockBooking = {
+        id: "b1",
+        basePrice: 280,
+        finalPrice: 280,
+        status: "PENDING",
+      };
+      (bookingRepository.createBooking as any).mockResolvedValue(mockBooking);
+
+      await bookingService.createBooking(
+        {
+          customerId: "c1",
+          serviceId: "s1",
+          travelDate: "2026-12-15",
+          adults: 2,
+          children: 1,
+          infants: 1,
+          notes: "Contact: John Doe (john@example.com, +66812345678)",
+        },
+        false,
+        "c1"
+      );
+
+      // 2 adults * 100 (discountedPrice) + 1 child * 80 + 1 infant * 0 = 280
+      expect(bookingRepository.createBooking).toHaveBeenCalledWith(
+        expect.objectContaining({
+          basePrice: 280,
+          finalPrice: 280,
+          currency: "USD",
+          status: "PENDING",
+          notes:
+            "Travel Date: 2026-12-15 | Guests: 2 Adults, 1 Child, 1 Infant | Contact: John Doe (john@example.com, +66812345678)",
+        })
+      );
+    });
+
     it("should throw 400 when service has zero active pricing tiers", async () => {
       (prisma.service.findUnique as any).mockResolvedValue({
         id: "s1",

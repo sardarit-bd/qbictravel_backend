@@ -77,6 +77,50 @@ export const setStripeClient = (client: IStripeClient) => {
  * - Safe retry if existing attempt is expired or failed.
  * - Prevents multiple active sessions.
  */
+export const resolveStripeSessionUrls = (
+  bookingId: string,
+  inputUrls?: { successUrl?: string; cancelUrl?: string },
+  frontendOriginOverride?: string,
+  isProductionOverride?: boolean,
+): { successUrl: string; cancelUrl: string } => {
+  const origin = frontendOriginOverride !== undefined ? frontendOriginOverride : env.frontendUrl;
+  const isProd = isProductionOverride !== undefined ? isProductionOverride : env.nodeEnv === "production";
+
+  if (!origin || typeof origin !== "string" || !origin.trim()) {
+    throw new AppError("Frontend application origin (FRONTEND_URL) is not configured", 500);
+  }
+
+  let parsedOrigin: URL;
+  try {
+    parsedOrigin = new URL(origin.trim());
+  } catch {
+    throw new AppError(`Invalid FRONTEND_URL origin configuration: "${origin}". Must be an absolute URL`, 500);
+  }
+
+  if (isProd && parsedOrigin.protocol !== "https:") {
+    throw new AppError(`Invalid FRONTEND_URL origin configuration: "${origin}". Production environment requires HTTPS`, 500);
+  }
+
+  if (parsedOrigin.protocol !== "http:" && parsedOrigin.protocol !== "https:") {
+    throw new AppError(`Invalid FRONTEND_URL origin configuration: "${origin}". Protocol must be HTTP or HTTPS`, 500);
+  }
+
+  const cleanBase = origin.trim().replace(/\/+$/, "");
+
+  // If user passed explicit successUrl, use it; otherwise generate standard URL with {CHECKOUT_SESSION_ID} preserved
+  const successUrl =
+    inputUrls?.successUrl && inputUrls.successUrl.trim()
+      ? inputUrls.successUrl.trim()
+      : `${cleanBase}/checkout/success?session_id={CHECKOUT_SESSION_ID}&bookingId=${bookingId}`;
+
+  const cancelUrl =
+    inputUrls?.cancelUrl && inputUrls.cancelUrl.trim()
+      ? inputUrls.cancelUrl.trim()
+      : `${cleanBase}/checkout/cancel?bookingId=${bookingId}`;
+
+  return { successUrl, cancelUrl };
+};
+
 export const createStripeCheckoutSession = async (
   customerId: string,
   input: CreateStripeSessionInput,
@@ -101,8 +145,10 @@ export const createStripeCheckoutSession = async (
   }
 
   const amountMinor = toStripeAmount(finalPrice, booking.currency);
-  const successUrl = input.successUrl || `${env.frontendUrl}/checkout/success?bookingId=${booking.id}&session_id={CHECKOUT_SESSION_ID}`;
-  const cancelUrl = input.cancelUrl || `${env.frontendUrl}/checkout/cancel?bookingId=${booking.id}`;
+  const { successUrl, cancelUrl } = resolveStripeSessionUrls(booking.id, {
+    successUrl: input.successUrl,
+    cancelUrl: input.cancelUrl,
+  });
 
   const { payment, isAlreadyVerified, isExistingActive } = await paymentRepository.createOrGetStripePayment({
     bookingId: booking.id,

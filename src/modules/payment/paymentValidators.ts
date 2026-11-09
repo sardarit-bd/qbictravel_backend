@@ -18,9 +18,27 @@ export const createPaymentSchema = yup.object({
   receiptNote: yup.string().trim().max(500, "Receipt note must be at most 500 characters").optional(),
 });
 
+const stripeRedirectUrlValidator = yup
+  .string()
+  .trim()
+  .test("is-valid-stripe-redirect-url", "${path} must be a valid HTTP or HTTPS URL", (value) => {
+    if (value === undefined || value === null || value === "") {
+      return true;
+    }
+    try {
+      // Stripe uses literal {CHECKOUT_SESSION_ID} placeholder in success URLs.
+      // Standard URI parsers treat { and } as unescaped characters; substitute safely for verification.
+      const normalized = value.replace(/\{CHECKOUT_SESSION_ID\}/g, "DUMMY_SESSION_ID");
+      const parsed = new URL(normalized);
+      return parsed.protocol === "http:" || parsed.protocol === "https:";
+    } catch {
+      return false;
+    }
+  });
+
 export const createStripeSessionSchema = yup.object({
-  successUrl: yup.string().url("Invalid success URL").optional(),
-  cancelUrl: yup.string().url("Invalid cancel URL").optional(),
+  successUrl: stripeRedirectUrlValidator.optional(),
+  cancelUrl: stripeRedirectUrlValidator.optional(),
 });
 
 export const verifyPaymentSchema = yup.object({
