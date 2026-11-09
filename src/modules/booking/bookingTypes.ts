@@ -23,6 +23,18 @@ export interface ReviewBookingPriceInput {
   notes?: string;
 }
 
+export interface ReviewPendingBookingInput {
+  action: "CONFIRM" | "REJECT";
+  notes?: string;
+}
+
+export interface ListPendingReservationsQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+  paymentStatus?: "UNPAID" | "PARTIALLY_PAID" | "PAID";
+}
+
 export interface BookingResponse {
   id: string;
   customerId: string;

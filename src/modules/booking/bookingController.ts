@@ -38,3 +38,35 @@ export const reviewBookingPrice = async (req: Request, res: Response, next: Next
     next(error);
   }
 };
+
+export const listPendingReservations = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await bookingService.listAdminPendingReservations(req.query);
+    sendResponse(res, 200, true, "Pending reservations retrieved successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getPendingReservation = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const booking = await bookingService.getAdminPendingReservation(req.params.bookingId as string);
+    sendResponse(res, 200, true, "Pending reservation retrieved successfully", booking);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const reviewPendingReservation = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const updated = await bookingService.reviewPendingReservation(
+      req.params.bookingId as string,
+      req.body,
+      req.user!.id
+    );
+    const message = req.body.action === "CONFIRM" ? "Booking confirmed successfully" : "Booking rejected successfully";
+    sendResponse(res, 200, true, message, updated);
+  } catch (error) {
+    next(error);
+  }
+};

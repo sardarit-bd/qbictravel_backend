@@ -27,6 +27,18 @@ export const reviewBookingPriceSchema = yup.object({
   notes: yup.string().trim().optional(),
 });
 
+export const reviewPendingBookingSchema = yup.object({
+  action: yup.string().oneOf(["CONFIRM", "REJECT"]).required("Action is required"),
+  notes: yup.string().trim().max(1000, "Notes must be at most 1000 characters").optional(),
+});
+
+export const listPendingReservationsQuerySchema = yup.object({
+  page: yup.number().integer().min(1).optional(),
+  limit: yup.number().integer().min(1).max(100).optional(),
+  search: yup.string().trim().optional(),
+  paymentStatus: yup.string().oneOf(["UNPAID", "PARTIALLY_PAID", "PAID"]).optional(),
+});
+
 export const bookingIdParamSchema = yup.object({
   bookingId: yup.string().uuid("Invalid booking ID").required("Booking ID is required"),
 });

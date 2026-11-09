@@ -3,10 +3,13 @@ import { prisma } from "../../lib/prisma.js";
 import * as bookingRepository from "./bookingRepository.js";
 import * as pricingService from "../pricing/pricingService.js";
 import * as notificationService from "../notification/notificationService.js";
+import { parsePagination } from "../../shared/utils/pagination.js";
 import type {
   CreateBookingInput,
   UpdateBookingPriceInput,
   ReviewBookingPriceInput,
+  ReviewPendingBookingInput,
+  ListPendingReservationsQuery,
   BookingResponse,
 } from "./bookingTypes.js";
 
@@ -371,4 +374,70 @@ export const reviewBookingPrice = async (
   );
   await notificationService.notifyBookingStatusChanged(bookingId);
   return mapBookingToResponse(rejected);
+};
+
+export const listAdminPendingReservations = async (
+  query: Record<string, unknown>
+) => {
+  const { page, limit, skip } = parsePagination(query);
+  const search = typeof query.search === "string" ? query.search : undefined;
+  const paymentStatus =
+    typeof query.paymentStatus === "string" ? query.paymentStatus : undefined;
+
+  const { items, total } = await bookingRepository.listPendingReservations({
+    skip,
+    take: limit,
+    search,
+    paymentStatus,
+  });
+
+  return { items, page, limit, total };
+};
+
+export const getAdminPendingReservation = async (bookingId: string) => {
+  const booking = await bookingRepository.findPendingReservationById(bookingId);
+  if (!booking) {
+    throw new AppError("Booking not found", 404);
+  }
+  return booking;
+};
+
+export const reviewPendingReservation = async (
+  bookingId: string,
+  input: ReviewPendingBookingInput,
+  adminId: string
+) => {
+  if (input.action === "CONFIRM") {
+    try {
+      const updated = await bookingRepository.confirmPendingBooking({
+        bookingId,
+        adminId,
+        notes: input.notes,
+      });
+      if (!updated) {
+        throw new AppError("Booking not found", 404);
+      }
+      await notificationService.notifyBookingStatusChanged(bookingId);
+      return updated;
+    } catch (err: any) {
+      if (err instanceof AppError) throw err;
+      throw new AppError(err.message || "Failed to confirm booking", 400);
+    }
+  }
+
+  try {
+    const updated = await bookingRepository.rejectPendingBooking({
+      bookingId,
+      adminId,
+      notes: input.notes,
+    });
+    if (!updated) {
+      throw new AppError("Booking not found", 404);
+    }
+    await notificationService.notifyBookingStatusChanged(bookingId);
+    return updated;
+  } catch (err: any) {
+    if (err instanceof AppError) throw err;
+    throw new AppError(err.message || "Failed to reject booking", 400);
+  }
 };

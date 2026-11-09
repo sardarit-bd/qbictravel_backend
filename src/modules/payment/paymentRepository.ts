@@ -27,6 +27,7 @@ const paymentInclude = {
       agentId: true,
       status: true,
       paymentStatus: true,
+      requiresApproval: true,
       currency: true,
       finalPrice: true,
       service: {
@@ -220,6 +221,29 @@ export const transitionPayment = async (params: {
     }
 
     if (params.toStatus === "VERIFIED") {
+      // Find current booking state to verify eligibility for confirmation
+      const targetBooking = await tx.booking.findUnique({
+        where: { id: params.bookingId },
+        select: { id: true, status: true, paymentStatus: true, requiresApproval: true, finalPrice: true },
+      });
+
+      if (!targetBooking) {
+        throw new AppError("Booking not found", 404);
+      }
+
+      if (
+        targetBooking.paymentStatus !== "UNPAID" ||
+        targetBooking.requiresApproval ||
+        !PAYABLE_BOOKING_STATUSES.includes(targetBooking.status as any) ||
+        Number(targetBooking.finalPrice) !== params.amount
+      ) {
+        throw new AppError("The booking can no longer accept this payment", 409);
+      }
+
+      // Check if booking is eligible for automatic confirmation:
+      // Eligible when status is PENDING and not requiring price approval
+      const shouldAutoConfirm = targetBooking.status === "PENDING" && !targetBooking.requiresApproval;
+
       const booking = await tx.booking.updateMany({
         where: {
           id: params.bookingId,
@@ -228,11 +252,31 @@ export const transitionPayment = async (params: {
           status: { in: PAYABLE_BOOKING_STATUSES },
           finalPrice: params.amount,
         },
-        data: { paymentStatus: "PAID" },
+        data: {
+          paymentStatus: "PAID",
+          ...(shouldAutoConfirm ? { status: "CONFIRMED" } : {}),
+        },
       });
 
       if (booking.count === 0) {
         throw new AppError("The booking can no longer accept this payment", 409);
+      }
+
+      if (shouldAutoConfirm) {
+        await tx.bookingHistory.create({
+          data: {
+            bookingId: params.bookingId,
+            actorId: params.adminId,
+            actorRole: "admin",
+            action: "BOOKING_AUTO_CONFIRMED",
+            changes: {
+              fromStatus: "PENDING",
+              toStatus: "CONFIRMED",
+              trigger: "PAYMENT_VERIFIED",
+              paymentId: params.paymentId,
+            },
+          },
+        });
       }
 
       await createCommissionForBooking(tx, params.bookingId);
@@ -575,13 +619,24 @@ export const verifyStripePaymentAtomically = async (params: {
       include: paymentInclude,
     });
 
-    // Update booking paymentStatus to PAID
+    // Check if booking is eligible for automatic confirmation:
+    // Eligible when:
+    // 1. Current booking status is PENDING
+    // 2. Booking does not require price approval (requiresApproval is false)
+    // 3. Paid amount matches authoritative booking finalPrice (verified above)
+    // 4. Currency matches authoritative booking currency (verified above)
+    const shouldAutoConfirm = booking.status === "PENDING" && !booking.requiresApproval;
+
+    // Update booking paymentStatus to PAID, and transition status to CONFIRMED if eligible
     await tx.booking.update({
       where: { id: params.bookingId },
-      data: { paymentStatus: "PAID" },
+      data: {
+        paymentStatus: "PAID",
+        ...(shouldAutoConfirm ? { status: "CONFIRMED" } : {}),
+      },
     });
 
-    // History record
+    // History record for payment verification
     await tx.bookingHistory.create({
       data: {
         bookingId: params.bookingId,
@@ -594,9 +649,28 @@ export const verifyStripePaymentAtomically = async (params: {
           currency: params.currency,
           stripePaymentIntentId: params.stripePaymentIntentId ?? null,
           stripeSessionId: params.stripeSessionId ?? null,
+          autoConfirmed: shouldAutoConfirm,
         },
       },
     });
+
+    // If auto-confirmed, record status transition in booking history
+    if (shouldAutoConfirm) {
+      await tx.bookingHistory.create({
+        data: {
+          bookingId: params.bookingId,
+          actorId: payment.customerId,
+          actorRole: "customer",
+          action: "BOOKING_AUTO_CONFIRMED",
+          changes: {
+            fromStatus: "PENDING",
+            toStatus: "CONFIRMED",
+            trigger: "STRIPE_PAYMENT_VERIFIED",
+            paymentId: payment.id,
+          },
+        },
+      });
+    }
 
     // Transactional Outbox for asynchronous durability
     await enqueueOutboxMessage(tx, {
