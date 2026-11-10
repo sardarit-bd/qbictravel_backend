@@ -59,6 +59,7 @@ export const ModelName = {
   PriceApproval: 'PriceApproval',
   BookingHistory: 'BookingHistory',
   CommissionRule: 'CommissionRule',
+  CommissionRuleAuditLog: 'CommissionRuleAuditLog',
   Commission: 'Commission',
   CommissionAdjustment: 'CommissionAdjustment',
   Media: 'Media',
@@ -68,6 +69,7 @@ export const ModelName = {
   StripeWebhookEvent: 'StripeWebhookEvent',
   OutboxMessage: 'OutboxMessage',
   PaymentRefund: 'PaymentRefund',
+  PaymentLink: 'PaymentLink',
   Permission: 'Permission',
   StaffPermission: 'StaffPermission',
   Service: 'Service',
@@ -145,6 +147,8 @@ export const BookingScalarFieldEnum = {
   id: 'id',
   customerId: 'customerId',
   agentId: 'agentId',
+  createdById: 'createdById',
+  source: 'source',
   serviceId: 'serviceId',
   availabilityId: 'availabilityId',
   currency: 'currency',
@@ -196,14 +200,31 @@ export type BookingHistoryScalarFieldEnum = (typeof BookingHistoryScalarFieldEnu
 
 export const CommissionRuleScalarFieldEnum = {
   id: 'id',
+  name: 'name',
+  description: 'description',
   rateType: 'rateType',
   rateValue: 'rateValue',
+  status: 'status',
   isActive: 'isActive',
   createdById: 'createdById',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type CommissionRuleScalarFieldEnum = (typeof CommissionRuleScalarFieldEnum)[keyof typeof CommissionRuleScalarFieldEnum]
+
+
+export const CommissionRuleAuditLogScalarFieldEnum = {
+  id: 'id',
+  ruleId: 'ruleId',
+  adminId: 'adminId',
+  action: 'action',
+  previousValues: 'previousValues',
+  newValues: 'newValues',
+  createdAt: 'createdAt'
+} as const
+
+export type CommissionRuleAuditLogScalarFieldEnum = (typeof CommissionRuleAuditLogScalarFieldEnum)[keyof typeof CommissionRuleAuditLogScalarFieldEnum]
 
 
 export const CommissionScalarFieldEnum = {
@@ -360,6 +381,20 @@ export const PaymentRefundScalarFieldEnum = {
 } as const
 
 export type PaymentRefundScalarFieldEnum = (typeof PaymentRefundScalarFieldEnum)[keyof typeof PaymentRefundScalarFieldEnum]
+
+
+export const PaymentLinkScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  status: 'status',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentLinkScalarFieldEnum = (typeof PaymentLinkScalarFieldEnum)[keyof typeof PaymentLinkScalarFieldEnum]
 
 
 export const PermissionScalarFieldEnum = {

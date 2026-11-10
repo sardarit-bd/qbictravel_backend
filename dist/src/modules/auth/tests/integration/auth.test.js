@@ -266,3 +266,24 @@ describe("POST /auth/reset-password", () => {
         expect(res.status).toBe(400);
     });
 });
+describe("GET /auth/reset-password/verify", () => {
+    it("verifies a valid active reset token and returns user info", async () => {
+        const user = await createUser();
+        await api().post(FORGOT).send({ email: user.email });
+        const token = lastEmailToken();
+        const res = await api().get(`${RESET}/verify?token=${token}`);
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.valid).toBe(true);
+        expect(res.body.data.user).toMatchObject({
+            name: user.name,
+            email: user.email,
+            role: user.role,
+        });
+    });
+    it("returns 400 for an expired or nonexistent reset token", async () => {
+        const res = await api().get(`${RESET}/verify?token=nonexistenttoken`);
+        expect(res.status).toBe(400);
+        expect(res.body.success).toBe(false);
+    });
+});

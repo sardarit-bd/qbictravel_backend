@@ -151,6 +151,23 @@ export const validateInvitationToken = async (token) => {
         },
     };
 };
+export const validateResetPasswordToken = async (token) => {
+    if (!token) {
+        throw new AppError(INVALID_RESET_MESSAGE, 400);
+    }
+    const record = await authRepository.findActivePasswordResetToken(hashToken(token));
+    if (!record || record.userStatus === "deactivated") {
+        throw new AppError(INVALID_RESET_MESSAGE, 400);
+    }
+    return {
+        valid: true,
+        user: {
+            name: record.userName,
+            email: record.userEmail,
+            role: record.userRole,
+        },
+    };
+};
 export const resetPassword = async (data) => {
     const record = await authRepository.findActivePasswordResetToken(hashToken(data.token));
     if (!record || record.userStatus === "deactivated") {

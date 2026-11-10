@@ -20,15 +20,45 @@ const ACTIVE_STATUSES: PaymentRecordStatusValue[] = [
 const PAYABLE_BOOKING_STATUSES: ("PENDING" | "CONFIRMED")[] = ["PENDING", "CONFIRMED"];
 
 const paymentInclude = {
+  customer: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+    },
+  },
   booking: {
     select: {
       id: true,
       serviceId: true,
       agentId: true,
+      source: true,
+      createdById: true,
       status: true,
       paymentStatus: true,
+      requiresApproval: true,
       currency: true,
       finalPrice: true,
+      agent: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          agentProfile: {
+            select: {
+              agencyName: true,
+            },
+          },
+        },
+      },
+      createdBy: {
+        select: {
+          id: true,
+          name: true,
+          role: true,
+        },
+      },
       service: {
         select: {
           id: true,
@@ -45,6 +75,7 @@ export const findBookingForPayment = async (bookingId: string) => {
     select: {
       id: true,
       customerId: true,
+      agentId: true,
       status: true,
       requiresApproval: true,
       paymentStatus: true,
@@ -167,9 +198,10 @@ export const findVerifiedPaymentForBooking = async (bookingId: string) => {
 };
 
 export const listPayments = async (filters: PaymentFilters, skip: number, take: number) => {
-  const where = {
+  const where: any = {
     ...(filters.customerId ? { customerId: filters.customerId } : {}),
     ...(filters.agentId ? { booking: { agentId: filters.agentId } } : {}),
+    ...(filters.source ? { booking: { source: filters.source } } : {}),
     ...(filters.bookingId ? { bookingId: filters.bookingId } : {}),
     ...(filters.status ? { status: filters.status } : {}),
     ...(filters.method ? { method: filters.method } : {}),
@@ -220,6 +252,29 @@ export const transitionPayment = async (params: {
     }
 
     if (params.toStatus === "VERIFIED") {
+      // Find current booking state to verify eligibility for confirmation
+      const targetBooking = await tx.booking.findUnique({
+        where: { id: params.bookingId },
+        select: { id: true, status: true, paymentStatus: true, requiresApproval: true, finalPrice: true },
+      });
+
+      if (!targetBooking) {
+        throw new AppError("Booking not found", 404);
+      }
+
+      if (
+        targetBooking.paymentStatus !== "UNPAID" ||
+        targetBooking.requiresApproval ||
+        !PAYABLE_BOOKING_STATUSES.includes(targetBooking.status as any) ||
+        Number(targetBooking.finalPrice) !== params.amount
+      ) {
+        throw new AppError("The booking can no longer accept this payment", 409);
+      }
+
+      // Check if booking is eligible for automatic confirmation:
+      // Eligible when status is PENDING and not requiring price approval
+      const shouldAutoConfirm = targetBooking.status === "PENDING" && !targetBooking.requiresApproval;
+
       const booking = await tx.booking.updateMany({
         where: {
           id: params.bookingId,
@@ -228,11 +283,31 @@ export const transitionPayment = async (params: {
           status: { in: PAYABLE_BOOKING_STATUSES },
           finalPrice: params.amount,
         },
-        data: { paymentStatus: "PAID" },
+        data: {
+          paymentStatus: "PAID",
+          ...(shouldAutoConfirm ? { status: "CONFIRMED" } : {}),
+        },
       });
 
       if (booking.count === 0) {
         throw new AppError("The booking can no longer accept this payment", 409);
+      }
+
+      if (shouldAutoConfirm) {
+        await tx.bookingHistory.create({
+          data: {
+            bookingId: params.bookingId,
+            actorId: params.adminId,
+            actorRole: "admin",
+            action: "BOOKING_AUTO_CONFIRMED",
+            changes: {
+              fromStatus: "PENDING",
+              toStatus: "CONFIRMED",
+              trigger: "PAYMENT_VERIFIED",
+              paymentId: params.paymentId,
+            },
+          },
+        });
       }
 
       await createCommissionForBooking(tx, params.bookingId);
@@ -575,13 +650,24 @@ export const verifyStripePaymentAtomically = async (params: {
       include: paymentInclude,
     });
 
-    // Update booking paymentStatus to PAID
+    // Check if booking is eligible for automatic confirmation:
+    // Eligible when:
+    // 1. Current booking status is PENDING
+    // 2. Booking does not require price approval (requiresApproval is false)
+    // 3. Paid amount matches authoritative booking finalPrice (verified above)
+    // 4. Currency matches authoritative booking currency (verified above)
+    const shouldAutoConfirm = booking.status === "PENDING" && !booking.requiresApproval;
+
+    // Update booking paymentStatus to PAID, and transition status to CONFIRMED if eligible
     await tx.booking.update({
       where: { id: params.bookingId },
-      data: { paymentStatus: "PAID" },
+      data: {
+        paymentStatus: "PAID",
+        ...(shouldAutoConfirm ? { status: "CONFIRMED" } : {}),
+      },
     });
 
-    // History record
+    // History record for payment verification
     await tx.bookingHistory.create({
       data: {
         bookingId: params.bookingId,
@@ -594,15 +680,38 @@ export const verifyStripePaymentAtomically = async (params: {
           currency: params.currency,
           stripePaymentIntentId: params.stripePaymentIntentId ?? null,
           stripeSessionId: params.stripeSessionId ?? null,
+          autoConfirmed: shouldAutoConfirm,
         },
       },
     });
+
+    // If auto-confirmed, record status transition in booking history
+    if (shouldAutoConfirm) {
+      await tx.bookingHistory.create({
+        data: {
+          bookingId: params.bookingId,
+          actorId: payment.customerId,
+          actorRole: "customer",
+          action: "BOOKING_AUTO_CONFIRMED",
+          changes: {
+            fromStatus: "PENDING",
+            toStatus: "CONFIRMED",
+            trigger: "STRIPE_PAYMENT_VERIFIED",
+            paymentId: payment.id,
+          },
+        },
+      });
+    }
 
     // Transactional Outbox for asynchronous durability
     await enqueueOutboxMessage(tx, {
       topic: "CALCULATE_COMMISSION",
       payload: { bookingId: params.bookingId, paymentId: payment.id },
     });
+
+    if (tx.commission && tx.commissionRule) {
+      await createCommissionForBooking(tx, params.bookingId);
+    }
 
     await enqueueOutboxMessage(tx, {
       topic: "SEND_BOOKING_VOUCHER_EMAIL",
@@ -661,4 +770,279 @@ export const updateStripePaymentStatus = async (params: {
 
     return updated;
   });
+};
+
+/**
+ * Creates or refreshes an active PaymentLink for a booking.
+ */
+export const createOrUpdatePaymentLink = async (params: {
+  bookingId: string;
+  tokenHash: string;
+  expiresAt: Date;
+  createdById?: string;
+}) => {
+  return prisma.$transaction(async (tx) => {
+    // Revoke any previous active payment links for this booking to maintain 1 active link at a time
+    await tx.paymentLink.updateMany({
+      where: {
+        bookingId: params.bookingId,
+        status: "ACTIVE",
+      },
+      data: {
+        status: "REVOKED",
+      },
+    });
+
+    const paymentLink = await tx.paymentLink.create({
+      data: {
+        bookingId: params.bookingId,
+        tokenHash: params.tokenHash,
+        expiresAt: params.expiresAt,
+        status: "ACTIVE",
+        createdById: params.createdById ?? null,
+      },
+    });
+
+    if (params.createdById) {
+      await tx.bookingHistory.create({
+        data: {
+          bookingId: params.bookingId,
+          actorId: params.createdById,
+          actorRole: "agent",
+          action: "PAYMENT_LINK_GENERATED",
+          changes: {
+            paymentLinkId: paymentLink.id,
+            expiresAt: params.expiresAt.toISOString(),
+          },
+        },
+      });
+    }
+
+    return paymentLink;
+  });
+};
+
+/**
+ * Find active payment link for a booking
+ */
+export const findActivePaymentLinkByBookingId = async (bookingId: string) => {
+  return prisma.paymentLink.findFirst({
+    where: {
+      bookingId,
+      status: "ACTIVE",
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+
+/**
+ * Find payment link by token hash with related booking, service, customer, and payments
+ */
+export const findPaymentLinkByTokenHash = async (tokenHash: string) => {
+  return prisma.paymentLink.findUnique({
+    where: { tokenHash },
+    include: {
+      booking: {
+        include: {
+          customer: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              phone: true,
+            },
+          },
+          service: {
+            select: {
+              id: true,
+              name: true,
+              description: true,
+            },
+          },
+          availability: true,
+          payments: {
+            select: {
+              id: true,
+              amount: true,
+              currency: true,
+              status: true,
+              method: true,
+            },
+          },
+        },
+      },
+    },
+  });
+};
+
+/**
+ * Revoke a payment link
+ */
+export const revokePaymentLink = async (paymentLinkId: string, revokedById?: string) => {
+  return prisma.$transaction(async (tx) => {
+    const link = await tx.paymentLink.update({
+      where: { id: paymentLinkId },
+      data: { status: "REVOKED" },
+    });
+
+    if (revokedById) {
+      await tx.bookingHistory.create({
+        data: {
+          bookingId: link.bookingId,
+          actorId: revokedById,
+          actorRole: "agent",
+          action: "PAYMENT_LINK_REVOKED",
+          changes: {
+            paymentLinkId: link.id,
+          },
+        },
+      });
+    }
+
+    return link;
+  });
+};
+
+/**
+ * Mark payment link as completed
+ */
+export const completePaymentLink = async (bookingId: string) => {
+  return prisma.paymentLink.updateMany({
+    where: {
+      bookingId,
+      status: "ACTIVE",
+    },
+    data: {
+      status: "COMPLETED",
+    },
+  });
+};
+
+/**
+ * Record a verified PayPal payment atomically
+ */
+export const recordVerifiedPayPalPayment = async (params: {
+  bookingId: string;
+  customerId: string;
+  amount: number;
+  currency: string;
+  paypalOrderId: string;
+  paypalCaptureId?: string;
+  rawPayload?: any;
+}) => {
+  return prisma.$transaction(
+    async (tx) => {
+      // Check if reference already processed
+      const existing = await tx.payment.findFirst({
+        where: {
+          method: "PAYPAL",
+          reference: params.paypalOrderId,
+        },
+      });
+
+      if (existing && existing.status === "VERIFIED") {
+        return { payment: existing, isDuplicate: true };
+      }
+
+      const booking = await tx.booking.findUnique({
+        where: { id: params.bookingId },
+        include: {
+          payments: {
+            where: { status: "VERIFIED" },
+            select: { amount: true },
+          },
+        },
+      });
+
+      if (!booking) {
+        throw new AppError("Booking not found", 404);
+      }
+
+      const currentPaid = booking.payments.reduce(
+        (sum: number, p: { amount: any }) => sum + Number(p.amount),
+        0,
+      );
+      const newTotalPaid = currentPaid + params.amount;
+      const finalPrice = Number(booking.finalPrice);
+
+      let newPaymentStatus: "PAID" | "PARTIALLY_PAID" = "PARTIALLY_PAID";
+      if (newTotalPaid >= finalPrice - 0.001) {
+        newPaymentStatus = "PAID";
+      }
+
+      let payment;
+      if (existing) {
+        payment = await tx.payment.update({
+          where: { id: existing.id },
+          data: {
+            status: "VERIFIED",
+            receivedAt: new Date(),
+            receiptNote: params.paypalCaptureId ? `PayPal Capture ID: ${params.paypalCaptureId}` : null,
+          },
+        });
+      } else {
+        payment = await tx.payment.create({
+          data: {
+            bookingId: params.bookingId,
+            customerId: params.customerId,
+            amount: params.amount,
+            currency: params.currency,
+            method: "PAYPAL",
+            status: "VERIFIED",
+            reference: params.paypalOrderId,
+            receiptNote: params.paypalCaptureId ? `PayPal Capture ID: ${params.paypalCaptureId}` : null,
+            submittedAt: new Date(),
+            receivedAt: new Date(),
+          },
+        });
+      }
+
+      await tx.booking.update({
+        where: { id: params.bookingId },
+        data: {
+          paymentStatus: newPaymentStatus,
+          ...(newPaymentStatus === "PAID" && booking.status === "PENDING" ? { status: "CONFIRMED" } : {}),
+        },
+      });
+
+      await tx.bookingHistory.create({
+        data: {
+          bookingId: params.bookingId,
+          actorId: params.customerId,
+          actorRole: "customer",
+          action: "PAYMENT_VERIFIED",
+          changes: {
+            paymentId: payment.id,
+            method: "PAYPAL",
+            amount: params.amount,
+            currency: params.currency,
+            newPaymentStatus,
+            paypalOrderId: params.paypalOrderId,
+            paypalCaptureId: params.paypalCaptureId ?? null,
+          },
+        },
+      });
+
+      if (newPaymentStatus === "PAID") {
+        await tx.paymentLink.updateMany({
+          where: { bookingId: params.bookingId, status: "ACTIVE" },
+          data: { status: "COMPLETED" },
+        });
+
+        // Trigger commission calculation if agent booking
+        if (booking.agentId) {
+          try {
+            await createCommissionForBooking(tx, params.bookingId);
+          } catch (commErr) {
+            console.error("[PayPal] Failed to create commission:", commErr);
+          }
+        }
+      }
+
+      return { payment, isDuplicate: false };
+    },
+    { isolationLevel: "Serializable" },
+  );
 };

@@ -49,7 +49,14 @@ export const getStaffBooking = async (staffId: string, bookingId: string) => {
 };
 
 export const listAdminBookings = async (query: Record<string, unknown>) =>
-  listWithFilters({ assignedStaffId: parseUuidQuery(query.assignedStaffId, "assignedStaffId") }, query);
+  listWithFilters(
+    {
+      assignedStaffId: parseUuidQuery(query.assignedStaffId, "assignedStaffId"),
+      agentId: parseUuidQuery(query.agentId, "agentId"),
+      source: query.source as any,
+    },
+    query,
+  );
 
 export const updateOperationalStatus = async (
   actorRole: OperationalActorRole,
@@ -126,12 +133,16 @@ export const assignBooking = async (adminId: string, bookingId: string, input: A
     throw new AppError("Booking not found", 404);
   }
 
+  let newStaffName: string | null = null;
   if (input.staffId) {
     const staff = await operationsRepository.findActiveStaff(input.staffId);
     if (!staff) {
       throw new AppError("Staff user not found or inactive", 400);
     }
+    newStaffName = staff.name ?? null;
   }
+
+  const previousStaffName = (booking as any).assignedStaff?.name ?? null;
 
   const updated = await operationsRepository.applyAssignment({
     bookingId,
@@ -139,7 +150,9 @@ export const assignBooking = async (adminId: string, bookingId: string, input: A
     adminId,
     changes: {
       previousStaffId: booking.assignedStaffId,
+      previousStaffName,
       newStaffId: input.staffId,
+      newStaffName,
       notes: input.notes ?? null,
     },
   });

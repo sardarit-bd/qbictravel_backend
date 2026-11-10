@@ -405,6 +405,7 @@ export const ModelName = {
   PriceApproval: 'PriceApproval',
   BookingHistory: 'BookingHistory',
   CommissionRule: 'CommissionRule',
+  CommissionRuleAuditLog: 'CommissionRuleAuditLog',
   Commission: 'Commission',
   CommissionAdjustment: 'CommissionAdjustment',
   Media: 'Media',
@@ -414,6 +415,7 @@ export const ModelName = {
   StripeWebhookEvent: 'StripeWebhookEvent',
   OutboxMessage: 'OutboxMessage',
   PaymentRefund: 'PaymentRefund',
+  PaymentLink: 'PaymentLink',
   Permission: 'Permission',
   StaffPermission: 'StaffPermission',
   Service: 'Service',
@@ -437,7 +439,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "agentProfile" | "passwordResetToken" | "revokedToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "commissionRule" | "commission" | "commissionAdjustment" | "media" | "mediaUploadAuth" | "notificationSetting" | "payment" | "stripeWebhookEvent" | "outboxMessage" | "paymentRefund" | "permission" | "staffPermission" | "service" | "serviceAvailability" | "servicePricing" | "systemSetting" | "settingAuditLog" | "user"
+    modelProps: "agentProfile" | "passwordResetToken" | "revokedToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "commissionRule" | "commissionRuleAuditLog" | "commission" | "commissionAdjustment" | "media" | "mediaUploadAuth" | "notificationSetting" | "payment" | "stripeWebhookEvent" | "outboxMessage" | "paymentRefund" | "paymentLink" | "permission" | "staffPermission" | "service" | "serviceAvailability" | "servicePricing" | "systemSetting" | "settingAuditLog" | "user"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1030,6 +1032,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.CommissionRuleCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.CommissionRuleCountAggregateOutputType> | number
+        }
+      }
+    }
+    CommissionRuleAuditLog: {
+      payload: Prisma.$CommissionRuleAuditLogPayload<ExtArgs>
+      fields: Prisma.CommissionRuleAuditLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CommissionRuleAuditLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CommissionRuleAuditLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>
+        }
+        findFirst: {
+          args: Prisma.CommissionRuleAuditLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CommissionRuleAuditLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>
+        }
+        findMany: {
+          args: Prisma.CommissionRuleAuditLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>[]
+        }
+        create: {
+          args: Prisma.CommissionRuleAuditLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>
+        }
+        createMany: {
+          args: Prisma.CommissionRuleAuditLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CommissionRuleAuditLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>[]
+        }
+        delete: {
+          args: Prisma.CommissionRuleAuditLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>
+        }
+        update: {
+          args: Prisma.CommissionRuleAuditLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.CommissionRuleAuditLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CommissionRuleAuditLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CommissionRuleAuditLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.CommissionRuleAuditLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>
+        }
+        aggregate: {
+          args: Prisma.CommissionRuleAuditLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCommissionRuleAuditLog>
+        }
+        groupBy: {
+          args: Prisma.CommissionRuleAuditLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CommissionRuleAuditLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CommissionRuleAuditLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CommissionRuleAuditLogCountAggregateOutputType> | number
         }
       }
     }
@@ -1696,6 +1772,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PaymentRefundCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PaymentRefundCountAggregateOutputType> | number
+        }
+      }
+    }
+    PaymentLink: {
+      payload: Prisma.$PaymentLinkPayload<ExtArgs>
+      fields: Prisma.PaymentLinkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PaymentLinkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PaymentLinkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>
+        }
+        findFirst: {
+          args: Prisma.PaymentLinkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PaymentLinkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>
+        }
+        findMany: {
+          args: Prisma.PaymentLinkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>[]
+        }
+        create: {
+          args: Prisma.PaymentLinkCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>
+        }
+        createMany: {
+          args: Prisma.PaymentLinkCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PaymentLinkCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>[]
+        }
+        delete: {
+          args: Prisma.PaymentLinkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>
+        }
+        update: {
+          args: Prisma.PaymentLinkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>
+        }
+        deleteMany: {
+          args: Prisma.PaymentLinkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PaymentLinkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PaymentLinkUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>[]
+        }
+        upsert: {
+          args: Prisma.PaymentLinkUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>
+        }
+        aggregate: {
+          args: Prisma.PaymentLinkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePaymentLink>
+        }
+        groupBy: {
+          args: Prisma.PaymentLinkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PaymentLinkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PaymentLinkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PaymentLinkCountAggregateOutputType> | number
         }
       }
     }
@@ -2381,6 +2531,8 @@ export const BookingScalarFieldEnum = {
   id: 'id',
   customerId: 'customerId',
   agentId: 'agentId',
+  createdById: 'createdById',
+  source: 'source',
   serviceId: 'serviceId',
   availabilityId: 'availabilityId',
   currency: 'currency',
@@ -2432,14 +2584,31 @@ export type BookingHistoryScalarFieldEnum = (typeof BookingHistoryScalarFieldEnu
 
 export const CommissionRuleScalarFieldEnum = {
   id: 'id',
+  name: 'name',
+  description: 'description',
   rateType: 'rateType',
   rateValue: 'rateValue',
+  status: 'status',
   isActive: 'isActive',
   createdById: 'createdById',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type CommissionRuleScalarFieldEnum = (typeof CommissionRuleScalarFieldEnum)[keyof typeof CommissionRuleScalarFieldEnum]
+
+
+export const CommissionRuleAuditLogScalarFieldEnum = {
+  id: 'id',
+  ruleId: 'ruleId',
+  adminId: 'adminId',
+  action: 'action',
+  previousValues: 'previousValues',
+  newValues: 'newValues',
+  createdAt: 'createdAt'
+} as const
+
+export type CommissionRuleAuditLogScalarFieldEnum = (typeof CommissionRuleAuditLogScalarFieldEnum)[keyof typeof CommissionRuleAuditLogScalarFieldEnum]
 
 
 export const CommissionScalarFieldEnum = {
@@ -2596,6 +2765,20 @@ export const PaymentRefundScalarFieldEnum = {
 } as const
 
 export type PaymentRefundScalarFieldEnum = (typeof PaymentRefundScalarFieldEnum)[keyof typeof PaymentRefundScalarFieldEnum]
+
+
+export const PaymentLinkScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  status: 'status',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentLinkScalarFieldEnum = (typeof PaymentLinkScalarFieldEnum)[keyof typeof PaymentLinkScalarFieldEnum]
 
 
 export const PermissionScalarFieldEnum = {
@@ -2832,6 +3015,20 @@ export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'BookingSource'
+ */
+export type EnumBookingSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookingSource'>
+    
+
+
+/**
+ * Reference to a field of type 'BookingSource[]'
+ */
+export type ListEnumBookingSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookingSource[]'>
+    
+
+
+/**
  * Reference to a field of type 'BookingStatus'
  */
 export type EnumBookingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookingStatus'>
@@ -2912,6 +3109,20 @@ export type EnumCommissionRateTypeFieldRefInput<$PrismaModel> = FieldRefInputTyp
  * Reference to a field of type 'CommissionRateType[]'
  */
 export type ListEnumCommissionRateTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CommissionRateType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'CommissionPolicyStatus'
+ */
+export type EnumCommissionPolicyStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CommissionPolicyStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'CommissionPolicyStatus[]'
+ */
+export type ListEnumCommissionPolicyStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CommissionPolicyStatus[]'>
     
 
 
@@ -3038,6 +3249,20 @@ export type EnumRefundStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pri
  * Reference to a field of type 'RefundStatus[]'
  */
 export type ListEnumRefundStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RefundStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentLinkStatus'
+ */
+export type EnumPaymentLinkStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentLinkStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentLinkStatus[]'
+ */
+export type ListEnumPaymentLinkStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentLinkStatus[]'>
     
 
 
@@ -3269,6 +3494,7 @@ export type GlobalOmitConfig = {
   priceApproval?: Prisma.PriceApprovalOmit
   bookingHistory?: Prisma.BookingHistoryOmit
   commissionRule?: Prisma.CommissionRuleOmit
+  commissionRuleAuditLog?: Prisma.CommissionRuleAuditLogOmit
   commission?: Prisma.CommissionOmit
   commissionAdjustment?: Prisma.CommissionAdjustmentOmit
   media?: Prisma.MediaOmit
@@ -3278,6 +3504,7 @@ export type GlobalOmitConfig = {
   stripeWebhookEvent?: Prisma.StripeWebhookEventOmit
   outboxMessage?: Prisma.OutboxMessageOmit
   paymentRefund?: Prisma.PaymentRefundOmit
+  paymentLink?: Prisma.PaymentLinkOmit
   permission?: Prisma.PermissionOmit
   staffPermission?: Prisma.StaffPermissionOmit
   service?: Prisma.ServiceOmit

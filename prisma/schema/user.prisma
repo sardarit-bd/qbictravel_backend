@@ -12,17 +12,20 @@ model User {
   deletedAt             DateTime?
   agentProfile          AgentProfile?
   agentBookings         Booking[]              @relation("AgentBookings")
+  createdBookings       Booking[]              @relation("CreatedBookings")
   assignedBookings      Booking[]              @relation("StaffAssignments")
   customerBookings      Booking[]              @relation("CustomerBookings")
   agentCommissions      Commission[]           @relation("AgentCommissions")
   commissionAdjustments CommissionAdjustment[] @relation("CommissionAdjustments")
   commissionRules       CommissionRule[]       @relation("CommissionRuleAuthor")
+  commissionRuleAudits  CommissionRuleAuditLog[] @relation("CommissionRuleAudits")
   uploadedMedia         Media[]
   mediaUploadAuths      MediaUploadAuth[]
   notificationSettings  NotificationSetting[]  @relation("NotificationSettingEditor")
   passwordResetTokens   PasswordResetToken[]
   customerPayments      Payment[]              @relation("CustomerPayments")
   reviewedPayments      Payment[]              @relation("PaymentReviews")
+  createdPaymentLinks   PaymentLink[]          @relation("PaymentLinkCreator")
   initiatedRefunds      PaymentRefund[]        @relation("RefundInitiators")
   adminApprovals        PriceApproval[]        @relation("AdminApprovals")
   settingAuditLogs      SettingAuditLog[]      @relation("SettingAuditActor")

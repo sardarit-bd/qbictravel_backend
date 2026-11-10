@@ -17,4 +17,6 @@ export interface AssignBookingInput {
 export interface OperationalFilters {
   assignedStaffId?: string;
   fulfillmentStatus?: FulfillmentStatusValue;
+  agentId?: string;
+  source?: "AGENT" | "ADMIN" | "CUSTOMER" | "DIRECT";
 }

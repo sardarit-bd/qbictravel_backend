@@ -2,10 +2,15 @@
 
 export interface CreateBookingInput {
   customerId: string;
-  agentId?: string;
+  agentId?: string | null;
   serviceId: string;
   availabilityId?: string;
   proposedPrice?: number | string;
+  travelDate?: string;
+  adults?: number;
+  children?: number;
+  infants?: number;
+  notes?: string;
 }
 
 export interface UpdateBookingPriceInput {
@@ -18,10 +23,26 @@ export interface ReviewBookingPriceInput {
   notes?: string;
 }
 
+export interface ReviewPendingBookingInput {
+  action: "CONFIRM" | "REJECT";
+  notes?: string;
+}
+
+export interface ListPendingReservationsQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+  paymentStatus?: "UNPAID" | "PARTIALLY_PAID" | "PAID";
+}
+
+export type BookingSourceValue = "AGENT" | "ADMIN" | "CUSTOMER" | "DIRECT";
+
 export interface BookingResponse {
   id: string;
   customerId: string;
   agentId: string | null;
+  createdById?: string | null;
+  source?: BookingSourceValue;
   serviceId: string;
   availabilityId: string | null;
   currency: string;

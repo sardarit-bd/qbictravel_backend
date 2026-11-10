@@ -24,7 +24,7 @@ import permissionRoutes, { myPermissionsRouter } from "./modules/permission/perm
 import agentRoutes from "./modules/agent/agentRoutes.js";
 import settingRoutes from "./modules/setting/settingRoutes.js";
 import customerRoutes from "./modules/customer/customerRoutes.js";
-import { handleStripeWebhook } from "./modules/payment/paymentController.js";
+import { handleStripeWebhook, handlePayPalWebhook } from "./modules/payment/paymentController.js";
 const swaggerCustomCss = `
   body {
     background-color: #0000;
@@ -110,6 +110,13 @@ app.post(
   "/api/v1/webhooks/stripe",
   express.raw({ type: "application/json", limit: "2mb" }),
   handleStripeWebhook,
+);
+
+// 3b. Dedicated PayPal Webhook parser
+app.post(
+  "/api/v1/webhooks/paypal",
+  express.json({ limit: "2mb" }),
+  handlePayPalWebhook,
 );
 
 app.use(express.json({ limit: "10kb" }));

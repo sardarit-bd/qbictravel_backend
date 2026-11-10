@@ -266,17 +266,20 @@ export type UserWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   agentProfile?: Prisma.XOR<Prisma.AgentProfileNullableScalarRelationFilter, Prisma.AgentProfileWhereInput> | null
   agentBookings?: Prisma.BookingListRelationFilter
+  createdBookings?: Prisma.BookingListRelationFilter
   assignedBookings?: Prisma.BookingListRelationFilter
   customerBookings?: Prisma.BookingListRelationFilter
   agentCommissions?: Prisma.CommissionListRelationFilter
   commissionAdjustments?: Prisma.CommissionAdjustmentListRelationFilter
   commissionRules?: Prisma.CommissionRuleListRelationFilter
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogListRelationFilter
   uploadedMedia?: Prisma.MediaListRelationFilter
   mediaUploadAuths?: Prisma.MediaUploadAuthListRelationFilter
   notificationSettings?: Prisma.NotificationSettingListRelationFilter
   passwordResetTokens?: Prisma.PasswordResetTokenListRelationFilter
   customerPayments?: Prisma.PaymentListRelationFilter
   reviewedPayments?: Prisma.PaymentListRelationFilter
+  createdPaymentLinks?: Prisma.PaymentLinkListRelationFilter
   initiatedRefunds?: Prisma.PaymentRefundListRelationFilter
   adminApprovals?: Prisma.PriceApprovalListRelationFilter
   settingAuditLogs?: Prisma.SettingAuditLogListRelationFilter
@@ -299,17 +302,20 @@ export type UserOrderByWithRelationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   agentProfile?: Prisma.AgentProfileOrderByWithRelationInput
   agentBookings?: Prisma.BookingOrderByRelationAggregateInput
+  createdBookings?: Prisma.BookingOrderByRelationAggregateInput
   assignedBookings?: Prisma.BookingOrderByRelationAggregateInput
   customerBookings?: Prisma.BookingOrderByRelationAggregateInput
   agentCommissions?: Prisma.CommissionOrderByRelationAggregateInput
   commissionAdjustments?: Prisma.CommissionAdjustmentOrderByRelationAggregateInput
   commissionRules?: Prisma.CommissionRuleOrderByRelationAggregateInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogOrderByRelationAggregateInput
   uploadedMedia?: Prisma.MediaOrderByRelationAggregateInput
   mediaUploadAuths?: Prisma.MediaUploadAuthOrderByRelationAggregateInput
   notificationSettings?: Prisma.NotificationSettingOrderByRelationAggregateInput
   passwordResetTokens?: Prisma.PasswordResetTokenOrderByRelationAggregateInput
   customerPayments?: Prisma.PaymentOrderByRelationAggregateInput
   reviewedPayments?: Prisma.PaymentOrderByRelationAggregateInput
+  createdPaymentLinks?: Prisma.PaymentLinkOrderByRelationAggregateInput
   initiatedRefunds?: Prisma.PaymentRefundOrderByRelationAggregateInput
   adminApprovals?: Prisma.PriceApprovalOrderByRelationAggregateInput
   settingAuditLogs?: Prisma.SettingAuditLogOrderByRelationAggregateInput
@@ -335,17 +341,20 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   deletedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   agentProfile?: Prisma.XOR<Prisma.AgentProfileNullableScalarRelationFilter, Prisma.AgentProfileWhereInput> | null
   agentBookings?: Prisma.BookingListRelationFilter
+  createdBookings?: Prisma.BookingListRelationFilter
   assignedBookings?: Prisma.BookingListRelationFilter
   customerBookings?: Prisma.BookingListRelationFilter
   agentCommissions?: Prisma.CommissionListRelationFilter
   commissionAdjustments?: Prisma.CommissionAdjustmentListRelationFilter
   commissionRules?: Prisma.CommissionRuleListRelationFilter
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogListRelationFilter
   uploadedMedia?: Prisma.MediaListRelationFilter
   mediaUploadAuths?: Prisma.MediaUploadAuthListRelationFilter
   notificationSettings?: Prisma.NotificationSettingListRelationFilter
   passwordResetTokens?: Prisma.PasswordResetTokenListRelationFilter
   customerPayments?: Prisma.PaymentListRelationFilter
   reviewedPayments?: Prisma.PaymentListRelationFilter
+  createdPaymentLinks?: Prisma.PaymentLinkListRelationFilter
   initiatedRefunds?: Prisma.PaymentRefundListRelationFilter
   adminApprovals?: Prisma.PriceApprovalListRelationFilter
   settingAuditLogs?: Prisma.SettingAuditLogListRelationFilter
@@ -404,17 +413,20 @@ export type UserCreateInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -437,17 +449,20 @@ export type UserUncheckedCreateInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -470,17 +485,20 @@ export type UserUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -503,17 +521,20 @@ export type UserUncheckedUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -658,6 +679,12 @@ export type UserCreateNestedOneWithoutAgentBookingsInput = {
   connect?: Prisma.UserWhereUniqueInput
 }
 
+export type UserCreateNestedOneWithoutCreatedBookingsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedBookingsInput, Prisma.UserUncheckedCreateWithoutCreatedBookingsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedBookingsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
 export type UserCreateNestedOneWithoutAssignedBookingsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutAssignedBookingsInput, Prisma.UserUncheckedCreateWithoutAssignedBookingsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignedBookingsInput
@@ -678,6 +705,16 @@ export type UserUpdateOneWithoutAgentBookingsNestedInput = {
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAgentBookingsInput, Prisma.UserUpdateWithoutAgentBookingsInput>, Prisma.UserUncheckedUpdateWithoutAgentBookingsInput>
+}
+
+export type UserUpdateOneWithoutCreatedBookingsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedBookingsInput, Prisma.UserUncheckedCreateWithoutCreatedBookingsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedBookingsInput
+  upsert?: Prisma.UserUpsertWithoutCreatedBookingsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedBookingsInput, Prisma.UserUpdateWithoutCreatedBookingsInput>, Prisma.UserUncheckedUpdateWithoutCreatedBookingsInput>
 }
 
 export type UserUpdateOneWithoutAssignedBookingsNestedInput = {
@@ -726,6 +763,20 @@ export type UserUpdateOneRequiredWithoutCommissionRulesNestedInput = {
   upsert?: Prisma.UserUpsertWithoutCommissionRulesInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCommissionRulesInput, Prisma.UserUpdateWithoutCommissionRulesInput>, Prisma.UserUncheckedUpdateWithoutCommissionRulesInput>
+}
+
+export type UserCreateNestedOneWithoutCommissionRuleAuditsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommissionRuleAuditsInput, Prisma.UserUncheckedCreateWithoutCommissionRuleAuditsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommissionRuleAuditsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCommissionRuleAuditsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommissionRuleAuditsInput, Prisma.UserUncheckedCreateWithoutCommissionRuleAuditsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommissionRuleAuditsInput
+  upsert?: Prisma.UserUpsertWithoutCommissionRuleAuditsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCommissionRuleAuditsInput, Prisma.UserUpdateWithoutCommissionRuleAuditsInput>, Prisma.UserUncheckedUpdateWithoutCommissionRuleAuditsInput>
 }
 
 export type UserCreateNestedOneWithoutAgentCommissionsInput = {
@@ -846,6 +897,22 @@ export type UserUpdateOneWithoutInitiatedRefundsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutInitiatedRefundsInput, Prisma.UserUpdateWithoutInitiatedRefundsInput>, Prisma.UserUncheckedUpdateWithoutInitiatedRefundsInput>
 }
 
+export type UserCreateNestedOneWithoutCreatedPaymentLinksInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedPaymentLinksInput, Prisma.UserUncheckedCreateWithoutCreatedPaymentLinksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedPaymentLinksInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutCreatedPaymentLinksNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedPaymentLinksInput, Prisma.UserUncheckedCreateWithoutCreatedPaymentLinksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedPaymentLinksInput
+  upsert?: Prisma.UserUpsertWithoutCreatedPaymentLinksInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedPaymentLinksInput, Prisma.UserUpdateWithoutCreatedPaymentLinksInput>, Prisma.UserUncheckedUpdateWithoutCreatedPaymentLinksInput>
+}
+
 export type UserCreateNestedOneWithoutGrantedPermissionsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutGrantedPermissionsInput, Prisma.UserUncheckedCreateWithoutGrantedPermissionsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutGrantedPermissionsInput
@@ -929,17 +996,20 @@ export type UserCreateWithoutAgentProfileInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -961,17 +1031,20 @@ export type UserUncheckedCreateWithoutAgentProfileInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1009,17 +1082,20 @@ export type UserUpdateWithoutAgentProfileInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -1041,17 +1117,20 @@ export type UserUncheckedUpdateWithoutAgentProfileInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1074,16 +1153,19 @@ export type UserCreateWithoutPasswordResetTokensInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -1106,16 +1188,19 @@ export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1154,16 +1239,19 @@ export type UserUpdateWithoutPasswordResetTokensInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -1186,16 +1274,19 @@ export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1217,17 +1308,20 @@ export type UserCreateWithoutAgentBookingsInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -1249,17 +1343,20 @@ export type UserUncheckedCreateWithoutAgentBookingsInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1271,6 +1368,81 @@ export type UserUncheckedCreateWithoutAgentBookingsInput = {
 export type UserCreateOrConnectWithoutAgentBookingsInput = {
   where: Prisma.UserWhereUniqueInput
   create: Prisma.XOR<Prisma.UserCreateWithoutAgentBookingsInput, Prisma.UserUncheckedCreateWithoutAgentBookingsInput>
+}
+
+export type UserCreateWithoutCreatedBookingsInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
+  uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
+  initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutCreatedBookingsInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
+  uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutCreatedBookingsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedBookingsInput, Prisma.UserUncheckedCreateWithoutCreatedBookingsInput>
 }
 
 export type UserCreateWithoutAssignedBookingsInput = {
@@ -1287,16 +1459,19 @@ export type UserCreateWithoutAssignedBookingsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -1319,16 +1494,19 @@ export type UserUncheckedCreateWithoutAssignedBookingsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1356,16 +1534,19 @@ export type UserCreateWithoutCustomerBookingsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -1388,16 +1569,19 @@ export type UserUncheckedCreateWithoutCustomerBookingsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1435,17 +1619,20 @@ export type UserUpdateWithoutAgentBookingsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -1467,17 +1654,101 @@ export type UserUncheckedUpdateWithoutAgentBookingsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUpsertWithoutCreatedBookingsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedBookingsInput, Prisma.UserUncheckedUpdateWithoutCreatedBookingsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedBookingsInput, Prisma.UserUncheckedCreateWithoutCreatedBookingsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreatedBookingsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedBookingsInput, Prisma.UserUncheckedUpdateWithoutCreatedBookingsInput>
+}
+
+export type UserUpdateWithoutCreatedBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
+  uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreatedBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
+  uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1511,16 +1782,19 @@ export type UserUpdateWithoutAssignedBookingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -1543,16 +1817,19 @@ export type UserUncheckedUpdateWithoutAssignedBookingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1586,16 +1863,19 @@ export type UserUpdateWithoutCustomerBookingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -1618,16 +1898,19 @@ export type UserUncheckedUpdateWithoutCustomerBookingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1650,17 +1933,20 @@ export type UserCreateWithoutAdminApprovalsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
@@ -1682,17 +1968,20 @@ export type UserUncheckedCreateWithoutAdminApprovalsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
@@ -1730,17 +2019,20 @@ export type UserUpdateWithoutAdminApprovalsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
@@ -1762,17 +2054,20 @@ export type UserUncheckedUpdateWithoutAdminApprovalsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
@@ -1794,16 +2089,19 @@ export type UserCreateWithoutCommissionRulesInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -1826,16 +2124,19 @@ export type UserUncheckedCreateWithoutCommissionRulesInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1874,16 +2175,19 @@ export type UserUpdateWithoutCommissionRulesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -1906,16 +2210,175 @@ export type UserUncheckedUpdateWithoutCommissionRulesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserCreateWithoutCommissionRuleAuditsInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
+  initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutCommissionRuleAuditsInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutCommissionRuleAuditsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommissionRuleAuditsInput, Prisma.UserUncheckedCreateWithoutCommissionRuleAuditsInput>
+}
+
+export type UserUpsertWithoutCommissionRuleAuditsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCommissionRuleAuditsInput, Prisma.UserUncheckedUpdateWithoutCommissionRuleAuditsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommissionRuleAuditsInput, Prisma.UserUncheckedCreateWithoutCommissionRuleAuditsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCommissionRuleAuditsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCommissionRuleAuditsInput, Prisma.UserUncheckedUpdateWithoutCommissionRuleAuditsInput>
+}
+
+export type UserUpdateWithoutCommissionRuleAuditsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCommissionRuleAuditsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1938,16 +2401,19 @@ export type UserCreateWithoutAgentCommissionsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -1970,16 +2436,19 @@ export type UserUncheckedCreateWithoutAgentCommissionsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2018,16 +2487,19 @@ export type UserUpdateWithoutAgentCommissionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -2050,16 +2522,19 @@ export type UserUncheckedUpdateWithoutAgentCommissionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2082,16 +2557,19 @@ export type UserCreateWithoutCommissionAdjustmentsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -2114,16 +2592,19 @@ export type UserUncheckedCreateWithoutCommissionAdjustmentsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2162,16 +2643,19 @@ export type UserUpdateWithoutCommissionAdjustmentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -2194,16 +2678,19 @@ export type UserUncheckedUpdateWithoutCommissionAdjustmentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2226,16 +2713,19 @@ export type UserCreateWithoutUploadedMediaInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -2258,16 +2748,19 @@ export type UserUncheckedCreateWithoutUploadedMediaInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2306,16 +2799,19 @@ export type UserUpdateWithoutUploadedMediaInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -2338,16 +2834,19 @@ export type UserUncheckedUpdateWithoutUploadedMediaInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2370,16 +2869,19 @@ export type UserCreateWithoutMediaUploadAuthsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -2402,16 +2904,19 @@ export type UserUncheckedCreateWithoutMediaUploadAuthsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2450,16 +2955,19 @@ export type UserUpdateWithoutMediaUploadAuthsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -2482,16 +2990,19 @@ export type UserUncheckedUpdateWithoutMediaUploadAuthsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2514,16 +3025,19 @@ export type UserCreateWithoutNotificationSettingsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -2546,16 +3060,19 @@ export type UserUncheckedCreateWithoutNotificationSettingsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2594,16 +3111,19 @@ export type UserUpdateWithoutNotificationSettingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -2626,16 +3146,19 @@ export type UserUncheckedUpdateWithoutNotificationSettingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2658,16 +3181,19 @@ export type UserCreateWithoutCustomerPaymentsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -2690,16 +3216,19 @@ export type UserUncheckedCreateWithoutCustomerPaymentsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2727,16 +3256,19 @@ export type UserCreateWithoutReviewedPaymentsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -2759,16 +3291,19 @@ export type UserUncheckedCreateWithoutReviewedPaymentsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2807,16 +3342,19 @@ export type UserUpdateWithoutCustomerPaymentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -2839,16 +3377,19 @@ export type UserUncheckedUpdateWithoutCustomerPaymentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2882,16 +3423,19 @@ export type UserUpdateWithoutReviewedPaymentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -2914,16 +3458,19 @@ export type UserUncheckedUpdateWithoutReviewedPaymentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2946,17 +3493,20 @@ export type UserCreateWithoutInitiatedRefundsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
@@ -2978,17 +3528,20 @@ export type UserUncheckedCreateWithoutInitiatedRefundsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
@@ -3026,17 +3579,20 @@ export type UserUpdateWithoutInitiatedRefundsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
@@ -3058,17 +3614,176 @@ export type UserUncheckedUpdateWithoutInitiatedRefundsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserCreateWithoutCreatedPaymentLinksInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
+  uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutCreatedPaymentLinksInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
+  uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutCreatedPaymentLinksInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedPaymentLinksInput, Prisma.UserUncheckedCreateWithoutCreatedPaymentLinksInput>
+}
+
+export type UserUpsertWithoutCreatedPaymentLinksInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedPaymentLinksInput, Prisma.UserUncheckedUpdateWithoutCreatedPaymentLinksInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedPaymentLinksInput, Prisma.UserUncheckedCreateWithoutCreatedPaymentLinksInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreatedPaymentLinksInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedPaymentLinksInput, Prisma.UserUncheckedUpdateWithoutCreatedPaymentLinksInput>
+}
+
+export type UserUpdateWithoutCreatedPaymentLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
+  uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreatedPaymentLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
+  uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
@@ -3090,17 +3805,20 @@ export type UserCreateWithoutGrantedPermissionsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -3122,17 +3840,20 @@ export type UserUncheckedCreateWithoutGrantedPermissionsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -3159,17 +3880,20 @@ export type UserCreateWithoutStaffPermissionsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -3191,17 +3915,20 @@ export type UserUncheckedCreateWithoutStaffPermissionsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -3239,17 +3966,20 @@ export type UserUpdateWithoutGrantedPermissionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -3271,17 +4001,20 @@ export type UserUncheckedUpdateWithoutGrantedPermissionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -3314,17 +4047,20 @@ export type UserUpdateWithoutStaffPermissionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -3346,17 +4082,20 @@ export type UserUncheckedUpdateWithoutStaffPermissionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -3378,17 +4117,20 @@ export type UserCreateWithoutEditedSettingsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -3410,17 +4152,20 @@ export type UserUncheckedCreateWithoutEditedSettingsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -3458,17 +4203,20 @@ export type UserUpdateWithoutEditedSettingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -3490,17 +4238,20 @@ export type UserUncheckedUpdateWithoutEditedSettingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -3522,17 +4273,20 @@ export type UserCreateWithoutSettingAuditLogsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
@@ -3554,17 +4308,20 @@ export type UserUncheckedCreateWithoutSettingAuditLogsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
@@ -3602,17 +4359,20 @@ export type UserUpdateWithoutSettingAuditLogsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
@@ -3634,17 +4394,20 @@ export type UserUncheckedUpdateWithoutSettingAuditLogsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
@@ -3659,17 +4422,20 @@ export type UserUncheckedUpdateWithoutSettingAuditLogsInput = {
 
 export type UserCountOutputType = {
   agentBookings: number
+  createdBookings: number
   assignedBookings: number
   customerBookings: number
   agentCommissions: number
   commissionAdjustments: number
   commissionRules: number
+  commissionRuleAudits: number
   uploadedMedia: number
   mediaUploadAuths: number
   notificationSettings: number
   passwordResetTokens: number
   customerPayments: number
   reviewedPayments: number
+  createdPaymentLinks: number
   initiatedRefunds: number
   adminApprovals: number
   settingAuditLogs: number
@@ -3680,17 +4446,20 @@ export type UserCountOutputType = {
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   agentBookings?: boolean | UserCountOutputTypeCountAgentBookingsArgs
+  createdBookings?: boolean | UserCountOutputTypeCountCreatedBookingsArgs
   assignedBookings?: boolean | UserCountOutputTypeCountAssignedBookingsArgs
   customerBookings?: boolean | UserCountOutputTypeCountCustomerBookingsArgs
   agentCommissions?: boolean | UserCountOutputTypeCountAgentCommissionsArgs
   commissionAdjustments?: boolean | UserCountOutputTypeCountCommissionAdjustmentsArgs
   commissionRules?: boolean | UserCountOutputTypeCountCommissionRulesArgs
+  commissionRuleAudits?: boolean | UserCountOutputTypeCountCommissionRuleAuditsArgs
   uploadedMedia?: boolean | UserCountOutputTypeCountUploadedMediaArgs
   mediaUploadAuths?: boolean | UserCountOutputTypeCountMediaUploadAuthsArgs
   notificationSettings?: boolean | UserCountOutputTypeCountNotificationSettingsArgs
   passwordResetTokens?: boolean | UserCountOutputTypeCountPasswordResetTokensArgs
   customerPayments?: boolean | UserCountOutputTypeCountCustomerPaymentsArgs
   reviewedPayments?: boolean | UserCountOutputTypeCountReviewedPaymentsArgs
+  createdPaymentLinks?: boolean | UserCountOutputTypeCountCreatedPaymentLinksArgs
   initiatedRefunds?: boolean | UserCountOutputTypeCountInitiatedRefundsArgs
   adminApprovals?: boolean | UserCountOutputTypeCountAdminApprovalsArgs
   settingAuditLogs?: boolean | UserCountOutputTypeCountSettingAuditLogsArgs
@@ -3713,6 +4482,13 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
  * UserCountOutputType without action
  */
 export type UserCountOutputTypeCountAgentBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookingWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCreatedBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.BookingWhereInput
 }
 
@@ -3749,6 +4525,13 @@ export type UserCountOutputTypeCountCommissionAdjustmentsArgs<ExtArgs extends ru
  */
 export type UserCountOutputTypeCountCommissionRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.CommissionRuleWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCommissionRuleAuditsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CommissionRuleAuditLogWhereInput
 }
 
 /**
@@ -3791,6 +4574,13 @@ export type UserCountOutputTypeCountCustomerPaymentsArgs<ExtArgs extends runtime
  */
 export type UserCountOutputTypeCountReviewedPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.PaymentWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCreatedPaymentLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentLinkWhereInput
 }
 
 /**
@@ -3850,17 +4640,20 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   deletedAt?: boolean
   agentProfile?: boolean | Prisma.User$agentProfileArgs<ExtArgs>
   agentBookings?: boolean | Prisma.User$agentBookingsArgs<ExtArgs>
+  createdBookings?: boolean | Prisma.User$createdBookingsArgs<ExtArgs>
   assignedBookings?: boolean | Prisma.User$assignedBookingsArgs<ExtArgs>
   customerBookings?: boolean | Prisma.User$customerBookingsArgs<ExtArgs>
   agentCommissions?: boolean | Prisma.User$agentCommissionsArgs<ExtArgs>
   commissionAdjustments?: boolean | Prisma.User$commissionAdjustmentsArgs<ExtArgs>
   commissionRules?: boolean | Prisma.User$commissionRulesArgs<ExtArgs>
+  commissionRuleAudits?: boolean | Prisma.User$commissionRuleAuditsArgs<ExtArgs>
   uploadedMedia?: boolean | Prisma.User$uploadedMediaArgs<ExtArgs>
   mediaUploadAuths?: boolean | Prisma.User$mediaUploadAuthsArgs<ExtArgs>
   notificationSettings?: boolean | Prisma.User$notificationSettingsArgs<ExtArgs>
   passwordResetTokens?: boolean | Prisma.User$passwordResetTokensArgs<ExtArgs>
   customerPayments?: boolean | Prisma.User$customerPaymentsArgs<ExtArgs>
   reviewedPayments?: boolean | Prisma.User$reviewedPaymentsArgs<ExtArgs>
+  createdPaymentLinks?: boolean | Prisma.User$createdPaymentLinksArgs<ExtArgs>
   initiatedRefunds?: boolean | Prisma.User$initiatedRefundsArgs<ExtArgs>
   adminApprovals?: boolean | Prisma.User$adminApprovalsArgs<ExtArgs>
   settingAuditLogs?: boolean | Prisma.User$settingAuditLogsArgs<ExtArgs>
@@ -3916,17 +4709,20 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   agentProfile?: boolean | Prisma.User$agentProfileArgs<ExtArgs>
   agentBookings?: boolean | Prisma.User$agentBookingsArgs<ExtArgs>
+  createdBookings?: boolean | Prisma.User$createdBookingsArgs<ExtArgs>
   assignedBookings?: boolean | Prisma.User$assignedBookingsArgs<ExtArgs>
   customerBookings?: boolean | Prisma.User$customerBookingsArgs<ExtArgs>
   agentCommissions?: boolean | Prisma.User$agentCommissionsArgs<ExtArgs>
   commissionAdjustments?: boolean | Prisma.User$commissionAdjustmentsArgs<ExtArgs>
   commissionRules?: boolean | Prisma.User$commissionRulesArgs<ExtArgs>
+  commissionRuleAudits?: boolean | Prisma.User$commissionRuleAuditsArgs<ExtArgs>
   uploadedMedia?: boolean | Prisma.User$uploadedMediaArgs<ExtArgs>
   mediaUploadAuths?: boolean | Prisma.User$mediaUploadAuthsArgs<ExtArgs>
   notificationSettings?: boolean | Prisma.User$notificationSettingsArgs<ExtArgs>
   passwordResetTokens?: boolean | Prisma.User$passwordResetTokensArgs<ExtArgs>
   customerPayments?: boolean | Prisma.User$customerPaymentsArgs<ExtArgs>
   reviewedPayments?: boolean | Prisma.User$reviewedPaymentsArgs<ExtArgs>
+  createdPaymentLinks?: boolean | Prisma.User$createdPaymentLinksArgs<ExtArgs>
   initiatedRefunds?: boolean | Prisma.User$initiatedRefundsArgs<ExtArgs>
   adminApprovals?: boolean | Prisma.User$adminApprovalsArgs<ExtArgs>
   settingAuditLogs?: boolean | Prisma.User$settingAuditLogsArgs<ExtArgs>
@@ -3943,17 +4739,20 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     agentProfile: Prisma.$AgentProfilePayload<ExtArgs> | null
     agentBookings: Prisma.$BookingPayload<ExtArgs>[]
+    createdBookings: Prisma.$BookingPayload<ExtArgs>[]
     assignedBookings: Prisma.$BookingPayload<ExtArgs>[]
     customerBookings: Prisma.$BookingPayload<ExtArgs>[]
     agentCommissions: Prisma.$CommissionPayload<ExtArgs>[]
     commissionAdjustments: Prisma.$CommissionAdjustmentPayload<ExtArgs>[]
     commissionRules: Prisma.$CommissionRulePayload<ExtArgs>[]
+    commissionRuleAudits: Prisma.$CommissionRuleAuditLogPayload<ExtArgs>[]
     uploadedMedia: Prisma.$MediaPayload<ExtArgs>[]
     mediaUploadAuths: Prisma.$MediaUploadAuthPayload<ExtArgs>[]
     notificationSettings: Prisma.$NotificationSettingPayload<ExtArgs>[]
     passwordResetTokens: Prisma.$PasswordResetTokenPayload<ExtArgs>[]
     customerPayments: Prisma.$PaymentPayload<ExtArgs>[]
     reviewedPayments: Prisma.$PaymentPayload<ExtArgs>[]
+    createdPaymentLinks: Prisma.$PaymentLinkPayload<ExtArgs>[]
     initiatedRefunds: Prisma.$PaymentRefundPayload<ExtArgs>[]
     adminApprovals: Prisma.$PriceApprovalPayload<ExtArgs>[]
     settingAuditLogs: Prisma.$SettingAuditLogPayload<ExtArgs>[]
@@ -4369,17 +5168,20 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   agentProfile<T extends Prisma.User$agentProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$agentProfileArgs<ExtArgs>>): Prisma.Prisma__AgentProfileClient<runtime.Types.Result.GetResult<Prisma.$AgentProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   agentBookings<T extends Prisma.User$agentBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$agentBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdBookings<T extends Prisma.User$createdBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignedBookings<T extends Prisma.User$assignedBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignedBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   customerBookings<T extends Prisma.User$customerBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$customerBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   agentCommissions<T extends Prisma.User$agentCommissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$agentCommissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   commissionAdjustments<T extends Prisma.User$commissionAdjustmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$commissionAdjustmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionAdjustmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   commissionRules<T extends Prisma.User$commissionRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$commissionRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  commissionRuleAudits<T extends Prisma.User$commissionRuleAuditsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$commissionRuleAuditsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionRuleAuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   uploadedMedia<T extends Prisma.User$uploadedMediaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$uploadedMediaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MediaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mediaUploadAuths<T extends Prisma.User$mediaUploadAuthsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mediaUploadAuthsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MediaUploadAuthPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notificationSettings<T extends Prisma.User$notificationSettingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationSettingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationSettingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   passwordResetTokens<T extends Prisma.User$passwordResetTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$passwordResetTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   customerPayments<T extends Prisma.User$customerPaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$customerPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviewedPayments<T extends Prisma.User$reviewedPaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reviewedPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdPaymentLinks<T extends Prisma.User$createdPaymentLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdPaymentLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   initiatedRefunds<T extends Prisma.User$initiatedRefundsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$initiatedRefundsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentRefundPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   adminApprovals<T extends Prisma.User$adminApprovalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$adminApprovalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PriceApprovalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   settingAuditLogs<T extends Prisma.User$settingAuditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$settingAuditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SettingAuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4862,6 +5664,30 @@ export type User$agentBookingsArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
+ * User.createdBookings
+ */
+export type User$createdBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Booking
+   */
+  select?: Prisma.BookingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Booking
+   */
+  omit?: Prisma.BookingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookingInclude<ExtArgs> | null
+  where?: Prisma.BookingWhereInput
+  orderBy?: Prisma.BookingOrderByWithRelationInput | Prisma.BookingOrderByWithRelationInput[]
+  cursor?: Prisma.BookingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookingScalarFieldEnum | Prisma.BookingScalarFieldEnum[]
+}
+
+/**
  * User.assignedBookings
  */
 export type User$assignedBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4979,6 +5805,30 @@ export type User$commissionRulesArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.CommissionRuleScalarFieldEnum | Prisma.CommissionRuleScalarFieldEnum[]
+}
+
+/**
+ * User.commissionRuleAudits
+ */
+export type User$commissionRuleAuditsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CommissionRuleAuditLog
+   */
+  select?: Prisma.CommissionRuleAuditLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CommissionRuleAuditLog
+   */
+  omit?: Prisma.CommissionRuleAuditLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommissionRuleAuditLogInclude<ExtArgs> | null
+  where?: Prisma.CommissionRuleAuditLogWhereInput
+  orderBy?: Prisma.CommissionRuleAuditLogOrderByWithRelationInput | Prisma.CommissionRuleAuditLogOrderByWithRelationInput[]
+  cursor?: Prisma.CommissionRuleAuditLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CommissionRuleAuditLogScalarFieldEnum | Prisma.CommissionRuleAuditLogScalarFieldEnum[]
 }
 
 /**
@@ -5123,6 +5973,30 @@ export type User$reviewedPaymentsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.PaymentScalarFieldEnum | Prisma.PaymentScalarFieldEnum[]
+}
+
+/**
+ * User.createdPaymentLinks
+ */
+export type User$createdPaymentLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PaymentLink
+   */
+  select?: Prisma.PaymentLinkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PaymentLink
+   */
+  omit?: Prisma.PaymentLinkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentLinkInclude<ExtArgs> | null
+  where?: Prisma.PaymentLinkWhereInput
+  orderBy?: Prisma.PaymentLinkOrderByWithRelationInput | Prisma.PaymentLinkOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentLinkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentLinkScalarFieldEnum | Prisma.PaymentLinkScalarFieldEnum[]
 }
 
 /**

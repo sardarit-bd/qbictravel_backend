@@ -1,11 +1,61 @@
 import * as yup from "yup";
-import { COMMISSION_RATE_TYPES } from "./commissionTypes.js";
+import { COMMISSION_RATE_TYPES, COMMISSION_POLICY_STATUSES } from "./commissionTypes.js";
 
 const twoDecimals = (value: number | undefined): boolean =>
   value === undefined || /^\d+(\.\d{1,2})?$/.test(String(value));
 
 export const commissionIdParamSchema = yup.object({
   commissionId: yup.string().uuid("Invalid commission ID").required("Commission ID is required"),
+});
+
+export const policyIdParamSchema = yup.object({
+  policyId: yup.string().uuid("Invalid policy ID").required("Policy ID is required"),
+});
+
+export const createCommissionPolicySchema = yup.object({
+  name: yup.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name cannot exceed 100 characters").required("Commission Name is required"),
+  description: yup.string().trim().max(500, "Description cannot exceed 500 characters").nullable().optional(),
+  rateType: yup
+    .string()
+    .oneOf([...COMMISSION_RATE_TYPES], "Rate type must be PERCENTAGE or FIXED")
+    .required("Rate type is required"),
+  rateValue: yup
+    .number()
+    .typeError("Rate value must be a number")
+    .moreThan(0, "Rate value must be greater than 0")
+    .max(99999999.99, "Rate value is too large")
+    .test("two-decimals", "Rate value can have at most 2 decimal places", twoDecimals)
+    .when("rateType", {
+      is: "PERCENTAGE",
+      then: (schema) => schema.max(100, "A percentage cannot exceed 100"),
+      otherwise: (schema) => schema,
+    })
+    .required("Rate value is required"),
+  status: yup.string().oneOf([...COMMISSION_POLICY_STATUSES]).optional(),
+  isActive: yup.boolean().optional(),
+});
+
+export const updateCommissionPolicySchema = yup.object({
+  name: yup.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name cannot exceed 100 characters").optional(),
+  description: yup.string().trim().max(500, "Description cannot exceed 500 characters").nullable().optional(),
+  rateType: yup
+    .string()
+    .oneOf([...COMMISSION_RATE_TYPES], "Rate type must be PERCENTAGE or FIXED")
+    .optional(),
+  rateValue: yup
+    .number()
+    .typeError("Rate value must be a number")
+    .moreThan(0, "Rate value must be greater than 0")
+    .max(99999999.99, "Rate value is too large")
+    .test("two-decimals", "Rate value can have at most 2 decimal places", twoDecimals)
+    .when("rateType", {
+      is: "PERCENTAGE",
+      then: (schema) => schema.max(100, "A percentage cannot exceed 100"),
+      otherwise: (schema) => schema,
+    })
+    .optional(),
+  status: yup.string().oneOf([...COMMISSION_POLICY_STATUSES]).optional(),
+  isActive: yup.boolean().optional(),
 });
 
 export const configureCommissionRuleSchema = yup.object({

@@ -1,7 +1,7 @@
 import env from "../../config/env.js";
 import sendResponse from "../../shared/utils/response.js";
 import { getOwnProfile } from "../user/userService.js";
-import { registerUser, loginUser, logoutUser, forgotPassword as forgotPasswordService, resetPassword as resetPasswordService, validateInvitationToken, } from "./authService.js";
+import { registerUser, loginUser, logoutUser, forgotPassword as forgotPasswordService, resetPassword as resetPasswordService, validateInvitationToken, validateResetPasswordToken, } from "./authService.js";
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 const isProduction = env.nodeEnv === "production";
 const cookieOptions = {
@@ -58,6 +58,16 @@ export const resetPassword = async (req, res, next) => {
     try {
         await resetPasswordService(req.body);
         sendResponse(res, 200, true, "Password has been reset successfully");
+    }
+    catch (error) {
+        next(error);
+    }
+};
+export const validateResetToken = async (req, res, next) => {
+    try {
+        const token = req.query.token || (req.body && req.body.token);
+        const result = await validateResetPasswordToken(token);
+        sendResponse(res, 200, true, "Password reset token is valid", result);
     }
     catch (error) {
         next(error);

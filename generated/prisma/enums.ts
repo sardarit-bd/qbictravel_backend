@@ -22,6 +22,16 @@ export const BookingStatus = {
 export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus]
 
 
+export const BookingSource = {
+  AGENT: 'AGENT',
+  ADMIN: 'ADMIN',
+  CUSTOMER: 'CUSTOMER',
+  DIRECT: 'DIRECT'
+} as const
+
+export type BookingSource = (typeof BookingSource)[keyof typeof BookingSource]
+
+
 export const ApprovalStatus = {
   PENDING: 'PENDING',
   APPROVED: 'APPROVED',
@@ -56,6 +66,16 @@ export const FulfillmentStatus = {
 export type FulfillmentStatus = (typeof FulfillmentStatus)[keyof typeof FulfillmentStatus]
 
 
+export const CommissionPolicyStatus = {
+  DRAFT: 'DRAFT',
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type CommissionPolicyStatus = (typeof CommissionPolicyStatus)[keyof typeof CommissionPolicyStatus]
+
+
 export const CommissionRateType = {
   PERCENTAGE: 'PERCENTAGE',
   FIXED: 'FIXED'
@@ -82,11 +102,22 @@ export const NotificationEvent = {
 export type NotificationEvent = (typeof NotificationEvent)[keyof typeof NotificationEvent]
 
 
+export const PaymentLinkStatus = {
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+  COMPLETED: 'COMPLETED',
+  REVOKED: 'REVOKED'
+} as const
+
+export type PaymentLinkStatus = (typeof PaymentLinkStatus)[keyof typeof PaymentLinkStatus]
+
+
 export const PaymentMethod = {
   BANK_TRANSFER: 'BANK_TRANSFER',
   CASH: 'CASH',
   OTHER: 'OTHER',
-  STRIPE: 'STRIPE'
+  STRIPE: 'STRIPE',
+  PAYPAL: 'PAYPAL'
 } as const
 
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]

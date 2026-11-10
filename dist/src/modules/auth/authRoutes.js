@@ -155,6 +155,26 @@ router.post("/forgot-password", authRateLimiter, validate(forgotPasswordSchema),
 router.post("/reset-password", authRateLimiter, validate(resetPasswordSchema), authController.resetPassword);
 /**
  * @openapi
+ * /api/v1/auth/reset-password/verify:
+ *   get:
+ *     tags:
+ *       - Auth
+ *     summary: Verify password reset token
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Reset token is valid
+ *       400:
+ *         description: Invalid or expired token
+ */
+router.get("/reset-password/verify", authRateLimiter, authController.validateResetToken);
+/**
+ * @openapi
  * /api/v1/auth/invitation/verify:
  *   get:
  *     tags:

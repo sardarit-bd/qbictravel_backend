@@ -56,6 +56,29 @@ const customerBookingSelect = {
 const toNumber = (value: unknown): number | null =>
   value == null ? null : Number(value);
 
+const parseTravelDateFromNotes = (notes?: string | null): string | null => {
+  if (!notes || typeof notes !== "string") return null;
+  const match = notes.match(/Travel Date:\s*([0-9]{4}-[0-9]{2}-[0-9]{2})/i);
+  return match ? match[1] : null;
+};
+
+const formatBookingItem = (b: any) => {
+  const fallbackDate = parseTravelDateFromNotes(b.notes);
+  const availability =
+    b.availability && b.availability.date
+      ? b.availability
+      : fallbackDate
+      ? { id: `notes-date-${b.id}`, date: new Date(fallbackDate) }
+      : null;
+
+  return {
+    ...b,
+    availability,
+    basePrice: toNumber(b.basePrice) ?? 0,
+    finalPrice: toNumber(b.finalPrice) ?? 0,
+  };
+};
+
 export const listCustomerBookings = async (
   customerId: string,
   params: ListCustomerBookingsParams
@@ -91,11 +114,7 @@ export const listCustomerBookings = async (
     prisma.booking.count({ where }),
   ]);
 
-  const formattedItems = items.map((b) => ({
-    ...b,
-    basePrice: toNumber(b.basePrice) ?? 0,
-    finalPrice: toNumber(b.finalPrice) ?? 0,
-  }));
+  const formattedItems = items.map(formatBookingItem);
 
   return {
     items: formattedItems,
@@ -118,14 +137,31 @@ export const findCustomerBookingById = async (
       id: bookingId,
       customerId,
     },
-    select: customerBookingSelect,
+    select: {
+      ...customerBookingSelect,
+      payments: {
+        select: {
+          id: true,
+          amount: true,
+          currency: true,
+          method: true,
+          status: true,
+          reference: true,
+          stripeSessionId: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: "desc" },
+      },
+    },
   });
 
   if (!booking) return null;
 
   return {
-    ...booking,
-    basePrice: toNumber(booking.basePrice) ?? 0,
-    finalPrice: toNumber(booking.finalPrice) ?? 0,
+    ...formatBookingItem(booking),
+    payments: (booking.payments || []).map((p: any) => ({
+      ...p,
+      amount: toNumber(p.amount) ?? 0,
+    })),
   };
 };

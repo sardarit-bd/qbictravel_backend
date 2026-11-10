@@ -2,6 +2,8 @@ import AppError from "../../shared/utils/AppError.js";
 import * as agentRepository from "./agentRepository.js";
 import type {
   ListAgentBookingsParams,
+  ListAgentCustomersParams,
+  CreateAgentCustomerInput,
   UpdateAgentProfileInput,
 } from "./agentRepository.js";
 
@@ -22,6 +24,20 @@ export const getAgentBooking = async (agentId: string, bookingId: string) => {
     throw new AppError("Booking not found", 404);
   }
   return booking;
+};
+
+export const listAgentCustomers = async (
+  agentId: string,
+  params: ListAgentCustomersParams
+) => {
+  return agentRepository.listAgentCustomers(agentId, params);
+};
+
+export const createAgentCustomer = async (
+  agentId: string,
+  data: CreateAgentCustomerInput
+) => {
+  return agentRepository.createOrResolveAgentCustomer(agentId, data);
 };
 
 export const getAgentProfile = async (agentId: string) => {

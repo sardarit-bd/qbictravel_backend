@@ -69,3 +69,29 @@ export const updateProfile = async (
     next(error);
   }
 };
+
+export const listCustomers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const result = await agentService.listAgentCustomers(req.user!.id, req.query);
+    sendResponse(res, 200, true, "Agent customers retrieved successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createCustomer = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const customer = await agentService.createAgentCustomer(req.user!.id, req.body);
+    sendResponse(res, 201, true, "Customer resolved successfully", customer);
+  } catch (error) {
+    next(error);
+  }
+};

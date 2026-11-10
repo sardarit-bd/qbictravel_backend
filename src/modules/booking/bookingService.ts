@@ -3,10 +3,13 @@ import { prisma } from "../../lib/prisma.js";
 import * as bookingRepository from "./bookingRepository.js";
 import * as pricingService from "../pricing/pricingService.js";
 import * as notificationService from "../notification/notificationService.js";
+import { parsePagination } from "../../shared/utils/pagination.js";
 import type {
   CreateBookingInput,
   UpdateBookingPriceInput,
   ReviewBookingPriceInput,
+  ReviewPendingBookingInput,
+  ListPendingReservationsQuery,
   BookingResponse,
 } from "./bookingTypes.js";
 
@@ -77,14 +80,123 @@ export const createBooking = async (
   }
 
   const activePricing = activePricings[0]!;
-  const basePrice = Number(activePricing.basePrice);
+  const rawBasePrice = Number(activePricing.basePrice);
   const currency = activePricing.currency;
+
+  const hasGuestCounts =
+    input.adults !== undefined ||
+    input.children !== undefined ||
+    input.infants !== undefined;
+
+  let basePrice = rawBasePrice;
+
+  if (hasGuestCounts) {
+    const adults = Math.max(1, Number(input.adults ?? 1));
+    const children = Math.max(0, Number(input.children ?? 0));
+    const infants = Math.max(0, Number(input.infants ?? 0));
+
+    const unitAdultPrice =
+      activePricing.discountedPrice != null &&
+      Number(activePricing.discountedPrice) > 0
+        ? Number(activePricing.discountedPrice)
+        : rawBasePrice;
+
+    const metadata = (service as any).metadata as Record<string, any> | null;
+    const tiers: Array<{ tierName?: string; price?: number }> = Array.isArray(
+      metadata?.pricingTiers,
+    )
+      ? metadata!.pricingTiers
+      : [];
+
+    const childTier = tiers.find((t) =>
+      /child/i.test(String(t?.tierName || "")),
+    );
+    const infantTier = tiers.find((t) =>
+      /infant/i.test(String(t?.tierName || "")),
+    );
+
+    const unitChildPrice =
+      childTier && typeof childTier.price === "number" && childTier.price >= 0
+        ? Number(childTier.price)
+        : Math.round(unitAdultPrice * 0.7 * 100) / 100;
+
+    const unitInfantPrice =
+      infantTier &&
+      typeof infantTier.price === "number" &&
+      infantTier.price >= 0
+        ? Number(infantTier.price)
+        : 0;
+
+    basePrice =
+      Math.round(
+        (adults * unitAdultPrice +
+          children * unitChildPrice +
+          infants * unitInfantPrice) *
+          100,
+      ) / 100;
+  }
+
   let finalPrice = basePrice;
   let proposedPrice = input.proposedPrice
     ? Number(input.proposedPrice)
     : undefined;
   let requiresApproval = false;
   let status: string = "PENDING";
+
+  // Resolve or auto-link ServiceAvailability record if travelDate is provided and availabilityId is not
+  let resolvedAvailabilityId = input.availabilityId;
+  if (!resolvedAvailabilityId && input.travelDate && input.travelDate.trim()) {
+    try {
+      const travelDateObj = new Date(input.travelDate.trim());
+      if (!isNaN(travelDateObj.getTime())) {
+        const availabilityRecord = await prisma.serviceAvailability.upsert({
+          where: {
+            serviceId_date: {
+              serviceId: input.serviceId,
+              date: travelDateObj,
+            },
+          },
+          update: {
+            bookedCount: { increment: 1 },
+            lastVerifiedAt: new Date(),
+          },
+          create: {
+            serviceId: input.serviceId,
+            date: travelDateObj,
+            isAvailable: true,
+            bookedCount: 1,
+            lastVerifiedAt: new Date(),
+          },
+        });
+        resolvedAvailabilityId = availabilityRecord.id;
+      }
+    } catch {
+      // In case of availability constraint or failure, continue with availabilityId=undefined
+    }
+  }
+
+  // Build structured notes if travelDate or guest counts are provided
+  const noteParts: string[] = [];
+  if (input.travelDate && input.travelDate.trim()) {
+    noteParts.push(`Travel Date: ${input.travelDate.trim()}`);
+  }
+  if (hasGuestCounts) {
+    const adults = Math.max(1, Number(input.adults ?? 1));
+    const children = Math.max(0, Number(input.children ?? 0));
+    const infants = Math.max(0, Number(input.infants ?? 0));
+    const guestParts = [`${adults} Adult${adults > 1 ? "s" : ""}`];
+    if (children > 0) {
+      guestParts.push(`${children} Child${children > 1 ? "ren" : ""}`);
+    }
+    if (infants > 0) {
+      guestParts.push(`${infants} Infant${infants > 1 ? "s" : ""}`);
+    }
+    noteParts.push(`Guests: ${guestParts.join(", ")}`);
+  }
+  if (input.notes && input.notes.trim()) {
+    noteParts.push(input.notes.trim());
+  }
+  const formattedNotes = noteParts.length > 0 ? noteParts.join(" | ") : undefined;
 
   if (isAgent) {
     if (proposedPrice === undefined) {
@@ -117,7 +229,11 @@ export const createBooking = async (
 
   const booking = await bookingRepository.createBooking({
     ...input,
-    agentId: isAgent ? actorId : input.agentId,
+    availabilityId: resolvedAvailabilityId,
+    ...(formattedNotes !== undefined ? { notes: formattedNotes } : {}),
+    agentId: isAgent ? actorId : null,
+    createdById: actorId,
+    source: isAgent ? "AGENT" : "CUSTOMER",
     currency,
     basePrice,
     proposedPrice,
@@ -219,6 +335,25 @@ export const updateAgentBookingPrice = async (
       where: { id: bookingId },
       include: { priceApproval: true },
     });
+
+    if (tx.bookingHistory) {
+      await tx.bookingHistory.create({
+        data: {
+          bookingId,
+          actorId,
+          actorRole: "agent",
+          action: requiresApproval ? "PRICE_APPROVAL_REQUESTED" : "PRICE_UPDATED",
+          changes: {
+            previousStatus: booking.status,
+            newStatus: status,
+            previousPrice: Number(booking.finalPrice),
+            proposedPrice,
+            requiresApproval,
+          },
+        },
+      });
+    }
+
     return mapBookingToResponse(updated);
   });
 
@@ -260,4 +395,143 @@ export const reviewBookingPrice = async (
   );
   await notificationService.notifyBookingStatusChanged(bookingId);
   return mapBookingToResponse(rejected);
+};
+
+export const listAdminPendingReservations = async (
+  query: Record<string, unknown>
+) => {
+  const { page, limit, skip } = parsePagination(query);
+  const search = typeof query.search === "string" ? query.search : undefined;
+  const paymentStatus =
+    typeof query.paymentStatus === "string" ? query.paymentStatus : undefined;
+
+  const { items, total } = await bookingRepository.listPendingReservations({
+    skip,
+    take: limit,
+    search,
+    paymentStatus,
+  });
+
+  return { items, page, limit, total };
+};
+
+export const getAdminPendingReservation = async (bookingId: string) => {
+  const booking = await bookingRepository.findPendingReservationById(bookingId);
+  if (!booking) {
+    throw new AppError("Booking not found", 404);
+  }
+  return booking;
+};
+
+export const reviewPendingReservation = async (
+  bookingId: string,
+  input: ReviewPendingBookingInput,
+  adminId: string
+) => {
+  if (input.action === "CONFIRM") {
+    try {
+      const updated = await bookingRepository.confirmPendingBooking({
+        bookingId,
+        adminId,
+        notes: input.notes,
+      });
+      if (!updated) {
+        throw new AppError("Booking not found", 404);
+      }
+      await notificationService.notifyBookingStatusChanged(bookingId);
+      return updated;
+    } catch (err: any) {
+      if (err instanceof AppError) throw err;
+      throw new AppError(err.message || "Failed to confirm booking", 400);
+    }
+  }
+
+  try {
+    const updated = await bookingRepository.rejectPendingBooking({
+      bookingId,
+      adminId,
+      notes: input.notes,
+    });
+    if (!updated) {
+      throw new AppError("Booking not found", 404);
+    }
+    await notificationService.notifyBookingStatusChanged(bookingId);
+    return updated;
+  } catch (err: any) {
+    if (err instanceof AppError) throw err;
+    throw new AppError(err.message || "Failed to reject booking", 400);
+  }
+};
+
+export const getAdminBookingHistory = async (
+  bookingId: string,
+  query: Record<string, unknown>
+) => {
+  const { page, limit, skip } = parsePagination({ limit: 50, ...query });
+  const result = await bookingRepository.findBookingHistory({
+    bookingId,
+    skip,
+    take: limit,
+  });
+
+  if (!result) {
+    throw new AppError("Booking not found", 404);
+  }
+
+  return {
+    items: result.items,
+    page,
+    limit,
+    total: result.total,
+  };
+};
+
+export const getStaffBookingHistory = async (
+  staffId: string,
+  bookingId: string,
+  query: Record<string, unknown>
+) => {
+  const { page, limit, skip } = parsePagination({ limit: 50, ...query });
+  const result = await bookingRepository.findBookingHistory({
+    bookingId,
+    skip,
+    take: limit,
+    assignedStaffId: staffId,
+  });
+
+  if (!result) {
+    throw new AppError("Booking not found", 404);
+  }
+
+  return {
+    items: result.items,
+    page,
+    limit,
+    total: result.total,
+  };
+};
+
+export const getAgentBookingHistory = async (
+  agentId: string,
+  bookingId: string,
+  query: Record<string, unknown>
+) => {
+  const { page, limit, skip } = parsePagination({ limit: 50, ...query });
+  const result = await bookingRepository.findBookingHistory({
+    bookingId,
+    skip,
+    take: limit,
+    agentId,
+  });
+
+  if (!result) {
+    throw new AppError("Booking not found", 404);
+  }
+
+  return {
+    items: result.items,
+    page,
+    limit,
+    total: result.total,
+  };
 };

@@ -7,8 +7,12 @@ import requirePermission from "../../shared/middleware/requirePermission.js";
 import {
   createPaymentSchema,
   createStripeSessionSchema,
+  generatePaymentLinkSchema,
   paymentBookingIdParamSchema,
   paymentIdParamSchema,
+  publicInitiatePaymentSchema,
+  publicPayPalCaptureSchema,
+  publicPaymentTokenParamSchema,
   recordPaymentSchema,
   verifyPaymentSchema,
 } from "./paymentValidators.js";
@@ -186,6 +190,102 @@ router.get(
   authMiddleware,
   requireRole("agent"),
   paymentController.listAgentPayments
+);
+
+router.post(
+  "/agent/bookings/:bookingId/payments",
+  authMiddleware,
+  requireRole("agent"),
+  validate(paymentBookingIdParamSchema, "params"),
+  validate(createPaymentSchema),
+  paymentController.createAgentPayment
+);
+
+/**
+ * @openapi
+ * /api/v1/agent/bookings/{bookingId}/payment-link:
+ *   post:
+ *     tags: [Agent Payments]
+ *     summary: Generate a secure customer payment link for an agent-created booking
+ *     security: [{ bearerAuth: [] }, { cookieAuth: [] }]
+ */
+router.post(
+  "/agent/bookings/:bookingId/payment-link",
+  authMiddleware,
+  requireRole("agent"),
+  validate(paymentBookingIdParamSchema, "params"),
+  validate(generatePaymentLinkSchema),
+  paymentController.generateAgentPaymentLink
+);
+
+/**
+ * @openapi
+ * /api/v1/public/payment-links/{token}:
+ *   get:
+ *     tags: [Public Payments]
+ *     summary: View booking summary and payment status from a public customer payment link
+ */
+router.get(
+  "/public/payment-links/:token",
+  validate(publicPaymentTokenParamSchema, "params"),
+  paymentController.getPublicPaymentLinkDetails
+);
+
+/**
+ * @openapi
+ * /api/v1/public/payment-links/{token}/stripe-session:
+ *   post:
+ *     tags: [Public Payments]
+ *     summary: Initiate Stripe Checkout from a public customer payment link
+ */
+router.post(
+  "/public/payment-links/:token/stripe-session",
+  validate(publicPaymentTokenParamSchema, "params"),
+  paymentController.createPublicStripeSession
+);
+
+/**
+ * @openapi
+ * /api/v1/public/payment-links/{token}/paypal-order:
+ *   post:
+ *     tags: [Public Payments]
+ *     summary: Initiate PayPal order from a public customer payment link
+ */
+router.post(
+  "/public/payment-links/:token/paypal-order",
+  validate(publicPaymentTokenParamSchema, "params"),
+  paymentController.createPublicPayPalOrder
+);
+
+/**
+ * @openapi
+ * /api/v1/public/payment-links/{token}/paypal-capture:
+ *   post:
+ *     tags: [Public Payments]
+ *     summary: Capture PayPal order from a public customer payment link
+ */
+router.post(
+  "/public/payment-links/:token/paypal-capture",
+  validate(publicPaymentTokenParamSchema, "params"),
+  validate(publicPayPalCaptureSchema),
+  paymentController.capturePublicPayPalOrder
+);
+
+router.post(
+  "/agent/bookings/:bookingId/stripe-session",
+  authMiddleware,
+  requireRole("agent"),
+  validate(paymentBookingIdParamSchema, "params"),
+  validate(createStripeSessionSchema),
+  paymentController.createAgentStripeSession
+);
+
+router.post(
+  "/agent/payments/:paymentId/reconcile",
+  authMiddleware,
+  requireRole("agent"),
+  validate(paymentIdParamSchema, "params"),
+  paymentController.reconcilePayment
 );
 
 /**

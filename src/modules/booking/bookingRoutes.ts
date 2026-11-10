@@ -8,6 +8,8 @@ import {
   createBookingSchema,
   updateBookingPriceSchema,
   reviewBookingPriceSchema,
+  reviewPendingBookingSchema,
+  listPendingReservationsQuerySchema,
   bookingIdParamSchema,
 } from "./bookingValidators.js";
 
@@ -150,6 +152,14 @@ router.patch(
   bookingController.updateBookingPrice
 );
 
+router.get(
+  "/agent/bookings/:bookingId/history",
+  authMiddleware,
+  requireRole("agent"),
+  validate(bookingIdParamSchema, "params"),
+  bookingController.getAgentBookingHistory
+);
+
 /**
  * @openapi
  * /api/v1/admin/bookings/{bookingId}/price-approvals:
@@ -196,6 +206,203 @@ router.post(
   validate(bookingIdParamSchema, "params"),
   validate(reviewBookingPriceSchema),
   bookingController.reviewBookingPrice
+);
+
+/**
+ * @openapi
+ * /api/v1/admin/bookings/pending:
+ *   get:
+ *     tags:
+ *       - Admin Bookings
+ *     summary: List pending reservations requiring confirmation or review
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, minimum: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, minimum: 1, maximum: 100 }
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *       - in: query
+ *         name: paymentStatus
+ *         schema: { type: string, enum: [UNPAID, PARTIALLY_PAID, PAID] }
+ *     responses:
+ *       200:
+ *         description: List of pending reservations
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+router.get(
+  "/admin/bookings/pending",
+  authMiddleware,
+  requirePermission("bookings.view"),
+  validate(listPendingReservationsQuerySchema, "query"),
+  bookingController.listPendingReservations
+);
+
+/**
+ * @openapi
+ * /api/v1/admin/bookings/pending/{bookingId}:
+ *   get:
+ *     tags:
+ *       - Admin Bookings
+ *     summary: Get details of a single pending reservation
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - name: bookingId
+ *         in: path
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       200:
+ *         description: Pending reservation details
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+router.get(
+  "/admin/bookings/pending/:bookingId",
+  authMiddleware,
+  requirePermission("bookings.view"),
+  validate(bookingIdParamSchema, "params"),
+  bookingController.getPendingReservation
+);
+
+/**
+ * @openapi
+ * /api/v1/admin/bookings/pending/{bookingId}/review:
+ *   post:
+ *     tags:
+ *       - Admin Bookings
+ *     summary: Confirm or reject a pending customer reservation
+ *     description: Admins can confirm an eligible pending reservation (promoting it to CONFIRMED so it enters the operational queue) or reject/cancel it.
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - name: bookingId
+ *         in: path
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [action]
+ *             properties:
+ *               action: { type: string, enum: [CONFIRM, REJECT], example: "CONFIRM" }
+ *               notes: { type: string, example: "Verified traveler identity and availability" }
+ *     responses:
+ *       200:
+ *         description: Booking confirmation or rejection processed
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+router.post(
+  "/admin/bookings/pending/:bookingId/review",
+  authMiddleware,
+  requirePermission("bookings.update_status"),
+  validate(bookingIdParamSchema, "params"),
+  validate(reviewPendingBookingSchema),
+  bookingController.reviewPendingReservation
+);
+
+/**
+ * @openapi
+ * /api/v1/admin/bookings/{bookingId}/history:
+ *   get:
+ *     tags:
+ *       - Admin Bookings
+ *     summary: Retrieve chronological activity history for a booking
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - name: bookingId
+ *         in: path
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, minimum: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, minimum: 1, maximum: 100 }
+ *     responses:
+ *       200:
+ *         description: Booking activity history retrieved successfully
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+router.get(
+  "/admin/bookings/:bookingId/history",
+  authMiddleware,
+  requirePermission("bookings.view"),
+  validate(bookingIdParamSchema, "params"),
+  bookingController.getAdminBookingHistory
+);
+
+/**
+ * @openapi
+ * /api/v1/staff/operations/bookings/{bookingId}/history:
+ *   get:
+ *     tags:
+ *       - Staff Operations
+ *     summary: Retrieve chronological activity history for an assigned booking
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - name: bookingId
+ *         in: path
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, minimum: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, minimum: 1, maximum: 100 }
+ *     responses:
+ *       200:
+ *         description: Booking activity history retrieved successfully
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+router.get(
+  "/staff/operations/bookings/:bookingId/history",
+  authMiddleware,
+  requireRole("staff"),
+  validate(bookingIdParamSchema, "params"),
+  bookingController.getStaffBookingHistory
 );
 
 export default router;

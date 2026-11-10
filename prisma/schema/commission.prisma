@@ -1,12 +1,36 @@
 model CommissionRule {
-  id          String             @id @default(uuid())
+  id          String                 @id @default(uuid())
+  name        String?
+  description String?
   rateType    CommissionRateType
-  rateValue   Decimal            @db.Decimal(10, 2)
-  isActive    Boolean            @default(true)
+  rateValue   Decimal                @db.Decimal(10, 2)
+  status      CommissionPolicyStatus @default(DRAFT)
+  isActive    Boolean                @default(false)
   createdById String
-  createdAt   DateTime           @default(now())
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @default(now()) @updatedAt
   commissions Commission[]
-  createdBy   User               @relation("CommissionRuleAuthor", fields: [createdById], references: [id])
+  createdBy   User                   @relation("CommissionRuleAuthor", fields: [createdById], references: [id])
+  auditLogs   CommissionRuleAuditLog[]
+
+  @@index([status])
+  @@index([isActive])
+}
+
+model CommissionRuleAuditLog {
+  id             String         @id @default(uuid())
+  ruleId         String
+  adminId        String
+  action         String
+  previousValues Json?
+  newValues      Json?
+  createdAt      DateTime       @default(now())
+  admin          User           @relation("CommissionRuleAudits", fields: [adminId], references: [id])
+  rule           CommissionRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+
+  @@index([ruleId])
+  @@index([adminId])
+  @@index([createdAt(sort: Desc)])
 }
 
 model Commission {
@@ -41,6 +65,13 @@ model CommissionAdjustment {
   commission     Commission @relation(fields: [commissionId], references: [id])
 
   @@index([commissionId])
+}
+
+enum CommissionPolicyStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+  ARCHIVED
 }
 
 enum CommissionRateType {
