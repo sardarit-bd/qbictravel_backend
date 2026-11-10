@@ -291,6 +291,18 @@ router.get(
 );
 
 /**
+ * Route alias: /admin/settings/audit
+ * Supports clients invoking GET /api/v1/admin/settings/audit as well as /audit-logs
+ */
+router.get(
+  "/admin/settings/audit",
+  authMiddleware,
+  requirePermission(["settings.audit.view", "settings.view"]),
+  validate(listAuditLogsQuerySchema, "query"),
+  controller.getAuditLogs
+);
+
+/**
  * @openapi
  * /api/v1/webhooks/payment:
  *   post:
