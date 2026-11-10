@@ -56,6 +56,16 @@ export const FulfillmentStatus = {
 export type FulfillmentStatus = (typeof FulfillmentStatus)[keyof typeof FulfillmentStatus]
 
 
+export const CommissionPolicyStatus = {
+  DRAFT: 'DRAFT',
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type CommissionPolicyStatus = (typeof CommissionPolicyStatus)[keyof typeof CommissionPolicyStatus]
+
+
 export const CommissionRateType = {
   PERCENTAGE: 'PERCENTAGE',
   FIXED: 'FIXED'

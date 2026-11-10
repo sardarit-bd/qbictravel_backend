@@ -59,6 +59,7 @@ export const ModelName = {
   PriceApproval: 'PriceApproval',
   BookingHistory: 'BookingHistory',
   CommissionRule: 'CommissionRule',
+  CommissionRuleAuditLog: 'CommissionRuleAuditLog',
   Commission: 'Commission',
   CommissionAdjustment: 'CommissionAdjustment',
   Media: 'Media',
@@ -196,14 +197,31 @@ export type BookingHistoryScalarFieldEnum = (typeof BookingHistoryScalarFieldEnu
 
 export const CommissionRuleScalarFieldEnum = {
   id: 'id',
+  name: 'name',
+  description: 'description',
   rateType: 'rateType',
   rateValue: 'rateValue',
+  status: 'status',
   isActive: 'isActive',
   createdById: 'createdById',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type CommissionRuleScalarFieldEnum = (typeof CommissionRuleScalarFieldEnum)[keyof typeof CommissionRuleScalarFieldEnum]
+
+
+export const CommissionRuleAuditLogScalarFieldEnum = {
+  id: 'id',
+  ruleId: 'ruleId',
+  adminId: 'adminId',
+  action: 'action',
+  previousValues: 'previousValues',
+  newValues: 'newValues',
+  createdAt: 'createdAt'
+} as const
+
+export type CommissionRuleAuditLogScalarFieldEnum = (typeof CommissionRuleAuditLogScalarFieldEnum)[keyof typeof CommissionRuleAuditLogScalarFieldEnum]
 
 
 export const CommissionScalarFieldEnum = {

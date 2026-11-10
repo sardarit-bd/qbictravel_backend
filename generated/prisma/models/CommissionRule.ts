@@ -36,29 +36,41 @@ export type CommissionRuleSumAggregateOutputType = {
 
 export type CommissionRuleMinAggregateOutputType = {
   id: string | null
+  name: string | null
+  description: string | null
   rateType: $Enums.CommissionRateType | null
   rateValue: runtime.Decimal | null
+  status: $Enums.CommissionPolicyStatus | null
   isActive: boolean | null
   createdById: string | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type CommissionRuleMaxAggregateOutputType = {
   id: string | null
+  name: string | null
+  description: string | null
   rateType: $Enums.CommissionRateType | null
   rateValue: runtime.Decimal | null
+  status: $Enums.CommissionPolicyStatus | null
   isActive: boolean | null
   createdById: string | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type CommissionRuleCountAggregateOutputType = {
   id: number
+  name: number
+  description: number
   rateType: number
   rateValue: number
+  status: number
   isActive: number
   createdById: number
   createdAt: number
+  updatedAt: number
   _all: number
 }
 
@@ -73,29 +85,41 @@ export type CommissionRuleSumAggregateInputType = {
 
 export type CommissionRuleMinAggregateInputType = {
   id?: true
+  name?: true
+  description?: true
   rateType?: true
   rateValue?: true
+  status?: true
   isActive?: true
   createdById?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type CommissionRuleMaxAggregateInputType = {
   id?: true
+  name?: true
+  description?: true
   rateType?: true
   rateValue?: true
+  status?: true
   isActive?: true
   createdById?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type CommissionRuleCountAggregateInputType = {
   id?: true
+  name?: true
+  description?: true
   rateType?: true
   rateValue?: true
+  status?: true
   isActive?: true
   createdById?: true
   createdAt?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -187,11 +211,15 @@ export type CommissionRuleGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 
 export type CommissionRuleGroupByOutputType = {
   id: string
+  name: string | null
+  description: string | null
   rateType: $Enums.CommissionRateType
   rateValue: runtime.Decimal
+  status: $Enums.CommissionPolicyStatus
   isActive: boolean
   createdById: string
   createdAt: Date
+  updatedAt: Date
   _count: CommissionRuleCountAggregateOutputType | null
   _avg: CommissionRuleAvgAggregateOutputType | null
   _sum: CommissionRuleSumAggregateOutputType | null
@@ -219,24 +247,34 @@ export type CommissionRuleWhereInput = {
   OR?: Prisma.CommissionRuleWhereInput[]
   NOT?: Prisma.CommissionRuleWhereInput | Prisma.CommissionRuleWhereInput[]
   id?: Prisma.StringFilter<"CommissionRule"> | string
+  name?: Prisma.StringNullableFilter<"CommissionRule"> | string | null
+  description?: Prisma.StringNullableFilter<"CommissionRule"> | string | null
   rateType?: Prisma.EnumCommissionRateTypeFilter<"CommissionRule"> | $Enums.CommissionRateType
   rateValue?: Prisma.DecimalFilter<"CommissionRule"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumCommissionPolicyStatusFilter<"CommissionRule"> | $Enums.CommissionPolicyStatus
   isActive?: Prisma.BoolFilter<"CommissionRule"> | boolean
   createdById?: Prisma.StringFilter<"CommissionRule"> | string
   createdAt?: Prisma.DateTimeFilter<"CommissionRule"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"CommissionRule"> | Date | string
   commissions?: Prisma.CommissionListRelationFilter
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  auditLogs?: Prisma.CommissionRuleAuditLogListRelationFilter
 }
 
 export type CommissionRuleOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  name?: Prisma.SortOrderInput | Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   rateType?: Prisma.SortOrder
   rateValue?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   commissions?: Prisma.CommissionOrderByRelationAggregateInput
   createdBy?: Prisma.UserOrderByWithRelationInput
+  auditLogs?: Prisma.CommissionRuleAuditLogOrderByRelationAggregateInput
 }
 
 export type CommissionRuleWhereUniqueInput = Prisma.AtLeast<{
@@ -244,22 +282,31 @@ export type CommissionRuleWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.CommissionRuleWhereInput | Prisma.CommissionRuleWhereInput[]
   OR?: Prisma.CommissionRuleWhereInput[]
   NOT?: Prisma.CommissionRuleWhereInput | Prisma.CommissionRuleWhereInput[]
+  name?: Prisma.StringNullableFilter<"CommissionRule"> | string | null
+  description?: Prisma.StringNullableFilter<"CommissionRule"> | string | null
   rateType?: Prisma.EnumCommissionRateTypeFilter<"CommissionRule"> | $Enums.CommissionRateType
   rateValue?: Prisma.DecimalFilter<"CommissionRule"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumCommissionPolicyStatusFilter<"CommissionRule"> | $Enums.CommissionPolicyStatus
   isActive?: Prisma.BoolFilter<"CommissionRule"> | boolean
   createdById?: Prisma.StringFilter<"CommissionRule"> | string
   createdAt?: Prisma.DateTimeFilter<"CommissionRule"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"CommissionRule"> | Date | string
   commissions?: Prisma.CommissionListRelationFilter
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  auditLogs?: Prisma.CommissionRuleAuditLogListRelationFilter
 }, "id">
 
 export type CommissionRuleOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  name?: Prisma.SortOrderInput | Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   rateType?: Prisma.SortOrder
   rateValue?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.CommissionRuleCountOrderByAggregateInput
   _avg?: Prisma.CommissionRuleAvgOrderByAggregateInput
   _max?: Prisma.CommissionRuleMaxOrderByAggregateInput
@@ -272,86 +319,126 @@ export type CommissionRuleScalarWhereWithAggregatesInput = {
   OR?: Prisma.CommissionRuleScalarWhereWithAggregatesInput[]
   NOT?: Prisma.CommissionRuleScalarWhereWithAggregatesInput | Prisma.CommissionRuleScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"CommissionRule"> | string
+  name?: Prisma.StringNullableWithAggregatesFilter<"CommissionRule"> | string | null
+  description?: Prisma.StringNullableWithAggregatesFilter<"CommissionRule"> | string | null
   rateType?: Prisma.EnumCommissionRateTypeWithAggregatesFilter<"CommissionRule"> | $Enums.CommissionRateType
   rateValue?: Prisma.DecimalWithAggregatesFilter<"CommissionRule"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumCommissionPolicyStatusWithAggregatesFilter<"CommissionRule"> | $Enums.CommissionPolicyStatus
   isActive?: Prisma.BoolWithAggregatesFilter<"CommissionRule"> | boolean
   createdById?: Prisma.StringWithAggregatesFilter<"CommissionRule"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CommissionRule"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CommissionRule"> | Date | string
 }
 
 export type CommissionRuleCreateInput = {
   id?: string
+  name?: string | null
+  description?: string | null
   rateType: $Enums.CommissionRateType
   rateValue: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.CommissionPolicyStatus
   isActive?: boolean
   createdAt?: Date | string
+  updatedAt?: Date | string
   commissions?: Prisma.CommissionCreateNestedManyWithoutRuleInput
   createdBy: Prisma.UserCreateNestedOneWithoutCommissionRulesInput
+  auditLogs?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutRuleInput
 }
 
 export type CommissionRuleUncheckedCreateInput = {
   id?: string
+  name?: string | null
+  description?: string | null
   rateType: $Enums.CommissionRateType
   rateValue: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.CommissionPolicyStatus
   isActive?: boolean
   createdById: string
   createdAt?: Date | string
+  updatedAt?: Date | string
   commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutRuleInput
+  auditLogs?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutRuleInput
 }
 
 export type CommissionRuleUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateType?: Prisma.EnumCommissionRateTypeFieldUpdateOperationsInput | $Enums.CommissionRateType
   rateValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumCommissionPolicyStatusFieldUpdateOperationsInput | $Enums.CommissionPolicyStatus
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commissions?: Prisma.CommissionUpdateManyWithoutRuleNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCommissionRulesNestedInput
+  auditLogs?: Prisma.CommissionRuleAuditLogUpdateManyWithoutRuleNestedInput
 }
 
 export type CommissionRuleUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateType?: Prisma.EnumCommissionRateTypeFieldUpdateOperationsInput | $Enums.CommissionRateType
   rateValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumCommissionPolicyStatusFieldUpdateOperationsInput | $Enums.CommissionPolicyStatus
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commissions?: Prisma.CommissionUncheckedUpdateManyWithoutRuleNestedInput
+  auditLogs?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutRuleNestedInput
 }
 
 export type CommissionRuleCreateManyInput = {
   id?: string
+  name?: string | null
+  description?: string | null
   rateType: $Enums.CommissionRateType
   rateValue: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.CommissionPolicyStatus
   isActive?: boolean
   createdById: string
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type CommissionRuleUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateType?: Prisma.EnumCommissionRateTypeFieldUpdateOperationsInput | $Enums.CommissionRateType
   rateValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumCommissionPolicyStatusFieldUpdateOperationsInput | $Enums.CommissionPolicyStatus
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CommissionRuleUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateType?: Prisma.EnumCommissionRateTypeFieldUpdateOperationsInput | $Enums.CommissionRateType
   rateValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumCommissionPolicyStatusFieldUpdateOperationsInput | $Enums.CommissionPolicyStatus
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CommissionRuleCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   rateType?: Prisma.SortOrder
   rateValue?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type CommissionRuleAvgOrderByAggregateInput = {
@@ -360,20 +447,28 @@ export type CommissionRuleAvgOrderByAggregateInput = {
 
 export type CommissionRuleMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   rateType?: Prisma.SortOrder
   rateValue?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type CommissionRuleMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   rateType?: Prisma.SortOrder
   rateValue?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type CommissionRuleSumOrderByAggregateInput = {
@@ -397,6 +492,24 @@ export type CommissionRuleOrderByRelationAggregateInput = {
 
 export type EnumCommissionRateTypeFieldUpdateOperationsInput = {
   set?: $Enums.CommissionRateType
+}
+
+export type EnumCommissionPolicyStatusFieldUpdateOperationsInput = {
+  set?: $Enums.CommissionPolicyStatus
+}
+
+export type CommissionRuleCreateNestedOneWithoutAuditLogsInput = {
+  create?: Prisma.XOR<Prisma.CommissionRuleCreateWithoutAuditLogsInput, Prisma.CommissionRuleUncheckedCreateWithoutAuditLogsInput>
+  connectOrCreate?: Prisma.CommissionRuleCreateOrConnectWithoutAuditLogsInput
+  connect?: Prisma.CommissionRuleWhereUniqueInput
+}
+
+export type CommissionRuleUpdateOneRequiredWithoutAuditLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.CommissionRuleCreateWithoutAuditLogsInput, Prisma.CommissionRuleUncheckedCreateWithoutAuditLogsInput>
+  connectOrCreate?: Prisma.CommissionRuleCreateOrConnectWithoutAuditLogsInput
+  upsert?: Prisma.CommissionRuleUpsertWithoutAuditLogsInput
+  connect?: Prisma.CommissionRuleWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CommissionRuleUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.CommissionRuleUpdateWithoutAuditLogsInput>, Prisma.CommissionRuleUncheckedUpdateWithoutAuditLogsInput>
 }
 
 export type CommissionRuleCreateNestedOneWithoutCommissionsInput = {
@@ -455,22 +568,104 @@ export type CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput = {
   deleteMany?: Prisma.CommissionRuleScalarWhereInput | Prisma.CommissionRuleScalarWhereInput[]
 }
 
-export type CommissionRuleCreateWithoutCommissionsInput = {
+export type CommissionRuleCreateWithoutAuditLogsInput = {
   id?: string
+  name?: string | null
+  description?: string | null
   rateType: $Enums.CommissionRateType
   rateValue: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.CommissionPolicyStatus
   isActive?: boolean
   createdAt?: Date | string
+  updatedAt?: Date | string
+  commissions?: Prisma.CommissionCreateNestedManyWithoutRuleInput
   createdBy: Prisma.UserCreateNestedOneWithoutCommissionRulesInput
+}
+
+export type CommissionRuleUncheckedCreateWithoutAuditLogsInput = {
+  id?: string
+  name?: string | null
+  description?: string | null
+  rateType: $Enums.CommissionRateType
+  rateValue: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.CommissionPolicyStatus
+  isActive?: boolean
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutRuleInput
+}
+
+export type CommissionRuleCreateOrConnectWithoutAuditLogsInput = {
+  where: Prisma.CommissionRuleWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommissionRuleCreateWithoutAuditLogsInput, Prisma.CommissionRuleUncheckedCreateWithoutAuditLogsInput>
+}
+
+export type CommissionRuleUpsertWithoutAuditLogsInput = {
+  update: Prisma.XOR<Prisma.CommissionRuleUpdateWithoutAuditLogsInput, Prisma.CommissionRuleUncheckedUpdateWithoutAuditLogsInput>
+  create: Prisma.XOR<Prisma.CommissionRuleCreateWithoutAuditLogsInput, Prisma.CommissionRuleUncheckedCreateWithoutAuditLogsInput>
+  where?: Prisma.CommissionRuleWhereInput
+}
+
+export type CommissionRuleUpdateToOneWithWhereWithoutAuditLogsInput = {
+  where?: Prisma.CommissionRuleWhereInput
+  data: Prisma.XOR<Prisma.CommissionRuleUpdateWithoutAuditLogsInput, Prisma.CommissionRuleUncheckedUpdateWithoutAuditLogsInput>
+}
+
+export type CommissionRuleUpdateWithoutAuditLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rateType?: Prisma.EnumCommissionRateTypeFieldUpdateOperationsInput | $Enums.CommissionRateType
+  rateValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumCommissionPolicyStatusFieldUpdateOperationsInput | $Enums.CommissionPolicyStatus
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  commissions?: Prisma.CommissionUpdateManyWithoutRuleNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCommissionRulesNestedInput
+}
+
+export type CommissionRuleUncheckedUpdateWithoutAuditLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rateType?: Prisma.EnumCommissionRateTypeFieldUpdateOperationsInput | $Enums.CommissionRateType
+  rateValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumCommissionPolicyStatusFieldUpdateOperationsInput | $Enums.CommissionPolicyStatus
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  commissions?: Prisma.CommissionUncheckedUpdateManyWithoutRuleNestedInput
+}
+
+export type CommissionRuleCreateWithoutCommissionsInput = {
+  id?: string
+  name?: string | null
+  description?: string | null
+  rateType: $Enums.CommissionRateType
+  rateValue: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.CommissionPolicyStatus
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy: Prisma.UserCreateNestedOneWithoutCommissionRulesInput
+  auditLogs?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutRuleInput
 }
 
 export type CommissionRuleUncheckedCreateWithoutCommissionsInput = {
   id?: string
+  name?: string | null
+  description?: string | null
   rateType: $Enums.CommissionRateType
   rateValue: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.CommissionPolicyStatus
   isActive?: boolean
   createdById: string
   createdAt?: Date | string
+  updatedAt?: Date | string
+  auditLogs?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutRuleInput
 }
 
 export type CommissionRuleCreateOrConnectWithoutCommissionsInput = {
@@ -491,38 +686,58 @@ export type CommissionRuleUpdateToOneWithWhereWithoutCommissionsInput = {
 
 export type CommissionRuleUpdateWithoutCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateType?: Prisma.EnumCommissionRateTypeFieldUpdateOperationsInput | $Enums.CommissionRateType
   rateValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumCommissionPolicyStatusFieldUpdateOperationsInput | $Enums.CommissionPolicyStatus
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCommissionRulesNestedInput
+  auditLogs?: Prisma.CommissionRuleAuditLogUpdateManyWithoutRuleNestedInput
 }
 
 export type CommissionRuleUncheckedUpdateWithoutCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateType?: Prisma.EnumCommissionRateTypeFieldUpdateOperationsInput | $Enums.CommissionRateType
   rateValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumCommissionPolicyStatusFieldUpdateOperationsInput | $Enums.CommissionPolicyStatus
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  auditLogs?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutRuleNestedInput
 }
 
 export type CommissionRuleCreateWithoutCreatedByInput = {
   id?: string
+  name?: string | null
+  description?: string | null
   rateType: $Enums.CommissionRateType
   rateValue: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.CommissionPolicyStatus
   isActive?: boolean
   createdAt?: Date | string
+  updatedAt?: Date | string
   commissions?: Prisma.CommissionCreateNestedManyWithoutRuleInput
+  auditLogs?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutRuleInput
 }
 
 export type CommissionRuleUncheckedCreateWithoutCreatedByInput = {
   id?: string
+  name?: string | null
+  description?: string | null
   rateType: $Enums.CommissionRateType
   rateValue: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.CommissionPolicyStatus
   isActive?: boolean
   createdAt?: Date | string
+  updatedAt?: Date | string
   commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutRuleInput
+  auditLogs?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutRuleInput
 }
 
 export type CommissionRuleCreateOrConnectWithoutCreatedByInput = {
@@ -556,45 +771,67 @@ export type CommissionRuleScalarWhereInput = {
   OR?: Prisma.CommissionRuleScalarWhereInput[]
   NOT?: Prisma.CommissionRuleScalarWhereInput | Prisma.CommissionRuleScalarWhereInput[]
   id?: Prisma.StringFilter<"CommissionRule"> | string
+  name?: Prisma.StringNullableFilter<"CommissionRule"> | string | null
+  description?: Prisma.StringNullableFilter<"CommissionRule"> | string | null
   rateType?: Prisma.EnumCommissionRateTypeFilter<"CommissionRule"> | $Enums.CommissionRateType
   rateValue?: Prisma.DecimalFilter<"CommissionRule"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumCommissionPolicyStatusFilter<"CommissionRule"> | $Enums.CommissionPolicyStatus
   isActive?: Prisma.BoolFilter<"CommissionRule"> | boolean
   createdById?: Prisma.StringFilter<"CommissionRule"> | string
   createdAt?: Prisma.DateTimeFilter<"CommissionRule"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"CommissionRule"> | Date | string
 }
 
 export type CommissionRuleCreateManyCreatedByInput = {
   id?: string
+  name?: string | null
+  description?: string | null
   rateType: $Enums.CommissionRateType
   rateValue: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.CommissionPolicyStatus
   isActive?: boolean
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type CommissionRuleUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateType?: Prisma.EnumCommissionRateTypeFieldUpdateOperationsInput | $Enums.CommissionRateType
   rateValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumCommissionPolicyStatusFieldUpdateOperationsInput | $Enums.CommissionPolicyStatus
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commissions?: Prisma.CommissionUpdateManyWithoutRuleNestedInput
+  auditLogs?: Prisma.CommissionRuleAuditLogUpdateManyWithoutRuleNestedInput
 }
 
 export type CommissionRuleUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateType?: Prisma.EnumCommissionRateTypeFieldUpdateOperationsInput | $Enums.CommissionRateType
   rateValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumCommissionPolicyStatusFieldUpdateOperationsInput | $Enums.CommissionPolicyStatus
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commissions?: Prisma.CommissionUncheckedUpdateManyWithoutRuleNestedInput
+  auditLogs?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutRuleNestedInput
 }
 
 export type CommissionRuleUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateType?: Prisma.EnumCommissionRateTypeFieldUpdateOperationsInput | $Enums.CommissionRateType
   rateValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumCommissionPolicyStatusFieldUpdateOperationsInput | $Enums.CommissionPolicyStatus
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -604,10 +841,12 @@ export type CommissionRuleUncheckedUpdateManyWithoutCreatedByInput = {
 
 export type CommissionRuleCountOutputType = {
   commissions: number
+  auditLogs: number
 }
 
 export type CommissionRuleCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   commissions?: boolean | CommissionRuleCountOutputTypeCountCommissionsArgs
+  auditLogs?: boolean | CommissionRuleCountOutputTypeCountAuditLogsArgs
 }
 
 /**
@@ -627,52 +866,77 @@ export type CommissionRuleCountOutputTypeCountCommissionsArgs<ExtArgs extends ru
   where?: Prisma.CommissionWhereInput
 }
 
+/**
+ * CommissionRuleCountOutputType without action
+ */
+export type CommissionRuleCountOutputTypeCountAuditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CommissionRuleAuditLogWhereInput
+}
+
 
 export type CommissionRuleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  name?: boolean
+  description?: boolean
   rateType?: boolean
   rateValue?: boolean
+  status?: boolean
   isActive?: boolean
   createdById?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   commissions?: boolean | Prisma.CommissionRule$commissionsArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  auditLogs?: boolean | Prisma.CommissionRule$auditLogsArgs<ExtArgs>
   _count?: boolean | Prisma.CommissionRuleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["commissionRule"]>
 
 export type CommissionRuleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  name?: boolean
+  description?: boolean
   rateType?: boolean
   rateValue?: boolean
+  status?: boolean
   isActive?: boolean
   createdById?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["commissionRule"]>
 
 export type CommissionRuleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  name?: boolean
+  description?: boolean
   rateType?: boolean
   rateValue?: boolean
+  status?: boolean
   isActive?: boolean
   createdById?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["commissionRule"]>
 
 export type CommissionRuleSelectScalar = {
   id?: boolean
+  name?: boolean
+  description?: boolean
   rateType?: boolean
   rateValue?: boolean
+  status?: boolean
   isActive?: boolean
   createdById?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
 }
 
-export type CommissionRuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "rateType" | "rateValue" | "isActive" | "createdById" | "createdAt", ExtArgs["result"]["commissionRule"]>
+export type CommissionRuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "rateType" | "rateValue" | "status" | "isActive" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["commissionRule"]>
 export type CommissionRuleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   commissions?: boolean | Prisma.CommissionRule$commissionsArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  auditLogs?: boolean | Prisma.CommissionRule$auditLogsArgs<ExtArgs>
   _count?: boolean | Prisma.CommissionRuleCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CommissionRuleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -687,14 +951,19 @@ export type $CommissionRulePayload<ExtArgs extends runtime.Types.Extensions.Inte
   objects: {
     commissions: Prisma.$CommissionPayload<ExtArgs>[]
     createdBy: Prisma.$UserPayload<ExtArgs>
+    auditLogs: Prisma.$CommissionRuleAuditLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    name: string | null
+    description: string | null
     rateType: $Enums.CommissionRateType
     rateValue: runtime.Decimal
+    status: $Enums.CommissionPolicyStatus
     isActive: boolean
     createdById: string
     createdAt: Date
+    updatedAt: Date
   }, ExtArgs["result"]["commissionRule"]>
   composites: {}
 }
@@ -1091,6 +1360,7 @@ export interface Prisma__CommissionRuleClient<T, Null = never, ExtArgs extends r
   readonly [Symbol.toStringTag]: "PrismaPromise"
   commissions<T extends Prisma.CommissionRule$commissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommissionRule$commissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  auditLogs<T extends Prisma.CommissionRule$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommissionRule$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionRuleAuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1121,11 +1391,15 @@ export interface Prisma__CommissionRuleClient<T, Null = never, ExtArgs extends r
  */
 export interface CommissionRuleFieldRefs {
   readonly id: Prisma.FieldRef<"CommissionRule", 'String'>
+  readonly name: Prisma.FieldRef<"CommissionRule", 'String'>
+  readonly description: Prisma.FieldRef<"CommissionRule", 'String'>
   readonly rateType: Prisma.FieldRef<"CommissionRule", 'CommissionRateType'>
   readonly rateValue: Prisma.FieldRef<"CommissionRule", 'Decimal'>
+  readonly status: Prisma.FieldRef<"CommissionRule", 'CommissionPolicyStatus'>
   readonly isActive: Prisma.FieldRef<"CommissionRule", 'Boolean'>
   readonly createdById: Prisma.FieldRef<"CommissionRule", 'String'>
   readonly createdAt: Prisma.FieldRef<"CommissionRule", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"CommissionRule", 'DateTime'>
 }
     
 
@@ -1548,6 +1822,30 @@ export type CommissionRule$commissionsArgs<ExtArgs extends runtime.Types.Extensi
   take?: number
   skip?: number
   distinct?: Prisma.CommissionScalarFieldEnum | Prisma.CommissionScalarFieldEnum[]
+}
+
+/**
+ * CommissionRule.auditLogs
+ */
+export type CommissionRule$auditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CommissionRuleAuditLog
+   */
+  select?: Prisma.CommissionRuleAuditLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CommissionRuleAuditLog
+   */
+  omit?: Prisma.CommissionRuleAuditLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommissionRuleAuditLogInclude<ExtArgs> | null
+  where?: Prisma.CommissionRuleAuditLogWhereInput
+  orderBy?: Prisma.CommissionRuleAuditLogOrderByWithRelationInput | Prisma.CommissionRuleAuditLogOrderByWithRelationInput[]
+  cursor?: Prisma.CommissionRuleAuditLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CommissionRuleAuditLogScalarFieldEnum | Prisma.CommissionRuleAuditLogScalarFieldEnum[]
 }
 
 /**

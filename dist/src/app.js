@@ -24,6 +24,7 @@ import permissionRoutes, { myPermissionsRouter } from "./modules/permission/perm
 import agentRoutes from "./modules/agent/agentRoutes.js";
 import settingRoutes from "./modules/setting/settingRoutes.js";
 import customerRoutes from "./modules/customer/customerRoutes.js";
+import { handleStripeWebhook } from "./modules/payment/paymentController.js";
 const swaggerCustomCss = `
   body {
     background-color: #0000;
@@ -93,6 +94,9 @@ app.use(rateLimit({
     legacyHeaders: false,
     skip: (req) => process.env.NODE_ENV === "test" || req.method === "OPTIONS",
 }));
+// 3. Dedicated Stripe Webhook raw body parser mounted BEFORE global express.json()
+// Stripe signature verification requires the exact unmodified raw byte buffer.
+app.post("/api/v1/webhooks/stripe", express.raw({ type: "application/json", limit: "2mb" }), handleStripeWebhook);
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 app.use(helmet());

@@ -271,6 +271,7 @@ export type UserWhereInput = {
   agentCommissions?: Prisma.CommissionListRelationFilter
   commissionAdjustments?: Prisma.CommissionAdjustmentListRelationFilter
   commissionRules?: Prisma.CommissionRuleListRelationFilter
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogListRelationFilter
   uploadedMedia?: Prisma.MediaListRelationFilter
   mediaUploadAuths?: Prisma.MediaUploadAuthListRelationFilter
   notificationSettings?: Prisma.NotificationSettingListRelationFilter
@@ -304,6 +305,7 @@ export type UserOrderByWithRelationInput = {
   agentCommissions?: Prisma.CommissionOrderByRelationAggregateInput
   commissionAdjustments?: Prisma.CommissionAdjustmentOrderByRelationAggregateInput
   commissionRules?: Prisma.CommissionRuleOrderByRelationAggregateInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogOrderByRelationAggregateInput
   uploadedMedia?: Prisma.MediaOrderByRelationAggregateInput
   mediaUploadAuths?: Prisma.MediaUploadAuthOrderByRelationAggregateInput
   notificationSettings?: Prisma.NotificationSettingOrderByRelationAggregateInput
@@ -340,6 +342,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   agentCommissions?: Prisma.CommissionListRelationFilter
   commissionAdjustments?: Prisma.CommissionAdjustmentListRelationFilter
   commissionRules?: Prisma.CommissionRuleListRelationFilter
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogListRelationFilter
   uploadedMedia?: Prisma.MediaListRelationFilter
   mediaUploadAuths?: Prisma.MediaUploadAuthListRelationFilter
   notificationSettings?: Prisma.NotificationSettingListRelationFilter
@@ -409,6 +412,7 @@ export type UserCreateInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -442,6 +446,7 @@ export type UserUncheckedCreateInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -475,6 +480,7 @@ export type UserUpdateInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -508,6 +514,7 @@ export type UserUncheckedUpdateInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -728,6 +735,20 @@ export type UserUpdateOneRequiredWithoutCommissionRulesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCommissionRulesInput, Prisma.UserUpdateWithoutCommissionRulesInput>, Prisma.UserUncheckedUpdateWithoutCommissionRulesInput>
 }
 
+export type UserCreateNestedOneWithoutCommissionRuleAuditsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommissionRuleAuditsInput, Prisma.UserUncheckedCreateWithoutCommissionRuleAuditsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommissionRuleAuditsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCommissionRuleAuditsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommissionRuleAuditsInput, Prisma.UserUncheckedCreateWithoutCommissionRuleAuditsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommissionRuleAuditsInput
+  upsert?: Prisma.UserUpsertWithoutCommissionRuleAuditsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCommissionRuleAuditsInput, Prisma.UserUpdateWithoutCommissionRuleAuditsInput>, Prisma.UserUncheckedUpdateWithoutCommissionRuleAuditsInput>
+}
+
 export type UserCreateNestedOneWithoutAgentCommissionsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutAgentCommissionsInput, Prisma.UserUncheckedCreateWithoutAgentCommissionsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutAgentCommissionsInput
@@ -934,6 +955,7 @@ export type UserCreateWithoutAgentProfileInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -966,6 +988,7 @@ export type UserUncheckedCreateWithoutAgentProfileInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -1014,6 +1037,7 @@ export type UserUpdateWithoutAgentProfileInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -1046,6 +1070,7 @@ export type UserUncheckedUpdateWithoutAgentProfileInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -1079,6 +1104,7 @@ export type UserCreateWithoutPasswordResetTokensInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -1111,6 +1137,7 @@ export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -1159,6 +1186,7 @@ export type UserUpdateWithoutPasswordResetTokensInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -1191,6 +1219,7 @@ export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -1222,6 +1251,7 @@ export type UserCreateWithoutAgentBookingsInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -1254,6 +1284,7 @@ export type UserUncheckedCreateWithoutAgentBookingsInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -1291,6 +1322,7 @@ export type UserCreateWithoutAssignedBookingsInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -1323,6 +1355,7 @@ export type UserUncheckedCreateWithoutAssignedBookingsInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -1360,6 +1393,7 @@ export type UserCreateWithoutCustomerBookingsInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -1392,6 +1426,7 @@ export type UserUncheckedCreateWithoutCustomerBookingsInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -1440,6 +1475,7 @@ export type UserUpdateWithoutAgentBookingsInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -1472,6 +1508,7 @@ export type UserUncheckedUpdateWithoutAgentBookingsInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -1515,6 +1552,7 @@ export type UserUpdateWithoutAssignedBookingsInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -1547,6 +1585,7 @@ export type UserUncheckedUpdateWithoutAssignedBookingsInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -1590,6 +1629,7 @@ export type UserUpdateWithoutCustomerBookingsInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -1622,6 +1662,7 @@ export type UserUncheckedUpdateWithoutCustomerBookingsInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -1655,6 +1696,7 @@ export type UserCreateWithoutAdminApprovalsInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -1687,6 +1729,7 @@ export type UserUncheckedCreateWithoutAdminApprovalsInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -1735,6 +1778,7 @@ export type UserUpdateWithoutAdminApprovalsInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -1767,6 +1811,7 @@ export type UserUncheckedUpdateWithoutAdminApprovalsInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -1798,6 +1843,7 @@ export type UserCreateWithoutCommissionRulesInput = {
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -1830,6 +1876,7 @@ export type UserUncheckedCreateWithoutCommissionRulesInput = {
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -1878,6 +1925,7 @@ export type UserUpdateWithoutCommissionRulesInput = {
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -1910,6 +1958,155 @@ export type UserUncheckedUpdateWithoutCommissionRulesInput = {
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
+  uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserCreateWithoutCommissionRuleAuditsInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutCommissionRuleAuditsInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutCommissionRuleAuditsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommissionRuleAuditsInput, Prisma.UserUncheckedCreateWithoutCommissionRuleAuditsInput>
+}
+
+export type UserUpsertWithoutCommissionRuleAuditsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCommissionRuleAuditsInput, Prisma.UserUncheckedUpdateWithoutCommissionRuleAuditsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommissionRuleAuditsInput, Prisma.UserUncheckedCreateWithoutCommissionRuleAuditsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCommissionRuleAuditsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCommissionRuleAuditsInput, Prisma.UserUncheckedUpdateWithoutCommissionRuleAuditsInput>
+}
+
+export type UserUpdateWithoutCommissionRuleAuditsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCommissionRuleAuditsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -1942,6 +2139,7 @@ export type UserCreateWithoutAgentCommissionsInput = {
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -1974,6 +2172,7 @@ export type UserUncheckedCreateWithoutAgentCommissionsInput = {
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -2022,6 +2221,7 @@ export type UserUpdateWithoutAgentCommissionsInput = {
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -2054,6 +2254,7 @@ export type UserUncheckedUpdateWithoutAgentCommissionsInput = {
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -2086,6 +2287,7 @@ export type UserCreateWithoutCommissionAdjustmentsInput = {
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -2118,6 +2320,7 @@ export type UserUncheckedCreateWithoutCommissionAdjustmentsInput = {
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -2166,6 +2369,7 @@ export type UserUpdateWithoutCommissionAdjustmentsInput = {
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -2198,6 +2402,7 @@ export type UserUncheckedUpdateWithoutCommissionAdjustmentsInput = {
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -2231,6 +2436,7 @@ export type UserCreateWithoutUploadedMediaInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -2263,6 +2469,7 @@ export type UserUncheckedCreateWithoutUploadedMediaInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -2311,6 +2518,7 @@ export type UserUpdateWithoutUploadedMediaInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -2343,6 +2551,7 @@ export type UserUncheckedUpdateWithoutUploadedMediaInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -2375,6 +2584,7 @@ export type UserCreateWithoutMediaUploadAuthsInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -2407,6 +2617,7 @@ export type UserUncheckedCreateWithoutMediaUploadAuthsInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -2455,6 +2666,7 @@ export type UserUpdateWithoutMediaUploadAuthsInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -2487,6 +2699,7 @@ export type UserUncheckedUpdateWithoutMediaUploadAuthsInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -2519,6 +2732,7 @@ export type UserCreateWithoutNotificationSettingsInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -2551,6 +2765,7 @@ export type UserUncheckedCreateWithoutNotificationSettingsInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -2599,6 +2814,7 @@ export type UserUpdateWithoutNotificationSettingsInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -2631,6 +2847,7 @@ export type UserUncheckedUpdateWithoutNotificationSettingsInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -2663,6 +2880,7 @@ export type UserCreateWithoutCustomerPaymentsInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -2695,6 +2913,7 @@ export type UserUncheckedCreateWithoutCustomerPaymentsInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -2732,6 +2951,7 @@ export type UserCreateWithoutReviewedPaymentsInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -2764,6 +2984,7 @@ export type UserUncheckedCreateWithoutReviewedPaymentsInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -2812,6 +3033,7 @@ export type UserUpdateWithoutCustomerPaymentsInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -2844,6 +3066,7 @@ export type UserUncheckedUpdateWithoutCustomerPaymentsInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -2887,6 +3110,7 @@ export type UserUpdateWithoutReviewedPaymentsInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -2919,6 +3143,7 @@ export type UserUncheckedUpdateWithoutReviewedPaymentsInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -2951,6 +3176,7 @@ export type UserCreateWithoutInitiatedRefundsInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -2983,6 +3209,7 @@ export type UserUncheckedCreateWithoutInitiatedRefundsInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -3031,6 +3258,7 @@ export type UserUpdateWithoutInitiatedRefundsInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -3063,6 +3291,7 @@ export type UserUncheckedUpdateWithoutInitiatedRefundsInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -3095,6 +3324,7 @@ export type UserCreateWithoutGrantedPermissionsInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -3127,6 +3357,7 @@ export type UserUncheckedCreateWithoutGrantedPermissionsInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -3164,6 +3395,7 @@ export type UserCreateWithoutStaffPermissionsInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -3196,6 +3428,7 @@ export type UserUncheckedCreateWithoutStaffPermissionsInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -3244,6 +3477,7 @@ export type UserUpdateWithoutGrantedPermissionsInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -3276,6 +3510,7 @@ export type UserUncheckedUpdateWithoutGrantedPermissionsInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -3319,6 +3554,7 @@ export type UserUpdateWithoutStaffPermissionsInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -3351,6 +3587,7 @@ export type UserUncheckedUpdateWithoutStaffPermissionsInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -3383,6 +3620,7 @@ export type UserCreateWithoutEditedSettingsInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -3415,6 +3653,7 @@ export type UserUncheckedCreateWithoutEditedSettingsInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -3463,6 +3702,7 @@ export type UserUpdateWithoutEditedSettingsInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -3495,6 +3735,7 @@ export type UserUncheckedUpdateWithoutEditedSettingsInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -3527,6 +3768,7 @@ export type UserCreateWithoutSettingAuditLogsInput = {
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
@@ -3559,6 +3801,7 @@ export type UserUncheckedCreateWithoutSettingAuditLogsInput = {
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
   commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -3607,6 +3850,7 @@ export type UserUpdateWithoutSettingAuditLogsInput = {
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
@@ -3639,6 +3883,7 @@ export type UserUncheckedUpdateWithoutSettingAuditLogsInput = {
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
   commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -3664,6 +3909,7 @@ export type UserCountOutputType = {
   agentCommissions: number
   commissionAdjustments: number
   commissionRules: number
+  commissionRuleAudits: number
   uploadedMedia: number
   mediaUploadAuths: number
   notificationSettings: number
@@ -3685,6 +3931,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   agentCommissions?: boolean | UserCountOutputTypeCountAgentCommissionsArgs
   commissionAdjustments?: boolean | UserCountOutputTypeCountCommissionAdjustmentsArgs
   commissionRules?: boolean | UserCountOutputTypeCountCommissionRulesArgs
+  commissionRuleAudits?: boolean | UserCountOutputTypeCountCommissionRuleAuditsArgs
   uploadedMedia?: boolean | UserCountOutputTypeCountUploadedMediaArgs
   mediaUploadAuths?: boolean | UserCountOutputTypeCountMediaUploadAuthsArgs
   notificationSettings?: boolean | UserCountOutputTypeCountNotificationSettingsArgs
@@ -3749,6 +3996,13 @@ export type UserCountOutputTypeCountCommissionAdjustmentsArgs<ExtArgs extends ru
  */
 export type UserCountOutputTypeCountCommissionRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.CommissionRuleWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCommissionRuleAuditsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CommissionRuleAuditLogWhereInput
 }
 
 /**
@@ -3855,6 +4109,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   agentCommissions?: boolean | Prisma.User$agentCommissionsArgs<ExtArgs>
   commissionAdjustments?: boolean | Prisma.User$commissionAdjustmentsArgs<ExtArgs>
   commissionRules?: boolean | Prisma.User$commissionRulesArgs<ExtArgs>
+  commissionRuleAudits?: boolean | Prisma.User$commissionRuleAuditsArgs<ExtArgs>
   uploadedMedia?: boolean | Prisma.User$uploadedMediaArgs<ExtArgs>
   mediaUploadAuths?: boolean | Prisma.User$mediaUploadAuthsArgs<ExtArgs>
   notificationSettings?: boolean | Prisma.User$notificationSettingsArgs<ExtArgs>
@@ -3921,6 +4176,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   agentCommissions?: boolean | Prisma.User$agentCommissionsArgs<ExtArgs>
   commissionAdjustments?: boolean | Prisma.User$commissionAdjustmentsArgs<ExtArgs>
   commissionRules?: boolean | Prisma.User$commissionRulesArgs<ExtArgs>
+  commissionRuleAudits?: boolean | Prisma.User$commissionRuleAuditsArgs<ExtArgs>
   uploadedMedia?: boolean | Prisma.User$uploadedMediaArgs<ExtArgs>
   mediaUploadAuths?: boolean | Prisma.User$mediaUploadAuthsArgs<ExtArgs>
   notificationSettings?: boolean | Prisma.User$notificationSettingsArgs<ExtArgs>
@@ -3948,6 +4204,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     agentCommissions: Prisma.$CommissionPayload<ExtArgs>[]
     commissionAdjustments: Prisma.$CommissionAdjustmentPayload<ExtArgs>[]
     commissionRules: Prisma.$CommissionRulePayload<ExtArgs>[]
+    commissionRuleAudits: Prisma.$CommissionRuleAuditLogPayload<ExtArgs>[]
     uploadedMedia: Prisma.$MediaPayload<ExtArgs>[]
     mediaUploadAuths: Prisma.$MediaUploadAuthPayload<ExtArgs>[]
     notificationSettings: Prisma.$NotificationSettingPayload<ExtArgs>[]
@@ -4374,6 +4631,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   agentCommissions<T extends Prisma.User$agentCommissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$agentCommissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   commissionAdjustments<T extends Prisma.User$commissionAdjustmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$commissionAdjustmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionAdjustmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   commissionRules<T extends Prisma.User$commissionRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$commissionRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  commissionRuleAudits<T extends Prisma.User$commissionRuleAuditsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$commissionRuleAuditsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionRuleAuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   uploadedMedia<T extends Prisma.User$uploadedMediaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$uploadedMediaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MediaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mediaUploadAuths<T extends Prisma.User$mediaUploadAuthsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mediaUploadAuthsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MediaUploadAuthPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notificationSettings<T extends Prisma.User$notificationSettingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationSettingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationSettingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4979,6 +5237,30 @@ export type User$commissionRulesArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.CommissionRuleScalarFieldEnum | Prisma.CommissionRuleScalarFieldEnum[]
+}
+
+/**
+ * User.commissionRuleAudits
+ */
+export type User$commissionRuleAuditsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CommissionRuleAuditLog
+   */
+  select?: Prisma.CommissionRuleAuditLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CommissionRuleAuditLog
+   */
+  omit?: Prisma.CommissionRuleAuditLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommissionRuleAuditLogInclude<ExtArgs> | null
+  where?: Prisma.CommissionRuleAuditLogWhereInput
+  orderBy?: Prisma.CommissionRuleAuditLogOrderByWithRelationInput | Prisma.CommissionRuleAuditLogOrderByWithRelationInput[]
+  cursor?: Prisma.CommissionRuleAuditLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CommissionRuleAuditLogScalarFieldEnum | Prisma.CommissionRuleAuditLogScalarFieldEnum[]
 }
 
 /**

@@ -82,6 +82,11 @@ export type BookingHistory = Prisma.BookingHistoryModel
  */
 export type CommissionRule = Prisma.CommissionRuleModel
 /**
+ * Model CommissionRuleAuditLog
+ * 
+ */
+export type CommissionRuleAuditLog = Prisma.CommissionRuleAuditLogModel
+/**
  * Model Commission
  * 
  */

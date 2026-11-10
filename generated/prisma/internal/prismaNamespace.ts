@@ -405,6 +405,7 @@ export const ModelName = {
   PriceApproval: 'PriceApproval',
   BookingHistory: 'BookingHistory',
   CommissionRule: 'CommissionRule',
+  CommissionRuleAuditLog: 'CommissionRuleAuditLog',
   Commission: 'Commission',
   CommissionAdjustment: 'CommissionAdjustment',
   Media: 'Media',
@@ -437,7 +438,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "agentProfile" | "passwordResetToken" | "revokedToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "commissionRule" | "commission" | "commissionAdjustment" | "media" | "mediaUploadAuth" | "notificationSetting" | "payment" | "stripeWebhookEvent" | "outboxMessage" | "paymentRefund" | "permission" | "staffPermission" | "service" | "serviceAvailability" | "servicePricing" | "systemSetting" | "settingAuditLog" | "user"
+    modelProps: "agentProfile" | "passwordResetToken" | "revokedToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "commissionRule" | "commissionRuleAuditLog" | "commission" | "commissionAdjustment" | "media" | "mediaUploadAuth" | "notificationSetting" | "payment" | "stripeWebhookEvent" | "outboxMessage" | "paymentRefund" | "permission" | "staffPermission" | "service" | "serviceAvailability" | "servicePricing" | "systemSetting" | "settingAuditLog" | "user"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1030,6 +1031,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.CommissionRuleCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.CommissionRuleCountAggregateOutputType> | number
+        }
+      }
+    }
+    CommissionRuleAuditLog: {
+      payload: Prisma.$CommissionRuleAuditLogPayload<ExtArgs>
+      fields: Prisma.CommissionRuleAuditLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CommissionRuleAuditLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CommissionRuleAuditLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>
+        }
+        findFirst: {
+          args: Prisma.CommissionRuleAuditLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CommissionRuleAuditLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>
+        }
+        findMany: {
+          args: Prisma.CommissionRuleAuditLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>[]
+        }
+        create: {
+          args: Prisma.CommissionRuleAuditLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>
+        }
+        createMany: {
+          args: Prisma.CommissionRuleAuditLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CommissionRuleAuditLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>[]
+        }
+        delete: {
+          args: Prisma.CommissionRuleAuditLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>
+        }
+        update: {
+          args: Prisma.CommissionRuleAuditLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.CommissionRuleAuditLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CommissionRuleAuditLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CommissionRuleAuditLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.CommissionRuleAuditLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CommissionRuleAuditLogPayload>
+        }
+        aggregate: {
+          args: Prisma.CommissionRuleAuditLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCommissionRuleAuditLog>
+        }
+        groupBy: {
+          args: Prisma.CommissionRuleAuditLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CommissionRuleAuditLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CommissionRuleAuditLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CommissionRuleAuditLogCountAggregateOutputType> | number
         }
       }
     }
@@ -2432,14 +2507,31 @@ export type BookingHistoryScalarFieldEnum = (typeof BookingHistoryScalarFieldEnu
 
 export const CommissionRuleScalarFieldEnum = {
   id: 'id',
+  name: 'name',
+  description: 'description',
   rateType: 'rateType',
   rateValue: 'rateValue',
+  status: 'status',
   isActive: 'isActive',
   createdById: 'createdById',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type CommissionRuleScalarFieldEnum = (typeof CommissionRuleScalarFieldEnum)[keyof typeof CommissionRuleScalarFieldEnum]
+
+
+export const CommissionRuleAuditLogScalarFieldEnum = {
+  id: 'id',
+  ruleId: 'ruleId',
+  adminId: 'adminId',
+  action: 'action',
+  previousValues: 'previousValues',
+  newValues: 'newValues',
+  createdAt: 'createdAt'
+} as const
+
+export type CommissionRuleAuditLogScalarFieldEnum = (typeof CommissionRuleAuditLogScalarFieldEnum)[keyof typeof CommissionRuleAuditLogScalarFieldEnum]
 
 
 export const CommissionScalarFieldEnum = {
@@ -2916,6 +3008,20 @@ export type ListEnumCommissionRateTypeFieldRefInput<$PrismaModel> = FieldRefInpu
 
 
 /**
+ * Reference to a field of type 'CommissionPolicyStatus'
+ */
+export type EnumCommissionPolicyStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CommissionPolicyStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'CommissionPolicyStatus[]'
+ */
+export type ListEnumCommissionPolicyStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CommissionPolicyStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'CommissionStatus'
  */
 export type EnumCommissionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CommissionStatus'>
@@ -3269,6 +3375,7 @@ export type GlobalOmitConfig = {
   priceApproval?: Prisma.PriceApprovalOmit
   bookingHistory?: Prisma.BookingHistoryOmit
   commissionRule?: Prisma.CommissionRuleOmit
+  commissionRuleAuditLog?: Prisma.CommissionRuleAuditLogOmit
   commission?: Prisma.CommissionOmit
   commissionAdjustment?: Prisma.CommissionAdjustmentOmit
   media?: Prisma.MediaOmit

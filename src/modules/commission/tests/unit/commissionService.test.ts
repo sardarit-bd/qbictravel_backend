@@ -10,6 +10,7 @@ const repo = vi.mocked(commissionRepository);
 const AGENT_ID = "agent-1";
 const ADMIN_ID = "admin-1";
 const COMMISSION_ID = "commission-1";
+const POLICY_ID = "policy-1";
 
 const makeCommission = (overrides: Record<string, unknown> = {}) =>
   ({
@@ -26,6 +27,21 @@ const makeCommission = (overrides: Record<string, unknown> = {}) =>
     adjustments: [
       { id: "adj-1", previousAmount: "50.00", newAmount: "45.00", reason: "Internal", adminId: ADMIN_ID, createdAt: new Date() },
     ],
+    ...overrides,
+  }) as any;
+
+const makePolicy = (overrides: Record<string, unknown> = {}) =>
+  ({
+    id: POLICY_ID,
+    rateType: "PERCENTAGE",
+    rateValue: "10.00",
+    status: "DRAFT",
+    isActive: false,
+    createdById: ADMIN_ID,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdBy: { id: ADMIN_ID, name: "Admin User", email: "admin@test.com" },
+    auditLogs: [],
     ...overrides,
   }) as any;
 
@@ -132,18 +148,18 @@ describe("commissionService.adjustCommission", () => {
   });
 });
 
-describe("commissionService rules", () => {
+describe("commissionService rules & policy lifecycle", () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
 
   it("returns the active rule with history", async () => {
-    const rule = { id: "rule-1", rateType: "PERCENTAGE", rateValue: "10.00", isActive: true };
-    repo.findActiveRule.mockResolvedValue(rule as any);
-    repo.listRules.mockResolvedValue({ items: [rule] as any, total: 1 });
+    const rule = makePolicy({ status: "ACTIVE", isActive: true });
+    repo.findActiveRule.mockResolvedValue(rule);
+    repo.listRules.mockResolvedValue({ items: [rule], total: 1 });
 
     const result = await commissionService.getRules({});
-    expect(result.activeRule).toMatchObject({ rateValue: 10 });
+    expect(result.activeRule).toMatchObject({ rateValue: 10, status: "ACTIVE" });
     expect(result.total).toBe(1);
   });
 
@@ -154,15 +170,144 @@ describe("commissionService rules", () => {
     expect(result.activeRule).toBeNull();
   });
 
-  it("configures a rule", async () => {
-    repo.replaceActiveRule.mockResolvedValue({ id: "rule-2", rateType: "FIXED", rateValue: "25.00" } as any);
-    const result = await commissionService.configureRule(ADMIN_ID, { rateType: "FIXED", rateValue: 25 });
-    expect(repo.replaceActiveRule).toHaveBeenCalledWith({ rateType: "FIXED", rateValue: 25, adminId: ADMIN_ID });
-    expect(result.rateValue).toBe(25);
+  it("creates a commission rule", async () => {
+    const createdRule = makePolicy({ name: "Partner 10%", status: "INACTIVE", isActive: false });
+    repo.createCommissionRule.mockResolvedValue(createdRule);
+
+    const result = await commissionService.createDraftPolicy(ADMIN_ID, { name: "Partner 10%", rateType: "PERCENTAGE", rateValue: 10 });
+    expect(repo.createCommissionRule).toHaveBeenCalledWith({ name: "Partner 10%", description: undefined, rateType: "PERCENTAGE", rateValue: 10, status: undefined, isActive: undefined, adminId: ADMIN_ID });
+    expect(result.status).toBe("INACTIVE");
   });
 
-  it("returns 409 on a serialization conflict", async () => {
-    repo.replaceActiveRule.mockRejectedValue(Object.assign(new Error("conflict"), { code: "P2034" }));
-    await expectAppError(commissionService.configureRule(ADMIN_ID, { rateType: "FIXED", rateValue: 25 }), 409);
+  it("updates a commission rule", async () => {
+    const existing = makePolicy({ name: "Old Name", status: "INACTIVE", isActive: false });
+    repo.findRuleById.mockResolvedValue(existing);
+    repo.updateCommissionRule.mockResolvedValue({ ...existing, name: "New Name", rateValue: "15.00" });
+
+    const result = await commissionService.updatePolicy(ADMIN_ID, POLICY_ID, { name: "New Name", rateValue: 15 });
+    expect(repo.updateCommissionRule).toHaveBeenCalledWith(
+      expect.objectContaining({ ruleId: POLICY_ID, adminId: ADMIN_ID, name: "New Name", rateValue: 15 })
+    );
+    expect(result.rateValue).toBe(15);
+  });
+
+  it("updates an active commission rule and preserves rateValue", async () => {
+    const active = makePolicy({ status: "ACTIVE", isActive: true });
+    repo.findRuleById.mockResolvedValue(active);
+    repo.updateCommissionRule.mockResolvedValue({ ...active, rateValue: "15.00" });
+
+    const result = await commissionService.updatePolicy(ADMIN_ID, POLICY_ID, { rateValue: 15 });
+    expect(repo.updateCommissionRule).toHaveBeenCalled();
+    expect(result.rateValue).toBe(15);
+  });
+
+  it("publishes a draft policy and marks it active", async () => {
+    const draft = makePolicy({ status: "DRAFT", isActive: false });
+    repo.findRuleById.mockResolvedValue(draft);
+    repo.publishPolicy.mockResolvedValue({ ...draft, status: "ACTIVE", isActive: true });
+
+    const result = await commissionService.publishPolicy(ADMIN_ID, POLICY_ID);
+    expect(repo.publishPolicy).toHaveBeenCalledWith(
+      expect.objectContaining({ ruleId: POLICY_ID, adminId: ADMIN_ID })
+    );
+    expect(result.status).toBe("ACTIVE");
+    expect(result.isActive).toBe(true);
+  });
+
+  it("rejects publishing an archived policy directly", async () => {
+    const archived = makePolicy({ status: "ARCHIVED", isActive: false });
+    repo.findRuleById.mockResolvedValue(archived);
+
+    await expectAppError(commissionService.publishPolicy(ADMIN_ID, POLICY_ID), 409);
+    expect(repo.publishPolicy).not.toHaveBeenCalled();
+  });
+
+  it("deactivates an active policy", async () => {
+    const active = makePolicy({ status: "ACTIVE", isActive: true });
+    repo.findRuleById.mockResolvedValue(active);
+    repo.deactivatePolicy.mockResolvedValue({ ...active, status: "INACTIVE", isActive: false });
+
+    const result = await commissionService.deactivatePolicy(ADMIN_ID, POLICY_ID);
+    expect(repo.deactivatePolicy).toHaveBeenCalledWith(
+      expect.objectContaining({ ruleId: POLICY_ID, adminId: ADMIN_ID })
+    );
+    expect(result.status).toBe("INACTIVE");
+    expect(result.isActive).toBe(false);
+  });
+
+  it("rejects deactivating a policy that is not active", async () => {
+    const draft = makePolicy({ status: "DRAFT", isActive: false });
+    repo.findRuleById.mockResolvedValue(draft);
+
+    await expectAppError(commissionService.deactivatePolicy(ADMIN_ID, POLICY_ID), 409);
+  });
+
+  it("archives an inactive policy", async () => {
+    const inactive = makePolicy({ status: "INACTIVE", isActive: false });
+    repo.findRuleById.mockResolvedValue(inactive);
+    repo.archivePolicy.mockResolvedValue({ ...inactive, status: "ARCHIVED", isActive: false });
+
+    const result = await commissionService.archivePolicy(ADMIN_ID, POLICY_ID);
+    expect(repo.archivePolicy).toHaveBeenCalledWith(
+      expect.objectContaining({ ruleId: POLICY_ID, adminId: ADMIN_ID })
+    );
+    expect(result.status).toBe("ARCHIVED");
+  });
+
+  it("rejects archiving an active policy", async () => {
+    const active = makePolicy({ status: "ACTIVE", isActive: true });
+    repo.findRuleById.mockResolvedValue(active);
+
+    await expectAppError(commissionService.archivePolicy(ADMIN_ID, POLICY_ID), 409);
+  });
+
+  it("deletes an inactive unused commission rule", async () => {
+    const inactive = makePolicy({ status: "INACTIVE", isActive: false });
+    repo.findRuleById.mockResolvedValue(inactive);
+    repo.countCommissionsByRuleId.mockResolvedValue(0);
+    repo.deleteCommissionRule.mockResolvedValue({ id: POLICY_ID, deleted: true } as any);
+
+    const result = await commissionService.deletePolicy(ADMIN_ID, POLICY_ID);
+    expect(repo.deleteCommissionRule).toHaveBeenCalledWith(
+      expect.objectContaining({ ruleId: POLICY_ID, adminId: ADMIN_ID })
+    );
+    expect(result.deleted).toBe(true);
+  });
+
+  it("rejects deleting an active commission", async () => {
+    const active = makePolicy({ status: "ACTIVE", isActive: true });
+    repo.findRuleById.mockResolvedValue(active);
+
+    await expectAppError(commissionService.deletePolicy(ADMIN_ID, POLICY_ID), 409);
+    expect(repo.deleteCommissionRule).not.toHaveBeenCalled();
+  });
+
+  it("rejects deleting a policy with existing commission records", async () => {
+    const draft = makePolicy({ status: "DRAFT", isActive: false });
+    repo.findRuleById.mockResolvedValue(draft);
+    repo.countCommissionsByRuleId.mockResolvedValue(3);
+
+    await expectAppError(commissionService.deletePolicy(ADMIN_ID, POLICY_ID), 409);
+  });
+
+  it("creates a revision from an archived policy", async () => {
+    const archived = makePolicy({ status: "ARCHIVED", isActive: false, rateValue: "12.00" });
+    repo.findRuleById.mockResolvedValue(archived);
+    const newDraft = makePolicy({ id: "policy-rev-2", status: "DRAFT", isActive: false, rateValue: "12.00" });
+    repo.createRevisionFromPolicy.mockResolvedValue(newDraft);
+
+    const result = await commissionService.createRevision(ADMIN_ID, POLICY_ID);
+    expect(repo.createRevisionFromPolicy).toHaveBeenCalledWith(
+      expect.objectContaining({ sourceRuleId: POLICY_ID, adminId: ADMIN_ID })
+    );
+    expect(result.status).toBe("DRAFT");
+    expect(result.id).toBe("policy-rev-2");
+  });
+
+  it("disables platform commission by deactivating active rules", async () => {
+    repo.disableActiveCommission.mockResolvedValue({ disabled: true, deactivatedCount: 1 });
+    const result = await commissionService.disableCommission(ADMIN_ID);
+    expect(repo.disableActiveCommission).toHaveBeenCalledWith(ADMIN_ID);
+    expect(result.disabled).toBe(true);
   });
 });

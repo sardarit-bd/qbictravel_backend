@@ -17,6 +17,7 @@ model User {
   agentCommissions      Commission[]           @relation("AgentCommissions")
   commissionAdjustments CommissionAdjustment[] @relation("CommissionAdjustments")
   commissionRules       CommissionRule[]       @relation("CommissionRuleAuthor")
+  commissionRuleAudits  CommissionRuleAuditLog[] @relation("CommissionRuleAudits")
   uploadedMedia         Media[]
   mediaUploadAuths      MediaUploadAuth[]
   notificationSettings  NotificationSetting[]  @relation("NotificationSettingEditor")
