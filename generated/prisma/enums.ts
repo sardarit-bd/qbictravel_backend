@@ -22,6 +22,16 @@ export const BookingStatus = {
 export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus]
 
 
+export const BookingSource = {
+  AGENT: 'AGENT',
+  ADMIN: 'ADMIN',
+  CUSTOMER: 'CUSTOMER',
+  DIRECT: 'DIRECT'
+} as const
+
+export type BookingSource = (typeof BookingSource)[keyof typeof BookingSource]
+
+
 export const ApprovalStatus = {
   PENDING: 'PENDING',
   APPROVED: 'APPROVED',

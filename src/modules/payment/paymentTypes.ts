@@ -62,6 +62,7 @@ export interface PaymentFilters {
   bookingId?: string;
   status?: PaymentRecordStatusValue;
   method?: PaymentMethodValue;
+  source?: "AGENT" | "ADMIN" | "CUSTOMER" | "DIRECT";
 }
 
 export interface CreateStripeSessionInput {

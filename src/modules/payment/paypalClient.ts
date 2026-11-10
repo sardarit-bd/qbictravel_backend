@@ -55,8 +55,8 @@ export class PayPalClient {
   private tokenExpiresAt = 0;
 
   constructor(config?: Partial<PayPalConfig>) {
-    this.clientId = config?.clientId || process.env.PAYPAL_CLIENT_ID || "";
-    this.clientSecret = config?.clientSecret || process.env.PAYPAL_CLIENT_SECRET || "";
+    this.clientId = config?.clientId ?? "";
+    this.clientSecret = config?.clientSecret ?? "";
     this.baseUrl = (
       config?.baseUrl ||
       process.env.PAYPAL_BASE_URL ||
@@ -68,7 +68,9 @@ export class PayPalClient {
   }
 
   public isAvailable(): boolean {
-    return Boolean(this.clientId && this.clientSecret);
+    const id = this.clientId || process.env.PAYPAL_CLIENT_ID;
+    const secret = this.clientSecret || process.env.PAYPAL_CLIENT_SECRET;
+    return Boolean(id && secret);
   }
 
   private async getAccessToken(): Promise<string> {

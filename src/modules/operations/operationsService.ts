@@ -49,7 +49,14 @@ export const getStaffBooking = async (staffId: string, bookingId: string) => {
 };
 
 export const listAdminBookings = async (query: Record<string, unknown>) =>
-  listWithFilters({ assignedStaffId: parseUuidQuery(query.assignedStaffId, "assignedStaffId") }, query);
+  listWithFilters(
+    {
+      assignedStaffId: parseUuidQuery(query.assignedStaffId, "assignedStaffId"),
+      agentId: parseUuidQuery(query.agentId, "agentId"),
+      source: query.source as any,
+    },
+    query,
+  );
 
 export const updateOperationalStatus = async (
   actorRole: OperationalActorRole,

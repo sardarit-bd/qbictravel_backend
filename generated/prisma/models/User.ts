@@ -266,6 +266,7 @@ export type UserWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   agentProfile?: Prisma.XOR<Prisma.AgentProfileNullableScalarRelationFilter, Prisma.AgentProfileWhereInput> | null
   agentBookings?: Prisma.BookingListRelationFilter
+  createdBookings?: Prisma.BookingListRelationFilter
   assignedBookings?: Prisma.BookingListRelationFilter
   customerBookings?: Prisma.BookingListRelationFilter
   agentCommissions?: Prisma.CommissionListRelationFilter
@@ -301,6 +302,7 @@ export type UserOrderByWithRelationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   agentProfile?: Prisma.AgentProfileOrderByWithRelationInput
   agentBookings?: Prisma.BookingOrderByRelationAggregateInput
+  createdBookings?: Prisma.BookingOrderByRelationAggregateInput
   assignedBookings?: Prisma.BookingOrderByRelationAggregateInput
   customerBookings?: Prisma.BookingOrderByRelationAggregateInput
   agentCommissions?: Prisma.CommissionOrderByRelationAggregateInput
@@ -339,6 +341,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   deletedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   agentProfile?: Prisma.XOR<Prisma.AgentProfileNullableScalarRelationFilter, Prisma.AgentProfileWhereInput> | null
   agentBookings?: Prisma.BookingListRelationFilter
+  createdBookings?: Prisma.BookingListRelationFilter
   assignedBookings?: Prisma.BookingListRelationFilter
   customerBookings?: Prisma.BookingListRelationFilter
   agentCommissions?: Prisma.CommissionListRelationFilter
@@ -410,6 +413,7 @@ export type UserCreateInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -445,6 +449,7 @@ export type UserUncheckedCreateInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -480,6 +485,7 @@ export type UserUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -515,6 +521,7 @@ export type UserUncheckedUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -672,6 +679,12 @@ export type UserCreateNestedOneWithoutAgentBookingsInput = {
   connect?: Prisma.UserWhereUniqueInput
 }
 
+export type UserCreateNestedOneWithoutCreatedBookingsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedBookingsInput, Prisma.UserUncheckedCreateWithoutCreatedBookingsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedBookingsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
 export type UserCreateNestedOneWithoutAssignedBookingsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutAssignedBookingsInput, Prisma.UserUncheckedCreateWithoutAssignedBookingsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignedBookingsInput
@@ -692,6 +705,16 @@ export type UserUpdateOneWithoutAgentBookingsNestedInput = {
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAgentBookingsInput, Prisma.UserUpdateWithoutAgentBookingsInput>, Prisma.UserUncheckedUpdateWithoutAgentBookingsInput>
+}
+
+export type UserUpdateOneWithoutCreatedBookingsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedBookingsInput, Prisma.UserUncheckedCreateWithoutCreatedBookingsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedBookingsInput
+  upsert?: Prisma.UserUpsertWithoutCreatedBookingsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedBookingsInput, Prisma.UserUpdateWithoutCreatedBookingsInput>, Prisma.UserUncheckedUpdateWithoutCreatedBookingsInput>
 }
 
 export type UserUpdateOneWithoutAssignedBookingsNestedInput = {
@@ -973,6 +996,7 @@ export type UserCreateWithoutAgentProfileInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -1007,6 +1031,7 @@ export type UserUncheckedCreateWithoutAgentProfileInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -1057,6 +1082,7 @@ export type UserUpdateWithoutAgentProfileInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -1091,6 +1117,7 @@ export type UserUncheckedUpdateWithoutAgentProfileInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -1126,6 +1153,7 @@ export type UserCreateWithoutPasswordResetTokensInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -1160,6 +1188,7 @@ export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -1210,6 +1239,7 @@ export type UserUpdateWithoutPasswordResetTokensInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -1244,6 +1274,7 @@ export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -1277,6 +1308,7 @@ export type UserCreateWithoutAgentBookingsInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -1311,6 +1343,7 @@ export type UserUncheckedCreateWithoutAgentBookingsInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -1337,6 +1370,81 @@ export type UserCreateOrConnectWithoutAgentBookingsInput = {
   create: Prisma.XOR<Prisma.UserCreateWithoutAgentBookingsInput, Prisma.UserUncheckedCreateWithoutAgentBookingsInput>
 }
 
+export type UserCreateWithoutCreatedBookingsInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
+  uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
+  initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutCreatedBookingsInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
+  uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutCreatedBookingsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedBookingsInput, Prisma.UserUncheckedCreateWithoutCreatedBookingsInput>
+}
+
 export type UserCreateWithoutAssignedBookingsInput = {
   id?: string
   name: string
@@ -1351,6 +1459,7 @@ export type UserCreateWithoutAssignedBookingsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
@@ -1385,6 +1494,7 @@ export type UserUncheckedCreateWithoutAssignedBookingsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
@@ -1424,6 +1534,7 @@ export type UserCreateWithoutCustomerBookingsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
@@ -1458,6 +1569,7 @@ export type UserUncheckedCreateWithoutCustomerBookingsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
@@ -1507,6 +1619,7 @@ export type UserUpdateWithoutAgentBookingsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -1541,6 +1654,88 @@ export type UserUncheckedUpdateWithoutAgentBookingsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
+  uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUpsertWithoutCreatedBookingsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedBookingsInput, Prisma.UserUncheckedUpdateWithoutCreatedBookingsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedBookingsInput, Prisma.UserUncheckedCreateWithoutCreatedBookingsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreatedBookingsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedBookingsInput, Prisma.UserUncheckedUpdateWithoutCreatedBookingsInput>
+}
+
+export type UserUpdateWithoutCreatedBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
+  uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreatedBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -1587,6 +1782,7 @@ export type UserUpdateWithoutAssignedBookingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
@@ -1621,6 +1817,7 @@ export type UserUncheckedUpdateWithoutAssignedBookingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
@@ -1666,6 +1863,7 @@ export type UserUpdateWithoutCustomerBookingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
@@ -1700,6 +1898,7 @@ export type UserUncheckedUpdateWithoutCustomerBookingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
@@ -1734,6 +1933,7 @@ export type UserCreateWithoutAdminApprovalsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -1768,6 +1968,7 @@ export type UserUncheckedCreateWithoutAdminApprovalsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -1818,6 +2019,7 @@ export type UserUpdateWithoutAdminApprovalsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -1852,6 +2054,7 @@ export type UserUncheckedUpdateWithoutAdminApprovalsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -1886,6 +2089,7 @@ export type UserCreateWithoutCommissionRulesInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -1920,6 +2124,7 @@ export type UserUncheckedCreateWithoutCommissionRulesInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -1970,6 +2175,7 @@ export type UserUpdateWithoutCommissionRulesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -2004,6 +2210,7 @@ export type UserUncheckedUpdateWithoutCommissionRulesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -2038,6 +2245,7 @@ export type UserCreateWithoutCommissionRuleAuditsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -2072,6 +2280,7 @@ export type UserUncheckedCreateWithoutCommissionRuleAuditsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -2122,6 +2331,7 @@ export type UserUpdateWithoutCommissionRuleAuditsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -2156,6 +2366,7 @@ export type UserUncheckedUpdateWithoutCommissionRuleAuditsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -2190,6 +2401,7 @@ export type UserCreateWithoutAgentCommissionsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
@@ -2224,6 +2436,7 @@ export type UserUncheckedCreateWithoutAgentCommissionsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
@@ -2274,6 +2487,7 @@ export type UserUpdateWithoutAgentCommissionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
@@ -2308,6 +2522,7 @@ export type UserUncheckedUpdateWithoutAgentCommissionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
@@ -2342,6 +2557,7 @@ export type UserCreateWithoutCommissionAdjustmentsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -2376,6 +2592,7 @@ export type UserUncheckedCreateWithoutCommissionAdjustmentsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -2426,6 +2643,7 @@ export type UserUpdateWithoutCommissionAdjustmentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -2460,6 +2678,7 @@ export type UserUncheckedUpdateWithoutCommissionAdjustmentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -2494,6 +2713,7 @@ export type UserCreateWithoutUploadedMediaInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -2528,6 +2748,7 @@ export type UserUncheckedCreateWithoutUploadedMediaInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -2578,6 +2799,7 @@ export type UserUpdateWithoutUploadedMediaInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -2612,6 +2834,7 @@ export type UserUncheckedUpdateWithoutUploadedMediaInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -2646,6 +2869,7 @@ export type UserCreateWithoutMediaUploadAuthsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -2680,6 +2904,7 @@ export type UserUncheckedCreateWithoutMediaUploadAuthsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -2730,6 +2955,7 @@ export type UserUpdateWithoutMediaUploadAuthsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -2764,6 +2990,7 @@ export type UserUncheckedUpdateWithoutMediaUploadAuthsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -2798,6 +3025,7 @@ export type UserCreateWithoutNotificationSettingsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -2832,6 +3060,7 @@ export type UserUncheckedCreateWithoutNotificationSettingsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -2882,6 +3111,7 @@ export type UserUpdateWithoutNotificationSettingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -2916,6 +3146,7 @@ export type UserUncheckedUpdateWithoutNotificationSettingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -2950,6 +3181,7 @@ export type UserCreateWithoutCustomerPaymentsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -2984,6 +3216,7 @@ export type UserUncheckedCreateWithoutCustomerPaymentsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -3023,6 +3256,7 @@ export type UserCreateWithoutReviewedPaymentsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -3057,6 +3291,7 @@ export type UserUncheckedCreateWithoutReviewedPaymentsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -3107,6 +3342,7 @@ export type UserUpdateWithoutCustomerPaymentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -3141,6 +3377,7 @@ export type UserUncheckedUpdateWithoutCustomerPaymentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -3186,6 +3423,7 @@ export type UserUpdateWithoutReviewedPaymentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -3220,6 +3458,7 @@ export type UserUncheckedUpdateWithoutReviewedPaymentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -3254,6 +3493,7 @@ export type UserCreateWithoutInitiatedRefundsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -3288,6 +3528,7 @@ export type UserUncheckedCreateWithoutInitiatedRefundsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -3338,6 +3579,7 @@ export type UserUpdateWithoutInitiatedRefundsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -3372,6 +3614,7 @@ export type UserUncheckedUpdateWithoutInitiatedRefundsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -3406,6 +3649,7 @@ export type UserCreateWithoutCreatedPaymentLinksInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -3440,6 +3684,7 @@ export type UserUncheckedCreateWithoutCreatedPaymentLinksInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -3490,6 +3735,7 @@ export type UserUpdateWithoutCreatedPaymentLinksInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -3524,6 +3770,7 @@ export type UserUncheckedUpdateWithoutCreatedPaymentLinksInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -3558,6 +3805,7 @@ export type UserCreateWithoutGrantedPermissionsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -3592,6 +3840,7 @@ export type UserUncheckedCreateWithoutGrantedPermissionsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -3631,6 +3880,7 @@ export type UserCreateWithoutStaffPermissionsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -3665,6 +3915,7 @@ export type UserUncheckedCreateWithoutStaffPermissionsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -3715,6 +3966,7 @@ export type UserUpdateWithoutGrantedPermissionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -3749,6 +4001,7 @@ export type UserUncheckedUpdateWithoutGrantedPermissionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -3794,6 +4047,7 @@ export type UserUpdateWithoutStaffPermissionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -3828,6 +4082,7 @@ export type UserUncheckedUpdateWithoutStaffPermissionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -3862,6 +4117,7 @@ export type UserCreateWithoutEditedSettingsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -3896,6 +4152,7 @@ export type UserUncheckedCreateWithoutEditedSettingsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -3946,6 +4203,7 @@ export type UserUpdateWithoutEditedSettingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -3980,6 +4238,7 @@ export type UserUncheckedUpdateWithoutEditedSettingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -4014,6 +4273,7 @@ export type UserCreateWithoutSettingAuditLogsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
@@ -4048,6 +4308,7 @@ export type UserUncheckedCreateWithoutSettingAuditLogsInput = {
   deletedAt?: Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
   agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
   assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
   customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
   agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
@@ -4098,6 +4359,7 @@ export type UserUpdateWithoutSettingAuditLogsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
@@ -4132,6 +4394,7 @@ export type UserUncheckedUpdateWithoutSettingAuditLogsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
   agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
   assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
   customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
   agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
@@ -4159,6 +4422,7 @@ export type UserUncheckedUpdateWithoutSettingAuditLogsInput = {
 
 export type UserCountOutputType = {
   agentBookings: number
+  createdBookings: number
   assignedBookings: number
   customerBookings: number
   agentCommissions: number
@@ -4182,6 +4446,7 @@ export type UserCountOutputType = {
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   agentBookings?: boolean | UserCountOutputTypeCountAgentBookingsArgs
+  createdBookings?: boolean | UserCountOutputTypeCountCreatedBookingsArgs
   assignedBookings?: boolean | UserCountOutputTypeCountAssignedBookingsArgs
   customerBookings?: boolean | UserCountOutputTypeCountCustomerBookingsArgs
   agentCommissions?: boolean | UserCountOutputTypeCountAgentCommissionsArgs
@@ -4217,6 +4482,13 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
  * UserCountOutputType without action
  */
 export type UserCountOutputTypeCountAgentBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookingWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCreatedBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.BookingWhereInput
 }
 
@@ -4368,6 +4640,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   deletedAt?: boolean
   agentProfile?: boolean | Prisma.User$agentProfileArgs<ExtArgs>
   agentBookings?: boolean | Prisma.User$agentBookingsArgs<ExtArgs>
+  createdBookings?: boolean | Prisma.User$createdBookingsArgs<ExtArgs>
   assignedBookings?: boolean | Prisma.User$assignedBookingsArgs<ExtArgs>
   customerBookings?: boolean | Prisma.User$customerBookingsArgs<ExtArgs>
   agentCommissions?: boolean | Prisma.User$agentCommissionsArgs<ExtArgs>
@@ -4436,6 +4709,7 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   agentProfile?: boolean | Prisma.User$agentProfileArgs<ExtArgs>
   agentBookings?: boolean | Prisma.User$agentBookingsArgs<ExtArgs>
+  createdBookings?: boolean | Prisma.User$createdBookingsArgs<ExtArgs>
   assignedBookings?: boolean | Prisma.User$assignedBookingsArgs<ExtArgs>
   customerBookings?: boolean | Prisma.User$customerBookingsArgs<ExtArgs>
   agentCommissions?: boolean | Prisma.User$agentCommissionsArgs<ExtArgs>
@@ -4465,6 +4739,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     agentProfile: Prisma.$AgentProfilePayload<ExtArgs> | null
     agentBookings: Prisma.$BookingPayload<ExtArgs>[]
+    createdBookings: Prisma.$BookingPayload<ExtArgs>[]
     assignedBookings: Prisma.$BookingPayload<ExtArgs>[]
     customerBookings: Prisma.$BookingPayload<ExtArgs>[]
     agentCommissions: Prisma.$CommissionPayload<ExtArgs>[]
@@ -4893,6 +5168,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   agentProfile<T extends Prisma.User$agentProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$agentProfileArgs<ExtArgs>>): Prisma.Prisma__AgentProfileClient<runtime.Types.Result.GetResult<Prisma.$AgentProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   agentBookings<T extends Prisma.User$agentBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$agentBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdBookings<T extends Prisma.User$createdBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignedBookings<T extends Prisma.User$assignedBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignedBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   customerBookings<T extends Prisma.User$customerBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$customerBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   agentCommissions<T extends Prisma.User$agentCommissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$agentCommissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5367,6 +5643,30 @@ export type User$agentProfileArgs<ExtArgs extends runtime.Types.Extensions.Inter
  * User.agentBookings
  */
 export type User$agentBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Booking
+   */
+  select?: Prisma.BookingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Booking
+   */
+  omit?: Prisma.BookingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookingInclude<ExtArgs> | null
+  where?: Prisma.BookingWhereInput
+  orderBy?: Prisma.BookingOrderByWithRelationInput | Prisma.BookingOrderByWithRelationInput[]
+  cursor?: Prisma.BookingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookingScalarFieldEnum | Prisma.BookingScalarFieldEnum[]
+}
+
+/**
+ * User.createdBookings
+ */
+export type User$createdBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Booking
    */

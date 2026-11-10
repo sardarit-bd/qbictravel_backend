@@ -12,6 +12,7 @@ model User {
   deletedAt             DateTime?
   agentProfile          AgentProfile?
   agentBookings         Booking[]              @relation("AgentBookings")
+  createdBookings       Booking[]              @relation("CreatedBookings")
   assignedBookings      Booking[]              @relation("StaffAssignments")
   customerBookings      Booking[]              @relation("CustomerBookings")
   agentCommissions      Commission[]           @relation("AgentCommissions")

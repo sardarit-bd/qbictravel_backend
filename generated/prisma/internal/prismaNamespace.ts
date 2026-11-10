@@ -2531,6 +2531,8 @@ export const BookingScalarFieldEnum = {
   id: 'id',
   customerId: 'customerId',
   agentId: 'agentId',
+  createdById: 'createdById',
+  source: 'source',
   serviceId: 'serviceId',
   availabilityId: 'availabilityId',
   currency: 'currency',
@@ -3009,6 +3011,20 @@ export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMo
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'BookingSource'
+ */
+export type EnumBookingSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookingSource'>
+    
+
+
+/**
+ * Reference to a field of type 'BookingSource[]'
+ */
+export type ListEnumBookingSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookingSource[]'>
     
 
 

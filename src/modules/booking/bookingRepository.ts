@@ -6,13 +6,17 @@ export const createBooking = async (input: CreateBookingInput & {
   basePrice: number; 
   finalPrice: number; 
   status: string; 
-  requiresApproval: boolean 
+  requiresApproval: boolean;
+  createdById?: string | null;
+  source?: "AGENT" | "ADMIN" | "CUSTOMER" | "DIRECT";
 }) => {
   return prisma.$transaction(async (tx) => {
     const created = await tx.booking.create({
       data: {
         customerId: input.customerId,
         agentId: input.agentId || null,
+        createdById: input.createdById ?? (input.agentId || input.customerId),
+        source: input.source || (input.agentId ? "AGENT" : "CUSTOMER"),
         serviceId: input.serviceId,
         availabilityId: input.availabilityId || null,
         currency: input.currency,
@@ -31,11 +35,13 @@ export const createBooking = async (input: CreateBookingInput & {
     await tx.bookingHistory.create({
       data: {
         bookingId: created.id,
-        actorId: input.agentId || input.customerId,
-        actorRole: input.agentId ? "agent" : "customer",
+        actorId: input.createdById || input.agentId || input.customerId,
+        actorRole: input.source?.toLowerCase() || (input.agentId ? "agent" : "customer"),
         action: "BOOKING_CREATED",
         changes: {
           status: input.status,
+          source: created.source,
+          createdById: created.createdById,
           basePrice: input.basePrice,
           finalPrice: input.finalPrice,
           currency: input.currency,
@@ -185,6 +191,8 @@ const adminReservationSelect = {
   status: true,
   paymentStatus: true,
   fulfillmentStatus: true,
+  source: true,
+  createdById: true,
   currency: true,
   basePrice: true,
   proposedPrice: true,
@@ -202,11 +210,24 @@ const adminReservationSelect = {
       phone: true,
     },
   },
+  agentId: true,
   agent: {
     select: {
       id: true,
       name: true,
       email: true,
+      agentProfile: {
+        select: {
+          agencyName: true,
+        },
+      },
+    },
+  },
+  createdBy: {
+    select: {
+      id: true,
+      name: true,
+      role: true,
     },
   },
   service: {

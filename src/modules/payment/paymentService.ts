@@ -58,6 +58,8 @@ const listWithFilters = async (base: PaymentFilters, query: Record<string, unkno
       ? {
           bookingId: parseUuidQuery(query.bookingId, "bookingId"),
           customerId: parseUuidQuery(query.customerId, "customerId"),
+          agentId: parseUuidQuery(query.agentId, "agentId"),
+          source: query.source as any,
         }
       : {}),
   };

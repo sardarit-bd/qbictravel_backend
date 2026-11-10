@@ -2,7 +2,7 @@
 
 export interface CreateBookingInput {
   customerId: string;
-  agentId?: string;
+  agentId?: string | null;
   serviceId: string;
   availabilityId?: string;
   proposedPrice?: number | string;
@@ -35,10 +35,14 @@ export interface ListPendingReservationsQuery {
   paymentStatus?: "UNPAID" | "PARTIALLY_PAID" | "PAID";
 }
 
+export type BookingSourceValue = "AGENT" | "ADMIN" | "CUSTOMER" | "DIRECT";
+
 export interface BookingResponse {
   id: string;
   customerId: string;
   agentId: string | null;
+  createdById?: string | null;
+  source?: BookingSourceValue;
   serviceId: string;
   availabilityId: string | null;
   currency: string;

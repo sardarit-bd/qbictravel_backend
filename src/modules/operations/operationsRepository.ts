@@ -11,6 +11,9 @@ const operationalSelect = {
   status: true,
   fulfillmentStatus: true,
   paymentStatus: true,
+  source: true,
+  agentId: true,
+  createdById: true,
   assignedStaffId: true,
   notes: true,
   internalNotes: true,
@@ -20,13 +23,34 @@ const operationalSelect = {
   availability: { select: { id: true, date: true } },
   customer: { select: { id: true, name: true, phone: true } },
   assignedStaff: { select: { id: true, name: true } },
+  agent: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      agentProfile: {
+        select: {
+          agencyName: true,
+        },
+      },
+    },
+  },
+  createdBy: {
+    select: {
+      id: true,
+      name: true,
+      role: true,
+    },
+  },
 } as const;
 
 export const listOperationalBookings = async (filters: OperationalFilters, skip: number, take: number) => {
-  const where = {
+  const where: any = {
     status: { in: OPERATIONAL_BOOKING_STATUSES },
     ...(filters.assignedStaffId ? { assignedStaffId: filters.assignedStaffId } : {}),
     ...(filters.fulfillmentStatus ? { fulfillmentStatus: filters.fulfillmentStatus } : {}),
+    ...(filters.agentId ? { agentId: filters.agentId } : {}),
+    ...(filters.source ? { source: filters.source } : {}),
   };
 
   const [items, total] = await Promise.all([

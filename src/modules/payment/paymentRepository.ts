@@ -20,16 +20,45 @@ const ACTIVE_STATUSES: PaymentRecordStatusValue[] = [
 const PAYABLE_BOOKING_STATUSES: ("PENDING" | "CONFIRMED")[] = ["PENDING", "CONFIRMED"];
 
 const paymentInclude = {
+  customer: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+    },
+  },
   booking: {
     select: {
       id: true,
       serviceId: true,
       agentId: true,
+      source: true,
+      createdById: true,
       status: true,
       paymentStatus: true,
       requiresApproval: true,
       currency: true,
       finalPrice: true,
+      agent: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          agentProfile: {
+            select: {
+              agencyName: true,
+            },
+          },
+        },
+      },
+      createdBy: {
+        select: {
+          id: true,
+          name: true,
+          role: true,
+        },
+      },
       service: {
         select: {
           id: true,
@@ -169,9 +198,10 @@ export const findVerifiedPaymentForBooking = async (bookingId: string) => {
 };
 
 export const listPayments = async (filters: PaymentFilters, skip: number, take: number) => {
-  const where = {
+  const where: any = {
     ...(filters.customerId ? { customerId: filters.customerId } : {}),
     ...(filters.agentId ? { booking: { agentId: filters.agentId } } : {}),
+    ...(filters.source ? { booking: { source: filters.source } } : {}),
     ...(filters.bookingId ? { bookingId: filters.bookingId } : {}),
     ...(filters.status ? { status: filters.status } : {}),
     ...(filters.method ? { method: filters.method } : {}),
