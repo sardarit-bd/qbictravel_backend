@@ -415,6 +415,7 @@ export const ModelName = {
   StripeWebhookEvent: 'StripeWebhookEvent',
   OutboxMessage: 'OutboxMessage',
   PaymentRefund: 'PaymentRefund',
+  PaymentLink: 'PaymentLink',
   Permission: 'Permission',
   StaffPermission: 'StaffPermission',
   Service: 'Service',
@@ -438,7 +439,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "agentProfile" | "passwordResetToken" | "revokedToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "commissionRule" | "commissionRuleAuditLog" | "commission" | "commissionAdjustment" | "media" | "mediaUploadAuth" | "notificationSetting" | "payment" | "stripeWebhookEvent" | "outboxMessage" | "paymentRefund" | "permission" | "staffPermission" | "service" | "serviceAvailability" | "servicePricing" | "systemSetting" | "settingAuditLog" | "user"
+    modelProps: "agentProfile" | "passwordResetToken" | "revokedToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "commissionRule" | "commissionRuleAuditLog" | "commission" | "commissionAdjustment" | "media" | "mediaUploadAuth" | "notificationSetting" | "payment" | "stripeWebhookEvent" | "outboxMessage" | "paymentRefund" | "paymentLink" | "permission" | "staffPermission" | "service" | "serviceAvailability" | "servicePricing" | "systemSetting" | "settingAuditLog" | "user"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1774,6 +1775,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PaymentLink: {
+      payload: Prisma.$PaymentLinkPayload<ExtArgs>
+      fields: Prisma.PaymentLinkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PaymentLinkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PaymentLinkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>
+        }
+        findFirst: {
+          args: Prisma.PaymentLinkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PaymentLinkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>
+        }
+        findMany: {
+          args: Prisma.PaymentLinkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>[]
+        }
+        create: {
+          args: Prisma.PaymentLinkCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>
+        }
+        createMany: {
+          args: Prisma.PaymentLinkCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PaymentLinkCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>[]
+        }
+        delete: {
+          args: Prisma.PaymentLinkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>
+        }
+        update: {
+          args: Prisma.PaymentLinkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>
+        }
+        deleteMany: {
+          args: Prisma.PaymentLinkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PaymentLinkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PaymentLinkUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>[]
+        }
+        upsert: {
+          args: Prisma.PaymentLinkUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentLinkPayload>
+        }
+        aggregate: {
+          args: Prisma.PaymentLinkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePaymentLink>
+        }
+        groupBy: {
+          args: Prisma.PaymentLinkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PaymentLinkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PaymentLinkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PaymentLinkCountAggregateOutputType> | number
+        }
+      }
+    }
     Permission: {
       payload: Prisma.$PermissionPayload<ExtArgs>
       fields: Prisma.PermissionFieldRefs
@@ -2690,6 +2765,20 @@ export const PaymentRefundScalarFieldEnum = {
 export type PaymentRefundScalarFieldEnum = (typeof PaymentRefundScalarFieldEnum)[keyof typeof PaymentRefundScalarFieldEnum]
 
 
+export const PaymentLinkScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  status: 'status',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentLinkScalarFieldEnum = (typeof PaymentLinkScalarFieldEnum)[keyof typeof PaymentLinkScalarFieldEnum]
+
+
 export const PermissionScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -3148,6 +3237,20 @@ export type ListEnumRefundStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
+ * Reference to a field of type 'PaymentLinkStatus'
+ */
+export type EnumPaymentLinkStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentLinkStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentLinkStatus[]'
+ */
+export type ListEnumPaymentLinkStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentLinkStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'ServiceType'
  */
 export type EnumServiceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceType'>
@@ -3385,6 +3488,7 @@ export type GlobalOmitConfig = {
   stripeWebhookEvent?: Prisma.StripeWebhookEventOmit
   outboxMessage?: Prisma.OutboxMessageOmit
   paymentRefund?: Prisma.PaymentRefundOmit
+  paymentLink?: Prisma.PaymentLinkOmit
   permission?: Prisma.PermissionOmit
   staffPermission?: Prisma.StaffPermissionOmit
   service?: Prisma.ServiceOmit

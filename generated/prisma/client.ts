@@ -132,6 +132,11 @@ export type OutboxMessage = Prisma.OutboxMessageModel
  */
 export type PaymentRefund = Prisma.PaymentRefundModel
 /**
+ * Model PaymentLink
+ * 
+ */
+export type PaymentLink = Prisma.PaymentLinkModel
+/**
  * Model Permission
  * 
  */

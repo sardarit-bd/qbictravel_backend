@@ -155,3 +155,72 @@ export const recordPayment = async (req: Request, res: Response, next: NextFunct
     next(error);
   }
 };
+
+// ── CUSTOMER PAYMENT LINK CONTROLLER ACTIONS ───────────────────────────────
+
+export const generateAgentPaymentLink = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await paymentService.generateAgentPaymentLink(
+      req.user!.id,
+      req.params.bookingId as string,
+      req.body?.expiresInDays,
+    );
+    sendResponse(res, 200, true, "Customer payment link generated successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getPublicPaymentLinkDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await paymentService.getPublicPaymentLinkDetails(req.params.token as string);
+    sendResponse(res, 200, true, "Payment link details retrieved successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createPublicStripeSession = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await paymentService.createPublicStripeCheckoutSession(req.params.token as string, {
+      successUrl: req.body?.successUrl,
+      cancelUrl: req.body?.cancelUrl,
+    });
+    sendResponse(res, 200, true, "Stripe checkout session initialized successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createPublicPayPalOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await paymentService.createPublicPayPalOrder(req.params.token as string, {
+      returnUrl: req.body?.returnUrl,
+      cancelUrl: req.body?.cancelUrl,
+    });
+    sendResponse(res, 200, true, "PayPal order created successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const capturePublicPayPalOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await paymentService.capturePublicPayPalOrder(
+      req.params.token as string,
+      req.body?.orderId as string,
+    );
+    sendResponse(res, 200, true, "PayPal payment captured successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const handlePayPalWebhook = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await paymentService.handlePayPalWebhook(req.headers as any, req.body);
+    sendResponse(res, 200, true, "PayPal webhook processed successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};

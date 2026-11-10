@@ -92,11 +92,22 @@ export const NotificationEvent = {
 export type NotificationEvent = (typeof NotificationEvent)[keyof typeof NotificationEvent]
 
 
+export const PaymentLinkStatus = {
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+  COMPLETED: 'COMPLETED',
+  REVOKED: 'REVOKED'
+} as const
+
+export type PaymentLinkStatus = (typeof PaymentLinkStatus)[keyof typeof PaymentLinkStatus]
+
+
 export const PaymentMethod = {
   BANK_TRANSFER: 'BANK_TRANSFER',
   CASH: 'CASH',
   OTHER: 'OTHER',
-  STRIPE: 'STRIPE'
+  STRIPE: 'STRIPE',
+  PAYPAL: 'PAYPAL'
 } as const
 
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]

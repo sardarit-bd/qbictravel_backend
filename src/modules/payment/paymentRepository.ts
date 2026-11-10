@@ -741,3 +741,278 @@ export const updateStripePaymentStatus = async (params: {
     return updated;
   });
 };
+
+/**
+ * Creates or refreshes an active PaymentLink for a booking.
+ */
+export const createOrUpdatePaymentLink = async (params: {
+  bookingId: string;
+  tokenHash: string;
+  expiresAt: Date;
+  createdById?: string;
+}) => {
+  return prisma.$transaction(async (tx) => {
+    // Revoke any previous active payment links for this booking to maintain 1 active link at a time
+    await tx.paymentLink.updateMany({
+      where: {
+        bookingId: params.bookingId,
+        status: "ACTIVE",
+      },
+      data: {
+        status: "REVOKED",
+      },
+    });
+
+    const paymentLink = await tx.paymentLink.create({
+      data: {
+        bookingId: params.bookingId,
+        tokenHash: params.tokenHash,
+        expiresAt: params.expiresAt,
+        status: "ACTIVE",
+        createdById: params.createdById ?? null,
+      },
+    });
+
+    if (params.createdById) {
+      await tx.bookingHistory.create({
+        data: {
+          bookingId: params.bookingId,
+          actorId: params.createdById,
+          actorRole: "agent",
+          action: "PAYMENT_LINK_GENERATED",
+          changes: {
+            paymentLinkId: paymentLink.id,
+            expiresAt: params.expiresAt.toISOString(),
+          },
+        },
+      });
+    }
+
+    return paymentLink;
+  });
+};
+
+/**
+ * Find active payment link for a booking
+ */
+export const findActivePaymentLinkByBookingId = async (bookingId: string) => {
+  return prisma.paymentLink.findFirst({
+    where: {
+      bookingId,
+      status: "ACTIVE",
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+
+/**
+ * Find payment link by token hash with related booking, service, customer, and payments
+ */
+export const findPaymentLinkByTokenHash = async (tokenHash: string) => {
+  return prisma.paymentLink.findUnique({
+    where: { tokenHash },
+    include: {
+      booking: {
+        include: {
+          customer: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              phone: true,
+            },
+          },
+          service: {
+            select: {
+              id: true,
+              name: true,
+              description: true,
+            },
+          },
+          availability: true,
+          payments: {
+            select: {
+              id: true,
+              amount: true,
+              currency: true,
+              status: true,
+              method: true,
+            },
+          },
+        },
+      },
+    },
+  });
+};
+
+/**
+ * Revoke a payment link
+ */
+export const revokePaymentLink = async (paymentLinkId: string, revokedById?: string) => {
+  return prisma.$transaction(async (tx) => {
+    const link = await tx.paymentLink.update({
+      where: { id: paymentLinkId },
+      data: { status: "REVOKED" },
+    });
+
+    if (revokedById) {
+      await tx.bookingHistory.create({
+        data: {
+          bookingId: link.bookingId,
+          actorId: revokedById,
+          actorRole: "agent",
+          action: "PAYMENT_LINK_REVOKED",
+          changes: {
+            paymentLinkId: link.id,
+          },
+        },
+      });
+    }
+
+    return link;
+  });
+};
+
+/**
+ * Mark payment link as completed
+ */
+export const completePaymentLink = async (bookingId: string) => {
+  return prisma.paymentLink.updateMany({
+    where: {
+      bookingId,
+      status: "ACTIVE",
+    },
+    data: {
+      status: "COMPLETED",
+    },
+  });
+};
+
+/**
+ * Record a verified PayPal payment atomically
+ */
+export const recordVerifiedPayPalPayment = async (params: {
+  bookingId: string;
+  customerId: string;
+  amount: number;
+  currency: string;
+  paypalOrderId: string;
+  paypalCaptureId?: string;
+  rawPayload?: any;
+}) => {
+  return prisma.$transaction(
+    async (tx) => {
+      // Check if reference already processed
+      const existing = await tx.payment.findFirst({
+        where: {
+          method: "PAYPAL",
+          reference: params.paypalOrderId,
+        },
+      });
+
+      if (existing && existing.status === "VERIFIED") {
+        return { payment: existing, isDuplicate: true };
+      }
+
+      const booking = await tx.booking.findUnique({
+        where: { id: params.bookingId },
+        include: {
+          payments: {
+            where: { status: "VERIFIED" },
+            select: { amount: true },
+          },
+        },
+      });
+
+      if (!booking) {
+        throw new AppError("Booking not found", 404);
+      }
+
+      const currentPaid = booking.payments.reduce(
+        (sum: number, p: { amount: any }) => sum + Number(p.amount),
+        0,
+      );
+      const newTotalPaid = currentPaid + params.amount;
+      const finalPrice = Number(booking.finalPrice);
+
+      let newPaymentStatus: "PAID" | "PARTIALLY_PAID" = "PARTIALLY_PAID";
+      if (newTotalPaid >= finalPrice - 0.001) {
+        newPaymentStatus = "PAID";
+      }
+
+      let payment;
+      if (existing) {
+        payment = await tx.payment.update({
+          where: { id: existing.id },
+          data: {
+            status: "VERIFIED",
+            receivedAt: new Date(),
+            receiptNote: params.paypalCaptureId ? `PayPal Capture ID: ${params.paypalCaptureId}` : null,
+          },
+        });
+      } else {
+        payment = await tx.payment.create({
+          data: {
+            bookingId: params.bookingId,
+            customerId: params.customerId,
+            amount: params.amount,
+            currency: params.currency,
+            method: "PAYPAL",
+            status: "VERIFIED",
+            reference: params.paypalOrderId,
+            receiptNote: params.paypalCaptureId ? `PayPal Capture ID: ${params.paypalCaptureId}` : null,
+            submittedAt: new Date(),
+            receivedAt: new Date(),
+          },
+        });
+      }
+
+      await tx.booking.update({
+        where: { id: params.bookingId },
+        data: {
+          paymentStatus: newPaymentStatus,
+          ...(newPaymentStatus === "PAID" && booking.status === "PENDING" ? { status: "CONFIRMED" } : {}),
+        },
+      });
+
+      await tx.bookingHistory.create({
+        data: {
+          bookingId: params.bookingId,
+          actorId: params.customerId,
+          actorRole: "customer",
+          action: "PAYMENT_VERIFIED",
+          changes: {
+            paymentId: payment.id,
+            method: "PAYPAL",
+            amount: params.amount,
+            currency: params.currency,
+            newPaymentStatus,
+            paypalOrderId: params.paypalOrderId,
+            paypalCaptureId: params.paypalCaptureId ?? null,
+          },
+        },
+      });
+
+      if (newPaymentStatus === "PAID") {
+        await tx.paymentLink.updateMany({
+          where: { bookingId: params.bookingId, status: "ACTIVE" },
+          data: { status: "COMPLETED" },
+        });
+
+        // Trigger commission calculation if agent booking
+        if (booking.agentId) {
+          try {
+            await createCommissionForBooking(tx, params.bookingId);
+          } catch (commErr) {
+            console.error("[PayPal] Failed to create commission:", commErr);
+          }
+        }
+      }
+
+      return { payment, isDuplicate: false };
+    },
+    { isolationLevel: "Serializable" },
+  );
+};

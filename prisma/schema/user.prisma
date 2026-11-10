@@ -24,6 +24,7 @@ model User {
   passwordResetTokens   PasswordResetToken[]
   customerPayments      Payment[]              @relation("CustomerPayments")
   reviewedPayments      Payment[]              @relation("PaymentReviews")
+  createdPaymentLinks   PaymentLink[]          @relation("PaymentLinkCreator")
   initiatedRefunds      PaymentRefund[]        @relation("RefundInitiators")
   adminApprovals        PriceApproval[]        @relation("AdminApprovals")
   settingAuditLogs      SettingAuditLog[]      @relation("SettingAuditActor")

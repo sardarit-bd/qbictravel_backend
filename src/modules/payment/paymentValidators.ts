@@ -62,3 +62,29 @@ export const recordPaymentSchema = yup.object({
   receivedAt: yup.date().typeError("Invalid received date").optional(),
   notes: yup.string().trim().max(500, "Notes must be at most 500 characters").optional(),
 });
+
+export const publicPaymentTokenParamSchema = yup.object({
+  token: yup
+    .string()
+    .trim()
+    .min(32, "Invalid payment token")
+    .max(128, "Invalid payment token")
+    .required("Payment token is required"),
+});
+
+export const generatePaymentLinkSchema = yup.object({
+  expiresInDays: yup.number().integer().min(1).max(30).default(7),
+});
+
+export const publicInitiatePaymentSchema = yup.object({
+  method: yup
+    .string()
+    .oneOf(["STRIPE", "PAYPAL"], "Method must be STRIPE or PAYPAL")
+    .required("Payment method is required"),
+  successUrl: stripeRedirectUrlValidator.optional(),
+  cancelUrl: stripeRedirectUrlValidator.optional(),
+});
+
+export const publicPayPalCaptureSchema = yup.object({
+  orderId: yup.string().trim().required("PayPal Order ID is required"),
+});

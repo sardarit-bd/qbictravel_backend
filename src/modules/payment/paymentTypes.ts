@@ -1,4 +1,4 @@
-export const PAYMENT_METHODS = ["BANK_TRANSFER", "CASH", "OTHER", "STRIPE"] as const;
+export const PAYMENT_METHODS = ["BANK_TRANSFER", "CASH", "OTHER", "STRIPE", "PAYPAL"] as const;
 export const PAYMENT_RECORD_STATUSES = [
   "INITIATED",
   "SUBMITTED",
@@ -13,8 +13,31 @@ export const PAYMENT_RECORD_STATUSES = [
   "DISPUTED",
 ] as const;
 
+export const PAYMENT_LINK_STATUSES = ["ACTIVE", "EXPIRED", "COMPLETED", "REVOKED"] as const;
+
 export type PaymentMethodValue = (typeof PAYMENT_METHODS)[number];
 export type PaymentRecordStatusValue = (typeof PAYMENT_RECORD_STATUSES)[number];
+export type PaymentLinkStatusValue = (typeof PAYMENT_LINK_STATUSES)[number];
+
+export interface PublicPaymentLinkDTO {
+  bookingId: string;
+  tourTitle: string;
+  travelDate?: string | Date | null;
+  guestCount?: number | null;
+  customerName: string;
+  customerEmailMasked: string;
+  currency: string;
+  totalAmount: number;
+  paidAmount: number;
+  remainingBalance: number;
+  paymentStatus: string;
+  linkStatus: PaymentLinkStatusValue;
+  expiresAt: string | Date;
+  isPayable: boolean;
+  supportedPaymentMethods: PaymentMethodValue[];
+  paypalAvailable: boolean;
+  stripeAvailable: boolean;
+}
 
 export interface CreatePaymentInput {
   method: PaymentMethodValue;

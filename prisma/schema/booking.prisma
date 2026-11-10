@@ -38,6 +38,7 @@ model Booking {
   history           BookingHistory[]
   commission        Commission?
   payments          Payment[]
+  paymentLinks      PaymentLink[]
   priceApproval     PriceApproval?
   stripeWebhookEvents StripeWebhookEvent[]
 }

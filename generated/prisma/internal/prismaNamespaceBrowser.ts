@@ -69,6 +69,7 @@ export const ModelName = {
   StripeWebhookEvent: 'StripeWebhookEvent',
   OutboxMessage: 'OutboxMessage',
   PaymentRefund: 'PaymentRefund',
+  PaymentLink: 'PaymentLink',
   Permission: 'Permission',
   StaffPermission: 'StaffPermission',
   Service: 'Service',
@@ -378,6 +379,20 @@ export const PaymentRefundScalarFieldEnum = {
 } as const
 
 export type PaymentRefundScalarFieldEnum = (typeof PaymentRefundScalarFieldEnum)[keyof typeof PaymentRefundScalarFieldEnum]
+
+
+export const PaymentLinkScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  status: 'status',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentLinkScalarFieldEnum = (typeof PaymentLinkScalarFieldEnum)[keyof typeof PaymentLinkScalarFieldEnum]
 
 
 export const PermissionScalarFieldEnum = {

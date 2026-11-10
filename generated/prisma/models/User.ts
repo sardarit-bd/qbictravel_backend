@@ -278,6 +278,7 @@ export type UserWhereInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenListRelationFilter
   customerPayments?: Prisma.PaymentListRelationFilter
   reviewedPayments?: Prisma.PaymentListRelationFilter
+  createdPaymentLinks?: Prisma.PaymentLinkListRelationFilter
   initiatedRefunds?: Prisma.PaymentRefundListRelationFilter
   adminApprovals?: Prisma.PriceApprovalListRelationFilter
   settingAuditLogs?: Prisma.SettingAuditLogListRelationFilter
@@ -312,6 +313,7 @@ export type UserOrderByWithRelationInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenOrderByRelationAggregateInput
   customerPayments?: Prisma.PaymentOrderByRelationAggregateInput
   reviewedPayments?: Prisma.PaymentOrderByRelationAggregateInput
+  createdPaymentLinks?: Prisma.PaymentLinkOrderByRelationAggregateInput
   initiatedRefunds?: Prisma.PaymentRefundOrderByRelationAggregateInput
   adminApprovals?: Prisma.PriceApprovalOrderByRelationAggregateInput
   settingAuditLogs?: Prisma.SettingAuditLogOrderByRelationAggregateInput
@@ -349,6 +351,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   passwordResetTokens?: Prisma.PasswordResetTokenListRelationFilter
   customerPayments?: Prisma.PaymentListRelationFilter
   reviewedPayments?: Prisma.PaymentListRelationFilter
+  createdPaymentLinks?: Prisma.PaymentLinkListRelationFilter
   initiatedRefunds?: Prisma.PaymentRefundListRelationFilter
   adminApprovals?: Prisma.PriceApprovalListRelationFilter
   settingAuditLogs?: Prisma.SettingAuditLogListRelationFilter
@@ -419,6 +422,7 @@ export type UserCreateInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -453,6 +457,7 @@ export type UserUncheckedCreateInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -487,6 +492,7 @@ export type UserUpdateInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -521,6 +527,7 @@ export type UserUncheckedUpdateInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -867,6 +874,22 @@ export type UserUpdateOneWithoutInitiatedRefundsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutInitiatedRefundsInput, Prisma.UserUpdateWithoutInitiatedRefundsInput>, Prisma.UserUncheckedUpdateWithoutInitiatedRefundsInput>
 }
 
+export type UserCreateNestedOneWithoutCreatedPaymentLinksInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedPaymentLinksInput, Prisma.UserUncheckedCreateWithoutCreatedPaymentLinksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedPaymentLinksInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutCreatedPaymentLinksNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedPaymentLinksInput, Prisma.UserUncheckedCreateWithoutCreatedPaymentLinksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedPaymentLinksInput
+  upsert?: Prisma.UserUpsertWithoutCreatedPaymentLinksInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedPaymentLinksInput, Prisma.UserUpdateWithoutCreatedPaymentLinksInput>, Prisma.UserUncheckedUpdateWithoutCreatedPaymentLinksInput>
+}
+
 export type UserCreateNestedOneWithoutGrantedPermissionsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutGrantedPermissionsInput, Prisma.UserUncheckedCreateWithoutGrantedPermissionsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutGrantedPermissionsInput
@@ -962,6 +985,7 @@ export type UserCreateWithoutAgentProfileInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -995,6 +1019,7 @@ export type UserUncheckedCreateWithoutAgentProfileInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1044,6 +1069,7 @@ export type UserUpdateWithoutAgentProfileInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -1077,6 +1103,7 @@ export type UserUncheckedUpdateWithoutAgentProfileInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1110,6 +1137,7 @@ export type UserCreateWithoutPasswordResetTokensInput = {
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -1143,6 +1171,7 @@ export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1192,6 +1221,7 @@ export type UserUpdateWithoutPasswordResetTokensInput = {
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -1225,6 +1255,7 @@ export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1258,6 +1289,7 @@ export type UserCreateWithoutAgentBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -1291,6 +1323,7 @@ export type UserUncheckedCreateWithoutAgentBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1329,6 +1362,7 @@ export type UserCreateWithoutAssignedBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -1362,6 +1396,7 @@ export type UserUncheckedCreateWithoutAssignedBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1400,6 +1435,7 @@ export type UserCreateWithoutCustomerBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -1433,6 +1469,7 @@ export type UserUncheckedCreateWithoutCustomerBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1482,6 +1519,7 @@ export type UserUpdateWithoutAgentBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -1515,6 +1553,7 @@ export type UserUncheckedUpdateWithoutAgentBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1559,6 +1598,7 @@ export type UserUpdateWithoutAssignedBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -1592,6 +1632,7 @@ export type UserUncheckedUpdateWithoutAssignedBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1636,6 +1677,7 @@ export type UserUpdateWithoutCustomerBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -1669,6 +1711,7 @@ export type UserUncheckedUpdateWithoutCustomerBookingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1703,6 +1746,7 @@ export type UserCreateWithoutAdminApprovalsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
@@ -1736,6 +1780,7 @@ export type UserUncheckedCreateWithoutAdminApprovalsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
@@ -1785,6 +1830,7 @@ export type UserUpdateWithoutAdminApprovalsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
@@ -1818,6 +1864,7 @@ export type UserUncheckedUpdateWithoutAdminApprovalsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
@@ -1850,6 +1897,7 @@ export type UserCreateWithoutCommissionRulesInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -1883,6 +1931,7 @@ export type UserUncheckedCreateWithoutCommissionRulesInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1932,6 +1981,7 @@ export type UserUpdateWithoutCommissionRulesInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -1965,6 +2015,7 @@ export type UserUncheckedUpdateWithoutCommissionRulesInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1998,6 +2049,7 @@ export type UserCreateWithoutCommissionRuleAuditsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -2031,6 +2083,7 @@ export type UserUncheckedCreateWithoutCommissionRuleAuditsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2080,6 +2133,7 @@ export type UserUpdateWithoutCommissionRuleAuditsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -2113,6 +2167,7 @@ export type UserUncheckedUpdateWithoutCommissionRuleAuditsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2146,6 +2201,7 @@ export type UserCreateWithoutAgentCommissionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -2179,6 +2235,7 @@ export type UserUncheckedCreateWithoutAgentCommissionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2228,6 +2285,7 @@ export type UserUpdateWithoutAgentCommissionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -2261,6 +2319,7 @@ export type UserUncheckedUpdateWithoutAgentCommissionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2294,6 +2353,7 @@ export type UserCreateWithoutCommissionAdjustmentsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -2327,6 +2387,7 @@ export type UserUncheckedCreateWithoutCommissionAdjustmentsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2376,6 +2437,7 @@ export type UserUpdateWithoutCommissionAdjustmentsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -2409,6 +2471,7 @@ export type UserUncheckedUpdateWithoutCommissionAdjustmentsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2442,6 +2505,7 @@ export type UserCreateWithoutUploadedMediaInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -2475,6 +2539,7 @@ export type UserUncheckedCreateWithoutUploadedMediaInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2524,6 +2589,7 @@ export type UserUpdateWithoutUploadedMediaInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -2557,6 +2623,7 @@ export type UserUncheckedUpdateWithoutUploadedMediaInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2590,6 +2657,7 @@ export type UserCreateWithoutMediaUploadAuthsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -2623,6 +2691,7 @@ export type UserUncheckedCreateWithoutMediaUploadAuthsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2672,6 +2741,7 @@ export type UserUpdateWithoutMediaUploadAuthsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -2705,6 +2775,7 @@ export type UserUncheckedUpdateWithoutMediaUploadAuthsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2738,6 +2809,7 @@ export type UserCreateWithoutNotificationSettingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -2771,6 +2843,7 @@ export type UserUncheckedCreateWithoutNotificationSettingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2820,6 +2893,7 @@ export type UserUpdateWithoutNotificationSettingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -2853,6 +2927,7 @@ export type UserUncheckedUpdateWithoutNotificationSettingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2886,6 +2961,7 @@ export type UserCreateWithoutCustomerPaymentsInput = {
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -2919,6 +2995,7 @@ export type UserUncheckedCreateWithoutCustomerPaymentsInput = {
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2957,6 +3034,7 @@ export type UserCreateWithoutReviewedPaymentsInput = {
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -2990,6 +3068,7 @@ export type UserUncheckedCreateWithoutReviewedPaymentsInput = {
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -3039,6 +3118,7 @@ export type UserUpdateWithoutCustomerPaymentsInput = {
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -3072,6 +3152,7 @@ export type UserUncheckedUpdateWithoutCustomerPaymentsInput = {
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -3116,6 +3197,7 @@ export type UserUpdateWithoutReviewedPaymentsInput = {
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -3149,6 +3231,7 @@ export type UserUncheckedUpdateWithoutReviewedPaymentsInput = {
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -3183,6 +3266,7 @@ export type UserCreateWithoutInitiatedRefundsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
@@ -3216,6 +3300,7 @@ export type UserUncheckedCreateWithoutInitiatedRefundsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
@@ -3265,6 +3350,7 @@ export type UserUpdateWithoutInitiatedRefundsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
@@ -3298,6 +3384,159 @@ export type UserUncheckedUpdateWithoutInitiatedRefundsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserCreateWithoutCreatedPaymentLinksInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
+  uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutCreatedPaymentLinksInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
+  uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutCreatedPaymentLinksInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedPaymentLinksInput, Prisma.UserUncheckedCreateWithoutCreatedPaymentLinksInput>
+}
+
+export type UserUpsertWithoutCreatedPaymentLinksInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedPaymentLinksInput, Prisma.UserUncheckedUpdateWithoutCreatedPaymentLinksInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedPaymentLinksInput, Prisma.UserUncheckedCreateWithoutCreatedPaymentLinksInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreatedPaymentLinksInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedPaymentLinksInput, Prisma.UserUncheckedUpdateWithoutCreatedPaymentLinksInput>
+}
+
+export type UserUpdateWithoutCreatedPaymentLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
+  uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreatedPaymentLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
+  uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
@@ -3331,6 +3570,7 @@ export type UserCreateWithoutGrantedPermissionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -3364,6 +3604,7 @@ export type UserUncheckedCreateWithoutGrantedPermissionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -3402,6 +3643,7 @@ export type UserCreateWithoutStaffPermissionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -3435,6 +3677,7 @@ export type UserUncheckedCreateWithoutStaffPermissionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -3484,6 +3727,7 @@ export type UserUpdateWithoutGrantedPermissionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -3517,6 +3761,7 @@ export type UserUncheckedUpdateWithoutGrantedPermissionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -3561,6 +3806,7 @@ export type UserUpdateWithoutStaffPermissionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -3594,6 +3840,7 @@ export type UserUncheckedUpdateWithoutStaffPermissionsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -3627,6 +3874,7 @@ export type UserCreateWithoutEditedSettingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
@@ -3660,6 +3908,7 @@ export type UserUncheckedCreateWithoutEditedSettingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -3709,6 +3958,7 @@ export type UserUpdateWithoutEditedSettingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
@@ -3742,6 +3992,7 @@ export type UserUncheckedUpdateWithoutEditedSettingsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -3775,6 +4026,7 @@ export type UserCreateWithoutSettingAuditLogsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
@@ -3808,6 +4060,7 @@ export type UserUncheckedCreateWithoutSettingAuditLogsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
   adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
@@ -3857,6 +4110,7 @@ export type UserUpdateWithoutSettingAuditLogsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
@@ -3890,6 +4144,7 @@ export type UserUncheckedUpdateWithoutSettingAuditLogsInput = {
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
   initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
   adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
@@ -3916,6 +4171,7 @@ export type UserCountOutputType = {
   passwordResetTokens: number
   customerPayments: number
   reviewedPayments: number
+  createdPaymentLinks: number
   initiatedRefunds: number
   adminApprovals: number
   settingAuditLogs: number
@@ -3938,6 +4194,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   passwordResetTokens?: boolean | UserCountOutputTypeCountPasswordResetTokensArgs
   customerPayments?: boolean | UserCountOutputTypeCountCustomerPaymentsArgs
   reviewedPayments?: boolean | UserCountOutputTypeCountReviewedPaymentsArgs
+  createdPaymentLinks?: boolean | UserCountOutputTypeCountCreatedPaymentLinksArgs
   initiatedRefunds?: boolean | UserCountOutputTypeCountInitiatedRefundsArgs
   adminApprovals?: boolean | UserCountOutputTypeCountAdminApprovalsArgs
   settingAuditLogs?: boolean | UserCountOutputTypeCountSettingAuditLogsArgs
@@ -4050,6 +4307,13 @@ export type UserCountOutputTypeCountReviewedPaymentsArgs<ExtArgs extends runtime
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountCreatedPaymentLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentLinkWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountInitiatedRefundsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.PaymentRefundWhereInput
 }
@@ -4116,6 +4380,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   passwordResetTokens?: boolean | Prisma.User$passwordResetTokensArgs<ExtArgs>
   customerPayments?: boolean | Prisma.User$customerPaymentsArgs<ExtArgs>
   reviewedPayments?: boolean | Prisma.User$reviewedPaymentsArgs<ExtArgs>
+  createdPaymentLinks?: boolean | Prisma.User$createdPaymentLinksArgs<ExtArgs>
   initiatedRefunds?: boolean | Prisma.User$initiatedRefundsArgs<ExtArgs>
   adminApprovals?: boolean | Prisma.User$adminApprovalsArgs<ExtArgs>
   settingAuditLogs?: boolean | Prisma.User$settingAuditLogsArgs<ExtArgs>
@@ -4183,6 +4448,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   passwordResetTokens?: boolean | Prisma.User$passwordResetTokensArgs<ExtArgs>
   customerPayments?: boolean | Prisma.User$customerPaymentsArgs<ExtArgs>
   reviewedPayments?: boolean | Prisma.User$reviewedPaymentsArgs<ExtArgs>
+  createdPaymentLinks?: boolean | Prisma.User$createdPaymentLinksArgs<ExtArgs>
   initiatedRefunds?: boolean | Prisma.User$initiatedRefundsArgs<ExtArgs>
   adminApprovals?: boolean | Prisma.User$adminApprovalsArgs<ExtArgs>
   settingAuditLogs?: boolean | Prisma.User$settingAuditLogsArgs<ExtArgs>
@@ -4211,6 +4477,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     passwordResetTokens: Prisma.$PasswordResetTokenPayload<ExtArgs>[]
     customerPayments: Prisma.$PaymentPayload<ExtArgs>[]
     reviewedPayments: Prisma.$PaymentPayload<ExtArgs>[]
+    createdPaymentLinks: Prisma.$PaymentLinkPayload<ExtArgs>[]
     initiatedRefunds: Prisma.$PaymentRefundPayload<ExtArgs>[]
     adminApprovals: Prisma.$PriceApprovalPayload<ExtArgs>[]
     settingAuditLogs: Prisma.$SettingAuditLogPayload<ExtArgs>[]
@@ -4638,6 +4905,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   passwordResetTokens<T extends Prisma.User$passwordResetTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$passwordResetTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   customerPayments<T extends Prisma.User$customerPaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$customerPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviewedPayments<T extends Prisma.User$reviewedPaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reviewedPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdPaymentLinks<T extends Prisma.User$createdPaymentLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdPaymentLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   initiatedRefunds<T extends Prisma.User$initiatedRefundsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$initiatedRefundsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentRefundPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   adminApprovals<T extends Prisma.User$adminApprovalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$adminApprovalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PriceApprovalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   settingAuditLogs<T extends Prisma.User$settingAuditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$settingAuditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SettingAuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5405,6 +5673,30 @@ export type User$reviewedPaymentsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.PaymentScalarFieldEnum | Prisma.PaymentScalarFieldEnum[]
+}
+
+/**
+ * User.createdPaymentLinks
+ */
+export type User$createdPaymentLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PaymentLink
+   */
+  select?: Prisma.PaymentLinkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PaymentLink
+   */
+  omit?: Prisma.PaymentLinkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentLinkInclude<ExtArgs> | null
+  where?: Prisma.PaymentLinkWhereInput
+  orderBy?: Prisma.PaymentLinkOrderByWithRelationInput | Prisma.PaymentLinkOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentLinkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentLinkScalarFieldEnum | Prisma.PaymentLinkScalarFieldEnum[]
 }
 
 /**

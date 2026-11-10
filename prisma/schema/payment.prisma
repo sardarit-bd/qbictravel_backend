@@ -94,11 +94,35 @@ model PaymentRefund {
   @@index([status])
 }
 
+model PaymentLink {
+  id          String            @id @default(uuid())
+  bookingId   String
+  tokenHash   String            @unique
+  expiresAt   DateTime
+  status      PaymentLinkStatus @default(ACTIVE)
+  createdById String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  booking     Booking           @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  createdBy   User?             @relation("PaymentLinkCreator", fields: [createdById], references: [id])
+
+  @@index([bookingId])
+  @@index([status])
+}
+
+enum PaymentLinkStatus {
+  ACTIVE
+  EXPIRED
+  COMPLETED
+  REVOKED
+}
+
 enum PaymentMethod {
   BANK_TRANSFER
   CASH
   OTHER
   STRIPE
+  PAYPAL
 }
 
 enum PaymentRecordStatus {
