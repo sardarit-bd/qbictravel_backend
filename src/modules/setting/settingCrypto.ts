@@ -3,6 +3,7 @@ import logger from "../../shared/logger/logger.js";
 
 const ALGORITHM = "aes-256-gcm";
 const IV_LENGTH = 12; // 12 bytes recommended for GCM
+const AUTH_TAG_LENGTH = 16; // 16 bytes authentication tag for GCM
 
 /**
  * Derives a strictly 32-byte key from the environment.
@@ -53,9 +54,26 @@ export const decryptSecret = (ciphertext: string, customKey?: string): string =>
   }
 
   const [ivHex, authTagHex, encryptedHex] = parts;
-  const key = getEncryptionKey(customKey);
+
+  // Strict hexadecimal string format validation
+  const isHex = (str: string) => str.length > 0 && str.length % 2 === 0 && /^[0-9a-fA-F]+$/.test(str);
+
+  if (!isHex(ivHex) || !isHex(authTagHex) || !isHex(encryptedHex)) {
+    throw new Error("Invalid ciphertext structure. Non-hexadecimal characters detected.");
+  }
+
   const iv = Buffer.from(ivHex, "hex");
   const authTag = Buffer.from(authTagHex, "hex");
+
+  if (iv.length !== IV_LENGTH) {
+    throw new Error(`Invalid initialization vector length: expected ${IV_LENGTH} bytes, got ${iv.length}.`);
+  }
+
+  if (authTag.length !== AUTH_TAG_LENGTH) {
+    throw new Error(`Invalid authentication tag length: expected ${AUTH_TAG_LENGTH} bytes, got ${authTag.length}.`);
+  }
+
+  const key = getEncryptionKey(customKey);
 
   try {
     const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);

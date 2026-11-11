@@ -26,17 +26,46 @@ describe("Setting Cryptography & Masking", () => {
     const encrypted = encryptSecret(plaintext, secretKey);
     const [iv, tag, ciphertext] = encrypted.split(":");
 
-    // Tamper with tag
-    const tamperedTag = tag.slice(0, -2) + "ff";
+    // Tamper with tag deterministically (flip the lowest bit of the first byte)
+    const tagBuffer = Buffer.from(tag, "hex");
+    tagBuffer[0] ^= 0x01;
+    const tamperedTag = tagBuffer.toString("hex");
+
     expect(() => {
       decryptSecret(`${iv}:${tamperedTag}:${ciphertext}`, secretKey);
-    }).toThrow();
+    }).toThrow(/Decryption failed/);
 
-    // Tamper with ciphertext
-    const tamperedCiphertext = ciphertext.slice(0, -2) + "aa";
+    // Tamper with ciphertext deterministically (flip the lowest bit of the first byte)
+    const cipherBuffer = Buffer.from(ciphertext, "hex");
+    cipherBuffer[0] ^= 0x01;
+    const tamperedCiphertext = cipherBuffer.toString("hex");
+
     expect(() => {
       decryptSecret(`${iv}:${tag}:${tamperedCiphertext}`, secretKey);
-    }).toThrow();
+    }).toThrow(/Decryption failed/);
+  });
+
+  it("should fail decryption on malformed payload or invalid IV/tag lengths", () => {
+    const plaintext = "another-secret";
+    const encrypted = encryptSecret(plaintext, secretKey);
+    const [iv, tag, ciphertext] = encrypted.split(":");
+
+    // Malformed structure (missing parts)
+    expect(() => decryptSecret("not-a-valid-encrypted-string", secretKey)).toThrow(/Invalid ciphertext structure/);
+    expect(() => decryptSecret(`${iv}:${tag}`, secretKey)).toThrow(/Invalid ciphertext structure/);
+    expect(() => decryptSecret("", secretKey)).toThrow(/Ciphertext must be a valid formatted string/);
+
+    // Non-hex characters
+    expect(() => decryptSecret(`${iv}:${tag}:zzzzzzzz`, secretKey)).toThrow(/Non-hexadecimal characters/);
+    expect(() => decryptSecret(`${iv}:invalidtag1234567890123456789012:${ciphertext}`, secretKey)).toThrow(/Non-hexadecimal characters/);
+
+    // Invalid IV length (e.g. 8 bytes instead of 12)
+    const shortIv = iv.slice(0, 16);
+    expect(() => decryptSecret(`${shortIv}:${tag}:${ciphertext}`, secretKey)).toThrow(/Invalid initialization vector length/);
+
+    // Invalid tag length (e.g. 12 bytes instead of 16)
+    const shortTag = tag.slice(0, 24);
+    expect(() => decryptSecret(`${iv}:${shortTag}:${ciphertext}`, secretKey)).toThrow(/Invalid authentication tag length/);
   });
 
   it("should fail decryption when a different key is provided", () => {
