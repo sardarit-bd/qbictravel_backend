@@ -76,6 +76,42 @@ describe("User Profile & Avatar Endpoints", () => {
       expect(res.status).toBe(400);
       expect(userService.updateOwnEmail).not.toHaveBeenCalled();
     });
+
+    it("returns 409 when email is already in use", async () => {
+      const AppError = (await import("../../../../shared/utils/AppError.js")).default;
+      vi.mocked(userService.updateOwnEmail).mockRejectedValue(
+        new AppError("Email address is already in use by another account", 409)
+      );
+
+      const res = await request(app)
+        .put("/api/v1/users/me/email")
+        .send({
+          newEmail: "existing@example.com",
+          currentPassword: "mySecretPassword123",
+        });
+
+      expect(res.status).toBe(409);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toMatch(/already in use/i);
+    });
+
+    it("returns 401 when current password is invalid", async () => {
+      const AppError = (await import("../../../../shared/utils/AppError.js")).default;
+      vi.mocked(userService.updateOwnEmail).mockRejectedValue(
+        new AppError("Invalid current password. Re-authentication failed.", 401)
+      );
+
+      const res = await request(app)
+        .put("/api/v1/users/me/email")
+        .send({
+          newEmail: "valid@example.com",
+          currentPassword: "wrongPassword",
+        });
+
+      expect(res.status).toBe(401);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toMatch(/invalid current password/i);
+    });
   });
 
   describe("POST /api/v1/users/me/avatar/signature", () => {
