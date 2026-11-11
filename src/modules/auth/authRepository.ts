@@ -44,6 +44,15 @@ export const findAuthUserById = async (
   });
 };
 
+export const findUserWithPasswordById = async (
+  id: string,
+): Promise<AuthUserWithPassword | null> => {
+  return db.user.findFirst({
+    where: { id, deletedAt: null },
+    select: { ...authRecordSelect, password: true },
+  });
+};
+
 export const findUserWithPassword = async (
   email: string,
 ): Promise<AuthUserWithPassword | null> => {

@@ -1,6 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
 import { encryptSecret, decryptSecret } from "./settingCrypto.js";
-import type { ListSettingAuditLogsQuery, SettingAuditLogItem } from "./settingTypes.js";
 
 /**
  * Retrieve all system settings from database.
@@ -141,59 +140,4 @@ export const logSettingAudit = async (params: {
   });
 };
 
-/**
- * List configuration audit logs with pagination and filters.
- */
-export const listSettingAuditLogs = async (
-  query: ListSettingAuditLogsQuery
-): Promise<{ items: SettingAuditLogItem[]; total: number; page: number; limit: number; pages: number }> => {
-  const page = Math.max(1, Number(query.page) || 1);
-  const limit = Math.min(100, Math.max(1, Number(query.limit) || 20));
-  const skip = (page - 1) * limit;
 
-  const where: Record<string, unknown> = {};
-  if (query.category) where.category = query.category;
-  if (query.status) where.status = query.status;
-
-  const [records, total] = await Promise.all([
-    prisma.settingAuditLog.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-      skip,
-      take: limit,
-    }),
-    prisma.settingAuditLog.count({ where }),
-  ]);
-
-  const items: SettingAuditLogItem[] = records.map((r) => {
-    let parsedMetadata: Record<string, unknown> | null = null;
-    if (r.metadata) {
-      try {
-        parsedMetadata = JSON.parse(r.metadata);
-      } catch {
-        parsedMetadata = null;
-      }
-    }
-    return {
-      id: r.id,
-      category: r.category,
-      action: r.action,
-      status: r.status,
-      actorId: r.actorId,
-      actorName: r.actorName,
-      actorEmail: r.actorEmail,
-      ipAddress: r.ipAddress,
-      userAgent: r.userAgent,
-      metadata: parsedMetadata,
-      createdAt: r.createdAt.toISOString(),
-    };
-  });
-
-  return {
-    items,
-    total,
-    page,
-    limit,
-    pages: Math.ceil(total / limit) || 1,
-  };
-};

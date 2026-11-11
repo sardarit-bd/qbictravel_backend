@@ -38,6 +38,20 @@ export interface RuntimePaymentCredentials {
   publishableKey: string;
   secretKey: string;
   merchantId: string;
+  stripe?: {
+    enabled: boolean;
+    environment: "sandbox" | "live";
+    publishableKey: string;
+    secretKey: string;
+    webhookSecret: string;
+  };
+  paypal?: {
+    enabled: boolean;
+    environment: "sandbox" | "live";
+    clientId: string;
+    clientSecret: string;
+    webhookId: string;
+  };
 }
 
 export interface RuntimeWebhookConfig {
@@ -224,6 +238,12 @@ export const getRuntimeGeneralConfig = async (): Promise<RuntimeGeneralSettings>
 
 /**
  * Resolve Payment Gateway credentials at runtime.
+ * Precedence: non-empty database SystemSetting values first, process.env
+ * fallback second. Empty DB records never shadow environment credentials.
+ *
+ * Note: the live payment services currently read process.env directly; this
+ * loader is the canonical resolver for any consumer that needs a single,
+ * precedence-aware view of the configured credentials.
  */
 export const getRuntimePaymentConfig = async (): Promise<RuntimePaymentCredentials> => {
   if (cachedPayment) return cachedPayment;
@@ -243,6 +263,22 @@ export const getRuntimePaymentConfig = async (): Promise<RuntimePaymentCredentia
       secretKey = (await getDecryptedSecretSetting("payment.secret_key")) || "";
     }
 
+    // Stripe
+    let stripeSecret = "";
+    if (map.get("payment.stripe.secret_key")?.isSecret) {
+      stripeSecret = (await getDecryptedSecretSetting("payment.stripe.secret_key")) || "";
+    }
+    let stripeWebhookSecret = "";
+    if (map.get("payment.stripe.webhook_secret")?.isSecret) {
+      stripeWebhookSecret = (await getDecryptedSecretSetting("payment.stripe.webhook_secret")) || "";
+    }
+
+    // PayPal
+    let paypalClientSecret = "";
+    if (map.get("payment.paypal.client_secret")?.isSecret) {
+      paypalClientSecret = (await getDecryptedSecretSetting("payment.paypal.client_secret")) || "";
+    }
+
     cachedPayment = {
       providerName,
       enabled,
@@ -250,6 +286,25 @@ export const getRuntimePaymentConfig = async (): Promise<RuntimePaymentCredentia
       publishableKey,
       secretKey,
       merchantId,
+      stripe: {
+        enabled: map.get("payment.stripe.enabled")?.value !== "false",
+        environment: (map.get("payment.stripe.environment")?.value as "sandbox" | "live") || environment,
+        publishableKey: map.get("payment.stripe.publishable_key")?.value || publishableKey || process.env.STRIPE_PUBLISHABLE_KEY || "",
+        secretKey: stripeSecret || secretKey || process.env.STRIPE_SECRET_KEY || "",
+        webhookSecret: stripeWebhookSecret || process.env.STRIPE_WEBHOOK_SECRET || "",
+      },
+      paypal: {
+        enabled: map.get("payment.paypal.enabled")?.value !== "false",
+        environment: (map.get("payment.paypal.environment")?.value as "sandbox" | "live") || environment,
+        clientId: map.get("payment.paypal.client_id")?.value || process.env.PAYPAL_CLIENT_ID || "",
+        clientSecret:
+          (map.get("payment.paypal.client_secret")?.isSecret
+            ? (await getDecryptedSecretSetting("payment.paypal.client_secret")) || ""
+          : "") ||
+          process.env.PAYPAL_CLIENT_SECRET ||
+          "",
+        webhookId: map.get("payment.paypal.webhook_id")?.value || process.env.PAYPAL_WEBHOOK_ID || "",
+      },
     };
     return cachedPayment;
   } catch (error) {

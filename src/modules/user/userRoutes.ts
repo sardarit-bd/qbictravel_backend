@@ -3,7 +3,11 @@ import { Router } from "express";
 import * as userController from "./userController.js";
 import validate from "../../shared/middleware/validate.js";
 import authMiddleware from "../../shared/middleware/authMiddleware.js";
-import { updateProfileSchema } from "./userValidators.js";
+import {
+  updateProfileSchema,
+  updateEmailSchema,
+  confirmAvatarSchema,
+} from "./userValidators.js";
 
 const router = Router();
 
@@ -22,10 +26,6 @@ router.use(authMiddleware);
  *     responses:
  *       200:
  *         description: Profile retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UserProfileResponse'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
  *       403:
@@ -40,30 +40,98 @@ router.get("/me", userController.getMe);
  *     tags:
  *       - Users
  *     summary: Update permitted profile fields
- *     description: Only name and phone can be changed. Role, status and email cannot be changed here.
+ *     description: Only name and phone can be changed here.
  *     security:
  *       - bearerAuth: []
  *       - cookieAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UpdateProfileRequest'
  *     responses:
  *       200:
  *         description: Profile updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UserProfileResponse'
- *       400:
- *         $ref: '#/components/responses/ValidationError'
- *       401:
- *         $ref: '#/components/responses/Unauthorized'
- *       403:
- *         $ref: '#/components/responses/Forbidden'
  */
 router.patch("/me", validate(updateProfileSchema), userController.updateMe);
+
+/**
+ * @openapi
+ * /api/v1/users/me/email:
+ *   put:
+ *     tags:
+ *       - Users
+ *     summary: Update own email address with password verification
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Email updated successfully
+ *       400:
+ *         description: Validation error or same email
+ *       401:
+ *         description: Incorrect password / Unauthorized
+ *       409:
+ *         description: Email already in use
+ */
+router.put(
+  "/me/email",
+  validate(updateEmailSchema),
+  userController.updateEmail,
+);
+
+/**
+ * @openapi
+ * /api/v1/users/me/avatar/signature:
+ *   post:
+ *     tags:
+ *       - Users
+ *     summary: Request Cloudinary upload signature for profile picture
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Upload signature generated
+ */
+router.post(
+  "/me/avatar/signature",
+  userController.createAvatarSignature,
+);
+
+/**
+ * @openapi
+ * /api/v1/users/me/avatar/confirm:
+ *   post:
+ *     tags:
+ *       - Users
+ *     summary: Confirm uploaded profile picture and update user avatar
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Avatar confirmed and updated
+ */
+router.post(
+  "/me/avatar/confirm",
+  validate(confirmAvatarSchema),
+  userController.confirmAvatar,
+);
+
+/**
+ * @openapi
+ * /api/v1/users/me/avatar:
+ *   delete:
+ *     tags:
+ *       - Users
+ *     summary: Remove own profile picture and clean up managed storage asset
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Avatar removed successfully
+ */
+router.delete(
+  "/me/avatar",
+  userController.removeAvatar,
+);
 
 export default router;

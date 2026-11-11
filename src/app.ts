@@ -144,6 +144,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1", serviceRoutes);
 app.use("/api/v1/admin/media", mediaRoutes);
 app.use("/api/v1/admin", permissionRoutes);
+app.use("/api/v1", settingRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/agent", agentRoutes);
 app.use("/api/v1", pricingRoutes);
@@ -153,7 +154,6 @@ app.use("/api/v1", operationsRoutes);
 app.use("/api/v1", notificationRoutes);
 app.use("/api/v1", commissionRoutes);
 app.use("/api/v1", reportRoutes);
-app.use("/api/v1", settingRoutes);
 app.use("/api/v1", customerRoutes);
 app.use(errorHandler);
 

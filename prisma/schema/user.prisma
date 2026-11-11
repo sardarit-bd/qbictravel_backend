@@ -5,6 +5,8 @@ model User {
   createdAt             DateTime               @default(now())
   password              String
   phone                 String?
+  avatarUrl             String?
+  avatarKey             String?
   role                  UserRole               @default(customer)
   status                UserStatus             @default(active)
   tokenVersion          Int                    @default(0)

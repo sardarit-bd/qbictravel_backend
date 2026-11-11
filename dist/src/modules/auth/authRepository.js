@@ -22,6 +22,12 @@ export const findAuthUserById = async (id) => {
         select: authRecordSelect,
     });
 };
+export const findUserWithPasswordById = async (id) => {
+    return db.user.findFirst({
+        where: { id, deletedAt: null },
+        select: { ...authRecordSelect, password: true },
+    });
+};
 export const findUserWithPassword = async (email) => {
     return db.user.findFirst({
         where: { email, deletedAt: null },

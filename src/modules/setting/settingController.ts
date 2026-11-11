@@ -138,20 +138,6 @@ export const sendTestEmail = async (
   }
 };
 
-export const getAuditLogs = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const query = res.locals.query || req.query;
-    const logs = await service.getAuditLogs(query);
-    sendResponse(res, 200, true, "Settings audit logs retrieved successfully", logs);
-  } catch (error) {
-    next(error);
-  }
-};
-
 export const handlePaymentWebhook = async (
   req: Request,
   res: Response,

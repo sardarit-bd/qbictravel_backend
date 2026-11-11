@@ -10,6 +10,7 @@ export const updateGeneralSettingsSchema = yup.object({
 });
 
 export const updatePaymentSettingsSchema = yup.object({
+  activeProvider: yup.string().oneOf(["stripe", "paypal"]).optional(),
   providerName: yup.string().trim().min(2, "Provider name must be at least 2 characters").max(100).optional(),
   enabled: yup.boolean().optional(),
   environment: yup.string().oneOf(["sandbox", "live"], "Environment must be sandbox or live").optional(),
@@ -17,6 +18,26 @@ export const updatePaymentSettingsSchema = yup.object({
   secretKey: yup.string().trim().min(8, "Secret key must be at least 8 characters").max(500).optional(),
   merchantId: yup.string().trim().max(100).optional(),
   confirmLiveMode: yup.boolean().optional(),
+
+  stripe: yup
+    .object({
+      enabled: yup.boolean().optional(),
+      environment: yup.string().oneOf(["sandbox", "live"]).optional(),
+      publishableKey: yup.string().trim().max(500).optional(),
+      secretKey: yup.string().trim().min(8, "Secret key must be at least 8 characters").max(500).optional(),
+      webhookSecret: yup.string().trim().min(8, "Webhook secret must be at least 8 characters").max(500).optional(),
+    })
+    .optional(),
+
+  paypal: yup
+    .object({
+      enabled: yup.boolean().optional(),
+      environment: yup.string().oneOf(["sandbox", "live"]).optional(),
+      clientId: yup.string().trim().max(500).optional(),
+      clientSecret: yup.string().trim().min(8, "Client secret must be at least 8 characters").max(500).optional(),
+      webhookId: yup.string().trim().max(500).optional(),
+    })
+    .optional(),
 });
 
 export const updateWebhookSettingsSchema = yup.object({
@@ -46,11 +67,4 @@ export const updateSmtpSettingsSchema = yup.object({
 
 export const sendTestEmailSchema = yup.object({
   recipientEmail: yup.string().trim().email("A valid recipient email is required").required("Recipient email is required"),
-});
-
-export const listAuditLogsQuerySchema = yup.object({
-  category: yup.string().trim().uppercase().optional(),
-  status: yup.string().trim().uppercase().optional(),
-  page: yup.number().integer().min(1).default(1),
-  limit: yup.number().integer().min(1).max(100).default(20),
 });
