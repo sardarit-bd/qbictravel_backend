@@ -10,7 +10,6 @@ import {
   updateCloudinarySettingsSchema,
   updateSmtpSettingsSchema,
   sendTestEmailSchema,
-  listAuditLogsQuerySchema,
 } from "./settingValidators.js";
 
 const router = Router();
@@ -264,42 +263,6 @@ router.post(
   requirePermission("settings.smtp.manage"),
   validate(sendTestEmailSchema),
   controller.sendTestEmail
-);
-
-/**
- * @openapi
- * /api/v1/admin/settings/audit-logs:
- *   get:
- *     tags: [Admin Settings]
- *     summary: View configuration audit log trail
- *     security: [{ bearerAuth: [] }, { cookieAuth: [] }]
- *     parameters:
- *       - { name: category, in: query, schema: { type: string } }
- *       - { name: status, in: query, schema: { type: string } }
- *       - { name: page, in: query, schema: { type: integer, default: 1 } }
- *       - { name: limit, in: query, schema: { type: integer, default: 20 } }
- *     responses:
- *       200: { description: Audit logs retrieved successfully }
- *       403: { $ref: '#/components/responses/Forbidden' }
- */
-router.get(
-  "/admin/settings/audit-logs",
-  authMiddleware,
-  requirePermission(["settings.audit.view", "settings.view"]),
-  validate(listAuditLogsQuerySchema, "query"),
-  controller.getAuditLogs
-);
-
-/**
- * Route alias: /admin/settings/audit
- * Supports clients invoking GET /api/v1/admin/settings/audit as well as /audit-logs
- */
-router.get(
-  "/admin/settings/audit",
-  authMiddleware,
-  requirePermission(["settings.audit.view", "settings.view"]),
-  validate(listAuditLogsQuerySchema, "query"),
-  controller.getAuditLogs
 );
 
 /**

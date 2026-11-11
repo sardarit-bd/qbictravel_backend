@@ -18,7 +18,9 @@ import type {
   UpdateWebhookSettingsInput,
   UpdateCloudinarySettingsInput,
   UpdateSmtpSettingsInput,
-  ListSettingAuditLogsQuery,
+  StripePaymentConfigSummary,
+  PayPalPaymentConfigSummary,
+  PaymentCredentialSource,
 } from "./settingTypes.js";
 
 export interface ActorContext {
@@ -28,6 +30,47 @@ export interface ActorContext {
   ipAddress?: string | null;
   userAgent?: string | null;
 }
+
+/**
+ * A credential is only considered present when it is a non-empty string.
+ * Empty strings are treated as "not configured" so that an empty database
+ * record can never shadow a valid environment variable.
+ */
+const hasCredentialValue = (value: string | null | undefined): boolean =>
+  typeof value === "string" && value.trim().length > 0;
+
+/**
+ * Resolve a credential using the documented precedence:
+ * non-empty database value first, environment variable second.
+ */
+const resolveCredential = (
+  dbValue: string | null | undefined,
+  envValue: string | null | undefined
+): { value: string; source: "database" | "environment" | "none" } => {
+  if (hasCredentialValue(dbValue)) return { value: dbValue!.trim(), source: "database" };
+  if (hasCredentialValue(envValue)) return { value: envValue!.trim(), source: "environment" };
+  return { value: "", source: "none" };
+};
+
+/**
+ * Best-effort environment detection from credential material. Used only when
+ * no explicit environment is stored in the database.
+ */
+const detectStripeEnvironment = (
+  secretKey: string,
+  publishableKey: string
+): "sandbox" | "live" | null => {
+  if (/^sk_live_/.test(secretKey) || /^pk_live_/.test(publishableKey)) return "live";
+  if (/^sk_test_/.test(secretKey) || /^pk_test_/.test(publishableKey)) return "sandbox";
+  return null;
+};
+
+const detectPaypalEnvironment = (baseUrl: string | undefined): "sandbox" | "live" | null => {
+  if (!baseUrl) return null;
+  if (baseUrl.includes("sandbox.paypal.com")) return "sandbox";
+  if (baseUrl.includes("api-m.paypal.com")) return "live";
+  return null;
+};
 
 /**
  * Generate the public webhook endpoint URL.
@@ -62,22 +105,119 @@ export const getSettingsOverview = async (): Promise<SystemSettingsOverview> => 
   };
 
   // 2. Payment
+  // Precedence: a non-empty SystemSetting (database) value wins; otherwise the
+  // process environment variable is used. Empty DB records never shadow env.
   const isPaymentCustomized = Array.from(map.keys()).some((k) => k.startsWith("payment."));
-  const hasSecretKey = Boolean(map.get("payment.secret_key")?.encryptedValue);
-  let maskedSecretKey = "";
-  if (hasSecretKey) {
-    const rawSecret = await repo.getDecryptedSecretSetting("payment.secret_key");
-    maskedSecretKey = maskSecret(rawSecret);
-  }
+
+  // Legacy generic secret key (kept for backward compatibility).
+  const legacySecretRecord = map.get("payment.secret_key");
+  const legacySecret = legacySecretRecord?.encryptedValue
+    ? await repo.getDecryptedSecretSetting("payment.secret_key")
+    : null;
+  const hasLegacySecretKey = hasCredentialValue(legacySecret);
+
+  // Stripe credentials
+  const dbStripeSecretRecord = map.get("payment.stripe.secret_key");
+  const dbStripeSecret = dbStripeSecretRecord?.encryptedValue
+    ? await repo.getDecryptedSecretSetting("payment.stripe.secret_key")
+    : null;
+  const dbStripeWebhookRecord = map.get("payment.stripe.webhook_secret");
+  const dbStripeWebhookSecret = dbStripeWebhookRecord?.encryptedValue
+    ? await repo.getDecryptedSecretSetting("payment.stripe.webhook_secret")
+    : null;
+
+  const stripeSecret = resolveCredential(dbStripeSecret, process.env.STRIPE_SECRET_KEY);
+  const stripeWebhookSecret = resolveCredential(
+    dbStripeWebhookSecret,
+    process.env.STRIPE_WEBHOOK_SECRET
+  );
+  const stripePublishableKey = resolveCredential(
+    map.get("payment.stripe.publishable_key")?.value || map.get("payment.publishable_key")?.value,
+    process.env.STRIPE_PUBLISHABLE_KEY
+  );
+
+  // The legacy generic secret is a database-managed Stripe credential.
+  const effectiveStripeSecret =
+    stripeSecret.value || (hasLegacySecretKey ? legacySecret!.trim() : "");
+  const stripeSecretSource: PaymentCredentialSource =
+    stripeSecret.source !== "none"
+      ? stripeSecret.source
+      : hasLegacySecretKey
+      ? "database"
+      : "none";
+  const stripeConfigured = hasCredentialValue(effectiveStripeSecret);
+  const stripeEnabled =
+    stripeConfigured && map.get("payment.stripe.enabled")?.value !== "false";
+  const stripeEnvironment =
+    (map.get("payment.stripe.environment")?.value as "sandbox" | "live") ||
+    (map.get("payment.environment")?.value as "sandbox" | "live") ||
+    detectStripeEnvironment(effectiveStripeSecret, stripePublishableKey.value) ||
+    "sandbox";
+
+  const stripeSummary: StripePaymentConfigSummary = {
+    enabled: stripeEnabled,
+    environment: stripeEnvironment,
+    publishableKey: stripePublishableKey.value,
+    hasSecretKey: stripeConfigured,
+    maskedSecretKey: maskSecret(effectiveStripeSecret),
+    hasWebhookSecret: hasCredentialValue(stripeWebhookSecret.value),
+    maskedWebhookSecret: maskSecret(stripeWebhookSecret.value),
+    configured: stripeConfigured,
+    source: stripeSecretSource,
+  };
+
+  // PayPal credentials
+  const dbPaypalSecretRecord = map.get("payment.paypal.client_secret");
+  const dbPaypalSecret = dbPaypalSecretRecord?.encryptedValue
+    ? await repo.getDecryptedSecretSetting("payment.paypal.client_secret")
+    : null;
+
+  const paypalClientId = resolveCredential(
+    map.get("payment.paypal.client_id")?.value,
+    process.env.PAYPAL_CLIENT_ID
+  );
+  const paypalClientSecret = resolveCredential(
+    dbPaypalSecret,
+    process.env.PAYPAL_CLIENT_SECRET
+  );
+  const paypalWebhookId = resolveCredential(
+    map.get("payment.paypal.webhook_id")?.value,
+    process.env.PAYPAL_WEBHOOK_ID
+  );
+
+  const paypalConfigured = Boolean(paypalClientId.value && paypalClientSecret.value);
+  const paypalEnabled =
+    paypalConfigured && map.get("payment.paypal.enabled")?.value !== "false";
+  const paypalEnvironment =
+    (map.get("payment.paypal.environment")?.value as "sandbox" | "live") ||
+    (map.get("payment.environment")?.value as "sandbox" | "live") ||
+    detectPaypalEnvironment(process.env.PAYPAL_BASE_URL) ||
+    "sandbox";
+
+  const paypalSummary: PayPalPaymentConfigSummary = {
+    enabled: paypalEnabled,
+    environment: paypalEnvironment,
+    clientId: paypalClientId.value,
+    hasClientSecret: hasCredentialValue(paypalClientSecret.value),
+    maskedClientSecret: maskSecret(paypalClientSecret.value),
+    webhookId: paypalWebhookId.value,
+    configured: paypalConfigured,
+    source: paypalClientSecret.source,
+  };
+
+  const activeProvider = (map.get("payment.active_provider")?.value as "stripe" | "paypal") || "stripe";
 
   const payment = {
+    activeProvider,
     providerName: map.get("payment.provider_name")?.value || "Direct Bank & Cash",
     enabled: map.get("payment.enabled")?.value !== "false",
     environment: (map.get("payment.environment")?.value as "sandbox" | "live") || "sandbox",
-    publishableKey: map.get("payment.publishable_key")?.value || "",
-    hasSecretKey,
-    maskedSecretKey,
+    publishableKey: stripePublishableKey.value,
+    hasSecretKey: stripeConfigured || hasLegacySecretKey,
+    maskedSecretKey: maskSecret(effectiveStripeSecret || legacySecret),
     merchantId: map.get("payment.merchant_id")?.value || "",
+    stripe: stripeSummary,
+    paypal: paypalSummary,
     isCustomized: isPaymentCustomized,
     updatedAt: map.get("payment.provider_name")?.updatedAt.toISOString() || null,
   };
@@ -264,7 +404,12 @@ export const updatePaymentSettings = async (
   input: UpdatePaymentSettingsInput,
   actor: ActorContext
 ) => {
-  if (input.environment === "live" && !input.confirmLiveMode) {
+  const isGoingLive =
+    input.environment === "live" ||
+    input.stripe?.environment === "live" ||
+    input.paypal?.environment === "live";
+
+  if (isGoingLive && !input.confirmLiveMode) {
     throw new AppError(
       "Confirmation is required before switching Payment Gateway to Live Mode.",
       400
@@ -273,6 +418,9 @@ export const updatePaymentSettings = async (
 
   const updates: Array<Promise<unknown>> = [];
 
+  if (input.activeProvider !== undefined) {
+    updates.push(repo.setPlaintextSetting("PAYMENT", "payment.active_provider", input.activeProvider, actor.id));
+  }
   if (input.providerName !== undefined) {
     updates.push(repo.setPlaintextSetting("PAYMENT", "payment.provider_name", input.providerName.trim(), actor.id));
   }
@@ -282,14 +430,58 @@ export const updatePaymentSettings = async (
   if (input.environment !== undefined) {
     updates.push(repo.setPlaintextSetting("PAYMENT", "payment.environment", input.environment, actor.id));
   }
-  if (input.publishableKey !== undefined) {
+  // Never persist empty credential values: an empty DB record must not shadow
+  // a valid environment variable. PayPal's client id is not a Stripe
+  // publishable key, so it must not be written to the legacy publishable field.
+  const isPaypalProvider = input.activeProvider === "paypal" || input.paypal !== undefined;
+  if (input.publishableKey !== undefined && input.publishableKey.trim() && !isPaypalProvider) {
     updates.push(repo.setPlaintextSetting("PAYMENT", "payment.publishable_key", input.publishableKey.trim(), actor.id));
   }
-  if (input.merchantId !== undefined) {
+  if (input.merchantId !== undefined && input.merchantId.trim()) {
     updates.push(repo.setPlaintextSetting("PAYMENT", "payment.merchant_id", input.merchantId.trim(), actor.id));
   }
   if (input.secretKey && input.secretKey.trim()) {
     updates.push(repo.setSecretSetting("PAYMENT", "payment.secret_key", input.secretKey.trim(), actor.id, "Payment Secret Key"));
+  }
+
+  // Stripe specific settings
+  if (input.stripe) {
+    if (input.stripe.enabled !== undefined) {
+      updates.push(repo.setPlaintextSetting("PAYMENT", "payment.stripe.enabled", String(input.stripe.enabled), actor.id));
+    }
+    if (input.stripe.environment !== undefined) {
+      updates.push(repo.setPlaintextSetting("PAYMENT", "payment.stripe.environment", input.stripe.environment, actor.id));
+    }
+    if (input.stripe.publishableKey !== undefined && input.stripe.publishableKey.trim()) {
+      updates.push(repo.setPlaintextSetting("PAYMENT", "payment.stripe.publishable_key", input.stripe.publishableKey.trim(), actor.id));
+      updates.push(repo.setPlaintextSetting("PAYMENT", "payment.publishable_key", input.stripe.publishableKey.trim(), actor.id));
+    }
+    if (input.stripe.secretKey && input.stripe.secretKey.trim()) {
+      updates.push(repo.setSecretSetting("PAYMENT", "payment.stripe.secret_key", input.stripe.secretKey.trim(), actor.id, "Stripe Secret Key"));
+      updates.push(repo.setSecretSetting("PAYMENT", "payment.secret_key", input.stripe.secretKey.trim(), actor.id, "Payment Secret Key"));
+    }
+    if (input.stripe.webhookSecret && input.stripe.webhookSecret.trim()) {
+      updates.push(repo.setSecretSetting("PAYMENT", "payment.stripe.webhook_secret", input.stripe.webhookSecret.trim(), actor.id, "Stripe Webhook Secret"));
+    }
+  }
+
+  // PayPal specific settings
+  if (input.paypal) {
+    if (input.paypal.enabled !== undefined) {
+      updates.push(repo.setPlaintextSetting("PAYMENT", "payment.paypal.enabled", String(input.paypal.enabled), actor.id));
+    }
+    if (input.paypal.environment !== undefined) {
+      updates.push(repo.setPlaintextSetting("PAYMENT", "payment.paypal.environment", input.paypal.environment, actor.id));
+    }
+    if (input.paypal.clientId !== undefined && input.paypal.clientId.trim()) {
+      updates.push(repo.setPlaintextSetting("PAYMENT", "payment.paypal.client_id", input.paypal.clientId.trim(), actor.id));
+    }
+    if (input.paypal.clientSecret && input.paypal.clientSecret.trim()) {
+      updates.push(repo.setSecretSetting("PAYMENT", "payment.paypal.client_secret", input.paypal.clientSecret.trim(), actor.id, "PayPal Client Secret"));
+    }
+    if (input.paypal.webhookId !== undefined && input.paypal.webhookId.trim()) {
+      updates.push(repo.setPlaintextSetting("PAYMENT", "payment.paypal.webhook_id", input.paypal.webhookId.trim(), actor.id));
+    }
   }
 
   await Promise.all(updates);
@@ -297,17 +489,19 @@ export const updatePaymentSettings = async (
 
   await repo.logSettingAudit({
     category: "PAYMENT",
-    action: input.environment === "live" ? "ACTIVATE_LIVE_PAYMENT_MODE" : "UPDATE_PAYMENT_CREDENTIALS",
+    action: isGoingLive ? "ACTIVATE_LIVE_PAYMENT_MODE" : "UPDATE_PAYMENT_CREDENTIALS",
     actorId: actor.id,
     actorName: actor.name,
     actorEmail: actor.email,
     ipAddress: actor.ipAddress,
     userAgent: actor.userAgent,
     metadata: {
+      activeProvider: input.activeProvider,
       providerName: input.providerName,
       environment: input.environment,
       enabled: input.enabled,
-      hasSecretKeyReplaced: Boolean(input.secretKey?.trim()),
+      hasSecretKeyReplaced: Boolean(input.secretKey?.trim() || input.stripe?.secretKey?.trim()),
+      hasPaypalSecretReplaced: Boolean(input.paypal?.clientSecret?.trim()),
     },
   });
 
@@ -749,11 +943,4 @@ export const handlePaymentWebhook = async (
     verified: true,
     processedAt: now,
   };
-};
-
-/**
- * Query configuration audit history.
- */
-export const getAuditLogs = async (query: ListSettingAuditLogsQuery) => {
-  return repo.listSettingAuditLogs(query);
 };

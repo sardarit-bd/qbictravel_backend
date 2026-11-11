@@ -196,12 +196,6 @@ export const SUPPORTED_PERMISSIONS: readonly PermissionDefinition[] = [
     module: "settings",
     description: "Configure SMTP host credentials, test connections, and send test emails",
   },
-  {
-    id: "settings.audit.view",
-    name: "View Settings Audit Log",
-    module: "settings",
-    description: "Inspect sensitive configuration audit logs and historical changes",
-  },
 ] as const;
 
 export type PermissionId = (typeof SUPPORTED_PERMISSIONS)[number]["id"];

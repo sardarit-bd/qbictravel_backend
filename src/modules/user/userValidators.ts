@@ -34,3 +34,20 @@ export const updateProfileSchema = yup
       value !== undefined &&
       Object.values(value).some((field) => field !== undefined),
   );
+
+export const updateEmailSchema = yup.object({
+  newEmail: yup
+    .string()
+    .trim()
+    .email("Invalid email address")
+    .required("New email address is required"),
+  currentPassword: yup
+    .string()
+    .required("Current password is required to verify identity"),
+});
+
+export const confirmAvatarSchema = yup.object({
+  publicId: yup.string().trim().required("publicId is required"),
+  uploadToken: yup.string().trim().required("uploadToken is required"),
+  assetId: yup.string().trim().optional(),
+});

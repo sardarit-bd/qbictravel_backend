@@ -23,91 +23,67 @@ vi.mock("../../../shared/middleware/authMiddleware.js", () => ({
   },
 }));
 
-describe("Settings Audit & Access Route Integration Tests", () => {
-  const mockAuditResponse = {
-    logs: [
-      {
-        id: "log-1",
-        category: "GENERAL",
-        action: "UPDATE_GENERAL_SETTINGS",
-        status: "SUCCESS",
-        actorId: "admin-1",
-        actorName: "Platform Admin",
-        actorEmail: "admin@phukettours.local",
-        ipAddress: "127.0.0.1",
-        userAgent: "TestAgent",
-        metadata: { platformName: "PhuketTours" },
-        createdAt: new Date().toISOString(),
-      },
-    ],
-    pagination: {
-      total: 1,
-      page: 1,
-      limit: 20,
-      totalPages: 1,
-    },
-  };
-
-  it("GET /api/v1/admin/settings/audit allows admin access", async () => {
-    vi.mocked(settingService.getAuditLogs).mockResolvedValue(mockAuditResponse as any);
-
+describe("Settings Routes & Removed Audit Logs Tests", () => {
+  it("GET /api/v1/admin/settings/audit is removed and returns 404", async () => {
     const res = await request(app)
       .get("/api/v1/admin/settings/audit")
       .set("x-mock-role", "admin");
 
-    expect(res.status).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(res.body.data.logs).toHaveLength(1);
-    expect(res.body.data.logs[0].action).toBe("UPDATE_GENERAL_SETTINGS");
+    expect(res.status).toBe(404);
   });
 
-  it("GET /api/v1/admin/settings/audit-logs also allows admin access", async () => {
-    vi.mocked(settingService.getAuditLogs).mockResolvedValue(mockAuditResponse as any);
-
+  it("GET /api/v1/admin/settings/audit-logs is removed and returns 404", async () => {
     const res = await request(app)
       .get("/api/v1/admin/settings/audit-logs")
       .set("x-mock-role", "admin");
 
-    expect(res.status).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(res.body.data.logs).toHaveLength(1);
+    expect(res.status).toBe(404);
   });
 
-  it("GET /api/v1/admin/settings/audit allows staff with settings.audit.view permission", async () => {
-    vi.mocked(settingService.getAuditLogs).mockResolvedValue(mockAuditResponse as any);
-    vi.spyOn(permissionRepository, "checkStaffPermission").mockImplementation(
-      (_userId, permId) => Promise.resolve(permId === "settings.audit.view")
-    );
+  it("GET /api/v1/admin/settings allows admin access", async () => {
+    vi.mocked(settingService.getSettingsOverview).mockResolvedValue({
+      general: {} as any,
+      payment: {} as any,
+      webhook: {} as any,
+      cloudinary: {} as any,
+      smtp: {} as any,
+      serverTime: new Date().toISOString(),
+    });
 
     const res = await request(app)
-      .get("/api/v1/admin/settings/audit")
-      .set("x-mock-role", "staff");
+      .get("/api/v1/admin/settings")
+      .set("x-mock-role", "admin");
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
   });
 
-  it("GET /api/v1/admin/settings/audit denies staff without settings.audit.view or settings.view", async () => {
-    vi.spyOn(permissionRepository, "checkStaffPermission").mockResolvedValue(false);
+  it("PUT /api/v1/admin/settings/payment allows admin to update payment settings", async () => {
+    vi.mocked(settingService.updatePaymentSettings).mockResolvedValue({} as any);
 
     const res = await request(app)
-      .get("/api/v1/admin/settings/audit")
-      .set("x-mock-role", "staff");
+      .put("/api/v1/admin/settings/payment")
+      .set("x-mock-role", "admin")
+      .send({
+        activeProvider: "stripe",
+        stripe: {
+          publishableKey: "pk_test_sample",
+        },
+      });
 
-    expect(res.status).toBe(403);
-    expect(res.body.success).toBe(false);
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
   });
 
-  it("GET /api/v1/admin/settings/audit denies customer and agent roles", async () => {
+  it("GET /api/v1/admin/settings denies customer and agent roles", async () => {
     const resCustomer = await request(app)
-      .get("/api/v1/admin/settings/audit")
+      .get("/api/v1/admin/settings")
       .set("x-mock-role", "customer");
     expect(resCustomer.status).toBe(403);
 
     const resAgent = await request(app)
-      .get("/api/v1/admin/settings/audit")
+      .get("/api/v1/admin/settings")
       .set("x-mock-role", "agent");
     expect(resAgent.status).toBe(403);
   });
 });
-
