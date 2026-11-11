@@ -45,12 +45,16 @@ export interface CreateUserInput {
 
 export interface AuthResult {
   user: AuthUser;
-  token: string;
+  token: string; // short-lived access token
+  accessToken?: string; // alias for explicit dual-token clients
+  refreshToken?: string; // raw opaque refresh token (to be sent via HttpOnly cookie)
+  sessionId?: string;
 }
 
 export interface AuthSession {
   jti: string;
   exp: number;
+  sessionId?: string;
 }
 
 export interface TokenPayload extends JwtPayload {
@@ -58,6 +62,8 @@ export interface TokenPayload extends JwtPayload {
   role: UserRole;
   tv: number;
   jti: string;
+  sid?: string; // session ID
+  type?: "access" | "legacy";
   iat: number;
   exp: number;
 }

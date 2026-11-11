@@ -20,6 +20,10 @@ const activeUser = {
 };
 beforeEach(() => {
     vi.resetAllMocks();
+    repo.createSessionWithToken.mockResolvedValue({
+        session: { id: "s1", userId: "u1" },
+        refreshToken: { id: "rt1", tokenHash: "hash" },
+    });
 });
 describe("registerUser", () => {
     it("always creates a customer and hashes the password", async () => {

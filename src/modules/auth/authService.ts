@@ -30,19 +30,64 @@ const INVALID_INVITATION_MESSAGE = "Invalid or expired invitation token";
 export const hashToken = (token: string): string =>
   createHash("sha256").update(token).digest("hex");
 
-const generateToken = (
+export const generateAccessToken = (
   id: string,
   role: UserRole,
   tokenVersion: number,
+  sessionId?: string,
 ): string => {
-  return jwt.sign({ id, role, tv: tokenVersion }, env.jwtSecret, {
-    expiresIn: "7d",
-    jwtid: randomUUID(),
-  });
+  return jwt.sign(
+    {
+      id,
+      role,
+      tv: tokenVersion,
+      sid: sessionId,
+      type: "access",
+    },
+    env.jwtSecret,
+    {
+      expiresIn: "15m",
+      jwtid: randomUUID(),
+      issuer: "phukettours",
+      audience: "phukettours-api",
+    },
+  );
 };
+
+export const generateLegacyToken = (
+  id: string,
+  role: UserRole,
+  tokenVersion: number,
+  sessionId?: string,
+): string => {
+  return jwt.sign(
+    {
+      id,
+      role,
+      tv: tokenVersion,
+      sid: sessionId,
+      type: "legacy",
+    },
+    env.jwtSecret,
+    {
+      expiresIn: "7d",
+      jwtid: randomUUID(),
+    },
+  );
+};
+
+export const generateOpaqueRefreshToken = (): string => {
+  return randomBytes(32).toString("hex");
+};
+
+export interface ClientContext {
+  userAgent?: string;
+  ipAddress?: string;
+}
 
 export const registerUser = async (
   data: RegisterInput,
+  context: ClientContext = {},
 ): Promise<AuthResult> => {
   const existingUser = await authRepository.findUserByEmail(data.email);
 
@@ -60,7 +105,33 @@ export const registerUser = async (
       role: "customer",
     });
 
-    return { user, token: generateToken(user.id, user.role, 0) };
+    // Create session and initial refresh token in rotation family
+    const rawRefreshToken = generateOpaqueRefreshToken();
+    const tokenHash = hashToken(rawRefreshToken);
+    const familyId = randomUUID();
+    const sessionExpiresAt = new Date(
+      Date.now() + env.refreshTokenTtlDays * 24 * 60 * 60 * 1000,
+    );
+
+    const { session } = await authRepository.createSessionWithToken({
+      userId: user.id,
+      userAgent: context.userAgent,
+      ipAddress: context.ipAddress,
+      sessionExpiresAt,
+      tokenHash,
+      tokenExpiresAt: sessionExpiresAt,
+      familyId,
+    });
+
+    const accessToken = generateAccessToken(user.id, user.role, 0, session.id);
+
+    return {
+      user,
+      token: accessToken,
+      accessToken,
+      refreshToken: rawRefreshToken,
+      sessionId: session.id,
+    };
   } catch (error) {
     if (isUniqueConstraintError(error)) {
       throw new AppError("Email already registered", 409);
@@ -69,7 +140,10 @@ export const registerUser = async (
   }
 };
 
-export const loginUser = async (data: LoginInput): Promise<AuthResult> => {
+export const loginUser = async (
+  data: LoginInput,
+  context: ClientContext = {},
+): Promise<AuthResult> => {
   const user = await authRepository.findUserWithPassword(data.email);
 
   if (!user) {
@@ -87,8 +161,129 @@ export const loginUser = async (data: LoginInput): Promise<AuthResult> => {
     throw new AppError("Account is deactivated", 403);
   }
 
+  // Create session and initial refresh token in rotation family
+  const rawRefreshToken = generateOpaqueRefreshToken();
+  const tokenHash = hashToken(rawRefreshToken);
+  const familyId = randomUUID();
+  const sessionExpiresAt = new Date(
+    Date.now() + env.refreshTokenTtlDays * 24 * 60 * 60 * 1000,
+  );
+
+  const { session } = await authRepository.createSessionWithToken({
+    userId: user.id,
+    userAgent: context.userAgent,
+    ipAddress: context.ipAddress,
+    sessionExpiresAt,
+    tokenHash,
+    tokenExpiresAt: sessionExpiresAt,
+    familyId,
+  });
+
+  const accessToken = generateAccessToken(
+    user.id,
+    user.role,
+    user.tokenVersion,
+    session.id,
+  );
+
   return {
-    token: generateToken(user.id, user.role, user.tokenVersion),
+    token: accessToken,
+    accessToken,
+    refreshToken: rawRefreshToken,
+    sessionId: session.id,
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+  };
+};
+
+/**
+ * Rotates an opaque refresh token atomically. Detects reuse of consumed tokens.
+ */
+export const refreshSession = async (
+  rawRefreshToken: string,
+  _context: ClientContext = {},
+): Promise<AuthResult> => {
+  if (!rawRefreshToken || typeof rawRefreshToken !== "string") {
+    throw new AppError("Refresh token missing or invalid", 401);
+  }
+
+  const tokenHash = hashToken(rawRefreshToken);
+  const tokenRecord = await authRepository.findRefreshTokenRecord(tokenHash);
+
+  if (!tokenRecord) {
+    throw new AppError("Invalid or expired session", 401);
+  }
+
+  // Reuse Detection: if this token was already consumed, a replay attack is occurring!
+  if (tokenRecord.isConsumed) {
+    logger.warn(
+      `[Security] Refresh token reuse detected for family ${tokenRecord.familyId}. Revoking entire session.`,
+    );
+    await authRepository.revokeTokenFamily(
+      tokenRecord.familyId,
+      tokenRecord.sessionId,
+    );
+    throw new AppError(
+      "Suspicious session activity detected. Please sign in again.",
+      401,
+    );
+  }
+
+  // Check if token or session is explicitly revoked
+  if (tokenRecord.revokedAt || tokenRecord.session.revokedAt) {
+    throw new AppError("Session has been revoked. Please sign in again.", 401);
+  }
+
+  // Check expiration
+  const now = new Date();
+  if (tokenRecord.expiresAt <= now || tokenRecord.session.expiresAt <= now) {
+    throw new AppError("Session has expired. Please sign in again.", 401);
+  }
+
+  const user = tokenRecord.session.user;
+  if (!user || user.status !== "active") {
+    throw new AppError("Account is no longer active", 403);
+  }
+
+  // Generate next token in rotation
+  const nextRawRefreshToken = generateOpaqueRefreshToken();
+  const nextTokenHash = hashToken(nextRawRefreshToken);
+  const nextSequence = tokenRecord.sequence + 1;
+  const newSessionExpiresAt = new Date(
+    Date.now() + env.refreshTokenTtlDays * 24 * 60 * 60 * 1000,
+  );
+
+  const rotatedToken = await authRepository.rotateRefreshTokenAtomic({
+    currentTokenId: tokenRecord.id,
+    sessionId: tokenRecord.sessionId,
+    familyId: tokenRecord.familyId,
+    nextSequence,
+    newTokenHash: nextTokenHash,
+    newTokenExpiresAt: newSessionExpiresAt,
+    newSessionExpiresAt,
+  });
+
+  if (!rotatedToken) {
+    // Concurrency conflict: another simultaneous request consumed this token
+    throw new AppError("Concurrent refresh detected. Please retry.", 409);
+  }
+
+  const newAccessToken = generateAccessToken(
+    user.id,
+    user.role,
+    user.tokenVersion,
+    tokenRecord.sessionId,
+  );
+
+  return {
+    token: newAccessToken,
+    accessToken: newAccessToken,
+    refreshToken: nextRawRefreshToken,
+    sessionId: tokenRecord.sessionId,
     user: {
       id: user.id,
       name: user.name,
@@ -99,8 +294,29 @@ export const loginUser = async (data: LoginInput): Promise<AuthResult> => {
 };
 
 export const logoutUser = async (session: AuthSession): Promise<void> => {
-  await authRepository.revokeToken(session.jti, new Date(session.exp * 1000));
-  await authRepository.deleteExpiredRevokedTokens();
+  // Revoke the specific server-side session if present
+  if (session.sessionId) {
+    await authRepository.revokeSessionById(session.sessionId);
+  }
+
+  // Also revoke legacy/jwt JTI
+  if (session.jti && session.exp) {
+    await authRepository.revokeToken(session.jti, new Date(session.exp * 1000));
+    await authRepository.deleteExpiredRevokedTokens();
+  }
+};
+
+export const logoutByRefreshToken = async (rawRefreshToken: string): Promise<void> => {
+  if (!rawRefreshToken) return;
+  const tokenHash = hashToken(rawRefreshToken);
+  const tokenRecord = await authRepository.findRefreshTokenRecord(tokenHash);
+  if (tokenRecord) {
+    await authRepository.revokeSessionById(tokenRecord.sessionId);
+  }
+};
+
+export const logoutAllSessions = async (userId: string): Promise<void> => {
+  await authRepository.revokeAllUserSessions(userId);
 };
 
 export const issueRawTokenAndStore = async (

@@ -603,14 +603,6 @@ export type NullableIntFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type MediaCreateNestedManyWithoutServiceInput = {
   create?: Prisma.XOR<Prisma.MediaCreateWithoutServiceInput, Prisma.MediaUncheckedCreateWithoutServiceInput> | Prisma.MediaCreateWithoutServiceInput[] | Prisma.MediaUncheckedCreateWithoutServiceInput[]
   connectOrCreate?: Prisma.MediaCreateOrConnectWithoutServiceInput | Prisma.MediaCreateOrConnectWithoutServiceInput[]

@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import env from "../../config/env.js";
-import { findAuthUserById, isTokenRevoked, } from "../../modules/auth/authRepository.js";
+import { findAuthUserById, isTokenRevoked, isSessionActive, } from "../../modules/auth/authRepository.js";
 import AppError from "../utils/AppError.js";
 const INVALID_TOKEN_MESSAGE = "Invalid or expired token";
 const extractToken = (req) => {
@@ -8,6 +8,7 @@ const extractToken = (req) => {
     if (authHeader?.startsWith("Bearer ")) {
         return authHeader.split(" ")[1] || null;
     }
+    // Backward compatibility: accept 7-day token cookie if Authorization header is absent
     const cookieToken = req.cookies?.token;
     return typeof cookieToken === "string" && cookieToken ? cookieToken : null;
 };
@@ -35,8 +36,16 @@ const authMiddleware = async (req, _res, next) => {
     if (!payload) {
         return next(new AppError(INVALID_TOKEN_MESSAGE, 401));
     }
+    // Check if JTI was explicitly revoked
     if (await isTokenRevoked(payload.jti)) {
         return next(new AppError(INVALID_TOKEN_MESSAGE, 401));
+    }
+    // If token is associated with a server-side session (dual-token), verify session is still active
+    if (payload.sid) {
+        const sessionActive = await isSessionActive(payload.sid);
+        if (!sessionActive) {
+            return next(new AppError(INVALID_TOKEN_MESSAGE, 401));
+        }
     }
     const user = await findAuthUserById(payload.id);
     if (!user || user.tokenVersion !== payload.tv) {
@@ -51,7 +60,11 @@ const authMiddleware = async (req, _res, next) => {
         email: user.email,
         role: user.role,
     };
-    req.auth = { jti: payload.jti, exp: payload.exp };
+    req.auth = {
+        jti: payload.jti,
+        exp: payload.exp,
+        sessionId: payload.sid,
+    };
     return next();
 };
 export default authMiddleware;

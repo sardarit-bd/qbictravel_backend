@@ -57,6 +57,16 @@ export type PasswordResetToken = Prisma.PasswordResetTokenModel
  */
 export type RevokedToken = Prisma.RevokedTokenModel
 /**
+ * Model Session
+ * 
+ */
+export type Session = Prisma.SessionModel
+/**
+ * Model RefreshToken
+ * 
+ */
+export type RefreshToken = Prisma.RefreshTokenModel
+/**
  * Model PricingRule
  * 
  */

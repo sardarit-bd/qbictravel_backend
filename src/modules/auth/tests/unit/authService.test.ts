@@ -32,6 +32,10 @@ const activeUser = {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  repo.createSessionWithToken.mockResolvedValue({
+    session: { id: "s1", userId: "u1" } as any,
+    refreshToken: { id: "rt1", tokenHash: "hash" } as any,
+  });
 });
 
 describe("registerUser", () => {

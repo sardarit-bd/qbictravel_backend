@@ -34,6 +34,7 @@ model User {
   grantedPermissions    StaffPermission[]      @relation("PermissionAssignedBy")
   staffPermissions      StaffPermission[]      @relation("UserStaffPermissions")
   editedSettings        SystemSetting[]        @relation("SettingEditor")
+  sessions              Session[]
 
   @@index([deletedAt])
 }

@@ -73,6 +73,21 @@ router.post("/register", validate(registerSchema), authController.register);
 router.post("/login", authRateLimiter, validate(loginSchema), authController.login);
 /**
  * @openapi
+ * /api/v1/auth/refresh:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Refresh access token using rotating refresh cookie
+ *     description: Rotates the refresh token and returns a new 15-minute access token.
+ *     responses:
+ *       200:
+ *         description: Token refreshed successfully
+ *       401:
+ *         description: Refresh token invalid, expired or reused
+ */
+router.post("/refresh", authRateLimiter, authController.refresh);
+/**
+ * @openapi
  * /api/v1/auth/logout:
  *   post:
  *     tags:
@@ -95,6 +110,23 @@ router.post("/login", authRateLimiter, validate(loginSchema), authController.log
  *         $ref: '#/components/responses/Forbidden'
  */
 router.post("/logout", authMiddleware, authController.logout);
+/**
+ * @openapi
+ * /api/v1/auth/logout-all:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: End all sessions across all devices for this account
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Logged out of all sessions successfully
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+router.post("/logout-all", authMiddleware, authController.logoutAll);
 /**
  * @openapi
  * /api/v1/auth/forgot-password:

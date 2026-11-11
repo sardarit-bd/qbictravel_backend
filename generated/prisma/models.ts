@@ -11,6 +11,8 @@
 export type * from './models/AgentProfile.js'
 export type * from './models/PasswordResetToken.js'
 export type * from './models/RevokedToken.js'
+export type * from './models/Session.js'
+export type * from './models/RefreshToken.js'
 export type * from './models/PricingRule.js'
 export type * from './models/Booking.js'
 export type * from './models/PriceApproval.js'
