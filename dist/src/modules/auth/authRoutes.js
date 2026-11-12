@@ -2,7 +2,7 @@ import { Router } from "express";
 import * as authController from "./authController.js";
 import validate from "../../shared/middleware/validate.js";
 import authMiddleware from "../../shared/middleware/authMiddleware.js";
-import { authRateLimiter } from "../../shared/middleware/rateLimiter.js";
+import { authRateLimiter, refreshRateLimiter } from "../../shared/middleware/rateLimiter.js";
 import { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, } from "./authValidators.js";
 const router = Router();
 /**
@@ -85,7 +85,7 @@ router.post("/login", authRateLimiter, validate(loginSchema), authController.log
  *       401:
  *         description: Refresh token invalid, expired or reused
  */
-router.post("/refresh", authRateLimiter, authController.refresh);
+router.post("/refresh", refreshRateLimiter, authController.refresh);
 /**
  * @openapi
  * /api/v1/auth/logout:
