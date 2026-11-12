@@ -76,11 +76,21 @@ const ALLOWED_ORIGINS = [
   "https://phukettours.com",
   "https://www.phukettours.com",
   "http://72.61.112.137",
+  "https://72.61.112.137",
+  "https://app.whed.sardarit.cloud",
 ];
 
-// If FRONTEND_URL is set in environment (e.g., custom deployed frontend), ensure it is included
-if (process.env.FRONTEND_URL && !ALLOWED_ORIGINS.includes(process.env.FRONTEND_URL)) {
-  ALLOWED_ORIGINS.push(process.env.FRONTEND_URL);
+// If FRONTEND_URL is set in environment (e.g., custom deployed frontend or comma-separated list), ensure it is included
+if (process.env.FRONTEND_URL) {
+  const configuredUrls = process.env.FRONTEND_URL.split(",")
+    .map((url) => url.trim())
+    .filter(Boolean);
+
+  for (const url of configuredUrls) {
+    if (!ALLOWED_ORIGINS.includes(url)) {
+      ALLOWED_ORIGINS.push(url);
+    }
+  }
 }
 
 // 1. CORS middleware must execute BEFORE all rate limiters and route handlers
