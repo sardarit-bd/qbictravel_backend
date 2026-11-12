@@ -12,13 +12,36 @@ const DUMMY_PASSWORD_HASH = bcrypt.hashSync("dummy-password-placeholder", 10);
 const INVALID_RESET_MESSAGE = "Invalid or expired password reset token";
 const INVALID_INVITATION_MESSAGE = "Invalid or expired invitation token";
 export const hashToken = (token) => createHash("sha256").update(token).digest("hex");
-const generateToken = (id, role, tokenVersion) => {
-    return jwt.sign({ id, role, tv: tokenVersion }, env.jwtSecret, {
+export const generateAccessToken = (id, role, tokenVersion, sessionId) => {
+    return jwt.sign({
+        id,
+        role,
+        tv: tokenVersion,
+        sid: sessionId,
+        type: "access",
+    }, env.jwtSecret, {
+        expiresIn: "15m",
+        jwtid: randomUUID(),
+        issuer: "phukettours",
+        audience: "phukettours-api",
+    });
+};
+export const generateLegacyToken = (id, role, tokenVersion, sessionId) => {
+    return jwt.sign({
+        id,
+        role,
+        tv: tokenVersion,
+        sid: sessionId,
+        type: "legacy",
+    }, env.jwtSecret, {
         expiresIn: "7d",
         jwtid: randomUUID(),
     });
 };
-export const registerUser = async (data) => {
+export const generateOpaqueRefreshToken = () => {
+    return randomBytes(32).toString("hex");
+};
+export const registerUser = async (data, context = {}) => {
     const existingUser = await authRepository.findUserByEmail(data.email);
     if (existingUser) {
         throw new AppError("Email already registered", 409);
@@ -31,7 +54,28 @@ export const registerUser = async (data) => {
             password: hashedPassword,
             role: "customer",
         });
-        return { user, token: generateToken(user.id, user.role, 0) };
+        // Create session and initial refresh token in rotation family
+        const rawRefreshToken = generateOpaqueRefreshToken();
+        const tokenHash = hashToken(rawRefreshToken);
+        const familyId = randomUUID();
+        const sessionExpiresAt = new Date(Date.now() + env.refreshTokenTtlDays * 24 * 60 * 60 * 1000);
+        const { session } = await authRepository.createSessionWithToken({
+            userId: user.id,
+            userAgent: context.userAgent,
+            ipAddress: context.ipAddress,
+            sessionExpiresAt,
+            tokenHash,
+            tokenExpiresAt: sessionExpiresAt,
+            familyId,
+        });
+        const accessToken = generateAccessToken(user.id, user.role, 0, session.id);
+        return {
+            user,
+            token: accessToken,
+            accessToken,
+            refreshToken: rawRefreshToken,
+            sessionId: session.id,
+        };
     }
     catch (error) {
         if (isUniqueConstraintError(error)) {
@@ -40,7 +84,7 @@ export const registerUser = async (data) => {
         throw error;
     }
 };
-export const loginUser = async (data) => {
+export const loginUser = async (data, context = {}) => {
     const user = await authRepository.findUserWithPassword(data.email);
     if (!user) {
         await bcrypt.compare(data.password, DUMMY_PASSWORD_HASH);
@@ -53,8 +97,89 @@ export const loginUser = async (data) => {
     if (user.status !== "active") {
         throw new AppError("Account is deactivated", 403);
     }
+    // Create session and initial refresh token in rotation family
+    const rawRefreshToken = generateOpaqueRefreshToken();
+    const tokenHash = hashToken(rawRefreshToken);
+    const familyId = randomUUID();
+    const sessionExpiresAt = new Date(Date.now() + env.refreshTokenTtlDays * 24 * 60 * 60 * 1000);
+    const { session } = await authRepository.createSessionWithToken({
+        userId: user.id,
+        userAgent: context.userAgent,
+        ipAddress: context.ipAddress,
+        sessionExpiresAt,
+        tokenHash,
+        tokenExpiresAt: sessionExpiresAt,
+        familyId,
+    });
+    const accessToken = generateAccessToken(user.id, user.role, user.tokenVersion, session.id);
     return {
-        token: generateToken(user.id, user.role, user.tokenVersion),
+        token: accessToken,
+        accessToken,
+        refreshToken: rawRefreshToken,
+        sessionId: session.id,
+        user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+        },
+    };
+};
+/**
+ * Rotates an opaque refresh token atomically. Detects reuse of consumed tokens.
+ */
+export const refreshSession = async (rawRefreshToken, _context = {}) => {
+    if (!rawRefreshToken || typeof rawRefreshToken !== "string") {
+        throw new AppError("Refresh token missing or invalid", 401);
+    }
+    const tokenHash = hashToken(rawRefreshToken);
+    const tokenRecord = await authRepository.findRefreshTokenRecord(tokenHash);
+    if (!tokenRecord) {
+        throw new AppError("Invalid or expired session", 401);
+    }
+    // Reuse Detection: if this token was already consumed, a replay attack is occurring!
+    if (tokenRecord.isConsumed) {
+        logger.warn(`[Security] Refresh token reuse detected for family ${tokenRecord.familyId}. Revoking entire session.`);
+        await authRepository.revokeTokenFamily(tokenRecord.familyId, tokenRecord.sessionId);
+        throw new AppError("Suspicious session activity detected. Please sign in again.", 401);
+    }
+    // Check if token or session is explicitly revoked
+    if (tokenRecord.revokedAt || tokenRecord.session.revokedAt) {
+        throw new AppError("Session has been revoked. Please sign in again.", 401);
+    }
+    // Check expiration
+    const now = new Date();
+    if (tokenRecord.expiresAt <= now || tokenRecord.session.expiresAt <= now) {
+        throw new AppError("Session has expired. Please sign in again.", 401);
+    }
+    const user = tokenRecord.session.user;
+    if (!user || user.status !== "active") {
+        throw new AppError("Account is no longer active", 403);
+    }
+    // Generate next token in rotation
+    const nextRawRefreshToken = generateOpaqueRefreshToken();
+    const nextTokenHash = hashToken(nextRawRefreshToken);
+    const nextSequence = tokenRecord.sequence + 1;
+    const newSessionExpiresAt = new Date(Date.now() + env.refreshTokenTtlDays * 24 * 60 * 60 * 1000);
+    const rotatedToken = await authRepository.rotateRefreshTokenAtomic({
+        currentTokenId: tokenRecord.id,
+        sessionId: tokenRecord.sessionId,
+        familyId: tokenRecord.familyId,
+        nextSequence,
+        newTokenHash: nextTokenHash,
+        newTokenExpiresAt: newSessionExpiresAt,
+        newSessionExpiresAt,
+    });
+    if (!rotatedToken) {
+        // Concurrency conflict: another simultaneous request consumed this token
+        throw new AppError("Concurrent refresh detected. Please retry.", 409);
+    }
+    const newAccessToken = generateAccessToken(user.id, user.role, user.tokenVersion, tokenRecord.sessionId);
+    return {
+        token: newAccessToken,
+        accessToken: newAccessToken,
+        refreshToken: nextRawRefreshToken,
+        sessionId: tokenRecord.sessionId,
         user: {
             id: user.id,
             name: user.name,
@@ -64,8 +189,27 @@ export const loginUser = async (data) => {
     };
 };
 export const logoutUser = async (session) => {
-    await authRepository.revokeToken(session.jti, new Date(session.exp * 1000));
-    await authRepository.deleteExpiredRevokedTokens();
+    // Revoke the specific server-side session if present
+    if (session.sessionId) {
+        await authRepository.revokeSessionById(session.sessionId);
+    }
+    // Also revoke legacy/jwt JTI
+    if (session.jti && session.exp) {
+        await authRepository.revokeToken(session.jti, new Date(session.exp * 1000));
+        await authRepository.deleteExpiredRevokedTokens();
+    }
+};
+export const logoutByRefreshToken = async (rawRefreshToken) => {
+    if (!rawRefreshToken)
+        return;
+    const tokenHash = hashToken(rawRefreshToken);
+    const tokenRecord = await authRepository.findRefreshTokenRecord(tokenHash);
+    if (tokenRecord) {
+        await authRepository.revokeSessionById(tokenRecord.sessionId);
+    }
+};
+export const logoutAllSessions = async (userId) => {
+    await authRepository.revokeAllUserSessions(userId);
 };
 export const issueRawTokenAndStore = async (userId, ttlMinutes) => {
     const rawToken = randomBytes(32).toString("hex");

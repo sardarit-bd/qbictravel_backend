@@ -25,6 +25,7 @@ import agentRoutes from "./modules/agent/agentRoutes.js";
 import settingRoutes from "./modules/setting/settingRoutes.js";
 import customerRoutes from "./modules/customer/customerRoutes.js";
 import { handleStripeWebhook, handlePayPalWebhook } from "./modules/payment/paymentController.js";
+import { csrfProtectionMiddleware } from "./shared/middleware/csrfMiddleware.js";
 const swaggerCustomCss = `
   body {
     background-color: #0000;
@@ -122,6 +123,7 @@ app.post(
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 app.use(helmet());
+app.use(csrfProtectionMiddleware(ALLOWED_ORIGINS));
 app.use(
   "/api-docs",
   swaggerUi.serve,

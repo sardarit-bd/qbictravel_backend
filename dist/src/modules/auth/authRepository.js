@@ -129,6 +129,149 @@ export const resetPasswordWithToken = async (data) => {
         await tx.passwordResetToken.deleteMany({
             where: { userId: data.userId, id: { not: data.tokenId } },
         });
+        // Also revoke all active user sessions upon password reset
+        await tx.session.updateMany({
+            where: { userId: data.userId, revokedAt: null },
+            data: { revokedAt: new Date() },
+        });
         return true;
     });
+};
+export const createSessionWithToken = async (params) => {
+    return db.$transaction(async (tx) => {
+        const session = await tx.session.create({
+            data: {
+                userId: params.userId,
+                userAgent: params.userAgent,
+                ipAddress: params.ipAddress,
+                expiresAt: params.sessionExpiresAt,
+                refreshTokens: {
+                    create: {
+                        tokenHash: params.tokenHash,
+                        familyId: params.familyId,
+                        sequence: 1,
+                        expiresAt: params.tokenExpiresAt,
+                    },
+                },
+            },
+            include: {
+                refreshTokens: true,
+            },
+        });
+        return {
+            session,
+            refreshToken: session.refreshTokens[0],
+        };
+    });
+};
+export const findRefreshTokenRecord = async (tokenHash) => {
+    return db.refreshToken.findUnique({
+        where: { tokenHash },
+        include: {
+            session: {
+                include: {
+                    user: {
+                        select: authRecordSelect,
+                    },
+                },
+            },
+        },
+    });
+};
+/**
+ * Atomically consumes current token and creates the next token in the family chain.
+ * Uses strict update count check to prevent concurrent race conditions from consuming the same token twice.
+ */
+export const rotateRefreshTokenAtomic = async (params) => {
+    return db.$transaction(async (tx) => {
+        // 1. Consume current token with atomic concurrency lock
+        const updated = await tx.refreshToken.updateMany({
+            where: {
+                id: params.currentTokenId,
+                isConsumed: false,
+                revokedAt: null,
+            },
+            data: {
+                isConsumed: true,
+                consumedAt: new Date(),
+            },
+        });
+        if (updated.count !== 1) {
+            // Token was already consumed concurrently or revoked
+            return null;
+        }
+        // 2. Insert next token in rotation sequence
+        const nextToken = await tx.refreshToken.create({
+            data: {
+                sessionId: params.sessionId,
+                tokenHash: params.newTokenHash,
+                familyId: params.familyId,
+                sequence: params.nextSequence,
+                expiresAt: params.newTokenExpiresAt,
+            },
+        });
+        // 3. Update session's lastActiveAt and sliding expiration
+        await tx.session.update({
+            where: { id: params.sessionId },
+            data: {
+                lastActiveAt: new Date(),
+                expiresAt: params.newSessionExpiresAt,
+            },
+        });
+        return nextToken;
+    });
+};
+/**
+ * Revokes all tokens in a family and marks session revoked when reuse is detected.
+ */
+export const revokeTokenFamily = async (familyId, sessionId) => {
+    await db.$transaction(async (tx) => {
+        await tx.refreshToken.updateMany({
+            where: { familyId, revokedAt: null },
+            data: { revokedAt: new Date() },
+        });
+        if (sessionId) {
+            await tx.session.updateMany({
+                where: { id: sessionId, revokedAt: null },
+                data: { revokedAt: new Date() },
+            });
+        }
+    });
+};
+export const revokeSessionById = async (sessionId) => {
+    await db.$transaction(async (tx) => {
+        await tx.session.updateMany({
+            where: { id: sessionId, revokedAt: null },
+            data: { revokedAt: new Date() },
+        });
+        await tx.refreshToken.updateMany({
+            where: { sessionId, revokedAt: null },
+            data: { revokedAt: new Date() },
+        });
+    });
+};
+export const revokeAllUserSessions = async (userId) => {
+    await db.$transaction(async (tx) => {
+        await tx.session.updateMany({
+            where: { userId, revokedAt: null },
+            data: { revokedAt: new Date() },
+        });
+        await tx.user.update({
+            where: { id: userId },
+            data: { tokenVersion: { increment: 1 } },
+        });
+    });
+};
+export const isSessionActive = async (sessionId) => {
+    const session = await db.session.findUnique({
+        where: { id: sessionId },
+        select: { revokedAt: true, expiresAt: true },
+    });
+    if (!session)
+        return false;
+    if (session.revokedAt !== null)
+        return false;
+    if (session.expiresAt <= new Date())
+        return false;
+    return true;
 };

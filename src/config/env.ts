@@ -40,6 +40,9 @@ const env = {
   smtpPass: process.env.SMTP_PASS || "",
   smtpFromEmail: process.env.SMTP_FROM_EMAIL || "noreply@phukettours.com",
   smtpFromName: process.env.SMTP_FROM_NAME || "PhuketTours",
+  accessTokenExpiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN || "15m",
+  refreshTokenTtlDays: Number(process.env.REFRESH_TOKEN_TTL_DAYS) || 7,
+  cookieDomain: process.env.COOKIE_DOMAIN || undefined,
 };
 
 export default env;

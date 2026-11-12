@@ -302,6 +302,7 @@ export type UserWhereInput = {
   grantedPermissions?: Prisma.StaffPermissionListRelationFilter
   staffPermissions?: Prisma.StaffPermissionListRelationFilter
   editedSettings?: Prisma.SystemSettingListRelationFilter
+  sessions?: Prisma.SessionListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -340,6 +341,7 @@ export type UserOrderByWithRelationInput = {
   grantedPermissions?: Prisma.StaffPermissionOrderByRelationAggregateInput
   staffPermissions?: Prisma.StaffPermissionOrderByRelationAggregateInput
   editedSettings?: Prisma.SystemSettingOrderByRelationAggregateInput
+  sessions?: Prisma.SessionOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -381,6 +383,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   grantedPermissions?: Prisma.StaffPermissionListRelationFilter
   staffPermissions?: Prisma.StaffPermissionListRelationFilter
   editedSettings?: Prisma.SystemSettingListRelationFilter
+  sessions?: Prisma.SessionListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -459,6 +462,7 @@ export type UserCreateInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -497,6 +501,7 @@ export type UserUncheckedCreateInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -535,6 +540,7 @@ export type UserUpdateInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -573,6 +579,7 @@ export type UserUncheckedUpdateInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -715,6 +722,20 @@ export type UserUpdateOneRequiredWithoutPasswordResetTokensNestedInput = {
   upsert?: Prisma.UserUpsertWithoutPasswordResetTokensInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPasswordResetTokensInput, Prisma.UserUpdateWithoutPasswordResetTokensInput>, Prisma.UserUncheckedUpdateWithoutPasswordResetTokensInput>
+}
+
+export type UserCreateNestedOneWithoutSessionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSessionsInput, Prisma.UserUncheckedCreateWithoutSessionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSessionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSessionsInput, Prisma.UserUncheckedCreateWithoutSessionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSessionsInput
+  upsert?: Prisma.UserUpsertWithoutSessionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSessionsInput, Prisma.UserUpdateWithoutSessionsInput>, Prisma.UserUncheckedUpdateWithoutSessionsInput>
 }
 
 export type UserCreateNestedOneWithoutAgentBookingsInput = {
@@ -1062,6 +1083,7 @@ export type UserCreateWithoutAgentProfileInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAgentProfileInput = {
@@ -1099,6 +1121,7 @@ export type UserUncheckedCreateWithoutAgentProfileInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAgentProfileInput = {
@@ -1152,6 +1175,7 @@ export type UserUpdateWithoutAgentProfileInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAgentProfileInput = {
@@ -1189,6 +1213,7 @@ export type UserUncheckedUpdateWithoutAgentProfileInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPasswordResetTokensInput = {
@@ -1226,6 +1251,7 @@ export type UserCreateWithoutPasswordResetTokensInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
@@ -1263,6 +1289,7 @@ export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPasswordResetTokensInput = {
@@ -1316,6 +1343,7 @@ export type UserUpdateWithoutPasswordResetTokensInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
@@ -1344,6 +1372,175 @@ export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutSessionsInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  avatarUrl?: string | null
+  avatarKey?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
+  uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
+  initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutSessionsInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  avatarUrl?: string | null
+  avatarKey?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
+  uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutSessionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSessionsInput, Prisma.UserUncheckedCreateWithoutSessionsInput>
+}
+
+export type UserUpsertWithoutSessionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSessionsInput, Prisma.UserUncheckedUpdateWithoutSessionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSessionsInput, Prisma.UserUncheckedCreateWithoutSessionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSessionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSessionsInput, Prisma.UserUncheckedUpdateWithoutSessionsInput>
+}
+
+export type UserUpdateWithoutSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
+  uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
+  uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
   createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1390,6 +1587,7 @@ export type UserCreateWithoutAgentBookingsInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAgentBookingsInput = {
@@ -1427,6 +1625,7 @@ export type UserUncheckedCreateWithoutAgentBookingsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAgentBookingsInput = {
@@ -1469,6 +1668,7 @@ export type UserCreateWithoutCreatedBookingsInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCreatedBookingsInput = {
@@ -1506,6 +1706,7 @@ export type UserUncheckedCreateWithoutCreatedBookingsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCreatedBookingsInput = {
@@ -1548,6 +1749,7 @@ export type UserCreateWithoutAssignedBookingsInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAssignedBookingsInput = {
@@ -1585,6 +1787,7 @@ export type UserUncheckedCreateWithoutAssignedBookingsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAssignedBookingsInput = {
@@ -1627,6 +1830,7 @@ export type UserCreateWithoutCustomerBookingsInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCustomerBookingsInput = {
@@ -1664,6 +1868,7 @@ export type UserUncheckedCreateWithoutCustomerBookingsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCustomerBookingsInput = {
@@ -1717,6 +1922,7 @@ export type UserUpdateWithoutAgentBookingsInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAgentBookingsInput = {
@@ -1754,6 +1960,7 @@ export type UserUncheckedUpdateWithoutAgentBookingsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutCreatedBookingsInput = {
@@ -1802,6 +2009,7 @@ export type UserUpdateWithoutCreatedBookingsInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedBookingsInput = {
@@ -1839,6 +2047,7 @@ export type UserUncheckedUpdateWithoutCreatedBookingsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutAssignedBookingsInput = {
@@ -1887,6 +2096,7 @@ export type UserUpdateWithoutAssignedBookingsInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedBookingsInput = {
@@ -1924,6 +2134,7 @@ export type UserUncheckedUpdateWithoutAssignedBookingsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutCustomerBookingsInput = {
@@ -1972,6 +2183,7 @@ export type UserUpdateWithoutCustomerBookingsInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCustomerBookingsInput = {
@@ -2009,6 +2221,7 @@ export type UserUncheckedUpdateWithoutCustomerBookingsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAdminApprovalsInput = {
@@ -2046,6 +2259,7 @@ export type UserCreateWithoutAdminApprovalsInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAdminApprovalsInput = {
@@ -2083,6 +2297,7 @@ export type UserUncheckedCreateWithoutAdminApprovalsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAdminApprovalsInput = {
@@ -2136,6 +2351,7 @@ export type UserUpdateWithoutAdminApprovalsInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAdminApprovalsInput = {
@@ -2173,6 +2389,7 @@ export type UserUncheckedUpdateWithoutAdminApprovalsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCommissionRulesInput = {
@@ -2210,6 +2427,7 @@ export type UserCreateWithoutCommissionRulesInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCommissionRulesInput = {
@@ -2247,6 +2465,7 @@ export type UserUncheckedCreateWithoutCommissionRulesInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCommissionRulesInput = {
@@ -2300,6 +2519,7 @@ export type UserUpdateWithoutCommissionRulesInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCommissionRulesInput = {
@@ -2337,6 +2557,7 @@ export type UserUncheckedUpdateWithoutCommissionRulesInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCommissionRuleAuditsInput = {
@@ -2374,6 +2595,7 @@ export type UserCreateWithoutCommissionRuleAuditsInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCommissionRuleAuditsInput = {
@@ -2411,6 +2633,7 @@ export type UserUncheckedCreateWithoutCommissionRuleAuditsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCommissionRuleAuditsInput = {
@@ -2464,6 +2687,7 @@ export type UserUpdateWithoutCommissionRuleAuditsInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCommissionRuleAuditsInput = {
@@ -2501,6 +2725,7 @@ export type UserUncheckedUpdateWithoutCommissionRuleAuditsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAgentCommissionsInput = {
@@ -2538,6 +2763,7 @@ export type UserCreateWithoutAgentCommissionsInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAgentCommissionsInput = {
@@ -2575,6 +2801,7 @@ export type UserUncheckedCreateWithoutAgentCommissionsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAgentCommissionsInput = {
@@ -2628,6 +2855,7 @@ export type UserUpdateWithoutAgentCommissionsInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAgentCommissionsInput = {
@@ -2665,6 +2893,7 @@ export type UserUncheckedUpdateWithoutAgentCommissionsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCommissionAdjustmentsInput = {
@@ -2702,6 +2931,7 @@ export type UserCreateWithoutCommissionAdjustmentsInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCommissionAdjustmentsInput = {
@@ -2739,6 +2969,7 @@ export type UserUncheckedCreateWithoutCommissionAdjustmentsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCommissionAdjustmentsInput = {
@@ -2792,6 +3023,7 @@ export type UserUpdateWithoutCommissionAdjustmentsInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCommissionAdjustmentsInput = {
@@ -2829,6 +3061,7 @@ export type UserUncheckedUpdateWithoutCommissionAdjustmentsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutUploadedMediaInput = {
@@ -2866,6 +3099,7 @@ export type UserCreateWithoutUploadedMediaInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutUploadedMediaInput = {
@@ -2903,6 +3137,7 @@ export type UserUncheckedCreateWithoutUploadedMediaInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutUploadedMediaInput = {
@@ -2956,6 +3191,7 @@ export type UserUpdateWithoutUploadedMediaInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUploadedMediaInput = {
@@ -2993,6 +3229,7 @@ export type UserUncheckedUpdateWithoutUploadedMediaInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMediaUploadAuthsInput = {
@@ -3030,6 +3267,7 @@ export type UserCreateWithoutMediaUploadAuthsInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMediaUploadAuthsInput = {
@@ -3067,6 +3305,7 @@ export type UserUncheckedCreateWithoutMediaUploadAuthsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMediaUploadAuthsInput = {
@@ -3120,6 +3359,7 @@ export type UserUpdateWithoutMediaUploadAuthsInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMediaUploadAuthsInput = {
@@ -3157,6 +3397,7 @@ export type UserUncheckedUpdateWithoutMediaUploadAuthsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNotificationSettingsInput = {
@@ -3194,6 +3435,7 @@ export type UserCreateWithoutNotificationSettingsInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotificationSettingsInput = {
@@ -3231,6 +3473,7 @@ export type UserUncheckedCreateWithoutNotificationSettingsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotificationSettingsInput = {
@@ -3284,6 +3527,7 @@ export type UserUpdateWithoutNotificationSettingsInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationSettingsInput = {
@@ -3321,6 +3565,7 @@ export type UserUncheckedUpdateWithoutNotificationSettingsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCustomerPaymentsInput = {
@@ -3358,6 +3603,7 @@ export type UserCreateWithoutCustomerPaymentsInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCustomerPaymentsInput = {
@@ -3395,6 +3641,7 @@ export type UserUncheckedCreateWithoutCustomerPaymentsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCustomerPaymentsInput = {
@@ -3437,6 +3684,7 @@ export type UserCreateWithoutReviewedPaymentsInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReviewedPaymentsInput = {
@@ -3474,6 +3722,7 @@ export type UserUncheckedCreateWithoutReviewedPaymentsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReviewedPaymentsInput = {
@@ -3527,6 +3776,7 @@ export type UserUpdateWithoutCustomerPaymentsInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCustomerPaymentsInput = {
@@ -3564,6 +3814,7 @@ export type UserUncheckedUpdateWithoutCustomerPaymentsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutReviewedPaymentsInput = {
@@ -3612,6 +3863,7 @@ export type UserUpdateWithoutReviewedPaymentsInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReviewedPaymentsInput = {
@@ -3649,6 +3901,7 @@ export type UserUncheckedUpdateWithoutReviewedPaymentsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInitiatedRefundsInput = {
@@ -3686,6 +3939,7 @@ export type UserCreateWithoutInitiatedRefundsInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInitiatedRefundsInput = {
@@ -3723,6 +3977,7 @@ export type UserUncheckedCreateWithoutInitiatedRefundsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInitiatedRefundsInput = {
@@ -3776,6 +4031,7 @@ export type UserUpdateWithoutInitiatedRefundsInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInitiatedRefundsInput = {
@@ -3813,6 +4069,7 @@ export type UserUncheckedUpdateWithoutInitiatedRefundsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCreatedPaymentLinksInput = {
@@ -3850,6 +4107,7 @@ export type UserCreateWithoutCreatedPaymentLinksInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCreatedPaymentLinksInput = {
@@ -3887,6 +4145,7 @@ export type UserUncheckedCreateWithoutCreatedPaymentLinksInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCreatedPaymentLinksInput = {
@@ -3940,6 +4199,7 @@ export type UserUpdateWithoutCreatedPaymentLinksInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedPaymentLinksInput = {
@@ -3977,6 +4237,7 @@ export type UserUncheckedUpdateWithoutCreatedPaymentLinksInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutGrantedPermissionsInput = {
@@ -4014,6 +4275,7 @@ export type UserCreateWithoutGrantedPermissionsInput = {
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGrantedPermissionsInput = {
@@ -4051,6 +4313,7 @@ export type UserUncheckedCreateWithoutGrantedPermissionsInput = {
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGrantedPermissionsInput = {
@@ -4093,6 +4356,7 @@ export type UserCreateWithoutStaffPermissionsInput = {
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStaffPermissionsInput = {
@@ -4130,6 +4394,7 @@ export type UserUncheckedCreateWithoutStaffPermissionsInput = {
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStaffPermissionsInput = {
@@ -4183,6 +4448,7 @@ export type UserUpdateWithoutGrantedPermissionsInput = {
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGrantedPermissionsInput = {
@@ -4220,6 +4486,7 @@ export type UserUncheckedUpdateWithoutGrantedPermissionsInput = {
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutStaffPermissionsInput = {
@@ -4268,6 +4535,7 @@ export type UserUpdateWithoutStaffPermissionsInput = {
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStaffPermissionsInput = {
@@ -4305,6 +4573,7 @@ export type UserUncheckedUpdateWithoutStaffPermissionsInput = {
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutEditedSettingsInput = {
@@ -4342,6 +4611,7 @@ export type UserCreateWithoutEditedSettingsInput = {
   settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutEditedSettingsInput = {
@@ -4379,6 +4649,7 @@ export type UserUncheckedCreateWithoutEditedSettingsInput = {
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutEditedSettingsInput = {
@@ -4432,6 +4703,7 @@ export type UserUpdateWithoutEditedSettingsInput = {
   settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEditedSettingsInput = {
@@ -4469,6 +4741,7 @@ export type UserUncheckedUpdateWithoutEditedSettingsInput = {
   settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSettingAuditLogsInput = {
@@ -4506,6 +4779,7 @@ export type UserCreateWithoutSettingAuditLogsInput = {
   grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSettingAuditLogsInput = {
@@ -4543,6 +4817,7 @@ export type UserUncheckedCreateWithoutSettingAuditLogsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
   staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
   editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSettingAuditLogsInput = {
@@ -4596,6 +4871,7 @@ export type UserUpdateWithoutSettingAuditLogsInput = {
   grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSettingAuditLogsInput = {
@@ -4633,6 +4909,7 @@ export type UserUncheckedUpdateWithoutSettingAuditLogsInput = {
   grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
   staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
   editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -4662,6 +4939,7 @@ export type UserCountOutputType = {
   grantedPermissions: number
   staffPermissions: number
   editedSettings: number
+  sessions: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4686,6 +4964,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   grantedPermissions?: boolean | UserCountOutputTypeCountGrantedPermissionsArgs
   staffPermissions?: boolean | UserCountOutputTypeCountStaffPermissionsArgs
   editedSettings?: boolean | UserCountOutputTypeCountEditedSettingsArgs
+  sessions?: boolean | UserCountOutputTypeCountSessionsArgs
 }
 
 /**
@@ -4845,6 +5124,13 @@ export type UserCountOutputTypeCountEditedSettingsArgs<ExtArgs extends runtime.T
   where?: Prisma.SystemSettingWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SessionWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -4882,6 +5168,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   grantedPermissions?: boolean | Prisma.User$grantedPermissionsArgs<ExtArgs>
   staffPermissions?: boolean | Prisma.User$staffPermissionsArgs<ExtArgs>
   editedSettings?: boolean | Prisma.User$editedSettingsArgs<ExtArgs>
+  sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -4957,6 +5244,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   grantedPermissions?: boolean | Prisma.User$grantedPermissionsArgs<ExtArgs>
   staffPermissions?: boolean | Prisma.User$staffPermissionsArgs<ExtArgs>
   editedSettings?: boolean | Prisma.User$editedSettingsArgs<ExtArgs>
+  sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -4987,6 +5275,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     grantedPermissions: Prisma.$StaffPermissionPayload<ExtArgs>[]
     staffPermissions: Prisma.$StaffPermissionPayload<ExtArgs>[]
     editedSettings: Prisma.$SystemSettingPayload<ExtArgs>[]
+    sessions: Prisma.$SessionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -5418,6 +5707,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   grantedPermissions<T extends Prisma.User$grantedPermissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$grantedPermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   staffPermissions<T extends Prisma.User$staffPermissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$staffPermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   editedSettings<T extends Prisma.User$editedSettingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$editedSettingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SystemSettingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6373,6 +6663,30 @@ export type User$editedSettingsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.SystemSettingScalarFieldEnum | Prisma.SystemSettingScalarFieldEnum[]
+}
+
+/**
+ * User.sessions
+ */
+export type User$sessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Session
+   */
+  select?: Prisma.SessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Session
+   */
+  omit?: Prisma.SessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SessionInclude<ExtArgs> | null
+  where?: Prisma.SessionWhereInput
+  orderBy?: Prisma.SessionOrderByWithRelationInput | Prisma.SessionOrderByWithRelationInput[]
+  cursor?: Prisma.SessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SessionScalarFieldEnum | Prisma.SessionScalarFieldEnum[]
 }
 
 /**

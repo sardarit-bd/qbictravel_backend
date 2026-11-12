@@ -34,7 +34,10 @@ export const resetDatabase = async (): Promise<void> => {
   await prisma.serviceAvailability.deleteMany();
   await prisma.service.deleteMany();
   
+  await prisma.permission.deleteMany();
   await prisma.revokedToken.deleteMany();
+  await prisma.refreshToken.deleteMany();
+  await prisma.session.deleteMany();
   await prisma.passwordResetToken.deleteMany();
   await prisma.agentProfile.deleteMany();
   await prisma.user.deleteMany();

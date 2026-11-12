@@ -48,6 +48,11 @@ describe("Service API Integration", () => {
   beforeEach(async () => {
     // Clean up services before each test to ensure isolation
     // Order matters due to foreign key constraints (delete children first)
+    await db.payment.deleteMany();
+    await db.bookingHistory.deleteMany();
+    await db.priceApproval.deleteMany();
+    await db.booking.deleteMany();
+    await db.pricingRule.deleteMany();
     await db.servicePricing.deleteMany();
     await db.serviceAvailability.deleteMany();
     await db.service.deleteMany();
