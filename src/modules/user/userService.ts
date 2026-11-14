@@ -75,7 +75,7 @@ export const updateOwnEmail = async (
     userWithPassword.password,
   );
   if (!isMatch) {
-    throw new AppError("Invalid current password. Re-authentication failed.", 401);
+    throw new AppError("Invalid current password. Re-authentication failed.", 400);
   }
 
   // Check email uniqueness

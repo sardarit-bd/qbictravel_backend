@@ -7,7 +7,7 @@ vi.mock("../../userService.js");
 
 vi.mock("../../../../shared/middleware/authMiddleware.js", () => ({
   default: (req: any, _res: any, next: any) => {
-    const role = (req.headers["x-mock-role"] as string) || "customer";
+    const role = (req.headers["x-mock-role"] as string) || "admin";
     const userId = (req.headers["x-mock-user-id"] as string) || "user-123";
     req.user = {
       id: userId,
@@ -111,6 +111,48 @@ describe("User Profile & Avatar Endpoints", () => {
       expect(res.status).toBe(401);
       expect(res.body.success).toBe(false);
       expect(res.body.message).toMatch(/invalid current password/i);
+    });
+
+    it("returns 403 Forbidden for staff role", async () => {
+      const res = await request(app)
+        .put("/api/v1/users/me/email")
+        .set("x-mock-role", "staff")
+        .send({
+          newEmail: "staffnew@example.com",
+          currentPassword: "password123",
+        });
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+      expect(userService.updateOwnEmail).not.toHaveBeenCalled();
+    });
+
+    it("returns 403 Forbidden for agent role", async () => {
+      const res = await request(app)
+        .put("/api/v1/users/me/email")
+        .set("x-mock-role", "agent")
+        .send({
+          newEmail: "agentnew@example.com",
+          currentPassword: "password123",
+        });
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+      expect(userService.updateOwnEmail).not.toHaveBeenCalled();
+    });
+
+    it("returns 403 Forbidden for customer role", async () => {
+      const res = await request(app)
+        .put("/api/v1/users/me/email")
+        .set("x-mock-role", "customer")
+        .send({
+          newEmail: "custnew@example.com",
+          currentPassword: "password123",
+        });
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+      expect(userService.updateOwnEmail).not.toHaveBeenCalled();
     });
   });
 
