@@ -502,6 +502,7 @@ export const findAgentProfile = async (agentId: string) => {
       phone: true,
       role: true,
       status: true,
+      avatarUrl: true,
       createdAt: true,
       agentProfile: {
         select: {
@@ -520,6 +521,7 @@ export const findAgentProfile = async (agentId: string) => {
     phone: user.phone,
     role: user.role,
     status: user.status,
+    avatarUrl: user.avatarUrl,
     agencyName: user.agentProfile?.agencyName || null,
     createdAt: user.createdAt,
   };
@@ -554,6 +556,7 @@ export const updateAgentProfile = async (
       phone: true,
       role: true,
       status: true,
+      avatarUrl: true,
       createdAt: true,
       agentProfile: {
         select: {
@@ -570,6 +573,7 @@ export const updateAgentProfile = async (
     phone: updated.phone,
     role: updated.role,
     status: updated.status,
+    avatarUrl: updated.avatarUrl,
     agencyName: updated.agentProfile?.agencyName || null,
     createdAt: updated.createdAt,
   };

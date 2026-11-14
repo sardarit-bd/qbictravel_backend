@@ -3,6 +3,7 @@ import { Router } from "express";
 import * as userController from "./userController.js";
 import validate from "../../shared/middleware/validate.js";
 import authMiddleware from "../../shared/middleware/authMiddleware.js";
+import requireRole from "../../shared/middleware/requireRole.js";
 import {
   updateProfileSchema,
   updateEmailSchema,
@@ -56,7 +57,7 @@ router.patch("/me", validate(updateProfileSchema), userController.updateMe);
  *   put:
  *     tags:
  *       - Users
- *     summary: Update own email address with password verification
+ *     summary: Update own email address with password verification (Admin only)
  *     security:
  *       - bearerAuth: []
  *       - cookieAuth: []
@@ -67,11 +68,14 @@ router.patch("/me", validate(updateProfileSchema), userController.updateMe);
  *         description: Validation error or same email
  *       401:
  *         description: Incorrect password / Unauthorized
+ *       403:
+ *         description: Forbidden - insufficient permissions (Admin only)
  *       409:
  *         description: Email already in use
  */
 router.put(
   "/me/email",
+  requireRole("admin"),
   validate(updateEmailSchema),
   userController.updateEmail,
 );
