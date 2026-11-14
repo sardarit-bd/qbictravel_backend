@@ -268,6 +268,14 @@ describe("Operations flow (real database)", () => {
       expect(idsOf(all)).toEqual([mine.id, theirs.id, unassigned.id].sort());
       expect(idsOf(filtered)).toEqual([theirs.id]);
       expect(invalid.status).toBe(400);
+
+      // Verify admin sees financial price fields and currency
+      expect(all.status).toBe(200);
+      for (const item of all.body.data.items) {
+        expect(item.currency).toBe("THB");
+        expect(Number(item.basePrice)).toBe(500);
+        expect(Number(item.finalPrice)).toBe(450);
+      }
     });
   });
 

@@ -6,7 +6,7 @@ type HistoryChanges = Record<string, string | number | boolean | null>;
 const OPERATIONAL_BOOKING_STATUSES: OperationalBookingStatus[] = ["CONFIRMED", "IN_PROGRESS", "COMPLETED"];
 const CLOSED_BOOKING_STATUSES: ("COMPLETED" | "CANCELLED" | "FAILED")[] = ["COMPLETED", "CANCELLED", "FAILED"];
 
-const operationalSelect = {
+export const staffOperationalSelect = {
   id: true,
   status: true,
   fulfillmentStatus: true,
@@ -44,7 +44,23 @@ const operationalSelect = {
   },
 } as const;
 
-export const listOperationalBookings = async (filters: OperationalFilters, skip: number, take: number) => {
+export const adminOperationalSelect = {
+  ...staffOperationalSelect,
+  currency: true,
+  basePrice: true,
+  proposedPrice: true,
+  finalPrice: true,
+} as const;
+
+// Backward compatibility alias for staff projection
+const operationalSelect = staffOperationalSelect;
+
+export const listOperationalBookings = async (
+  filters: OperationalFilters,
+  skip: number,
+  take: number,
+  projection: "admin" | "staff" = "staff"
+) => {
   const where: any = {
     status: { in: OPERATIONAL_BOOKING_STATUSES },
     ...(filters.assignedStaffId ? { assignedStaffId: filters.assignedStaffId } : {}),
@@ -53,10 +69,12 @@ export const listOperationalBookings = async (filters: OperationalFilters, skip:
     ...(filters.source ? { source: filters.source } : {}),
   };
 
+  const select = projection === "admin" ? adminOperationalSelect : staffOperationalSelect;
+
   const [items, total] = await Promise.all([
     prisma.booking.findMany({
       where,
-      select: operationalSelect,
+      select,
       orderBy: { createdAt: "desc" },
       skip,
       take,
@@ -67,14 +85,20 @@ export const listOperationalBookings = async (filters: OperationalFilters, skip:
   return { items, total };
 };
 
-export const findOperationalBooking = async (bookingId: string, assignedStaffId?: string) => {
+export const findOperationalBooking = async (
+  bookingId: string,
+  assignedStaffId?: string,
+  projection: "admin" | "staff" = "staff"
+) => {
+  const select = projection === "admin" ? adminOperationalSelect : staffOperationalSelect;
+
   return prisma.booking.findFirst({
     where: {
       id: bookingId,
       status: { in: OPERATIONAL_BOOKING_STATUSES },
       ...(assignedStaffId ? { assignedStaffId } : {}),
     },
-    select: operationalSelect,
+    select,
   });
 };
 
@@ -138,9 +162,11 @@ export const applyOperationalTransition = async (params: {
       },
     });
 
+    const select = params.actorRole === "admin" ? adminOperationalSelect : staffOperationalSelect;
+
     return tx.booking.findUniqueOrThrow({
       where: { id: params.bookingId },
-      select: operationalSelect,
+      select,
     });
   });
 };
@@ -173,7 +199,7 @@ export const applyAssignment = async (params: {
 
     return tx.booking.findUniqueOrThrow({
       where: { id: params.bookingId },
-      select: operationalSelect,
+      select: adminOperationalSelect,
     });
   });
 };

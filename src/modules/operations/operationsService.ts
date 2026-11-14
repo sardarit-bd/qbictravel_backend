@@ -27,21 +27,25 @@ export const TRANSITIONS: Transition[] = [
   { from: "FULFILLED", to: "IN_PROGRESS", bookingFrom: "COMPLETED", bookingTo: "IN_PROGRESS", adminOnly: true, requiresPaid: false },
 ];
 
-const listWithFilters = async (base: OperationalFilters, query: Record<string, unknown>) => {
+const listWithFilters = async (
+  base: OperationalFilters,
+  query: Record<string, unknown>,
+  projection: "admin" | "staff" = "staff"
+) => {
   const { page, limit, skip } = parsePagination(query);
   const filters: OperationalFilters = {
     ...base,
     fulfillmentStatus: parseEnumQuery(query.fulfillmentStatus, FULFILLMENT_STATUSES, "fulfillmentStatus"),
   };
-  const { items, total } = await operationsRepository.listOperationalBookings(filters, skip, limit);
+  const { items, total } = await operationsRepository.listOperationalBookings(filters, skip, limit, projection);
   return { items, page, limit, total };
 };
 
 export const listStaffBookings = async (staffId: string, query: Record<string, unknown>) =>
-  listWithFilters({ assignedStaffId: staffId }, query);
+  listWithFilters({ assignedStaffId: staffId }, query, "staff");
 
 export const getStaffBooking = async (staffId: string, bookingId: string) => {
-  const booking = await operationsRepository.findOperationalBooking(bookingId, staffId);
+  const booking = await operationsRepository.findOperationalBooking(bookingId, staffId, "staff");
   if (!booking) {
     throw new AppError("Booking not found", 404);
   }
@@ -56,6 +60,7 @@ export const listAdminBookings = async (query: Record<string, unknown>) =>
       source: query.source as any,
     },
     query,
+    "admin"
   );
 
 export const updateOperationalStatus = async (
