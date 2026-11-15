@@ -170,3 +170,7 @@ export const bulkUpdateServiceStatusSchema = yup.object({
     .required("serviceIds array is required"),
   status: serviceStatusSchema,
 });
+
+export const serviceIdParamSchema = yup.object({
+  serviceId: yup.string().trim().uuid("Invalid service ID format").required("Service ID is required"),
+});

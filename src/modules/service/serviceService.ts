@@ -69,3 +69,22 @@ export const updateServicePricingManual = async (id: string, data: PricingUpdate
 export const bulkUpdateServicesStatus = async (data: BulkUpdateServiceStatusInput) => {
   return serviceRepository.bulkUpdateServiceStatus(data);
 };
+
+export const deleteService = async (id: string) => {
+  // 1. Verify existence
+  const service = await getServiceDetails(id, true);
+
+  // 2. Verify no bookings exist
+  const bookingCount = await serviceRepository.countServiceBookings(id);
+  if (bookingCount > 0) {
+    throw new AppError(
+      `Cannot delete tour "${service.name}" because it has ${bookingCount} existing ${
+        bookingCount === 1 ? "booking" : "bookings"
+      }. Please move the tour to Draft or Unpublished status instead.`,
+      400
+    );
+  }
+
+  // 3. Delegate atomic deletion
+  return serviceRepository.deleteServiceRecord(id);
+};

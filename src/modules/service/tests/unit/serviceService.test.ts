@@ -125,4 +125,34 @@ describe("Service Service", () => {
       });
     });
   });
+
+  describe("deleteService", () => {
+    it("should throw 404 if service does not exist", async () => {
+      mockedRepo.findServiceById.mockResolvedValue(null);
+
+      await expect(serviceService.deleteService("999")).rejects.toThrow("Service not found");
+      expect(mockedRepo.countServiceBookings).not.toHaveBeenCalled();
+      expect(mockedRepo.deleteServiceRecord).not.toHaveBeenCalled();
+    });
+
+    it("should throw 400 if service has existing bookings", async () => {
+      mockedRepo.findServiceById.mockResolvedValue({ id: "1", name: "Phi Phi Island Tour" } as any);
+      mockedRepo.countServiceBookings.mockResolvedValue(3);
+
+      await expect(serviceService.deleteService("1")).rejects.toThrow(
+        'Cannot delete tour "Phi Phi Island Tour" because it has 3 existing bookings. Please move the tour to Draft or Unpublished status instead.'
+      );
+      expect(mockedRepo.deleteServiceRecord).not.toHaveBeenCalled();
+    });
+
+    it("should delete service when it has 0 bookings", async () => {
+      mockedRepo.findServiceById.mockResolvedValue({ id: "1", name: "Phi Phi Island Tour" } as any);
+      mockedRepo.countServiceBookings.mockResolvedValue(0);
+      mockedRepo.deleteServiceRecord.mockResolvedValue({ id: "1", name: "Phi Phi Island Tour" });
+
+      const result = await serviceService.deleteService("1");
+      expect(result).toEqual({ id: "1", name: "Phi Phi Island Tour" });
+      expect(mockedRepo.deleteServiceRecord).toHaveBeenCalledWith("1");
+    });
+  });
 });

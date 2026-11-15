@@ -171,3 +171,13 @@ export const updateAdminPricing = async (req: Request, res: Response, next: Next
     next(error);
   }
 };
+
+export const deleteAdminService = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const serviceId = req.params.serviceId as string;
+    const result = await serviceService.deleteService(serviceId);
+    sendResponse(res, 200, true, "Tour package deleted successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};

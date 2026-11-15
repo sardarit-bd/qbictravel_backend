@@ -2,6 +2,7 @@ import { Router } from "express";
 import validate from "../../shared/middleware/validate.js";
 import authMiddleware from "../../shared/middleware/authMiddleware.js";
 import requirePermission from "../../shared/middleware/requirePermission.js";
+import requireRole from "../../shared/middleware/requireRole.js";
 
 import * as serviceController from "./serviceController.js";
 import {
@@ -12,6 +13,7 @@ import {
   pricingUpdateSchema,
   getAdminServicesQuerySchema,
   bulkUpdateServiceStatusSchema,
+  serviceIdParamSchema,
 } from "./serviceValidators.js";
 
 const router = Router();
@@ -380,5 +382,39 @@ router.get("/admin/services/:serviceId/pricing", authMiddleware, requirePermissi
  *         description: Pricing updated successfully
  */
 router.put("/admin/services/:serviceId/pricing", authMiddleware, requirePermission("tours.edit"), validate(pricingUpdateSchema), serviceController.updateAdminPricing);
+
+/**
+ * @openapi
+ * /api/v1/admin/services/{serviceId}:
+ *   delete:
+ *     tags:
+ *       - Services (Admin)
+ *     summary: Permanently delete a tour package (Admin only, without bookings)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: serviceId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Tour package deleted successfully
+ *       400:
+ *         description: Cannot delete tour with existing bookings
+ *       401/403:
+ *         description: Unauthorized/Forbidden
+ *       404:
+ *         description: Tour not found
+ */
+router.delete(
+  "/admin/services/:serviceId",
+  authMiddleware,
+  requireRole("admin"),
+  validate(serviceIdParamSchema, "params"),
+  serviceController.deleteAdminService
+);
 
 export default router;
