@@ -121,7 +121,20 @@ export const availabilityUpdateSchema = yup.object({
 export const pricingUpdateSchema = yup.object({
   currency: yup.string().trim().uppercase().length(3, "Currency must be a 3-letter code").optional(),
   basePrice: yup.number().min(0, "Base price cannot be negative").optional(),
-  discountedPrice: yup.number().min(0, "Discounted price cannot be negative").optional(),
+  discountedPrice: yup
+    .number()
+    .transform((val, orig) => (orig === null || orig === "" ? null : val))
+    .nullable()
+    .optional()
+    .test("is-valid-discount", "Discount price must be greater than 0", function (val) {
+      if (val === null || val === undefined) return true;
+      if (val <= 0) return this.createError({ message: "Discount price must be greater than 0" });
+      const { basePrice } = this.parent;
+      if (basePrice !== undefined && basePrice !== null && val >= basePrice) {
+        return this.createError({ message: "Discount price must be lower than the adult price" });
+      }
+      return true;
+    }),
   taxRate: yup.number().min(0, "Tax rate cannot be negative").optional(),
   validFrom: yup.string().optional(),
   validTo: yup.string().optional(),

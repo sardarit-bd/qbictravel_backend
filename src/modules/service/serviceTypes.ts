@@ -96,7 +96,7 @@ export interface AvailabilityUpdateInput {
 export interface PricingUpdateInput {
   currency?: string;
   basePrice?: number;
-  discountedPrice?: number;
+  discountedPrice?: number | null;
   taxRate?: number;
   validFrom?: string;
   validTo?: string;
