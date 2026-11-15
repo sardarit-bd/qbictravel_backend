@@ -1,4 +1,5 @@
 import { db } from "../../config/database/index.js";
+import AppError from "../../shared/utils/AppError.js";
 import type {
   CreateServiceInput,
   UpdateServiceInput,
@@ -507,5 +508,47 @@ export const findAllAdminAvailability = async (serviceId?: string) => {
     where,
     include: { service: { select: { name: true, type: true } } },
     orderBy: { date: "asc" },
+  });
+};
+
+export const countServiceBookings = async (serviceId: string): Promise<number> => {
+  return db.booking.count({
+    where: { serviceId },
+  });
+};
+
+export const deleteServiceRecord = async (serviceId: string): Promise<{ id: string; name: string }> => {
+  return db.$transaction(async (tx) => {
+    // 1. Double check booking dependencies inside transaction
+    const bookingCount = await tx.booking.count({
+      where: { serviceId },
+    });
+    if (bookingCount > 0) {
+      throw new AppError(
+        `Cannot delete tour because it has ${bookingCount} existing ${
+          bookingCount === 1 ? "booking" : "bookings"
+        }. Please move the tour to Draft or Unpublished status instead.`,
+        400
+      );
+    }
+
+    // 2. Unlink or clean up any direct media references to this service
+    await tx.media.updateMany({
+      where: { serviceId },
+      data: { serviceId: null },
+    });
+
+    // 3. Delete any pricing rules targeted directly at this service
+    await tx.pricingRule.deleteMany({
+      where: { serviceId },
+    });
+
+    // 4. Delete the service (availability and pricing cascade automatically)
+    const deleted = await tx.service.delete({
+      where: { id: serviceId },
+      select: { id: true, name: true },
+    });
+
+    return deleted;
   });
 };
