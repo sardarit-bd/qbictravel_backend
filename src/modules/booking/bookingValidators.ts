@@ -13,6 +13,62 @@ export const createBookingSchema = yup.object({
   notes: yup.string().trim().max(1000, "Notes must be at most 1000 characters").optional(),
 });
 
+export const createStaffBookingSchema = yup
+  .object({
+    customerId: yup.string().uuid("Invalid customer ID").optional(),
+    customer: yup
+      .object({
+        name: yup.string().trim().max(100, "Name must be 100 characters or less"),
+        email: yup.string().trim().email("Invalid email address"),
+        phone: yup
+          .string()
+          .trim()
+          .max(30, "Phone must be 30 characters or less")
+          .nullable()
+          .optional(),
+      })
+      .notRequired()
+      .default(undefined),
+    serviceId: yup
+      .string()
+      .uuid("Invalid service ID")
+      .required("Service ID is required"),
+    availabilityId: yup.string().uuid("Invalid availability ID").optional(),
+    travelDate: yup.string().trim().optional(),
+    adults: yup
+      .number()
+      .integer("Adults must be an integer")
+      .min(1, "At least 1 adult is required")
+      .max(50, "Maximum 50 adults per booking")
+      .optional(),
+    children: yup
+      .number()
+      .integer("Children must be an integer")
+      .min(0, "Children cannot be negative")
+      .max(50, "Maximum 50 children per booking")
+      .optional(),
+    infants: yup
+      .number()
+      .integer("Infants must be an integer")
+      .min(0, "Infants cannot be negative")
+      .max(50, "Maximum 50 infants per booking")
+      .optional(),
+    notes: yup
+      .string()
+      .trim()
+      .max(1000, "Notes must be at most 1000 characters")
+      .optional(),
+  })
+  .test(
+    "customer-selection-or-inline",
+    "Either customerId or customer details must be provided",
+    (value) => {
+      const hasId = Boolean(value?.customerId);
+      const hasCustomer = Boolean(value?.customer && value?.customer?.email && value?.customer?.name);
+      return (hasId && !hasCustomer) || (!hasId && hasCustomer);
+    }
+  );
+
 export const updateBookingPriceSchema = yup.object({
   proposedPrice: yup.number().min(0, "Proposed price must be at least 0").required("Proposed price is required"),
 });

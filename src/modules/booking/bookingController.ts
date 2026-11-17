@@ -13,6 +13,15 @@ export const createBooking = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+export const createStaffBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const booking = await bookingService.createStaffBooking(req.body, req.user!.id);
+    sendResponse(res, 201, true, "Booking created successfully", booking);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const updateBookingPrice = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const booking = await bookingService.updateAgentBookingPrice(

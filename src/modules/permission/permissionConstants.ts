@@ -55,6 +55,12 @@ export const SUPPORTED_PERMISSIONS: readonly PermissionDefinition[] = [
     description: "View the full operational reservations queue and traveler booking details",
   },
   {
+    id: "bookings.create",
+    name: "Create Bookings",
+    module: "bookings",
+    description: "Create direct tour bookings on behalf of customers",
+  },
+  {
     id: "bookings.assign",
     name: "Assign Staff",
     module: "bookings",

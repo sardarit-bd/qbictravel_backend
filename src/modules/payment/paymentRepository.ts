@@ -76,6 +76,8 @@ export const findBookingForPayment = async (bookingId: string) => {
       id: true,
       customerId: true,
       agentId: true,
+      createdById: true,
+      assignedStaffId: true,
       status: true,
       requiresApproval: true,
       paymentStatus: true,

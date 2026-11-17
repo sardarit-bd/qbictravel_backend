@@ -1,16 +1,21 @@
 import { prisma } from "../../lib/prisma.js";
 import type { CreateBookingInput } from "./bookingTypes.js";
 
-export const createBooking = async (input: CreateBookingInput & { 
-  currency: string;
-  basePrice: number; 
-  finalPrice: number; 
-  status: string; 
-  requiresApproval: boolean;
-  createdById?: string | null;
-  source?: "AGENT" | "ADMIN" | "CUSTOMER" | "DIRECT";
-}) => {
-  return prisma.$transaction(async (tx) => {
+export const createBooking = async (
+  input: CreateBookingInput & { 
+    currency: string;
+    basePrice: number; 
+    finalPrice: number; 
+    status: string; 
+    requiresApproval: boolean;
+    createdById?: string | null;
+    source?: "AGENT" | "ADMIN" | "CUSTOMER" | "DIRECT";
+    historyAction?: string;
+    actorRole?: string;
+  },
+  txClient?: any
+) => {
+  const execute = async (tx: any) => {
     const created = await tx.booking.create({
       data: {
         customerId: input.customerId,
@@ -36,8 +41,8 @@ export const createBooking = async (input: CreateBookingInput & {
       data: {
         bookingId: created.id,
         actorId: input.createdById || input.agentId || input.customerId,
-        actorRole: input.source?.toLowerCase() || (input.agentId ? "agent" : "customer"),
-        action: "BOOKING_CREATED",
+        actorRole: input.actorRole || input.source?.toLowerCase() || (input.agentId ? "agent" : "customer"),
+        action: input.historyAction || "BOOKING_CREATED",
         changes: {
           status: input.status,
           source: created.source,
@@ -52,7 +57,12 @@ export const createBooking = async (input: CreateBookingInput & {
     });
 
     return created;
-  });
+  };
+
+  if (txClient) {
+    return execute(txClient);
+  }
+  return prisma.$transaction(execute);
 };
 
 export const findBookingById = async (bookingId: string) => {

@@ -98,6 +98,196 @@ describe("PaymentLink Unit & Security Tests", () => {
     });
   });
 
+  describe("Staff Payment Link Generation", () => {
+    it("allows staff who created the booking to generate a payment link", async () => {
+      vi.spyOn(paymentRepository, "findBookingForPayment").mockResolvedValue({
+        id: "booking-staff-1",
+        customerId: "cust-1",
+        createdById: "staff-1",
+        assignedStaffId: null,
+        agentId: null,
+        status: "PENDING",
+        requiresApproval: false,
+        paymentStatus: "UNPAID",
+        currency: "USD",
+        finalPrice: 180 as any,
+      } as any);
+
+      const fakeLink = {
+        id: "link-staff-1",
+        bookingId: "booking-staff-1",
+        tokenHash: "hashed-token",
+        expiresAt: new Date(Date.now() + 86400000 * 7),
+        status: "ACTIVE",
+        createdById: "staff-1",
+      };
+
+      vi.spyOn(paymentRepository, "createOrUpdatePaymentLink").mockResolvedValue(fakeLink as any);
+
+      const result = await paymentService.generateStaffPaymentLink(
+        { id: "staff-1", role: "staff" },
+        "booking-staff-1"
+      );
+
+      expect(result.bookingId).toBe("booking-staff-1");
+      expect(result.rawToken).toHaveLength(64);
+      expect(result.paymentUrl).toContain(`/pay/${result.rawToken}`);
+      expect(paymentRepository.createOrUpdatePaymentLink).toHaveBeenCalledWith(
+        expect.objectContaining({
+          bookingId: "booking-staff-1",
+          createdById: "staff-1",
+        })
+      );
+    });
+
+    it("allows assigned operational staff to generate a payment link", async () => {
+      vi.spyOn(paymentRepository, "findBookingForPayment").mockResolvedValue({
+        id: "booking-staff-2",
+        customerId: "cust-1",
+        createdById: "other-staff",
+        assignedStaffId: "staff-assigned",
+        agentId: null,
+        status: "CONFIRMED",
+        requiresApproval: false,
+        paymentStatus: "UNPAID",
+        currency: "USD",
+        finalPrice: 200 as any,
+      } as any);
+
+      const fakeLink = {
+        id: "link-staff-2",
+        bookingId: "booking-staff-2",
+        tokenHash: "hashed-token-2",
+        expiresAt: new Date(Date.now() + 86400000 * 7),
+        status: "ACTIVE",
+        createdById: "staff-assigned",
+      };
+
+      vi.spyOn(paymentRepository, "createOrUpdatePaymentLink").mockResolvedValue(fakeLink as any);
+
+      const result = await paymentService.generateStaffPaymentLink(
+        { id: "staff-assigned", role: "staff" },
+        "booking-staff-2"
+      );
+
+      expect(result.bookingId).toBe("booking-staff-2");
+      expect(result.paymentUrl).toContain(`/pay/${result.rawToken}`);
+    });
+
+    it("allows admin user to generate a payment link for any booking", async () => {
+      vi.spyOn(paymentRepository, "findBookingForPayment").mockResolvedValue({
+        id: "booking-admin-1",
+        customerId: "cust-1",
+        createdById: "random-staff",
+        assignedStaffId: "another-staff",
+        agentId: null,
+        status: "PENDING",
+        requiresApproval: false,
+        paymentStatus: "UNPAID",
+        currency: "USD",
+        finalPrice: 300 as any,
+      } as any);
+
+      const fakeLink = {
+        id: "link-admin-1",
+        bookingId: "booking-admin-1",
+        tokenHash: "hashed-admin",
+        expiresAt: new Date(Date.now() + 86400000 * 7),
+        status: "ACTIVE",
+        createdById: "admin-1",
+      };
+
+      vi.spyOn(paymentRepository, "createOrUpdatePaymentLink").mockResolvedValue(fakeLink as any);
+
+      const result = await paymentService.generateStaffPaymentLink(
+        { id: "admin-1", role: "admin" },
+        "booking-admin-1"
+      );
+
+      expect(result.bookingId).toBe("booking-admin-1");
+      expect(result.paymentUrl).toContain(`/pay/${result.rawToken}`);
+    });
+
+    it("rejects unauthorized staff who is neither creator nor assigned", async () => {
+      vi.spyOn(paymentRepository, "findBookingForPayment").mockResolvedValue({
+        id: "booking-staff-3",
+        customerId: "cust-1",
+        createdById: "staff-creator",
+        assignedStaffId: "staff-assigned",
+        agentId: null,
+        status: "PENDING",
+        requiresApproval: false,
+        paymentStatus: "UNPAID",
+        currency: "USD",
+        finalPrice: 150 as any,
+      } as any);
+
+      await expect(
+        paymentService.generateStaffPaymentLink(
+          { id: "staff-unrelated", role: "staff" },
+          "booking-staff-3"
+        )
+      ).rejects.toThrow("You are not authorized to generate a payment link for this booking");
+    });
+
+    it("rejects payment link generation if booking is already paid", async () => {
+      vi.spyOn(paymentRepository, "findBookingForPayment").mockResolvedValue({
+        id: "booking-staff-4",
+        createdById: "staff-1",
+        status: "CONFIRMED",
+        requiresApproval: false,
+        paymentStatus: "PAID",
+        currency: "USD",
+        finalPrice: 150 as any,
+      } as any);
+
+      await expect(
+        paymentService.generateStaffPaymentLink(
+          { id: "staff-1", role: "staff" },
+          "booking-staff-4"
+        )
+      ).rejects.toThrow("This booking is already paid in full");
+    });
+
+    it("rejects payment link generation if booking is cancelled", async () => {
+      vi.spyOn(paymentRepository, "findBookingForPayment").mockResolvedValue({
+        id: "booking-staff-5",
+        createdById: "staff-1",
+        status: "CANCELLED",
+        requiresApproval: false,
+        paymentStatus: "UNPAID",
+        currency: "USD",
+        finalPrice: 150 as any,
+      } as any);
+
+      await expect(
+        paymentService.generateStaffPaymentLink(
+          { id: "staff-1", role: "staff" },
+          "booking-staff-5"
+        )
+      ).rejects.toThrow("Cannot create a payment link for a cancelled booking");
+    });
+
+    it("rejects payment link generation if booking has invalid price or currency", async () => {
+      vi.spyOn(paymentRepository, "findBookingForPayment").mockResolvedValue({
+        id: "booking-staff-6",
+        createdById: "staff-1",
+        status: "PENDING",
+        requiresApproval: false,
+        paymentStatus: "UNPAID",
+        currency: "",
+        finalPrice: 0 as any,
+      } as any);
+
+      await expect(
+        paymentService.generateStaffPaymentLink(
+          { id: "staff-1", role: "staff" },
+          "booking-staff-6"
+        )
+      ).rejects.toThrow("Booking has invalid pricing or currency");
+    });
+  });
+
   describe("Public Link Details Security & Privacy", () => {
     it("masks customer email and computes remaining balance correctly", async () => {
       const token = "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2";

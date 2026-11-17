@@ -8,9 +8,15 @@ vi.mock("../../paymentService.js");
 vi.mock("../../../../shared/middleware/authMiddleware.js", () => ({
   default: (req: any, _res: any, next: any) => {
     const role = req.headers["x-mock-role"] as string;
+    if (!role) return next();
     req.user = { id: `${role}-1`, role };
     next();
   },
+}));
+vi.mock("../../../permission/permissionRepository.js", () => ({
+  checkStaffPermission: vi.fn().mockImplementation((_staffId: string, permission: string) => {
+    return Promise.resolve(permission === "bookings.create");
+  }),
 }));
 
 const BOOKING_ID = "123e4567-e89b-12d3-a456-426614174002";
@@ -255,6 +261,50 @@ describe("Payment API Integration", () => {
       );
       const res = await call("post", `/api/v1/admin/payments/${PAYMENT_ID}/record`, "admin", {});
       expect(res.status).toBe(409);
+    });
+  });
+
+  describe("POST /api/v1/staff/bookings/:bookingId/payment-link", () => {
+    it("returns 200 and payment link data when authorized staff generates link", async () => {
+      vi.mocked(paymentService.generateStaffPaymentLink).mockResolvedValue({
+        paymentLinkId: "link-123",
+        bookingId: BOOKING_ID,
+        paymentUrl: "http://localhost:3000/pay/abc",
+        rawToken: "abc",
+        expiresAt: new Date(),
+        status: "ACTIVE",
+      });
+
+      const res = await call("post", `/api/v1/staff/bookings/${BOOKING_ID}/payment-link`, "staff", { expiresInDays: 7 });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.paymentUrl).toBe("http://localhost:3000/pay/abc");
+      expect(paymentService.generateStaffPaymentLink).toHaveBeenCalledWith(
+        { id: "staff-1", role: "staff" },
+        BOOKING_ID,
+        7
+      );
+    });
+
+    it("returns 401 when unauthenticated", async () => {
+      const res = await request(app).post(`/api/v1/staff/bookings/${BOOKING_ID}/payment-link`);
+      expect(res.status).toBe(401);
+    });
+
+    it("returns 403 when customer attempts to access staff payment link endpoint", async () => {
+      const res = await call("post", `/api/v1/staff/bookings/${BOOKING_ID}/payment-link`, "customer");
+      expect(res.status).toBe(403);
+    });
+
+    it("returns 403 when agent attempts to access staff payment link endpoint", async () => {
+      const res = await call("post", `/api/v1/staff/bookings/${BOOKING_ID}/payment-link`, "agent");
+      expect(res.status).toBe(403);
+    });
+
+    it("returns 400 when bookingId is not a valid UUID", async () => {
+      const res = await call("post", "/api/v1/staff/bookings/invalid-uuid/payment-link", "staff");
+      expect(res.status).toBe(400);
     });
   });
 });

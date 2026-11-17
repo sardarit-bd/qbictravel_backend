@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { randomBytes } from "node:crypto";
 import { prisma } from "../../lib/prisma.js";
 import AppError from "../../shared/utils/AppError.js";
+import { resolveOrCreateCustomer } from "../customer/customerHelper.js";
 
 export type AgentBookingStatus =
   | "PENDING"
@@ -407,85 +408,13 @@ export const createOrResolveAgentCustomer = async (
   _agentId: string,
   input: CreateAgentCustomerInput
 ) => {
-  const email = input.email.trim().toLowerCase();
-  const name = input.name.trim();
-  const phone = input.phone?.trim() || null;
-
-  const existing = await prisma.user.findUnique({
-    where: { email },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      phone: true,
-      role: true,
-      status: true,
-      deletedAt: true,
-      createdAt: true,
+  return resolveOrCreateCustomer({
+    customer: {
+      name: input.name,
+      email: input.email,
+      phone: input.phone,
     },
   });
-
-  if (existing) {
-    if (existing.role !== "customer") {
-      throw new AppError(
-        "This email belongs to a non-customer account. Please enter the traveler's email address.",
-        409
-      );
-    }
-    if (existing.status !== "active" || existing.deletedAt !== null) {
-      throw new AppError("This customer account is inactive.", 409);
-    }
-
-    // Update phone or name if customer had missing phone
-    const shouldUpdate = (phone && !existing.phone) || (name && name !== existing.name);
-    if (shouldUpdate) {
-      const updated = await prisma.user.update({
-        where: { id: existing.id },
-        data: {
-          ...(name ? { name } : {}),
-          ...(phone && !existing.phone ? { phone } : {}),
-        },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          phone: true,
-          createdAt: true,
-        },
-      });
-      return updated;
-    }
-
-    return {
-      id: existing.id,
-      name: existing.name,
-      email: existing.email,
-      phone: existing.phone,
-      createdAt: existing.createdAt,
-    };
-  }
-
-  const randomPassword = await bcrypt.hash(randomBytes(24).toString("hex"), 10);
-
-  const created = await prisma.user.create({
-    data: {
-      name,
-      email,
-      phone,
-      password: randomPassword,
-      role: "customer",
-      status: "active",
-    },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      phone: true,
-      createdAt: true,
-    },
-  });
-
-  return created;
 };
 
 export const findAgentProfile = async (agentId: string) => {

@@ -7,12 +7,20 @@ vi.mock("../../bookingService.js");
 vi.mock("../../../../shared/middleware/authMiddleware.js", () => ({
   default: (req: any, _res: any, next: any) => {
     const role = req.headers["x-mock-role"] as string;
+    if (!role) {
+      return next();
+    }
     req.user = { 
-      id: role === "admin" ? "admin-1" : role === "agent" ? "agent-1" : "cust-1", 
+      id: role === "admin" ? "admin-1" : role === "agent" ? "agent-1" : role === "staff" ? "staff-1" : "cust-1", 
       role 
     };
     next();
   },
+}));
+vi.mock("../../../permission/permissionRepository.js", () => ({
+  checkStaffPermission: vi.fn().mockImplementation((_staffId: string, permission: string) => {
+    return Promise.resolve(permission === "bookings.create" || permission === "bookings.view" || permission === "bookings.approve_price");
+  }),
 }));
 
 describe("Booking API Integration", () => {
@@ -198,6 +206,81 @@ describe("Booking API Integration", () => {
         .set("x-mock-role", "customer");
 
       expect(res.status).toBe(403);
+    });
+  });
+
+  describe("POST /api/v1/staff/bookings", () => {
+    it("should return 201 when authorized staff creates a booking", async () => {
+      const mockBooking = {
+        id: mockBookingId,
+        customerId: mockCustomerId,
+        agentId: null,
+        createdById: "staff-1",
+        source: "DIRECT",
+        serviceId: mockServiceId,
+        finalPrice: 90,
+        status: "PENDING",
+      };
+      vi.mocked(bookingService.createStaffBooking).mockResolvedValue(mockBooking as any);
+
+      const res = await request(app)
+        .post("/api/v1/staff/bookings")
+        .set("x-mock-role", "staff")
+        .send({
+          customerId: mockCustomerId,
+          serviceId: mockServiceId,
+          adults: 1,
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body.data.source).toBe("DIRECT");
+      expect(res.body.data.createdById).toBe("staff-1");
+    });
+
+    it("should return 401 when request is unauthenticated", async () => {
+      const res = await request(app)
+        .post("/api/v1/staff/bookings")
+        .send({
+          customerId: mockCustomerId,
+          serviceId: mockServiceId,
+        });
+
+      expect(res.status).toBe(401);
+    });
+
+    it("should return 403 when customer role attempts to access staff endpoint", async () => {
+      const res = await request(app)
+        .post("/api/v1/staff/bookings")
+        .set("x-mock-role", "customer")
+        .send({
+          customerId: mockCustomerId,
+          serviceId: mockServiceId,
+        });
+
+      expect(res.status).toBe(403);
+    });
+
+    it("should return 403 when agent role attempts to access staff endpoint", async () => {
+      const res = await request(app)
+        .post("/api/v1/staff/bookings")
+        .set("x-mock-role", "agent")
+        .send({
+          customerId: mockCustomerId,
+          serviceId: mockServiceId,
+        });
+
+      expect(res.status).toBe(403);
+    });
+
+    it("should return 400 when neither customerId nor customer object is provided", async () => {
+      const res = await request(app)
+        .post("/api/v1/staff/bookings")
+        .set("x-mock-role", "staff")
+        .send({
+          serviceId: mockServiceId,
+        });
+
+      expect(res.status).toBe(400);
     });
   });
 });

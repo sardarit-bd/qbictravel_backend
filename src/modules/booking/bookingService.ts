@@ -6,12 +6,14 @@ import * as notificationService from "../notification/notificationService.js";
 import { parsePagination } from "../../shared/utils/pagination.js";
 import type {
   CreateBookingInput,
+  CreateStaffBookingInput,
   UpdateBookingPriceInput,
   ReviewBookingPriceInput,
   ReviewPendingBookingInput,
   ListPendingReservationsQuery,
   BookingResponse,
 } from "./bookingTypes.js";
+import { resolveOrCreateCustomer } from "../customer/customerHelper.js";
 
 const mapBookingToResponse = (booking: any): BookingResponse => {
   if (!booking) return booking;
@@ -248,6 +250,237 @@ export const createBooking = async (
     await notificationService.notifyBookingCreated(booking.id);
     return mapBookingToResponse(updated);
   }
+
+  await notificationService.notifyBookingCreated(booking.id);
+  return mapBookingToResponse(booking);
+};
+
+export const createStaffBooking = async (
+  input: CreateStaffBookingInput,
+  staffId: string
+): Promise<BookingResponse> => {
+  // 1. Resolve or create customer (does NOT send login invitation or create password credentials)
+  const customer = await resolveOrCreateCustomer({
+    customerId: input.customerId,
+    customer: input.customer,
+  });
+
+  // 2. Fetch service and active standard pricing
+  const service = await prisma.service.findUnique({
+    where: { id: input.serviceId },
+    include: { pricing: true },
+  });
+
+  if (!service) {
+    throw new AppError("Service not found", 404);
+  }
+  if (service.status !== "PUBLISHED") {
+    throw new AppError("Cannot book unpublished tour", 400);
+  }
+
+  const now = new Date();
+  const activePricings = service.pricing.filter(
+    (p) =>
+      (!p.validFrom || p.validFrom <= now) && (!p.validTo || p.validTo >= now)
+  );
+
+  if (activePricings.length === 0) {
+    throw new AppError("Service has no active pricing", 400);
+  }
+
+  if (activePricings.length > 1) {
+    throw new AppError(
+      "Service has multiple active pricing tiers. Please contact support.",
+      409
+    );
+  }
+
+  const activePricing = activePricings[0]!;
+  const rawBasePrice = Number(activePricing.basePrice);
+  const currency = activePricing.currency;
+
+  const hasGuestCounts =
+    input.adults !== undefined ||
+    input.children !== undefined ||
+    input.infants !== undefined;
+
+  let basePrice = rawBasePrice;
+
+  if (hasGuestCounts) {
+    const adults = Math.max(1, Number(input.adults ?? 1));
+    const children = Math.max(0, Number(input.children ?? 0));
+    const infants = Math.max(0, Number(input.infants ?? 0));
+
+    const unitAdultPrice =
+      activePricing.discountedPrice != null &&
+      Number(activePricing.discountedPrice) > 0
+        ? Number(activePricing.discountedPrice)
+        : rawBasePrice;
+
+    const metadata = (service as any).metadata as Record<string, any> | null;
+    const tiers: Array<{ tierName?: string; price?: number }> = Array.isArray(
+      metadata?.pricingTiers
+    )
+      ? metadata!.pricingTiers
+      : [];
+
+    const childTier = tiers.find((t) =>
+      /child/i.test(String(t?.tierName || ""))
+    );
+    const infantTier = tiers.find((t) =>
+      /infant/i.test(String(t?.tierName || ""))
+    );
+
+    const unitChildPrice =
+      childTier && typeof childTier.price === "number" && childTier.price >= 0
+        ? Number(childTier.price)
+        : Math.round(unitAdultPrice * 0.7 * 100) / 100;
+
+    const unitInfantPrice =
+      infantTier &&
+      typeof infantTier.price === "number" &&
+      infantTier.price >= 0
+        ? Number(infantTier.price)
+        : 0;
+
+    basePrice =
+      Math.round(
+        (adults * unitAdultPrice +
+          children * unitChildPrice +
+          infants * unitInfantPrice) *
+          100
+      ) / 100;
+  }
+
+  const finalPrice = basePrice;
+  const status = "PENDING"; // Follows standard booking lifecycle awaiting payment
+
+  // 3. Resolve Availability, Capacity Validation, Customer & Booking Creation atomically
+  let travelDateObj: Date | undefined;
+  if (input.travelDate && input.travelDate.trim()) {
+    travelDateObj = new Date(input.travelDate.trim());
+    if (isNaN(travelDateObj.getTime())) {
+      throw new AppError("Invalid travel date format", 400);
+    }
+  }
+
+  const totalGuests = Math.max(
+    1,
+    (input.adults ?? 1) + (input.children ?? 0) + (input.infants ?? 0)
+  );
+
+  // 4. Build Structured Notes
+  const noteParts: string[] = [];
+  if (input.travelDate && input.travelDate.trim()) {
+    noteParts.push(`Travel Date: ${input.travelDate.trim()}`);
+  }
+  if (hasGuestCounts) {
+    const adults = Math.max(1, Number(input.adults ?? 1));
+    const children = Math.max(0, Number(input.children ?? 0));
+    const infants = Math.max(0, Number(input.infants ?? 0));
+    const guestParts: string[] = [`${adults} Adult${adults > 1 ? "s" : ""}`];
+    if (children > 0) {
+      guestParts.push(`${children} Child${children > 1 ? "ren" : ""}`);
+    }
+    if (infants > 0) {
+      guestParts.push(`${infants} Infant${infants > 1 ? "s" : ""}`);
+    }
+    noteParts.push(`Guests: ${guestParts.join(", ")}`);
+  }
+  if (input.notes && input.notes.trim()) {
+    noteParts.push(input.notes.trim());
+  }
+  const formattedNotes = noteParts.length > 0 ? noteParts.join(" | ") : undefined;
+
+  // 5. Execute Customer, Availability Capacity, and Booking in a single atomic transaction
+  const booking = await prisma.$transaction(async (tx) => {
+    // 5a. Resolve or create customer inside transaction
+    const customer = await resolveOrCreateCustomer(
+      {
+        customerId: input.customerId,
+        customer: input.customer,
+      },
+      tx
+    );
+
+    // 5b. Resolve availability and reserve capacity atomically
+    let resolvedAvailabilityId = input.availabilityId;
+
+    if (travelDateObj) {
+      // Upsert availability record if it does not exist yet to obtain record ID
+      await tx.serviceAvailability.upsert({
+        where: {
+          serviceId_date: {
+            serviceId: input.serviceId,
+            date: travelDateObj,
+          },
+        },
+        create: {
+          serviceId: input.serviceId,
+          date: travelDateObj,
+          isAvailable: true,
+          bookedCount: 0,
+          lastVerifiedAt: new Date(),
+        },
+        update: {},
+      });
+
+      // Conditional atomic update: only increments if isAvailable is true and capacity is not exceeded
+      const updatedList = await tx.$queryRaw<Array<{ id: string }>>`
+        UPDATE "ServiceAvailability"
+        SET "bookedCount" = "bookedCount" + ${totalGuests},
+            "lastVerifiedAt" = NOW()
+        WHERE "serviceId" = ${input.serviceId}
+          AND "date" = ${travelDateObj}::date
+          AND "isAvailable" = true
+          AND ("capacity" IS NULL OR "bookedCount" + ${totalGuests} <= "capacity")
+        RETURNING "id"
+      `;
+
+      if (!updatedList || updatedList.length === 0) {
+        // Find existing record to provide specific error message
+        const currentAvail = await tx.serviceAvailability.findUnique({
+          where: {
+            serviceId_date: {
+              serviceId: input.serviceId,
+              date: travelDateObj,
+            },
+          },
+          select: { isAvailable: true, capacity: true, bookedCount: true },
+        });
+
+        if (currentAvail && !currentAvail.isAvailable) {
+          throw new AppError("Tour is not available on the selected date", 400);
+        }
+        throw new AppError("Selected date does not have sufficient capacity", 409);
+      }
+
+      resolvedAvailabilityId = updatedList[0].id;
+    }
+
+    // 5c. Persist Booking & Audit History
+    const created = await bookingRepository.createBooking(
+      {
+        customerId: customer.id,
+        agentId: null,
+        createdById: staffId,
+        source: "DIRECT",
+        serviceId: input.serviceId,
+        availabilityId: resolvedAvailabilityId,
+        currency,
+        basePrice,
+        finalPrice,
+        status,
+        requiresApproval: false,
+        ...(formattedNotes !== undefined ? { notes: formattedNotes } : {}),
+        historyAction: "BOOKING_CREATED_BY_STAFF",
+        actorRole: "staff",
+      },
+      tx
+    );
+
+    return created;
+  });
 
   await notificationService.notifyBookingCreated(booking.id);
   return mapBookingToResponse(booking);

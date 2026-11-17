@@ -917,6 +917,76 @@ export const generateAgentPaymentLink = async (
 };
 
 /**
+ * Generates or retrieves an active secure customer payment link for a staff-managed booking.
+ * Enforces staff authorization: creator staff, assigned operational staff, or admin.
+ */
+export const generateStaffPaymentLink = async (
+  staffUser: { id: string; role: string },
+  bookingId: string,
+  expiresInDays = 7,
+) => {
+  const booking = await paymentRepository.findBookingForPayment(bookingId);
+  if (!booking) {
+    throw new AppError("Booking not found", 404);
+  }
+
+  // Authorization check: Staff must be creator, assigned staff, or admin
+  const isCreator = (booking as any).createdById === staffUser.id;
+  const isAssigned = (booking as any).assignedStaffId === staffUser.id;
+  const isAdmin = staffUser.role === "admin";
+
+  if (!isCreator && !isAssigned && !isAdmin) {
+    throw new AppError("You are not authorized to generate a payment link for this booking", 403);
+  }
+
+  if (booking.requiresApproval || (booking.status as any) === "AWAITING_APPROVAL") {
+    throw new AppError("Cannot create a payment link while custom price is awaiting admin approval", 409);
+  }
+
+  if (booking.status === "CANCELLED" || booking.status === "FAILED") {
+    throw new AppError("Cannot create a payment link for a cancelled booking", 409);
+  }
+
+  if (booking.paymentStatus === "PAID") {
+    throw new AppError("This booking is already paid in full", 409);
+  }
+
+  if (!PAYABLE_BOOKING_STATUSES.includes(booking.status)) {
+    throw new AppError(`Booking status ${booking.status} is not eligible for payment`, 409);
+  }
+
+  if (!booking.finalPrice || Number(booking.finalPrice) <= 0 || !booking.currency) {
+    throw new AppError("Booking has invalid pricing or currency", 400);
+  }
+
+  // Generate a cryptographically secure token
+  const rawToken = generateSecureToken();
+  const tokenHash = hashToken(rawToken);
+
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + (expiresInDays || 7));
+
+  const paymentLink = await paymentRepository.createOrUpdatePaymentLink({
+    bookingId,
+    tokenHash,
+    expiresAt,
+    createdById: staffUser.id,
+  });
+
+  const frontendBaseUrl = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/$/, "");
+  const paymentUrl = `${frontendBaseUrl}/pay/${rawToken}`;
+
+  return {
+    paymentLinkId: paymentLink.id,
+    bookingId: paymentLink.bookingId,
+    paymentUrl,
+    rawToken,
+    expiresAt: paymentLink.expiresAt,
+    status: paymentLink.status,
+  };
+};
+
+/**
  * Retrieves public booking details for a customer payment link token.
  * Masks customer sensitive data and omits internal agent notes.
  */

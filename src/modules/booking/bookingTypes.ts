@@ -13,6 +13,22 @@ export interface CreateBookingInput {
   notes?: string;
 }
 
+export interface CreateStaffBookingInput {
+  customerId?: string;
+  customer?: {
+    name: string;
+    email: string;
+    phone?: string | null;
+  };
+  serviceId: string;
+  availabilityId?: string;
+  travelDate?: string;
+  adults?: number;
+  children?: number;
+  infants?: number;
+  notes?: string;
+}
+
 export interface UpdateBookingPriceInput {
   proposedPrice: number | string;
 }
