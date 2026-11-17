@@ -83,6 +83,10 @@ export const findBookingForPayment = async (bookingId: string) => {
       paymentStatus: true,
       currency: true,
       finalPrice: true,
+      discountRequests: {
+        where: { status: "PENDING" },
+        select: { id: true },
+      },
       customer: {
         select: {
           id: true,

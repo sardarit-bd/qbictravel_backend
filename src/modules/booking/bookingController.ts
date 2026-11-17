@@ -117,3 +117,13 @@ export const getAgentBookingHistory = async (req: Request, res: Response, next: 
     next(error);
   }
 };
+
+export const listStaffCustomers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await bookingService.listStaffCustomers(req.query);
+    sendResponse(res, 200, true, "Staff customers retrieved successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+

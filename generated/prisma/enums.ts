@@ -9,6 +9,35 @@
 * 🟢 You can import this file directly.
 */
 
+export const DiscountType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED_AMOUNT: 'FIXED_AMOUNT'
+} as const
+
+export type DiscountType = (typeof DiscountType)[keyof typeof DiscountType]
+
+
+export const DiscountApprovalStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type DiscountApprovalStatus = (typeof DiscountApprovalStatus)[keyof typeof DiscountApprovalStatus]
+
+
+export const DiscountAuditAction = {
+  DISCOUNT_REQUESTED: 'DISCOUNT_REQUESTED',
+  DISCOUNT_APPROVED: 'DISCOUNT_APPROVED',
+  DISCOUNT_REJECTED: 'DISCOUNT_REJECTED',
+  DISCOUNT_REQUEST_CANCELLED: 'DISCOUNT_REQUEST_CANCELLED',
+  DISCOUNT_APPROVAL_REVERSED: 'DISCOUNT_APPROVAL_REVERSED'
+} as const
+
+export type DiscountAuditAction = (typeof DiscountAuditAction)[keyof typeof DiscountAuditAction]
+
+
 export const BookingStatus = {
   PENDING: 'PENDING',
   CONFIRMED: 'CONFIRMED',

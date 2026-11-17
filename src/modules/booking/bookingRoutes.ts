@@ -12,6 +12,7 @@ import {
   reviewPendingBookingSchema,
   listPendingReservationsQuerySchema,
   bookingIdParamSchema,
+  listStaffCustomersQuerySchema,
 } from "./bookingValidators.js";
 
 const router = Router();
@@ -455,6 +456,14 @@ router.post(
   requirePermission("bookings.create"),
   validate(createStaffBookingSchema),
   bookingController.createStaffBooking
+);
+
+router.get(
+  "/staff/customers",
+  authMiddleware,
+  requirePermission("bookings.create"),
+  validate(listStaffCustomersQuerySchema, "query"),
+  bookingController.listStaffCustomers
 );
 
 export default router;

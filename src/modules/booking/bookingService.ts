@@ -768,3 +768,8 @@ export const getAgentBookingHistory = async (
     total: result.total,
   };
 };
+
+export const listStaffCustomers = async (query: Record<string, unknown>) => {
+  return bookingRepository.listStaffCustomers(query);
+};
+

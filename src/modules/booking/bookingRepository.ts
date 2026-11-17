@@ -537,3 +537,57 @@ export const findBookingHistory = async (params: {
 
   return { items, total };
 };
+
+export interface ListStaffCustomersParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
+export const listStaffCustomers = async (params: ListStaffCustomersParams) => {
+  const page = Math.max(1, Number(params.page) || 1);
+  const limit = Math.max(1, Math.min(100, Number(params.limit) || 50));
+  const skip = (page - 1) * limit;
+
+  const where: any = {
+    role: "customer",
+    status: "active",
+    deletedAt: null,
+  };
+
+  if (params.search && params.search.trim()) {
+    const q = params.search.trim();
+    where.OR = [
+      { name: { contains: q, mode: "insensitive" } },
+      { email: { contains: q, mode: "insensitive" } },
+      { phone: { contains: q, mode: "insensitive" } },
+    ];
+  }
+
+  const [items, total] = await Promise.all([
+    prisma.user.findMany({
+      where,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        createdAt: true,
+      },
+      orderBy: { name: "asc" },
+      skip,
+      take: limit,
+    }),
+    prisma.user.count({ where }),
+  ]);
+
+  return {
+    items,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};

@@ -939,7 +939,11 @@ export const generateStaffPaymentLink = async (
     throw new AppError("You are not authorized to generate a payment link for this booking", 403);
   }
 
-  if (booking.requiresApproval || (booking.status as any) === "AWAITING_APPROVAL") {
+  if (
+    booking.requiresApproval ||
+    (booking.status as any) === "AWAITING_APPROVAL" ||
+    ((booking as any).discountRequests && (booking as any).discountRequests.length > 0)
+  ) {
     throw new AppError("Cannot create a payment link while custom price is awaiting admin approval", 409);
   }
 

@@ -406,6 +406,8 @@ export const ModelName = {
   Booking: 'Booking',
   PriceApproval: 'PriceApproval',
   BookingHistory: 'BookingHistory',
+  StaffDiscountRequest: 'StaffDiscountRequest',
+  StaffDiscountAuditEvent: 'StaffDiscountAuditEvent',
   CommissionRule: 'CommissionRule',
   CommissionRuleAuditLog: 'CommissionRuleAuditLog',
   Commission: 'Commission',
@@ -441,7 +443,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "agentProfile" | "passwordResetToken" | "revokedToken" | "session" | "refreshToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "commissionRule" | "commissionRuleAuditLog" | "commission" | "commissionAdjustment" | "media" | "mediaUploadAuth" | "notificationSetting" | "payment" | "stripeWebhookEvent" | "outboxMessage" | "paymentRefund" | "paymentLink" | "permission" | "staffPermission" | "service" | "serviceAvailability" | "servicePricing" | "systemSetting" | "settingAuditLog" | "user"
+    modelProps: "agentProfile" | "passwordResetToken" | "revokedToken" | "session" | "refreshToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "staffDiscountRequest" | "staffDiscountAuditEvent" | "commissionRule" | "commissionRuleAuditLog" | "commission" | "commissionAdjustment" | "media" | "mediaUploadAuth" | "notificationSetting" | "payment" | "stripeWebhookEvent" | "outboxMessage" | "paymentRefund" | "paymentLink" | "permission" | "staffPermission" | "service" | "serviceAvailability" | "servicePricing" | "systemSetting" | "settingAuditLog" | "user"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1108,6 +1110,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.BookingHistoryCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.BookingHistoryCountAggregateOutputType> | number
+        }
+      }
+    }
+    StaffDiscountRequest: {
+      payload: Prisma.$StaffDiscountRequestPayload<ExtArgs>
+      fields: Prisma.StaffDiscountRequestFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StaffDiscountRequestFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountRequestPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StaffDiscountRequestFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountRequestPayload>
+        }
+        findFirst: {
+          args: Prisma.StaffDiscountRequestFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountRequestPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StaffDiscountRequestFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountRequestPayload>
+        }
+        findMany: {
+          args: Prisma.StaffDiscountRequestFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountRequestPayload>[]
+        }
+        create: {
+          args: Prisma.StaffDiscountRequestCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountRequestPayload>
+        }
+        createMany: {
+          args: Prisma.StaffDiscountRequestCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StaffDiscountRequestCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountRequestPayload>[]
+        }
+        delete: {
+          args: Prisma.StaffDiscountRequestDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountRequestPayload>
+        }
+        update: {
+          args: Prisma.StaffDiscountRequestUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountRequestPayload>
+        }
+        deleteMany: {
+          args: Prisma.StaffDiscountRequestDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StaffDiscountRequestUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StaffDiscountRequestUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountRequestPayload>[]
+        }
+        upsert: {
+          args: Prisma.StaffDiscountRequestUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountRequestPayload>
+        }
+        aggregate: {
+          args: Prisma.StaffDiscountRequestAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStaffDiscountRequest>
+        }
+        groupBy: {
+          args: Prisma.StaffDiscountRequestGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffDiscountRequestGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StaffDiscountRequestCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffDiscountRequestCountAggregateOutputType> | number
+        }
+      }
+    }
+    StaffDiscountAuditEvent: {
+      payload: Prisma.$StaffDiscountAuditEventPayload<ExtArgs>
+      fields: Prisma.StaffDiscountAuditEventFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StaffDiscountAuditEventFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountAuditEventPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StaffDiscountAuditEventFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountAuditEventPayload>
+        }
+        findFirst: {
+          args: Prisma.StaffDiscountAuditEventFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountAuditEventPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StaffDiscountAuditEventFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountAuditEventPayload>
+        }
+        findMany: {
+          args: Prisma.StaffDiscountAuditEventFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountAuditEventPayload>[]
+        }
+        create: {
+          args: Prisma.StaffDiscountAuditEventCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountAuditEventPayload>
+        }
+        createMany: {
+          args: Prisma.StaffDiscountAuditEventCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StaffDiscountAuditEventCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountAuditEventPayload>[]
+        }
+        delete: {
+          args: Prisma.StaffDiscountAuditEventDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountAuditEventPayload>
+        }
+        update: {
+          args: Prisma.StaffDiscountAuditEventUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountAuditEventPayload>
+        }
+        deleteMany: {
+          args: Prisma.StaffDiscountAuditEventDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StaffDiscountAuditEventUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StaffDiscountAuditEventUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountAuditEventPayload>[]
+        }
+        upsert: {
+          args: Prisma.StaffDiscountAuditEventUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffDiscountAuditEventPayload>
+        }
+        aggregate: {
+          args: Prisma.StaffDiscountAuditEventAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStaffDiscountAuditEvent>
+        }
+        groupBy: {
+          args: Prisma.StaffDiscountAuditEventGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffDiscountAuditEventGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StaffDiscountAuditEventCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffDiscountAuditEventCountAggregateOutputType> | number
         }
       }
     }
@@ -2763,6 +2913,56 @@ export const BookingHistoryScalarFieldEnum = {
 export type BookingHistoryScalarFieldEnum = (typeof BookingHistoryScalarFieldEnum)[keyof typeof BookingHistoryScalarFieldEnum]
 
 
+export const StaffDiscountRequestScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  discountType: 'discountType',
+  discountValue: 'discountValue',
+  originalPrice: 'originalPrice',
+  discountAmount: 'discountAmount',
+  proposedFinalPrice: 'proposedFinalPrice',
+  approvedDiscountAmount: 'approvedDiscountAmount',
+  approvedFinalPrice: 'approvedFinalPrice',
+  status: 'status',
+  reason: 'reason',
+  rejectionReason: 'rejectionReason',
+  adminNotes: 'adminNotes',
+  requestedById: 'requestedById',
+  reviewedById: 'reviewedById',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffDiscountRequestScalarFieldEnum = (typeof StaffDiscountRequestScalarFieldEnum)[keyof typeof StaffDiscountRequestScalarFieldEnum]
+
+
+export const StaffDiscountAuditEventScalarFieldEnum = {
+  id: 'id',
+  discountRequestId: 'discountRequestId',
+  bookingId: 'bookingId',
+  actorId: 'actorId',
+  actorRole: 'actorRole',
+  action: 'action',
+  previousStatus: 'previousStatus',
+  newStatus: 'newStatus',
+  originalPrice: 'originalPrice',
+  discountType: 'discountType',
+  discountValue: 'discountValue',
+  requestedDiscountAmount: 'requestedDiscountAmount',
+  proposedFinalPrice: 'proposedFinalPrice',
+  approvedDiscountAmount: 'approvedDiscountAmount',
+  finalPrice: 'finalPrice',
+  reason: 'reason',
+  rejectionReason: 'rejectionReason',
+  adminNotes: 'adminNotes',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type StaffDiscountAuditEventScalarFieldEnum = (typeof StaffDiscountAuditEventScalarFieldEnum)[keyof typeof StaffDiscountAuditEventScalarFieldEnum]
+
+
 export const CommissionRuleScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -3296,6 +3496,48 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'DiscountType'
+ */
+export type EnumDiscountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DiscountType'>
+    
+
+
+/**
+ * Reference to a field of type 'DiscountType[]'
+ */
+export type ListEnumDiscountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DiscountType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DiscountApprovalStatus'
+ */
+export type EnumDiscountApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DiscountApprovalStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'DiscountApprovalStatus[]'
+ */
+export type ListEnumDiscountApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DiscountApprovalStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DiscountAuditAction'
+ */
+export type EnumDiscountAuditActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DiscountAuditAction'>
+    
+
+
+/**
+ * Reference to a field of type 'DiscountAuditAction[]'
+ */
+export type ListEnumDiscountAuditActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DiscountAuditAction[]'>
+    
+
+
+/**
  * Reference to a field of type 'CommissionRateType'
  */
 export type EnumCommissionRateTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CommissionRateType'>
@@ -3678,6 +3920,8 @@ export type GlobalOmitConfig = {
   booking?: Prisma.BookingOmit
   priceApproval?: Prisma.PriceApprovalOmit
   bookingHistory?: Prisma.BookingHistoryOmit
+  staffDiscountRequest?: Prisma.StaffDiscountRequestOmit
+  staffDiscountAuditEvent?: Prisma.StaffDiscountAuditEventOmit
   commissionRule?: Prisma.CommissionRuleOmit
   commissionRuleAuditLog?: Prisma.CommissionRuleAuditLogOmit
   commission?: Prisma.CommissionOmit

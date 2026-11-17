@@ -95,6 +95,12 @@ export const listPendingReservationsQuerySchema = yup.object({
   paymentStatus: yup.string().oneOf(["UNPAID", "PARTIALLY_PAID", "PAID"]).optional(),
 });
 
+export const listStaffCustomersQuerySchema = yup.object({
+  page: yup.number().integer().min(1).optional(),
+  limit: yup.number().integer().min(1).max(100).optional(),
+  search: yup.string().trim().optional(),
+});
+
 export const bookingIdParamSchema = yup.object({
   bookingId: yup.string().uuid("Invalid booking ID").required("Booking ID is required"),
 });
