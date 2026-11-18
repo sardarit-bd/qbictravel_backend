@@ -6,11 +6,14 @@ import requireRole from "../../shared/middleware/requireRole.js";
 import requirePermission from "../../shared/middleware/requirePermission.js";
 import {
   createBookingSchema,
+  createStaffBookingSchema,
   updateBookingPriceSchema,
   reviewBookingPriceSchema,
   reviewPendingBookingSchema,
   listPendingReservationsQuerySchema,
   bookingIdParamSchema,
+  listStaffCustomersQuerySchema,
+  listStaffCreatedBookingsQuerySchema,
 } from "./bookingValidators.js";
 
 const router = Router();
@@ -403,6 +406,84 @@ router.get(
   requireRole("staff"),
   validate(bookingIdParamSchema, "params"),
   bookingController.getStaffBookingHistory
+);
+
+/**
+ * @openapi
+ * /api/v1/staff/bookings:
+ *   post:
+ *     tags:
+ *       - Staff Bookings
+ *     summary: Create a booking for a customer as staff
+ *     description: Staff members can create bookings for existing customers or new guest customers at standard tour prices.
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [serviceId]
+ *             properties:
+ *               customerId: { type: string, format: uuid }
+ *               customer:
+ *                 type: object
+ *                 required: [name, email]
+ *                 properties:
+ *                   name: { type: string }
+ *                   email: { type: string, format: email }
+ *                   phone: { type: string, nullable: true }
+ *               serviceId: { type: string, format: uuid }
+ *               travelDate: { type: string }
+ *               adults: { type: integer, minimum: 1 }
+ *               children: { type: integer, minimum: 0 }
+ *               infants: { type: integer, minimum: 0 }
+ *               notes: { type: string }
+ *     responses:
+ *       201:
+ *         description: Booking created successfully
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+router.post(
+  "/staff/bookings",
+  authMiddleware,
+  requirePermission("bookings.create"),
+  validate(createStaffBookingSchema),
+  bookingController.createStaffBooking
+);
+
+router.get(
+  "/staff/customers",
+  authMiddleware,
+  requirePermission("bookings.create"),
+  validate(listStaffCustomersQuerySchema, "query"),
+  bookingController.listStaffCustomers
+);
+
+/**
+ * @openapi
+ * /api/v1/staff/created-bookings:
+ *   get:
+ *     tags:
+ *       - Staff Bookings
+ *     summary: List bookings created by the authenticated staff user
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ */
+router.get(
+  "/staff/created-bookings",
+  authMiddleware,
+  requireRole("staff", "admin"),
+  validate(listStaffCreatedBookingsQuerySchema, "query"),
+  bookingController.listStaffCreatedBookings
 );
 
 export default router;

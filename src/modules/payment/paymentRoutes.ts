@@ -220,6 +220,49 @@ router.post(
 
 /**
  * @openapi
+ * /api/v1/staff/bookings/{bookingId}/payment-link:
+ *   post:
+ *     tags: [Staff Payments]
+ *     summary: Generate a secure customer payment link for a staff-created or staff-assigned booking
+ *     security: [{ bearerAuth: [] }, { cookieAuth: [] }]
+ *     parameters:
+ *       - name: bookingId
+ *         in: path
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               expiresInDays: { type: integer, minimum: 1, maximum: 30, default: 7 }
+ *     responses:
+ *       200:
+ *         description: Customer payment link generated successfully
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       409:
+ *         description: Booking not eligible for payment link (paid, cancelled, or awaiting approval)
+ */
+router.post(
+  "/staff/bookings/:bookingId/payment-link",
+  authMiddleware,
+  requirePermission("bookings.create"),
+  validate(paymentBookingIdParamSchema, "params"),
+  validate(generatePaymentLinkSchema),
+  paymentController.generateStaffPaymentLink
+);
+
+/**
+ * @openapi
  * /api/v1/public/payment-links/{token}:
  *   get:
  *     tags: [Public Payments]

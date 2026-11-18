@@ -12,37 +12,39 @@ model PricingRule {
 }
 
 model Booking {
-  id                String               @id @default(uuid())
-  customerId        String
-  agentId           String?
-  createdById       String?
-  source            BookingSource        @default(DIRECT)
-  serviceId         String
-  availabilityId    String?
-  currency          String
-  basePrice         Decimal              @db.Decimal(10, 2)
-  proposedPrice     Decimal?             @db.Decimal(10, 2)
-  finalPrice        Decimal              @db.Decimal(10, 2)
-  status            BookingStatus        @default(PENDING)
-  requiresApproval  Boolean              @default(false)
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
-  paymentStatus     PaymentStatus        @default(UNPAID)
-  fulfillmentStatus FulfillmentStatus    @default(NOT_STARTED)
-  notes             String?
-  internalNotes     String?
-  assignedStaffId   String?
-  agent             User?                @relation("AgentBookings", fields: [agentId], references: [id])
-  createdBy         User?                @relation("CreatedBookings", fields: [createdById], references: [id])
-  assignedStaff     User?                @relation("StaffAssignments", fields: [assignedStaffId], references: [id])
-  availability      ServiceAvailability? @relation(fields: [availabilityId], references: [id])
-  customer          User                 @relation("CustomerBookings", fields: [customerId], references: [id])
-  service           Service              @relation(fields: [serviceId], references: [id])
-  history           BookingHistory[]
-  commission        Commission?
-  payments          Payment[]
-  paymentLinks      PaymentLink[]
-  priceApproval     PriceApproval?
+  id                  String                    @id @default(uuid())
+  customerId          String
+  agentId             String?
+  createdById         String?
+  source              BookingSource             @default(DIRECT)
+  serviceId           String
+  availabilityId      String?
+  currency            String
+  basePrice           Decimal                   @db.Decimal(10, 2)
+  proposedPrice       Decimal?                  @db.Decimal(10, 2)
+  finalPrice          Decimal                   @db.Decimal(10, 2)
+  status              BookingStatus             @default(PENDING)
+  requiresApproval    Boolean                   @default(false)
+  createdAt           DateTime                  @default(now())
+  updatedAt           DateTime                  @updatedAt
+  paymentStatus       PaymentStatus             @default(UNPAID)
+  fulfillmentStatus   FulfillmentStatus         @default(NOT_STARTED)
+  notes               String?
+  internalNotes       String?
+  assignedStaffId     String?
+  agent               User?                     @relation("AgentBookings", fields: [agentId], references: [id])
+  createdBy           User?                     @relation("CreatedBookings", fields: [createdById], references: [id])
+  assignedStaff       User?                     @relation("StaffAssignments", fields: [assignedStaffId], references: [id])
+  availability        ServiceAvailability?      @relation(fields: [availabilityId], references: [id])
+  customer            User                      @relation("CustomerBookings", fields: [customerId], references: [id])
+  service             Service                   @relation(fields: [serviceId], references: [id])
+  history             BookingHistory[]
+  commission          Commission?
+  payments            Payment[]
+  paymentLinks        PaymentLink[]
+  priceApproval       PriceApproval?
+  discountRequests    StaffDiscountRequest[]
+  discountAuditEvents StaffDiscountAuditEvent[]
   stripeWebhookEvents StripeWebhookEvent[]
 
   @@index([agentId])
@@ -76,6 +78,91 @@ model BookingHistory {
   booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
   @@index([bookingId])
+}
+
+model StaffDiscountRequest {
+  id                     String                 @id @default(uuid())
+  bookingId              String
+  discountType           DiscountType
+  discountValue          Decimal                @db.Decimal(10, 2)
+  originalPrice          Decimal                @db.Decimal(10, 2)
+  discountAmount         Decimal                @db.Decimal(10, 2)
+  proposedFinalPrice     Decimal                @db.Decimal(10, 2)
+  approvedDiscountAmount Decimal?               @db.Decimal(10, 2)
+  approvedFinalPrice     Decimal?               @db.Decimal(10, 2)
+  status                 DiscountApprovalStatus @default(PENDING)
+  reason                 String                 @db.Text
+  rejectionReason        String?                @db.Text
+  adminNotes             String?                @db.Text
+  requestedById          String
+  reviewedById           String?
+  reviewedAt             DateTime?
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+
+  booking     Booking                   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  requestedBy User                      @relation("StaffDiscountRequests", fields: [requestedById], references: [id])
+  reviewedBy  User?                     @relation("AdminDiscountReviews", fields: [reviewedById], references: [id])
+  auditEvents StaffDiscountAuditEvent[]
+
+  @@index([bookingId])
+  @@index([requestedById])
+  @@index([reviewedById])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model StaffDiscountAuditEvent {
+  id                      String                  @id @default(uuid())
+  discountRequestId       String?
+  bookingId               String
+  actorId                 String
+  actorRole               String
+  action                  DiscountAuditAction
+  previousStatus          DiscountApprovalStatus?
+  newStatus               DiscountApprovalStatus?
+  originalPrice           Decimal?                @db.Decimal(10, 2)
+  discountType            DiscountType?
+  discountValue           Decimal?                @db.Decimal(10, 2)
+  requestedDiscountAmount Decimal?                @db.Decimal(10, 2)
+  proposedFinalPrice      Decimal?                @db.Decimal(10, 2)
+  approvedDiscountAmount  Decimal?                @db.Decimal(10, 2)
+  finalPrice              Decimal?                @db.Decimal(10, 2)
+  reason                  String?                 @db.Text
+  rejectionReason         String?                 @db.Text
+  adminNotes              String?                 @db.Text
+  metadata                Json?
+  createdAt               DateTime                @default(now())
+
+  booking         Booking               @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  discountRequest StaffDiscountRequest? @relation(fields: [discountRequestId], references: [id], onDelete: SetNull)
+  actor           User                  @relation("DiscountAuditActor", fields: [actorId], references: [id])
+
+  @@index([discountRequestId])
+  @@index([bookingId])
+  @@index([actorId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+enum DiscountApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum DiscountAuditAction {
+  DISCOUNT_REQUESTED
+  DISCOUNT_APPROVED
+  DISCOUNT_REJECTED
+  DISCOUNT_REQUEST_CANCELLED
+  DISCOUNT_APPROVAL_REVERSED
 }
 
 enum BookingStatus {

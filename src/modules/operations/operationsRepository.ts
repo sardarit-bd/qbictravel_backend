@@ -42,6 +42,36 @@ export const staffOperationalSelect = {
       role: true,
     },
   },
+  discountRequests: {
+    orderBy: { createdAt: "desc" },
+    take: 1,
+    select: {
+      id: true,
+      discountType: true,
+      discountValue: true,
+      originalPrice: true,
+      discountAmount: true,
+      proposedFinalPrice: true,
+      approvedDiscountAmount: true,
+      approvedFinalPrice: true,
+      status: true,
+      reason: true,
+      rejectionReason: true,
+      adminNotes: true,
+      requestedById: true,
+      reviewedById: true,
+      reviewedAt: true,
+      createdAt: true,
+      requestedBy: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
+      },
+    },
+  },
 } as const;
 
 export const adminOperationalSelect = {
@@ -66,6 +96,7 @@ export const listOperationalBookings = async (
     ...(filters.assignedStaffId ? { assignedStaffId: filters.assignedStaffId } : {}),
     ...(filters.fulfillmentStatus ? { fulfillmentStatus: filters.fulfillmentStatus } : {}),
     ...(filters.agentId ? { agentId: filters.agentId } : {}),
+    ...(filters.createdById ? { createdById: filters.createdById } : {}),
     ...(filters.source ? { source: filters.source } : {}),
   };
 

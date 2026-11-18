@@ -18,5 +18,6 @@ export interface OperationalFilters {
   assignedStaffId?: string;
   fulfillmentStatus?: FulfillmentStatusValue;
   agentId?: string;
+  createdById?: string;
   source?: "AGENT" | "ADMIN" | "CUSTOMER" | "DIRECT";
 }

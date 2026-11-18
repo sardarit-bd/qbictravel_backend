@@ -63,6 +63,16 @@ export type PriceApproval = Prisma.PriceApprovalModel
  */
 export type BookingHistory = Prisma.BookingHistoryModel
 /**
+ * Model StaffDiscountRequest
+ * 
+ */
+export type StaffDiscountRequest = Prisma.StaffDiscountRequestModel
+/**
+ * Model StaffDiscountAuditEvent
+ * 
+ */
+export type StaffDiscountAuditEvent = Prisma.StaffDiscountAuditEventModel
+/**
  * Model CommissionRule
  * 
  */

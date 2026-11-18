@@ -171,6 +171,19 @@ export const generateAgentPaymentLink = async (req: Request, res: Response, next
   }
 };
 
+export const generateStaffPaymentLink = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await paymentService.generateStaffPaymentLink(
+      { id: req.user!.id, role: req.user!.role },
+      req.params.bookingId as string,
+      req.body?.expiresInDays,
+    );
+    sendResponse(res, 200, true, "Customer payment link generated successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getPublicPaymentLinkDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const result = await paymentService.getPublicPaymentLinkDetails(req.params.token as string);

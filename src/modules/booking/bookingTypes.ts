@@ -13,6 +13,27 @@ export interface CreateBookingInput {
   notes?: string;
 }
 
+export interface CreateStaffBookingInput {
+  customerId?: string;
+  customer?: {
+    name: string;
+    email: string;
+    phone?: string | null;
+  };
+  serviceId: string;
+  availabilityId?: string;
+  travelDate?: string;
+  adults?: number;
+  children?: number;
+  infants?: number;
+  notes?: string;
+  discount?: {
+    discountType: "PERCENTAGE" | "FIXED_AMOUNT";
+    discountValue: number;
+    reason: string;
+  };
+}
+
 export interface UpdateBookingPriceInput {
   proposedPrice: number | string;
 }
@@ -26,6 +47,8 @@ export interface ReviewBookingPriceInput {
 export interface ReviewPendingBookingInput {
   action: "CONFIRM" | "REJECT";
   notes?: string;
+  approvedDiscountValue?: number;
+  rejectionReason?: string;
 }
 
 export interface ListPendingReservationsQuery {

@@ -60,6 +60,8 @@ export const ModelName = {
   Booking: 'Booking',
   PriceApproval: 'PriceApproval',
   BookingHistory: 'BookingHistory',
+  StaffDiscountRequest: 'StaffDiscountRequest',
+  StaffDiscountAuditEvent: 'StaffDiscountAuditEvent',
   CommissionRule: 'CommissionRule',
   CommissionRuleAuditLog: 'CommissionRuleAuditLog',
   Commission: 'Commission',
@@ -229,6 +231,56 @@ export const BookingHistoryScalarFieldEnum = {
 } as const
 
 export type BookingHistoryScalarFieldEnum = (typeof BookingHistoryScalarFieldEnum)[keyof typeof BookingHistoryScalarFieldEnum]
+
+
+export const StaffDiscountRequestScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  discountType: 'discountType',
+  discountValue: 'discountValue',
+  originalPrice: 'originalPrice',
+  discountAmount: 'discountAmount',
+  proposedFinalPrice: 'proposedFinalPrice',
+  approvedDiscountAmount: 'approvedDiscountAmount',
+  approvedFinalPrice: 'approvedFinalPrice',
+  status: 'status',
+  reason: 'reason',
+  rejectionReason: 'rejectionReason',
+  adminNotes: 'adminNotes',
+  requestedById: 'requestedById',
+  reviewedById: 'reviewedById',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffDiscountRequestScalarFieldEnum = (typeof StaffDiscountRequestScalarFieldEnum)[keyof typeof StaffDiscountRequestScalarFieldEnum]
+
+
+export const StaffDiscountAuditEventScalarFieldEnum = {
+  id: 'id',
+  discountRequestId: 'discountRequestId',
+  bookingId: 'bookingId',
+  actorId: 'actorId',
+  actorRole: 'actorRole',
+  action: 'action',
+  previousStatus: 'previousStatus',
+  newStatus: 'newStatus',
+  originalPrice: 'originalPrice',
+  discountType: 'discountType',
+  discountValue: 'discountValue',
+  requestedDiscountAmount: 'requestedDiscountAmount',
+  proposedFinalPrice: 'proposedFinalPrice',
+  approvedDiscountAmount: 'approvedDiscountAmount',
+  finalPrice: 'finalPrice',
+  reason: 'reason',
+  rejectionReason: 'rejectionReason',
+  adminNotes: 'adminNotes',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type StaffDiscountAuditEventScalarFieldEnum = (typeof StaffDiscountAuditEventScalarFieldEnum)[keyof typeof StaffDiscountAuditEventScalarFieldEnum]
 
 
 export const CommissionRuleScalarFieldEnum = {

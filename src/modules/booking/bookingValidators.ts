@@ -13,6 +13,93 @@ export const createBookingSchema = yup.object({
   notes: yup.string().trim().max(1000, "Notes must be at most 1000 characters").optional(),
 });
 
+export const createStaffBookingSchema = yup
+  .object({
+    customerId: yup.string().uuid("Invalid customer ID").optional(),
+    customer: yup
+      .object({
+        name: yup.string().trim().max(100, "Name must be 100 characters or less"),
+        email: yup.string().trim().email("Invalid email address"),
+        phone: yup
+          .string()
+          .trim()
+          .max(30, "Phone must be 30 characters or less")
+          .nullable()
+          .optional(),
+      })
+      .notRequired()
+      .default(undefined),
+    serviceId: yup
+      .string()
+      .uuid("Invalid service ID")
+      .required("Service ID is required"),
+    availabilityId: yup.string().uuid("Invalid availability ID").optional(),
+    travelDate: yup.string().trim().optional(),
+    adults: yup
+      .number()
+      .integer("Adults must be an integer")
+      .min(1, "At least 1 adult is required")
+      .max(50, "Maximum 50 adults per booking")
+      .optional(),
+    children: yup
+      .number()
+      .integer("Children must be an integer")
+      .min(0, "Children cannot be negative")
+      .max(50, "Maximum 50 children per booking")
+      .optional(),
+    infants: yup
+      .number()
+      .integer("Infants must be an integer")
+      .min(0, "Infants cannot be negative")
+      .max(50, "Maximum 50 infants per booking")
+      .optional(),
+    notes: yup
+      .string()
+      .trim()
+      .max(1000, "Notes must be at most 1000 characters")
+      .optional(),
+    discount: yup
+      .object({
+        discountType: yup
+          .string()
+          .oneOf(["PERCENTAGE", "FIXED_AMOUNT"], "discountType must be either PERCENTAGE or FIXED_AMOUNT")
+          .required("discountType is required when discount is provided"),
+        discountValue: yup
+          .number()
+          .typeError("discountValue must be a number")
+          .positive("discountValue must be greater than zero")
+          .required("discountValue is required when discount is provided")
+          .test(
+            "percentage-cap",
+            "Percentage discount must not exceed 100%",
+            function (value) {
+              const { discountType } = this.parent;
+              if (discountType === "PERCENTAGE" && value !== undefined && value > 100) {
+                return false;
+              }
+              return true;
+            }
+          ),
+        reason: yup
+          .string()
+          .trim()
+          .min(1, "Reason is required and cannot be empty when discount is provided")
+          .max(1000, "Reason cannot exceed 1000 characters")
+          .required("Reason is required when discount is provided"),
+      })
+      .notRequired()
+      .default(undefined),
+  })
+  .test(
+    "customer-selection-or-inline",
+    "Either customerId or customer details must be provided",
+    (value) => {
+      const hasId = Boolean(value?.customerId);
+      const hasCustomer = Boolean(value?.customer && value?.customer?.email && value?.customer?.name);
+      return (hasId && !hasCustomer) || (!hasId && hasCustomer);
+    }
+  );
+
 export const updateBookingPriceSchema = yup.object({
   proposedPrice: yup.number().min(0, "Proposed price must be at least 0").required("Proposed price is required"),
 });
@@ -30,6 +117,16 @@ export const reviewBookingPriceSchema = yup.object({
 export const reviewPendingBookingSchema = yup.object({
   action: yup.string().oneOf(["CONFIRM", "REJECT"]).required("Action is required"),
   notes: yup.string().trim().max(1000, "Notes must be at most 1000 characters").optional(),
+  approvedDiscountValue: yup
+    .number()
+    .typeError("approvedDiscountValue must be a number")
+    .positive("approvedDiscountValue must be greater than zero")
+    .optional(),
+  rejectionReason: yup
+    .string()
+    .trim()
+    .max(1000, "Rejection reason cannot exceed 1000 characters")
+    .optional(),
 });
 
 export const listPendingReservationsQuerySchema = yup.object({
@@ -37,6 +134,21 @@ export const listPendingReservationsQuerySchema = yup.object({
   limit: yup.number().integer().min(1).max(100).optional(),
   search: yup.string().trim().optional(),
   paymentStatus: yup.string().oneOf(["UNPAID", "PARTIALLY_PAID", "PAID"]).optional(),
+});
+
+export const listStaffCustomersQuerySchema = yup.object({
+  page: yup.number().integer().min(1).optional(),
+  limit: yup.number().integer().min(1).max(100).optional(),
+  search: yup.string().trim().optional(),
+});
+
+export const listStaffCreatedBookingsQuerySchema = yup.object({
+  page: yup.number().integer().min(1).optional(),
+  limit: yup.number().integer().min(1).max(100).optional(),
+  status: yup.string().trim().optional(),
+  paymentStatus: yup.string().oneOf(["ALL", "UNPAID", "PARTIALLY_PAID", "PAID"]).optional(),
+  fulfillmentStatus: yup.string().oneOf(["ALL", "NOT_STARTED", "IN_PROGRESS", "FULFILLED"]).optional(),
+  search: yup.string().trim().optional(),
 });
 
 export const bookingIdParamSchema = yup.object({

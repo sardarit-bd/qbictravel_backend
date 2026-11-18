@@ -24,6 +24,7 @@ import permissionRoutes, { myPermissionsRouter } from "./modules/permission/perm
 import agentRoutes from "./modules/agent/agentRoutes.js";
 import settingRoutes from "./modules/setting/settingRoutes.js";
 import customerRoutes from "./modules/customer/customerRoutes.js";
+import discountRoutes from "./modules/discount/discountRoutes.js";
 import { handleStripeWebhook, handlePayPalWebhook } from "./modules/payment/paymentController.js";
 import { csrfProtectionMiddleware } from "./shared/middleware/csrfMiddleware.js";
 const swaggerCustomCss = `
@@ -167,6 +168,7 @@ app.use("/api/v1", notificationRoutes);
 app.use("/api/v1", commissionRoutes);
 app.use("/api/v1", reportRoutes);
 app.use("/api/v1", customerRoutes);
+app.use("/api/v1", discountRoutes);
 app.use(errorHandler);
 
 export default app;
