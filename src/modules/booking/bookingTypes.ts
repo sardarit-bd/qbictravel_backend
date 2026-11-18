@@ -27,6 +27,11 @@ export interface CreateStaffBookingInput {
   children?: number;
   infants?: number;
   notes?: string;
+  discount?: {
+    discountType: "PERCENTAGE" | "FIXED_AMOUNT";
+    discountValue: number;
+    reason: string;
+  };
 }
 
 export interface UpdateBookingPriceInput {
@@ -42,6 +47,8 @@ export interface ReviewBookingPriceInput {
 export interface ReviewPendingBookingInput {
   action: "CONFIRM" | "REJECT";
   notes?: string;
+  approvedDiscountValue?: number;
+  rejectionReason?: string;
 }
 
 export interface ListPendingReservationsQuery {

@@ -127,3 +127,12 @@ export const listStaffCustomers = async (req: Request, res: Response, next: Next
   }
 };
 
+export const listStaffCreatedBookings = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await bookingService.listStaffCreatedBookings(req.user!.id, req.query);
+    sendResponse(res, 200, true, "Staff created bookings retrieved successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+

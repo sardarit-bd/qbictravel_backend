@@ -13,6 +13,7 @@ import {
   listPendingReservationsQuerySchema,
   bookingIdParamSchema,
   listStaffCustomersQuerySchema,
+  listStaffCreatedBookingsQuerySchema,
 } from "./bookingValidators.js";
 
 const router = Router();
@@ -464,6 +465,25 @@ router.get(
   requirePermission("bookings.create"),
   validate(listStaffCustomersQuerySchema, "query"),
   bookingController.listStaffCustomers
+);
+
+/**
+ * @openapi
+ * /api/v1/staff/created-bookings:
+ *   get:
+ *     tags:
+ *       - Staff Bookings
+ *     summary: List bookings created by the authenticated staff user
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ */
+router.get(
+  "/staff/created-bookings",
+  authMiddleware,
+  requireRole("staff", "admin"),
+  validate(listStaffCreatedBookingsQuerySchema, "query"),
+  bookingController.listStaffCreatedBookings
 );
 
 export default router;

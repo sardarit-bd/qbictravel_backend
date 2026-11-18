@@ -353,7 +353,44 @@ export const createStaffBooking = async (
   }
 
   const finalPrice = basePrice;
-  const status = "PENDING"; // Follows standard booking lifecycle awaiting payment
+  const hasDiscount = Boolean(input.discount && input.discount.discountValue > 0);
+  const requiresApproval = hasDiscount;
+  const status = hasDiscount ? "AWAITING_APPROVAL" : "PENDING";
+
+  let discountAmount = 0;
+  let proposedFinalPrice = basePrice;
+
+  if (hasDiscount && input.discount) {
+    const dVal = Number(input.discount.discountValue);
+    if (input.discount.discountType === "PERCENTAGE") {
+      if (dVal <= 0 || dVal > 100) {
+        throw new AppError("Percentage discount must be between 1 and 100", 400);
+      }
+      discountAmount = Math.round(basePrice * (dVal / 100) * 100) / 100;
+    } else if (input.discount.discountType === "FIXED_AMOUNT") {
+      if (dVal <= 0) {
+        throw new AppError("Fixed discount must be greater than zero", 400);
+      }
+      if (dVal >= basePrice) {
+        throw new AppError(
+          `Fixed discount (${dVal}) must be strictly less than the standard original price (${basePrice})`,
+          400
+        );
+      }
+      discountAmount = Math.round(dVal * 100) / 100;
+    } else {
+      throw new AppError("Invalid discount type", 400);
+    }
+
+    proposedFinalPrice = Math.round((basePrice - discountAmount) * 100) / 100;
+    if (proposedFinalPrice <= 0) {
+      throw new AppError("Proposed final price after discount must be greater than zero", 400);
+    }
+
+    if (!input.discount.reason || !input.discount.reason.trim()) {
+      throw new AppError("A reason is mandatory when requesting a discount", 400);
+    }
+  }
 
   // 3. Resolve Availability, Capacity Validation, Customer & Booking Creation atomically
   let travelDateObj: Date | undefined;
@@ -471,7 +508,7 @@ export const createStaffBooking = async (
         basePrice,
         finalPrice,
         status,
-        requiresApproval: false,
+        requiresApproval,
         ...(formattedNotes !== undefined ? { notes: formattedNotes } : {}),
         historyAction: "BOOKING_CREATED_BY_STAFF",
         actorRole: "staff",
@@ -479,10 +516,57 @@ export const createStaffBooking = async (
       tx
     );
 
+    // 5d. Atomically persist StaffDiscountRequest and StaffDiscountAuditEvent if discount requested
+    if (hasDiscount && input.discount) {
+      const discountRecord = await tx.staffDiscountRequest.create({
+        data: {
+          bookingId: created.id,
+          discountType: input.discount.discountType,
+          discountValue: input.discount.discountValue,
+          originalPrice: basePrice,
+          discountAmount,
+          proposedFinalPrice,
+          status: "PENDING",
+          reason: input.discount.reason.trim(),
+          requestedById: staffId,
+        },
+      });
+
+      const staffUser = await tx.user.findUnique({
+        where: { id: staffId },
+        select: { id: true, role: true },
+      });
+
+      await tx.staffDiscountAuditEvent.create({
+        data: {
+          discountRequestId: discountRecord.id,
+          bookingId: created.id,
+          actorId: staffId,
+          actorRole: staffUser?.role || "staff",
+          action: "DISCOUNT_REQUESTED",
+          previousStatus: null,
+          newStatus: "PENDING",
+          originalPrice: basePrice,
+          discountType: input.discount.discountType,
+          discountValue: input.discount.discountValue,
+          requestedDiscountAmount: discountAmount,
+          proposedFinalPrice,
+          reason: input.discount.reason.trim(),
+          metadata: {
+            currency,
+            source: "STAFF_DIRECT_CREATION",
+          },
+        },
+      });
+    }
+
     return created;
   });
 
-  await notificationService.notifyBookingCreated(booking.id);
+  // Only notify customer on creation if the booking does NOT require approval
+  if (!requiresApproval) {
+    await notificationService.notifyBookingCreated(booking.id);
+  }
   return mapBookingToResponse(booking);
 };
 
@@ -648,6 +732,28 @@ export const listAdminPendingReservations = async (
   return { items, page, limit, total };
 };
 
+export const listStaffCreatedBookings = async (
+  staffId: string,
+  query: Record<string, unknown>
+) => {
+  const { page, limit, skip } = parsePagination(query);
+  const result = await bookingRepository.listStaffCreatedBookings(staffId, {
+    skip,
+    take: limit,
+    status: typeof query.status === "string" ? query.status : undefined,
+    paymentStatus: typeof query.paymentStatus === "string" ? query.paymentStatus : undefined,
+    fulfillmentStatus: typeof query.fulfillmentStatus === "string" ? query.fulfillmentStatus : undefined,
+    search: typeof query.search === "string" ? query.search : undefined,
+  });
+
+  return {
+    items: result.items,
+    page,
+    limit,
+    total: result.total,
+  };
+};
+
 export const getAdminPendingReservation = async (bookingId: string) => {
   const booking = await bookingRepository.findPendingReservationById(bookingId);
   if (!booking) {
@@ -667,6 +773,7 @@ export const reviewPendingReservation = async (
         bookingId,
         adminId,
         notes: input.notes,
+        approvedDiscountValue: input.approvedDiscountValue,
       });
       if (!updated) {
         throw new AppError("Booking not found", 404);
@@ -684,6 +791,7 @@ export const reviewPendingReservation = async (
       bookingId,
       adminId,
       notes: input.notes,
+      rejectionReason: input.rejectionReason,
     });
     if (!updated) {
       throw new AppError("Booking not found", 404);

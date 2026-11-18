@@ -22,6 +22,12 @@ vi.mock("../../../../lib/prisma.js", () => {
       create: vi.fn(),
       update: vi.fn(),
     },
+    staffDiscountRequest: {
+      create: vi.fn(),
+    },
+    staffDiscountAuditEvent: {
+      create: vi.fn(),
+    },
     $queryRaw: vi.fn(),
   };
 
@@ -32,6 +38,8 @@ vi.mock("../../../../lib/prisma.js", () => {
       },
       user: mockTx.user,
       serviceAvailability: mockTx.serviceAvailability,
+      staffDiscountRequest: mockTx.staffDiscountRequest,
+      staffDiscountAuditEvent: mockTx.staffDiscountAuditEvent,
       $transaction: vi.fn((callback) => callback(mockTx)),
       $queryRaw: mockTx.$queryRaw,
     },
@@ -370,5 +378,142 @@ describe("Staff Booking Creation Unit Tests", () => {
         staffId
       )
     ).rejects.toThrow("Database write failure");
+  });
+
+  describe("Unified Staff Booking with Optional Discount Request", () => {
+    it("creates booking in AWAITING_APPROVAL status with pending StaffDiscountRequest and audit event when discount is requested", async () => {
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(mockActiveCustomer as any);
+      vi.mocked(prisma.service.findUnique).mockResolvedValue(mockService as any);
+      vi.mocked(prisma.staffDiscountRequest.create).mockResolvedValue({
+        id: "discount-req-1",
+        bookingId: "booking-discount-1",
+        status: "PENDING",
+      } as any);
+      vi.mocked(prisma.staffDiscountAuditEvent.create).mockResolvedValue({
+        id: "audit-req-1",
+      } as any);
+
+      const notificationService = await import("../../../notification/notificationService.js");
+
+      (bookingRepository.createBooking as any).mockResolvedValue({
+        id: "booking-discount-1",
+        customerId,
+        agentId: null,
+        createdById: staffId,
+        source: "DIRECT",
+        serviceId,
+        currency: "USD",
+        basePrice: 90,
+        finalPrice: 90,
+        status: "AWAITING_APPROVAL",
+        requiresApproval: true,
+      });
+
+      const result = await bookingService.createStaffBooking(
+        {
+          customerId,
+          serviceId,
+          travelDate: "2026-12-01",
+          adults: 1,
+          discount: {
+            discountType: "PERCENTAGE",
+            discountValue: 10,
+            reason: "VIP Loyal Customer discount",
+          },
+        },
+        staffId
+      );
+
+      expect(result.id).toBe("booking-discount-1");
+      expect(result.status).toBe("AWAITING_APPROVAL");
+      expect(bookingRepository.createBooking).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: "AWAITING_APPROVAL",
+          requiresApproval: true,
+          basePrice: 90,
+          finalPrice: 90,
+        }),
+        expect.anything()
+      );
+
+      // Verify StaffDiscountRequest was created with PENDING
+      expect(prisma.staffDiscountRequest.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            bookingId: "booking-discount-1",
+            discountType: "PERCENTAGE",
+            discountValue: 10,
+            originalPrice: 90,
+            discountAmount: 9,
+            proposedFinalPrice: 81,
+            status: "PENDING",
+            reason: "VIP Loyal Customer discount",
+            requestedById: staffId,
+          }),
+        })
+      );
+
+      // Verify audit event DISCOUNT_REQUESTED was logged
+      expect(prisma.staffDiscountAuditEvent.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            discountRequestId: "discount-req-1",
+            bookingId: "booking-discount-1",
+            actorId: staffId,
+            action: "DISCOUNT_REQUESTED",
+            newStatus: "PENDING",
+            originalPrice: 90,
+            proposedFinalPrice: 81,
+          }),
+        })
+      );
+
+      // Verify customer booking confirmation email was NOT dispatched
+      expect(notificationService.notifyBookingCreated).not.toHaveBeenCalled();
+    });
+
+    it("rejects booking creation if percentage discount exceeds 100%", async () => {
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(mockActiveCustomer as any);
+      vi.mocked(prisma.service.findUnique).mockResolvedValue(mockService as any);
+
+      await expect(
+        bookingService.createStaffBooking(
+          {
+            customerId,
+            serviceId,
+            travelDate: "2026-12-01",
+            adults: 1,
+            discount: {
+              discountType: "PERCENTAGE",
+              discountValue: 105,
+              reason: "Invalid discount",
+            },
+          },
+          staffId
+        )
+      ).rejects.toThrow("Percentage discount must be between 1 and 100");
+    });
+
+    it("rejects booking creation if fixed discount is equal to or greater than base price", async () => {
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(mockActiveCustomer as any);
+      vi.mocked(prisma.service.findUnique).mockResolvedValue(mockService as any);
+
+      await expect(
+        bookingService.createStaffBooking(
+          {
+            customerId,
+            serviceId,
+            travelDate: "2026-12-01",
+            adults: 1,
+            discount: {
+              discountType: "FIXED_AMOUNT",
+              discountValue: 90,
+              reason: "Free tour attempt",
+            },
+          },
+          staffId
+        )
+      ).rejects.toThrow("strictly less than the standard original price");
+    });
   });
 });

@@ -786,6 +786,7 @@ export const createOrUpdatePaymentLink = async (params: {
   tokenHash: string;
   expiresAt: Date;
   createdById?: string;
+  actorRole?: string;
 }) => {
   return prisma.$transaction(async (tx) => {
     // Revoke any previous active payment links for this booking to maintain 1 active link at a time
@@ -814,7 +815,7 @@ export const createOrUpdatePaymentLink = async (params: {
         data: {
           bookingId: params.bookingId,
           actorId: params.createdById,
-          actorRole: "agent",
+          actorRole: params.actorRole || "staff",
           action: "PAYMENT_LINK_GENERATED",
           changes: {
             paymentLinkId: paymentLink.id,

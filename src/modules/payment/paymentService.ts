@@ -901,6 +901,7 @@ export const generateAgentPaymentLink = async (
     tokenHash,
     expiresAt,
     createdById: agentId,
+    actorRole: "agent",
   });
 
   const frontendBaseUrl = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/$/, "");
@@ -942,9 +943,10 @@ export const generateStaffPaymentLink = async (
   if (
     booking.requiresApproval ||
     (booking.status as any) === "AWAITING_APPROVAL" ||
+    booking.status === "PENDING" ||
     ((booking as any).discountRequests && (booking as any).discountRequests.length > 0)
   ) {
-    throw new AppError("Cannot create a payment link while custom price is awaiting admin approval", 409);
+    throw new AppError("Cannot create a payment link while booking is awaiting admin approval", 409);
   }
 
   if (booking.status === "CANCELLED" || booking.status === "FAILED") {
@@ -975,6 +977,7 @@ export const generateStaffPaymentLink = async (
     tokenHash,
     expiresAt,
     createdById: staffUser.id,
+    actorRole: staffUser.role || "staff",
   });
 
   const frontendBaseUrl = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/$/, "");

@@ -57,6 +57,7 @@ export const listAdminBookings = async (query: Record<string, unknown>) =>
     {
       assignedStaffId: parseUuidQuery(query.assignedStaffId, "assignedStaffId"),
       agentId: parseUuidQuery(query.agentId, "agentId"),
+      createdById: parseUuidQuery(query.createdById, "createdById"),
       source: query.source as any,
     },
     query,

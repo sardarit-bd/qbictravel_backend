@@ -284,6 +284,36 @@ const adminReservationSelect = {
       reviewedAt: true,
     },
   },
+  discountRequests: {
+    orderBy: { createdAt: "desc" },
+    take: 1,
+    select: {
+      id: true,
+      discountType: true,
+      discountValue: true,
+      originalPrice: true,
+      discountAmount: true,
+      proposedFinalPrice: true,
+      approvedDiscountAmount: true,
+      approvedFinalPrice: true,
+      status: true,
+      reason: true,
+      rejectionReason: true,
+      adminNotes: true,
+      requestedById: true,
+      reviewedById: true,
+      reviewedAt: true,
+      createdAt: true,
+      requestedBy: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
+      },
+    },
+  },
 } as const;
 
 export const listPendingReservations = async (params: {
@@ -332,33 +362,176 @@ export const findPendingReservationById = async (bookingId: string) => {
   });
 };
 
+export const listStaffCreatedBookings = async (
+  staffId: string,
+  params: {
+    skip: number;
+    take: number;
+    status?: string;
+    paymentStatus?: string;
+    fulfillmentStatus?: string;
+    search?: string;
+  }
+) => {
+  const where: any = {
+    createdById: staffId,
+  };
+
+  if (params.status && params.status !== "ALL") {
+    where.status = params.status;
+  }
+
+  if (params.paymentStatus && params.paymentStatus !== "ALL") {
+    where.paymentStatus = params.paymentStatus;
+  }
+
+  if (params.fulfillmentStatus && params.fulfillmentStatus !== "ALL") {
+    where.fulfillmentStatus = params.fulfillmentStatus;
+  }
+
+  if (params.search && params.search.trim()) {
+    const q = params.search.trim();
+    where.OR = [
+      { id: { contains: q, mode: "insensitive" } },
+      { customer: { name: { contains: q, mode: "insensitive" } } },
+      { customer: { email: { contains: q, mode: "insensitive" } } },
+      { service: { name: { contains: q, mode: "insensitive" } } },
+      { notes: { contains: q, mode: "insensitive" } },
+    ];
+  }
+
+  const [items, total] = await Promise.all([
+    prisma.booking.findMany({
+      where,
+      select: adminReservationSelect,
+      orderBy: { createdAt: "desc" },
+      skip: params.skip,
+      take: params.take,
+    }),
+    prisma.booking.count({ where }),
+  ]);
+
+  return { items, total };
+};
+
 export const confirmPendingBooking = async (params: {
   bookingId: string;
   adminId: string;
   notes?: string;
+  approvedDiscountValue?: number;
 }) => {
   return prisma.$transaction(async (tx) => {
     const booking = await tx.booking.findUnique({
       where: { id: params.bookingId },
-      include: { priceApproval: true },
+      include: {
+        priceApproval: true,
+        discountRequests: {
+          where: { status: "PENDING" },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
+      },
     });
 
     if (!booking) {
       return null;
     }
 
-    if (booking.status !== "PENDING") {
+    if (booking.status !== "PENDING" && booking.status !== "AWAITING_APPROVAL") {
       throw new Error(`Cannot confirm booking in ${booking.status} status`);
     }
 
-    if (booking.requiresApproval) {
+    // If agent price approval is pending, it must be approved via price negotiation endpoint
+    if (booking.priceApproval && booking.priceApproval.status === "PENDING") {
       throw new Error("Booking requires price approval before confirmation");
+    }
+
+    let finalPrice = Number(booking.finalPrice);
+    const pendingDiscount = booking.discountRequests?.[0];
+
+    if (pendingDiscount) {
+      const originalPrice = Number(booking.basePrice);
+      const requestedValue = Number(pendingDiscount.discountValue);
+      let approvedDiscountAmount = 0;
+      let approvedFinalPrice = originalPrice;
+
+      if (params.approvedDiscountValue !== undefined && params.approvedDiscountValue !== null) {
+        const customVal = Number(params.approvedDiscountValue);
+        if (customVal <= 0) {
+          throw new Error("Approved discount value must be greater than zero");
+        }
+        if (customVal > requestedValue) {
+          throw new Error("Approved discount cannot exceed the requested discount");
+        }
+
+        if (pendingDiscount.discountType === "PERCENTAGE") {
+          approvedDiscountAmount = Math.round(originalPrice * (customVal / 100) * 100) / 100;
+        } else {
+          approvedDiscountAmount = Math.round(customVal * 100) / 100;
+        }
+      } else {
+        // Full approval of requested discount
+        approvedDiscountAmount = Number(pendingDiscount.discountAmount);
+      }
+
+      approvedFinalPrice = Math.round((originalPrice - approvedDiscountAmount) * 100) / 100;
+      if (approvedFinalPrice <= 0) {
+        throw new Error("Approved final price must be greater than zero");
+      }
+
+      finalPrice = approvedFinalPrice;
+
+      // Update StaffDiscountRequest
+      await tx.staffDiscountRequest.update({
+        where: { id: pendingDiscount.id },
+        data: {
+          status: "APPROVED",
+          approvedDiscountAmount,
+          approvedFinalPrice,
+          adminNotes: params.notes ? params.notes.trim() : null,
+          reviewedById: params.adminId,
+          reviewedAt: new Date(),
+        },
+      });
+
+      // Append StaffDiscountAuditEvent
+      const adminUser = await tx.user.findUnique({
+        where: { id: params.adminId },
+        select: { id: true, role: true },
+      });
+
+      await tx.staffDiscountAuditEvent.create({
+        data: {
+          discountRequestId: pendingDiscount.id,
+          bookingId: booking.id,
+          actorId: params.adminId,
+          actorRole: adminUser?.role || "admin",
+          action: "DISCOUNT_APPROVED",
+          previousStatus: "PENDING",
+          newStatus: "APPROVED",
+          originalPrice,
+          discountType: pendingDiscount.discountType,
+          discountValue: Number(pendingDiscount.discountValue),
+          requestedDiscountAmount: Number(pendingDiscount.discountAmount),
+          proposedFinalPrice: Number(pendingDiscount.proposedFinalPrice),
+          approvedDiscountAmount,
+          finalPrice: approvedFinalPrice,
+          reason: pendingDiscount.reason,
+          adminNotes: params.notes ? params.notes.trim() : null,
+          metadata: {
+            currency: booking.currency,
+            approvalSource: "UNIFIED_ADMIN_BOOKING_APPROVAL",
+          },
+        },
+      });
     }
 
     const updated = await tx.booking.update({
       where: { id: params.bookingId },
       data: {
         status: "CONFIRMED",
+        finalPrice,
+        requiresApproval: false,
         ...(params.notes ? { internalNotes: params.notes } : {}),
       },
       select: adminReservationSelect,
@@ -371,9 +544,11 @@ export const confirmPendingBooking = async (params: {
         actorRole: "admin",
         action: "BOOKING_CONFIRMED",
         changes: {
-          previousStatus: "PENDING",
+          previousStatus: booking.status,
           newStatus: "CONFIRMED",
+          finalPrice,
           notes: params.notes ?? null,
+          discountApproved: Boolean(pendingDiscount),
         },
       },
     });
@@ -386,10 +561,18 @@ export const rejectPendingBooking = async (params: {
   bookingId: string;
   adminId: string;
   notes?: string;
+  rejectionReason?: string;
 }) => {
   return prisma.$transaction(async (tx) => {
     const booking = await tx.booking.findUnique({
       where: { id: params.bookingId },
+      include: {
+        discountRequests: {
+          where: { status: "PENDING" },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
+      },
     });
 
     if (!booking) {
@@ -400,10 +583,58 @@ export const rejectPendingBooking = async (params: {
       throw new Error(`Cannot reject booking in ${booking.status} status`);
     }
 
+    const rejectionReasonText = params.rejectionReason?.trim() || params.notes?.trim() || "Rejected by administrator";
+
+    const pendingDiscount = booking.discountRequests?.[0];
+    if (pendingDiscount) {
+      await tx.staffDiscountRequest.update({
+        where: { id: pendingDiscount.id },
+        data: {
+          status: "REJECTED",
+          rejectionReason: rejectionReasonText,
+          adminNotes: params.notes?.trim() || null,
+          reviewedById: params.adminId,
+          reviewedAt: new Date(),
+        },
+      });
+
+      const adminUser = await tx.user.findUnique({
+        where: { id: params.adminId },
+        select: { id: true, role: true },
+      });
+
+      await tx.staffDiscountAuditEvent.create({
+        data: {
+          discountRequestId: pendingDiscount.id,
+          bookingId: booking.id,
+          actorId: params.adminId,
+          actorRole: adminUser?.role || "admin",
+          action: "DISCOUNT_REJECTED",
+          previousStatus: "PENDING",
+          newStatus: "REJECTED",
+          originalPrice: Number(booking.basePrice),
+          discountType: pendingDiscount.discountType,
+          discountValue: Number(pendingDiscount.discountValue),
+          requestedDiscountAmount: Number(pendingDiscount.discountAmount),
+          proposedFinalPrice: Number(pendingDiscount.proposedFinalPrice),
+          approvedDiscountAmount: null,
+          finalPrice: Number(booking.basePrice),
+          reason: pendingDiscount.reason,
+          rejectionReason: rejectionReasonText,
+          adminNotes: params.notes?.trim() || null,
+          metadata: {
+            currency: booking.currency,
+            rejectionSource: "UNIFIED_ADMIN_BOOKING_APPROVAL",
+          },
+        },
+      });
+    }
+
     const updated = await tx.booking.update({
       where: { id: params.bookingId },
       data: {
         status: "CANCELLED",
+        requiresApproval: false,
         ...(params.notes ? { internalNotes: params.notes } : {}),
       },
       select: adminReservationSelect,
@@ -426,6 +657,8 @@ export const rejectPendingBooking = async (params: {
           previousStatus: booking.status,
           newStatus: "CANCELLED",
           notes: params.notes ?? null,
+          rejectionReason: rejectionReasonText,
+          discountRejected: Boolean(pendingDiscount),
         },
       },
     });
@@ -444,7 +677,14 @@ export const findBookingHistory = async (params: {
   const booking = await prisma.booking.findFirst({
     where: {
       id: params.bookingId,
-      ...(params.assignedStaffId ? { assignedStaffId: params.assignedStaffId } : {}),
+      ...(params.assignedStaffId
+        ? {
+            OR: [
+              { assignedStaffId: params.assignedStaffId },
+              { createdById: params.assignedStaffId },
+            ],
+          }
+        : {}),
       ...(params.agentId ? { agentId: params.agentId } : {}),
     },
     select: { id: true },
