@@ -61,7 +61,7 @@ const router = Router();
 router.post(
   "/bookings",
   authMiddleware,
-  requireRole("customer"),
+  requireRole("customer", "affiliate"),
   validate(createBookingSchema),
   bookingController.createBooking
 );

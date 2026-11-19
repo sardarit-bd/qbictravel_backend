@@ -7,8 +7,8 @@ import { bookingIdParamSchema } from "./customerValidators.js";
 
 const router = Router();
 
-// Protect all customer routes with auth and the customer role.
-router.use("/customer", authMiddleware, requireRole("customer"));
+// Protect all customer routes with auth and customer/affiliate role (blocks agent, staff, admin).
+router.use("/customer", authMiddleware, requireRole("customer", "affiliate"));
 
 /**
  * @openapi
