@@ -25,6 +25,11 @@ import agentRoutes from "./modules/agent/agentRoutes.js";
 import settingRoutes from "./modules/setting/settingRoutes.js";
 import customerRoutes from "./modules/customer/customerRoutes.js";
 import discountRoutes from "./modules/discount/discountRoutes.js";
+import {
+  publicAffiliateRouter,
+  affiliatePortalRouter,
+  adminAffiliateRouter,
+} from "./modules/affiliate/affiliateRoutes.js";
 import { handleStripeWebhook, handlePayPalWebhook } from "./modules/payment/paymentController.js";
 import { csrfProtectionMiddleware } from "./shared/middleware/csrfMiddleware.js";
 const swaggerCustomCss = `
@@ -169,6 +174,9 @@ app.use("/api/v1", commissionRoutes);
 app.use("/api/v1", reportRoutes);
 app.use("/api/v1", customerRoutes);
 app.use("/api/v1", discountRoutes);
+app.use("/api/v1/affiliates", publicAffiliateRouter);
+app.use("/api/v1/affiliate", affiliatePortalRouter);
+app.use("/api/v1/admin/affiliates", adminAffiliateRouter);
 app.use(errorHandler);
 
 export default app;

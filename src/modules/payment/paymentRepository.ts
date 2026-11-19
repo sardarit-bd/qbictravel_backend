@@ -2,6 +2,7 @@ import { prisma } from "../../lib/prisma.js";
 import AppError from "../../shared/utils/AppError.js";
 import type { PaymentFilters, PaymentMethodValue, PaymentRecordStatusValue } from "./paymentTypes.js";
 import { createCommissionForBooking } from "../commission/commissionRepository.js";
+import { recordAffiliateCommissionForVerifiedPayment } from "../affiliate/affiliateCommissionService.js";
 import { enqueueOutboxMessage } from "../outbox/outboxService.js";
 import type { OutboxTopic } from "../../../generated/prisma/enums.js";
 
@@ -719,6 +720,15 @@ export const verifyStripePaymentAtomically = async (params: {
       await createCommissionForBooking(tx, params.bookingId);
     }
 
+    if (tx.affiliateCommission && tx.affiliateBookingAttribution) {
+      await recordAffiliateCommissionForVerifiedPayment(tx, {
+        paymentId: payment.id,
+        bookingId: params.bookingId,
+        paidAmount: payment.amount.toString(),
+        currency: payment.currency,
+      });
+    }
+
     await enqueueOutboxMessage(tx, {
       topic: "SEND_BOOKING_VOUCHER_EMAIL",
       payload: { bookingId: params.bookingId, decision: "CONFIRMED" },
@@ -1031,6 +1041,15 @@ export const recordVerifiedPayPalPayment = async (params: {
           },
         },
       });
+
+      if (tx.affiliateCommission && tx.affiliateBookingAttribution) {
+        await recordAffiliateCommissionForVerifiedPayment(tx, {
+          paymentId: payment.id,
+          bookingId: params.bookingId,
+          paidAmount: params.amount,
+          currency: params.currency,
+        });
+      }
 
       if (newPaymentStatus === "PAID") {
         await tx.paymentLink.updateMany({

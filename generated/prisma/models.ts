@@ -8,6 +8,14 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/Affiliate.js'
+export type * from './models/AffiliateLink.js'
+export type * from './models/AffiliateClick.js'
+export type * from './models/AffiliateBookingAttribution.js'
+export type * from './models/AffiliateCommission.js'
+export type * from './models/AffiliatePayout.js'
+export type * from './models/AffiliateSettings.js'
+export type * from './models/AffiliateAuditEvent.js'
 export type * from './models/AgentProfile.js'
 export type * from './models/PasswordResetToken.js'
 export type * from './models/RevokedToken.js'

@@ -1,4 +1,4 @@
-export type UserRole = "customer" | "agent" | "staff" | "admin";
+export type UserRole = "customer" | "agent" | "staff" | "admin" | "affiliate";
 export type UserStatus = "active" | "deactivated";
 
 export interface AuthenticatedUser {

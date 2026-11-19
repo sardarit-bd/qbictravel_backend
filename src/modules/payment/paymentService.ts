@@ -16,6 +16,8 @@ import * as notificationService from "../notification/notificationService.js";
 import { toStripeAmount, fromStripeAmount } from "../../shared/utils/currencyUtils.js";
 import { StripeHttpClient, verifyWebhookSignature, type IStripeClient, type StripeEventPayload } from "./stripeClient.js";
 import { defaultPayPalClient, type PayPalOrderResponse } from "./paypalClient.js";
+import { prisma } from "../../lib/prisma.js";
+import { recordAffiliateCommissionReversal } from "../affiliate/affiliateCommissionService.js";
 import { generateSecureToken, hashToken } from "./tokenUtils.js";
 import logger from "../../shared/logger/logger.js";
 import env from "../../config/env.js";
@@ -418,6 +420,47 @@ export const handleStripeWebhook = async (
           });
         }
         await paymentRepository.completeWebhookEvent(eventId, "PROCESSED", targetPayment?.bookingId, targetPayment?.id);
+        return { received: true, eventId, type: eventType, status: "PROCESSED", paymentId };
+      }
+
+      // Charge refunded (full or partial Stripe refund)
+      case "charge.refunded": {
+        const paymentIntentId = typeof object.payment_intent === "string" ? object.payment_intent : null;
+        const currency = (object.currency || "thb").toUpperCase();
+        const targetPayment = paymentIntentId
+          ? await paymentRepository.findPaymentByStripePaymentIntentId(paymentIntentId)
+          : null;
+
+        if (targetPayment) {
+          paymentId = targetPayment.id;
+          const refundsList: Array<{ id?: string; amount?: number; reason?: string }> =
+            Array.isArray(object.refunds?.data) && object.refunds.data.length > 0
+              ? object.refunds.data
+              : [{ id: eventId, amount: object.amount_refunded || 0 }];
+
+          await prisma.$transaction(async (tx) => {
+            for (const ref of refundsList) {
+              const refundAmount = fromStripeAmount(ref.amount || 0, currency);
+              if (refundAmount > 0) {
+                await recordAffiliateCommissionReversal(tx, {
+                  bookingId: targetPayment.bookingId,
+                  paymentId: targetPayment.id,
+                  refundId: ref.id || eventId,
+                  refundAmount,
+                  currency,
+                  reason: ref.reason || "Stripe charge.refunded webhook",
+                });
+              }
+            }
+          });
+        }
+
+        await paymentRepository.completeWebhookEvent(
+          eventId,
+          "PROCESSED",
+          targetPayment?.bookingId,
+          targetPayment?.id
+        );
         return { received: true, eventId, type: eventType, status: "PROCESSED", paymentId };
       }
 

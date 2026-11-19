@@ -312,18 +312,6 @@ export type AgentProfileNullableScalarRelationFilter = {
   isNot?: Prisma.AgentProfileWhereInput | null
 }
 
-export type StringFieldUpdateOperationsInput = {
-  set?: string
-}
-
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
-}
-
 export type AgentProfileCreateNestedOneWithoutUserInput = {
   create?: Prisma.XOR<Prisma.AgentProfileCreateWithoutUserInput, Prisma.AgentProfileUncheckedCreateWithoutUserInput>
   connectOrCreate?: Prisma.AgentProfileCreateOrConnectWithoutUserInput

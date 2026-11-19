@@ -38,6 +38,12 @@ model User {
   staffPermissions      StaffPermission[]         @relation("UserStaffPermissions")
   editedSettings        SystemSetting[]           @relation("SettingEditor")
   sessions              Session[]
+  affiliateProfile           Affiliate?                 @relation("UserAffiliateProfile")
+  approvedAffiliates         Affiliate[]                @relation("AffiliateApprover")
+  processedAffiliatePayouts  AffiliatePayout[]          @relation("AffiliatePayoutProcessor")
+  affiliateAuditEvents       AffiliateAuditEvent[]      @relation("AffiliateAuditActor")
+  updatedAffiliateSettings   AffiliateSettings[]        @relation("AffiliateSettingsEditor")
+  createdAffiliateCommissions AffiliateCommission[]     @relation("AffiliateCommissionCreator")
 
   @@index([deletedAt])
 }
@@ -47,6 +53,7 @@ enum UserRole {
   agent
   staff
   admin
+  affiliate
 }
 
 enum UserStatus {

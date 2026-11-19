@@ -44,8 +44,10 @@ model Booking {
   paymentLinks        PaymentLink[]
   priceApproval       PriceApproval?
   discountRequests    StaffDiscountRequest[]
-  discountAuditEvents StaffDiscountAuditEvent[]
-  stripeWebhookEvents StripeWebhookEvent[]
+  discountAuditEvents  StaffDiscountAuditEvent[]
+  stripeWebhookEvents  StripeWebhookEvent[]
+  affiliateAttribution AffiliateBookingAttribution?
+  affiliateCommissions AffiliateCommission[]
 
   @@index([agentId])
   @@index([createdById])

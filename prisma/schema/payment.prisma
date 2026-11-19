@@ -23,6 +23,7 @@ model Payment {
   reviewedBy            User?               @relation("PaymentReviews", fields: [reviewedById], references: [id])
   refunds               PaymentRefund[]
   stripeWebhookEvents   StripeWebhookEvent[]
+  affiliateCommissions  AffiliateCommission[]
 
   @@unique([method, reference])
   @@index([bookingId])

@@ -339,10 +339,6 @@ export type PasswordResetTokenOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type PasswordResetTokenCreateNestedManyWithoutUserInput = {
   create?: Prisma.XOR<Prisma.PasswordResetTokenCreateWithoutUserInput, Prisma.PasswordResetTokenUncheckedCreateWithoutUserInput> | Prisma.PasswordResetTokenCreateWithoutUserInput[] | Prisma.PasswordResetTokenUncheckedCreateWithoutUserInput[]
   connectOrCreate?: Prisma.PasswordResetTokenCreateOrConnectWithoutUserInput | Prisma.PasswordResetTokenCreateOrConnectWithoutUserInput[]
