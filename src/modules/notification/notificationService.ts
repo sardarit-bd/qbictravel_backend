@@ -45,9 +45,31 @@ const notifyBookingParties = async (
       return;
     }
 
-    const recipients = [booking.customer, booking.agent].filter(
-      (user): user is NonNullable<typeof user> => user !== null && user.status === "active",
-    );
+    // Determine customer/guest recipient
+    interface Recipient {
+      name: string;
+      email: string;
+    }
+    const recipients: Recipient[] = [];
+
+    if (booking.isGuest && booking.guestSnapshot) {
+      recipients.push({
+        name: booking.guestSnapshot.guestName,
+        email: booking.guestSnapshot.guestEmail,
+      });
+    } else if (booking.customer && booking.customer.status === "active") {
+      recipients.push({
+        name: booking.customer.name,
+        email: booking.customer.email,
+      });
+    }
+
+    if (booking.agent && booking.agent.status === "active") {
+      recipients.push({
+        name: booking.agent.name,
+        email: booking.agent.email,
+      });
+    }
 
     for (const recipient of recipients) {
       try {

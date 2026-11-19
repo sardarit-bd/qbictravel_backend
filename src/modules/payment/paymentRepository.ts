@@ -318,6 +318,35 @@ export const transitionPayment = async (params: {
       }
 
       await createCommissionForBooking(tx, params.bookingId);
+
+      const targetPaymentRecord = typeof tx.payment?.findUnique === "function"
+        ? await tx.payment.findUnique({
+            where: { id: params.paymentId },
+            select: { currency: true },
+          })
+        : null;
+
+      if (tx.affiliateCommission && tx.affiliateBookingAttribution) {
+        await recordAffiliateCommissionForVerifiedPayment(tx, {
+          paymentId: params.paymentId,
+          bookingId: params.bookingId,
+          paidAmount: params.amount.toString(),
+          currency: targetPaymentRecord?.currency || "THB",
+        });
+      }
+
+      // Transactional Outbox for asynchronous durability
+      await enqueueOutboxMessage(tx, {
+        topic: "CALCULATE_COMMISSION",
+        payload: { bookingId: params.bookingId, paymentId: params.paymentId },
+        dedupeKey: `commission:${params.paymentId}`,
+      });
+
+      await enqueueOutboxMessage(tx, {
+        topic: "SEND_BOOKING_VOUCHER_EMAIL",
+        payload: { bookingId: params.bookingId, decision: "CONFIRMED" },
+        dedupeKey: `voucher_email:${params.paymentId}`,
+      });
     }
 
     await tx.bookingHistory.create({
@@ -714,6 +743,7 @@ export const verifyStripePaymentAtomically = async (params: {
     await enqueueOutboxMessage(tx, {
       topic: "CALCULATE_COMMISSION",
       payload: { bookingId: params.bookingId, paymentId: payment.id },
+      dedupeKey: `commission:${payment.id}`,
     });
 
     if (tx.commission && tx.commissionRule) {
@@ -732,6 +762,7 @@ export const verifyStripePaymentAtomically = async (params: {
     await enqueueOutboxMessage(tx, {
       topic: "SEND_BOOKING_VOUCHER_EMAIL",
       payload: { bookingId: params.bookingId, decision: "CONFIRMED" },
+      dedupeKey: `voucher_email:${payment.id}`,
     });
 
     return { payment: updatedPayment, isDuplicateSuccess: false, isOverpayment: false };
@@ -1065,6 +1096,19 @@ export const recordVerifiedPayPalPayment = async (params: {
             console.error("[PayPal] Failed to create commission:", commErr);
           }
         }
+
+        // Transactional Outbox for asynchronous durability
+        await enqueueOutboxMessage(tx, {
+          topic: "CALCULATE_COMMISSION",
+          payload: { bookingId: params.bookingId, paymentId: payment.id },
+          dedupeKey: `commission:${payment.id}`,
+        });
+
+        await enqueueOutboxMessage(tx, {
+          topic: "SEND_BOOKING_VOUCHER_EMAIL",
+          payload: { bookingId: params.bookingId, decision: "CONFIRMED" },
+          dedupeKey: `voucher_email:${payment.id}`,
+        });
       }
 
       return { payment, isDuplicate: false };

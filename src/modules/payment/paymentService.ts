@@ -837,10 +837,10 @@ export const verifyPayment = async (adminId: string, paymentId: string, input: V
     throw new AppError("The payment was changed by someone else. Please reload and retry.", 409);
   }
 
-  await notificationService.notifyPaymentDecision(
-    payment.bookingId,
-    input.decision === "VERIFIED" ? "CONFIRMED" : "REJECTED",
-  );
+  // If rejected, notify customer synchronously; if verified, notification is handled durably via outbox
+  if (input.decision === "REJECTED") {
+    await notificationService.notifyPaymentDecision(payment.bookingId, "REJECTED");
+  }
 
   return mapPayment(updated);
 };
@@ -895,7 +895,7 @@ export const recordPayment = async (adminId: string, paymentId: string, input: R
     throw new AppError("The payment was changed by someone else. Please reload and retry.", 409);
   }
 
-  await notificationService.notifyPaymentDecision(payment.bookingId, "CONFIRMED");
+  // Payment confirmation email is enqueued durably via transactional outbox inside transitionPayment
 
   return mapPayment(updated);
 };

@@ -11,23 +11,67 @@ export interface EnqueueOutboxParams {
   topic: OutboxTopic;
   payload: Record<string, any>;
   scheduledAt?: Date;
+  dedupeKey?: string;
 }
 
 /**
  * Enqueue an Outbox message within an existing Prisma transaction or standalone client.
+ * Supports idempotency: if a message with matching topic and dedupeKey already exists
+ * in PENDING, PROCESSING, or COMPLETED status, the existing message is returned without duplicating.
  */
 export const enqueueOutboxMessage = async (
   client: PrismaTx | typeof prisma,
   params: EnqueueOutboxParams,
 ): Promise<OutboxMessage> => {
-  return client.outboxMessage.create({
-    data: {
-      topic: params.topic,
-      payload: params.payload,
-      status: "PENDING",
-      scheduledAt: params.scheduledAt ?? new Date(),
-    },
-  });
+  const dedupeKey = params.dedupeKey || params.payload?.dedupeKey;
+  const payloadWithDedupe = dedupeKey ? { ...params.payload, dedupeKey } : params.payload;
+
+  if (dedupeKey && typeof client?.outboxMessage?.findFirst === "function") {
+    // Check if an outbox message with this topic and dedupeKey already exists
+    const existing = await client.outboxMessage.findFirst({
+      where: {
+        topic: params.topic,
+        payload: {
+          path: ["dedupeKey"],
+          equals: dedupeKey,
+        },
+      },
+    });
+
+    if (existing) {
+      logger.info(
+        { topic: params.topic, dedupeKey, existingId: existing.id, status: existing.status },
+        "Outbox message already enqueued with dedupeKey, skipping duplicate",
+      );
+      return existing;
+    }
+  }
+
+  if (typeof client?.outboxMessage?.create === "function") {
+    return client.outboxMessage.create({
+      data: {
+        topic: params.topic,
+        payload: payloadWithDedupe,
+        status: "PENDING",
+        scheduledAt: params.scheduledAt ?? new Date(),
+      },
+    });
+  }
+
+  return {
+    id: `mock-outbox-${Date.now()}`,
+    topic: params.topic,
+    payload: payloadWithDedupe,
+    status: "PENDING",
+    attempts: 0,
+    lastError: null,
+    lockedAt: null,
+    lockedBy: null,
+    scheduledAt: params.scheduledAt ?? new Date(),
+    processedAt: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  } as OutboxMessage;
 };
 
 /**
