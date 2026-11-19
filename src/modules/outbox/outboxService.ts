@@ -154,14 +154,27 @@ export const processOutboxMessage = async (
       case "SEND_BOOKING_VOUCHER_EMAIL": {
         const bookingId = payload.bookingId;
         const paymentId = payload.paymentId;
+        const isGuestAccess = Boolean(payload.isGuestAccess);
+        const guestAccessUrl = payload.guestAccessUrl as string | undefined;
+        const guestTokenExpiresAt = payload.guestTokenExpiresAt as string | undefined;
         const decision = payload.decision || "CONFIRMED";
+
         if (!bookingId) {
           throw new Error("Missing bookingId in SEND_BOOKING_VOUCHER_EMAIL payload");
         }
-        if (handlers?.onNotification) {
-          await handlers.onNotification(bookingId, decision);
+
+        if (isGuestAccess && guestAccessUrl) {
+          if (handlers?.onNotification) {
+            await handlers.onNotification(bookingId, decision);
+          } else {
+            await notificationService.notifyGuestBookingAccess(bookingId, guestAccessUrl, guestTokenExpiresAt);
+          }
         } else {
-          await notificationService.notifyPaymentDecision(bookingId, decision, paymentId);
+          if (handlers?.onNotification) {
+            await handlers.onNotification(bookingId, decision);
+          } else {
+            await notificationService.notifyPaymentDecision(bookingId, decision, paymentId);
+          }
         }
         break;
       }

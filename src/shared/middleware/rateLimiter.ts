@@ -54,3 +54,21 @@ export const guestCheckoutRateLimiter = rateLimit({
     data: null,
   },
 });
+
+/**
+ * Public rate limiter for guest magic-link itinerary access
+ * to prevent brute-force token enumeration.
+ * Allows 30 requests per 15-minute window per IP.
+ */
+export const guestAccessRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => env.nodeEnv === "test" || req.method === "OPTIONS",
+  message: {
+    success: false,
+    message: "Too many requests. Please try again later.",
+    data: null,
+  },
+});

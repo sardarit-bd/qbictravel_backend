@@ -154,3 +154,37 @@ export const notifyOperationalUpdate = async (bookingId: string): Promise<void> 
   notifyBookingParties(bookingId, "OPERATIONAL_UPDATE", "An update on your booking", (c) =>
     `Hello ${c.recipientName},\n\nYour ${c.serviceName} booking is now ${humanize(c.fulfillmentStatus)}.`,
   );
+
+/**
+ * Sends a secure Guest Booking Access magic link email.
+ * Recipient is retrieved safely from GuestBookingSnapshot without exposing Shadow Customer data.
+ */
+export const notifyGuestBookingAccess = async (
+  bookingId: string,
+  guestAccessUrl: string,
+  expiresAtIso?: string,
+): Promise<void> => {
+  const expiryFormatted = expiresAtIso
+    ? new Date(expiresAtIso).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    : "30 days";
+
+  return notifyBookingParties(
+    bookingId,
+    "BOOKING_CONFIRMATION",
+    "Your PhuketTours Booking Access Link",
+    (c) =>
+      `Hello ${c.recipientName},\n\n` +
+      `Thank you for booking your Phuket experience with us!\n\n` +
+      `Booking Reference: ${bookingId.substring(0, 8).toUpperCase()}\n` +
+      `Experience: ${c.serviceName}\n\n` +
+      `You can view your full itinerary and manage your booking anytime without an account using your secure access link:\n` +
+      `${guestAccessUrl}\n\n` +
+      `This link is valid until ${expiryFormatted}. Please keep this email safe.\n\n` +
+      `If you have questions or need to modify your booking, our support team is available at support@phukettours.com.\n\n` +
+      `Warm regards,\nThe PhuketTours Team`,
+  );
+};

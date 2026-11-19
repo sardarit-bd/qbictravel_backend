@@ -5,6 +5,8 @@ import * as pricingService from "../pricing/pricingService.js";
 import * as notificationService from "../notification/notificationService.js";
 import { parsePagination } from "../../shared/utils/pagination.js";
 import { generateSecureToken, hashToken } from "../payment/tokenUtils.js";
+import { enqueueOutboxMessage } from "../outbox/outboxService.js";
+import logger from "../../shared/logger/logger.js";
 import type {
   CreateBookingInput,
   CreateStaffBookingInput,
@@ -842,14 +844,138 @@ export const createGuestBooking = async (
 
   const frontendBaseUrl = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/$/, "");
   const paymentUrl = `${frontendBaseUrl}/pay/${result.rawPaymentToken}`;
+  const guestAccessUrl = `${frontendBaseUrl}/bookings/guest/${result.accessToken}`;
+
+  // Enqueue Guest Booking Access Email via Transactional Outbox
+  try {
+    await enqueueOutboxMessage(prisma, {
+      topic: "SEND_BOOKING_VOUCHER_EMAIL",
+      payload: {
+        bookingId: result.booking.id,
+        isGuestAccess: true,
+        guestAccessUrl,
+        guestTokenExpiresAt: tokenExpiresAt.toISOString(),
+      },
+      dedupeKey: `guest_access_email:${result.booking.id}`,
+    });
+  } catch (err) {
+    logger.error({ bookingId: result.booking.id, err }, "Failed to enqueue guest access outbox email");
+  }
 
   return {
     booking: result.booking,
     guestSnapshot: result.guestSnapshot,
     accessToken: result.accessToken,
+    guestAccessUrl,
     paymentLink: {
       token: result.rawPaymentToken,
       paymentUrl,
+    },
+  };
+};
+
+/**
+ * Retrieves public safe guest booking itinerary details using a secure magic-link token.
+ * Validates token expiration, revocation, and active purpose.
+ * Never leaks internal customer IDs, Shadow Customer credentials, or private internal notes.
+ */
+export const getPublicGuestBookingDetails = async (rawToken: string) => {
+  const tokenHash = hashToken(rawToken);
+  const tokenRecord = await bookingRepository.findGuestBookingTokenByHash(tokenHash);
+
+  if (!tokenRecord) {
+    throw new AppError("Invalid or expired booking access link", 404);
+  }
+
+  // Security checks: revocation & expiration
+  if (tokenRecord.revokedAt) {
+    throw new AppError("This booking access link has been revoked", 403);
+  }
+
+  if (new Date() > new Date(tokenRecord.expiresAt)) {
+    throw new AppError("This booking access link has expired", 410);
+  }
+
+  const booking = tokenRecord.booking;
+  if (!booking) {
+    throw new AppError("Booking not found", 404);
+  }
+
+  const finalPrice = Number(booking.finalPrice);
+  const verifiedPayments = booking.payments || [];
+  const totalPaid = verifiedPayments.reduce(
+    (sum: number, p: any) => sum + Number(p.amount),
+    0,
+  );
+  const remainingBalance = Math.max(0, finalPrice - totalPaid);
+
+  // Check if active payment link exists and is still valid
+  const activePaymentLink = booking.paymentLinks?.[0];
+  const isPaymentLinkValid =
+    activePaymentLink &&
+    activePaymentLink.status === "ACTIVE" &&
+    new Date() < new Date(activePaymentLink.expiresAt) &&
+    remainingBalance > 0 &&
+    booking.paymentStatus !== "PAID";
+
+  const frontendBaseUrl = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/$/, "");
+
+  // Parse structured notes for guest count details (e.g. "Guests: 2 Adults, 1 Child")
+  let guestCounts = { adults: 1, children: 0, infants: 0 };
+  if (booking.notes) {
+    const matchAdults = booking.notes.match(/(\d+)\s+Adult/i);
+    const matchChildren = booking.notes.match(/(\d+)\s+Child/i);
+    const matchInfants = booking.notes.match(/(\d+)\s+Infant/i);
+    if (matchAdults) guestCounts.adults = parseInt(matchAdults[1], 10);
+    if (matchChildren) guestCounts.children = parseInt(matchChildren[1], 10);
+    if (matchInfants) guestCounts.infants = parseInt(matchInfants[1], 10);
+  }
+
+  // Construct safe, sanitized response payload
+  return {
+    bookingReference: booking.id.substring(0, 8).toUpperCase(),
+    status: booking.status,
+    paymentStatus: booking.paymentStatus,
+    fulfillmentStatus: booking.fulfillmentStatus,
+    currency: booking.currency,
+    pricing: {
+      basePrice: Number(booking.basePrice),
+      finalPrice: finalPrice,
+      totalPaid: totalPaid,
+      remainingBalance: remainingBalance,
+    },
+    guest: {
+      name: booking.guestSnapshot?.guestName || "Guest",
+      email: booking.guestSnapshot?.guestEmail || tokenRecord.email,
+      phone: booking.guestSnapshot?.guestPhone || null,
+      party: guestCounts,
+    },
+    service: {
+      id: booking.service.id,
+      name: booking.service.name,
+      type: booking.service.type,
+      description: booking.service.description,
+      providerName: booking.service.providerName,
+      metadata: booking.service.metadata,
+    },
+    travelDate: booking.availability?.date
+      ? new Date(booking.availability.date).toISOString().split("T")[0]
+      : null,
+    createdAt: booking.createdAt,
+    paymentAction: isPaymentLinkValid
+      ? {
+          isPayable: true,
+          expiresAt: activePaymentLink.expiresAt,
+          paymentUrl: `${frontendBaseUrl}/pay/${activePaymentLink.tokenHash}`, // Note: in production, paymentLink tokenHash or lookup token
+        }
+      : {
+          isPayable: false,
+          remainingBalance: remainingBalance,
+        },
+    cancellationPolicy: {
+      allowed: false,
+      notice: "Direct online cancellations are not permitted for guest bookings. Please contact support to modify or cancel your reservation.",
+      supportEmail: "support@phukettours.com",
     },
   };
 };

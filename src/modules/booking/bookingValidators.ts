@@ -212,3 +212,10 @@ export const createGuestBookingSchema = yup.object({
     .max(50, "Referral code too long")
     .optional(),
 });
+
+export const guestAccessTokenParamSchema = yup.object({
+  token: yup
+    .string()
+    .required("Access token is required")
+    .matches(/^[0-9a-fA-F]{64}$/, "Invalid token format"),
+});

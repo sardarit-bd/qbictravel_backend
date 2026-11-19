@@ -188,3 +188,25 @@ export const listStaffCreatedBookings = async (req: Request, res: Response, next
   }
 };
 
+/**
+ * Public endpoint to access guest booking itinerary details via magic link token.
+ * GET /api/v1/public/bookings/access/:token
+ * Rate-limited, generic 404/410/403 responses, no caching, sanitized payload.
+ */
+export const getPublicGuestBookingAccess = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const rawToken = req.params.token as string;
+
+    // Prevent caching of private guest itinerary data
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+
+    const result = await bookingService.getPublicGuestBookingDetails(rawToken);
+    sendResponse(res, 200, true, "Guest booking itinerary retrieved successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+

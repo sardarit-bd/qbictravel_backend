@@ -4,11 +4,12 @@ import validate from "../../shared/middleware/validate.js";
 import authMiddleware from "../../shared/middleware/authMiddleware.js";
 import requireRole from "../../shared/middleware/requireRole.js";
 import requirePermission from "../../shared/middleware/requirePermission.js";
-import { guestCheckoutRateLimiter } from "../../shared/middleware/rateLimiter.js";
+import { guestCheckoutRateLimiter, guestAccessRateLimiter } from "../../shared/middleware/rateLimiter.js";
 import {
   createBookingSchema,
   createStaffBookingSchema,
   createGuestBookingSchema,
+  guestAccessTokenParamSchema,
   updateBookingPriceSchema,
   reviewBookingPriceSchema,
   reviewPendingBookingSchema,
@@ -63,6 +64,40 @@ router.post(
   guestCheckoutRateLimiter,
   validate(createGuestBookingSchema),
   bookingController.createGuestBooking
+);
+
+/**
+ * @openapi
+ * /api/v1/public/bookings/access/{token}:
+ *   get:
+ *     tags:
+ *       - Guest Bookings
+ *     summary: Retrieve guest booking itinerary using a secure magic link token
+ *     description: Returns sanitized, read-only itinerary details for anonymous guests without requiring an account or exposing internal customer records.
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 64-character hex guest access token
+ *     responses:
+ *       200:
+ *         description: Guest booking details retrieved successfully
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       403:
+ *         description: Token revoked
+ *       404:
+ *         description: Invalid or unknown token
+ *       410:
+ *         description: Token expired
+ */
+router.get(
+  "/public/bookings/access/:token",
+  guestAccessRateLimiter,
+  validate(guestAccessTokenParamSchema, "params"),
+  bookingController.getPublicGuestBookingAccess
 );
 
 /**

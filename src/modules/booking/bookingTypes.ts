@@ -58,6 +58,7 @@ export interface GuestBookingResult {
     guestPhone: string | null;
   };
   accessToken: string;
+  guestAccessUrl?: string;
   paymentLink: {
     token: string;
     paymentUrl: string;

@@ -833,3 +833,62 @@ export const listStaffCustomers = async (params: ListStaffCustomersParams) => {
     },
   };
 };
+
+/**
+ * Finds a GuestBookingToken record by its SHA-256 token hash.
+ * Includes associated Booking, Service, GuestBookingSnapshot, and PaymentLink.
+ */
+export const findGuestBookingTokenByHash = async (tokenHash: string) => {
+  return prisma.guestBookingToken.findUnique({
+    where: { tokenHash },
+    include: {
+      booking: {
+        include: {
+          service: {
+            select: {
+              id: true,
+              name: true,
+              type: true,
+              description: true,
+              providerName: true,
+              metadata: true,
+            },
+          },
+          availability: {
+            select: {
+              date: true,
+            },
+          },
+          guestSnapshot: {
+            select: {
+              guestName: true,
+              guestEmail: true,
+              guestPhone: true,
+            },
+          },
+          paymentLinks: {
+            where: { status: "ACTIVE" },
+            orderBy: { createdAt: "desc" },
+            take: 1,
+            select: {
+              tokenHash: true,
+              expiresAt: true,
+              status: true,
+            },
+          },
+          payments: {
+            where: { status: "VERIFIED" },
+            select: {
+              id: true,
+              amount: true,
+              currency: true,
+              method: true,
+              status: true,
+              createdAt: true,
+            },
+          },
+        },
+      },
+    },
+  });
+};
