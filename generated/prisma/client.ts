@@ -107,6 +107,11 @@ export type Session = Prisma.SessionModel
  */
 export type RefreshToken = Prisma.RefreshTokenModel
 /**
+ * Model EmailVerificationToken
+ * 
+ */
+export type EmailVerificationToken = Prisma.EmailVerificationTokenModel
+/**
  * Model PricingRule
  * 
  */
@@ -136,6 +141,26 @@ export type StaffDiscountRequest = Prisma.StaffDiscountRequestModel
  * 
  */
 export type StaffDiscountAuditEvent = Prisma.StaffDiscountAuditEventModel
+/**
+ * Model GuestBookingSnapshot
+ * 
+ */
+export type GuestBookingSnapshot = Prisma.GuestBookingSnapshotModel
+/**
+ * Model GuestBookingToken
+ * 
+ */
+export type GuestBookingToken = Prisma.GuestBookingTokenModel
+/**
+ * Model BookingClaimAudit
+ * 
+ */
+export type BookingClaimAudit = Prisma.BookingClaimAuditModel
+/**
+ * Model Invoice
+ * 
+ */
+export type Invoice = Prisma.InvoiceModel
 /**
  * Model CommissionRule
  * 

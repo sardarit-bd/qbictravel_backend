@@ -152,6 +152,32 @@ export const FulfillmentStatus = {
 export type FulfillmentStatus = (typeof FulfillmentStatus)[keyof typeof FulfillmentStatus]
 
 
+export const GuestTokenPurpose = {
+  ACCESS_ONLY: 'ACCESS_ONLY',
+  ACCESS_AND_CLAIM: 'ACCESS_AND_CLAIM'
+} as const
+
+export type GuestTokenPurpose = (typeof GuestTokenPurpose)[keyof typeof GuestTokenPurpose]
+
+
+export const InvoiceType = {
+  TAX_INVOICE: 'TAX_INVOICE',
+  PAYMENT_RECEIPT: 'PAYMENT_RECEIPT',
+  INTERIM_STATEMENT: 'INTERIM_STATEMENT'
+} as const
+
+export type InvoiceType = (typeof InvoiceType)[keyof typeof InvoiceType]
+
+
+export const InvoiceStatus = {
+  ISSUED: 'ISSUED',
+  VOID: 'VOID',
+  REFUNDED: 'REFUNDED'
+} as const
+
+export type InvoiceStatus = (typeof InvoiceStatus)[keyof typeof InvoiceStatus]
+
+
 export const CommissionPolicyStatus = {
   DRAFT: 'DRAFT',
   ACTIVE: 'ACTIVE',

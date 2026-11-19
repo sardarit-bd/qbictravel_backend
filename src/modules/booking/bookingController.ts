@@ -46,6 +46,34 @@ export const createStaffBooking = async (req: Request, res: Response, next: Next
   }
 };
 
+export const createGuestBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await bookingService.createGuestBooking(req.body);
+
+    // Attach server-validated last-click affiliate attribution for guest booking
+    const attributionPayload = getAttributionFromRequest(req);
+    const fallbackCode = typeof req.body?.referralCode === "string" ? req.body.referralCode : null;
+    if (attributionPayload || fallbackCode) {
+      try {
+        await prisma.$transaction(async (tx) => {
+          await affiliateService.attachAttributionToBooking(tx, {
+            bookingId: result.booking.id,
+            customerId: result.booking.customerId,
+            attributionPayload,
+            fallbackCode,
+          });
+        });
+      } catch {
+        // Non-blocking: never fail booking creation due to attribution
+      }
+    }
+
+    sendResponse(res, 201, true, "Guest booking created successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const updateBookingPrice = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const booking = await bookingService.updateAgentBookingPrice(

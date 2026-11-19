@@ -4,9 +4,12 @@ import * as bookingRepository from "./bookingRepository.js";
 import * as pricingService from "../pricing/pricingService.js";
 import * as notificationService from "../notification/notificationService.js";
 import { parsePagination } from "../../shared/utils/pagination.js";
+import { generateSecureToken, hashToken } from "../payment/tokenUtils.js";
 import type {
   CreateBookingInput,
   CreateStaffBookingInput,
+  CreateGuestBookingInput,
+  GuestBookingResult,
   UpdateBookingPriceInput,
   ReviewBookingPriceInput,
   ReviewPendingBookingInput,
@@ -568,6 +571,287 @@ export const createStaffBooking = async (
     await notificationService.notifyBookingCreated(booking.id);
   }
   return mapBookingToResponse(booking);
+};
+
+export const createGuestBooking = async (
+  input: CreateGuestBookingInput
+): Promise<GuestBookingResult> => {
+  // 1. Fetch tour service and active standard pricing
+  const service = await prisma.service.findUnique({
+    where: { id: input.serviceId },
+    include: { pricing: true },
+  });
+
+  if (!service) {
+    throw new AppError("Service not found", 404);
+  }
+  if (service.status !== "PUBLISHED") {
+    throw new AppError("Cannot book unpublished tour", 400);
+  }
+
+  const now = new Date();
+  const activePricings = service.pricing.filter(
+    (p) =>
+      (!p.validFrom || p.validFrom <= now) && (!p.validTo || p.validTo >= now)
+  );
+
+  if (activePricings.length === 0) {
+    throw new AppError("Service has no active pricing", 400);
+  }
+
+  if (activePricings.length > 1) {
+    throw new AppError(
+      "Service has multiple active pricing tiers. Please contact support.",
+      409
+    );
+  }
+
+  const activePricing = activePricings[0]!;
+  const rawBasePrice = Number(activePricing.basePrice);
+  const currency = activePricing.currency;
+
+  const hasGuestCounts =
+    input.adults !== undefined ||
+    input.children !== undefined ||
+    input.infants !== undefined;
+
+  let basePrice = rawBasePrice;
+
+  if (hasGuestCounts) {
+    const adults = Math.max(1, Number(input.adults ?? 1));
+    const children = Math.max(0, Number(input.children ?? 0));
+    const infants = Math.max(0, Number(input.infants ?? 0));
+
+    const unitAdultPrice =
+      activePricing.discountedPrice != null &&
+      Number(activePricing.discountedPrice) > 0
+        ? Number(activePricing.discountedPrice)
+        : rawBasePrice;
+
+    const metadata = (service as any).metadata as Record<string, any> | null;
+    const tiers: Array<{ tierName?: string; price?: number }> = Array.isArray(
+      metadata?.pricingTiers
+    )
+      ? metadata!.pricingTiers
+      : [];
+
+    const childTier = tiers.find((t) =>
+      /child/i.test(String(t?.tierName || ""))
+    );
+    const infantTier = tiers.find((t) =>
+      /infant/i.test(String(t?.tierName || ""))
+    );
+
+    const unitChildPrice =
+      childTier && typeof childTier.price === "number" && childTier.price >= 0
+        ? Number(childTier.price)
+        : Math.round(unitAdultPrice * 0.7 * 100) / 100;
+
+    const unitInfantPrice =
+      infantTier &&
+      typeof infantTier.price === "number" &&
+      infantTier.price >= 0
+        ? Number(infantTier.price)
+        : 0;
+
+    basePrice =
+      Math.round(
+        (adults * unitAdultPrice +
+          children * unitChildPrice +
+          infants * unitInfantPrice) *
+          100
+      ) / 100;
+  }
+
+  const finalPrice = basePrice;
+  const status = "PENDING";
+  const requiresApproval = false;
+
+  // 2. Parse travel date
+  let travelDateObj: Date | undefined;
+  if (input.travelDate && input.travelDate.trim()) {
+    travelDateObj = new Date(input.travelDate.trim());
+    if (isNaN(travelDateObj.getTime())) {
+      throw new AppError("Invalid travel date format", 400);
+    }
+  }
+
+  const totalGuests = Math.max(
+    1,
+    (input.adults ?? 1) + (input.children ?? 0) + (input.infants ?? 0)
+  );
+
+  // 3. Build structured notes
+  const noteParts: string[] = [];
+  if (input.travelDate && input.travelDate.trim()) {
+    noteParts.push(`Travel Date: ${input.travelDate.trim()}`);
+  }
+  if (hasGuestCounts) {
+    const adults = Math.max(1, Number(input.adults ?? 1));
+    const children = Math.max(0, Number(input.children ?? 0));
+    const infants = Math.max(0, Number(input.infants ?? 0));
+    const guestParts: string[] = [`${adults} Adult${adults > 1 ? "s" : ""}`];
+    if (children > 0) {
+      guestParts.push(`${children} Child${children > 1 ? "ren" : ""}`);
+    }
+    if (infants > 0) {
+      guestParts.push(`${infants} Infant${infants > 1 ? "s" : ""}`);
+    }
+    noteParts.push(`Guests: ${guestParts.join(", ")}`);
+  }
+  if (input.notes && input.notes.trim()) {
+    noteParts.push(input.notes.trim());
+  }
+  const formattedNotes = noteParts.length > 0 ? noteParts.join(" | ") : undefined;
+
+  // Generate tokens
+  const rawAccessToken = generateSecureToken();
+  const accessTokenHash = hashToken(rawAccessToken);
+  const tokenExpiresAt = new Date();
+  tokenExpiresAt.setDate(tokenExpiresAt.getDate() + 30); // 30-day guest token
+
+  const rawPaymentToken = generateSecureToken();
+  const paymentTokenHash = hashToken(rawPaymentToken);
+  const paymentExpiresAt = new Date();
+  paymentExpiresAt.setDate(paymentExpiresAt.getDate() + 7); // 7-day payment link
+
+  const normalizedEmail = input.customer.email.trim().toLowerCase();
+  const normalizedName = input.customer.name.trim();
+  const normalizedPhone = input.customer.phone?.trim() || null;
+
+  // 4. Atomic transaction
+  const result = await prisma.$transaction(async (tx) => {
+    // 4a. Resolve or create shadow customer
+    const customer = await resolveOrCreateCustomer(
+      {
+        customer: {
+          name: normalizedName,
+          email: normalizedEmail,
+          phone: normalizedPhone,
+        },
+      },
+      tx
+    );
+
+    // 4b. Capacity reservation
+    let resolvedAvailabilityId = input.availabilityId;
+    if (travelDateObj) {
+      const defaultCapacity = (service as any).capacity || 50;
+      await tx.$executeRaw`
+        INSERT INTO "ServiceAvailability" ("id", "serviceId", "date", "capacity", "bookedCount", "isAvailable", "lastVerifiedAt")
+        VALUES (gen_random_uuid(), ${input.serviceId}, ${travelDateObj}, ${defaultCapacity}, 0, true, NOW())
+        ON CONFLICT ("serviceId", "date") DO NOTHING;
+      `;
+
+      const updatedList: any[] = await tx.$queryRaw`
+        UPDATE "ServiceAvailability"
+        SET "bookedCount" = "bookedCount" + ${totalGuests},
+            "lastVerifiedAt" = NOW()
+        WHERE "serviceId" = ${input.serviceId}
+          AND "date" = ${travelDateObj}
+          AND "isAvailable" = true
+          AND ("capacity" - "bookedCount") >= ${totalGuests}
+        RETURNING "id", "bookedCount", "capacity";
+      `;
+
+      if (!updatedList || updatedList.length === 0) {
+        const currentAvail = await tx.serviceAvailability.findUnique({
+          where: {
+            serviceId_date: {
+              serviceId: input.serviceId,
+              date: travelDateObj,
+            },
+          },
+          select: { isAvailable: true, capacity: true, bookedCount: true },
+        });
+
+        if (currentAvail && !currentAvail.isAvailable) {
+          throw new AppError("Tour is not available on the selected date", 400);
+        }
+        throw new AppError("Selected date does not have sufficient capacity", 409);
+      }
+
+      resolvedAvailabilityId = updatedList[0].id;
+    }
+
+    // 4c. Create Booking
+    const booking = await bookingRepository.createBooking(
+      {
+        customerId: customer.id,
+        agentId: null,
+        createdById: null, // Explicitly NULL for anonymous guest checkout
+        source: "DIRECT",
+        serviceId: input.serviceId,
+        availabilityId: resolvedAvailabilityId,
+        currency,
+        basePrice,
+        finalPrice,
+        status,
+        requiresApproval,
+        ...(formattedNotes !== undefined ? { notes: formattedNotes } : {}),
+        historyAction: "BOOKING_CREATED_BY_GUEST",
+        actorRole: "customer",
+        isGuest: true,
+      },
+      tx
+    );
+
+    // 4d. Create immutable GuestBookingSnapshot
+    await tx.guestBookingSnapshot.create({
+      data: {
+        bookingId: booking.id,
+        guestName: normalizedName,
+        guestEmail: normalizedEmail,
+        guestPhone: normalizedPhone,
+      },
+    });
+
+    // 4e. Create GuestBookingToken
+    await tx.guestBookingToken.create({
+      data: {
+        bookingId: booking.id,
+        tokenHash: accessTokenHash,
+        email: normalizedEmail,
+        purpose: "ACCESS_AND_CLAIM",
+        expiresAt: tokenExpiresAt,
+      },
+    });
+
+    // 4f. Create active PaymentLink
+    await tx.paymentLink.create({
+      data: {
+        bookingId: booking.id,
+        tokenHash: paymentTokenHash,
+        expiresAt: paymentExpiresAt,
+        status: "ACTIVE",
+        createdById: null,
+      },
+    });
+
+    return {
+      booking: mapBookingToResponse(booking),
+      guestSnapshot: {
+        guestName: normalizedName,
+        guestEmail: normalizedEmail,
+        guestPhone: normalizedPhone,
+      },
+      accessToken: rawAccessToken,
+      rawPaymentToken,
+    };
+  });
+
+  const frontendBaseUrl = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/$/, "");
+  const paymentUrl = `${frontendBaseUrl}/pay/${result.rawPaymentToken}`;
+
+  return {
+    booking: result.booking,
+    guestSnapshot: result.guestSnapshot,
+    accessToken: result.accessToken,
+    paymentLink: {
+      token: result.rawPaymentToken,
+      paymentUrl,
+    },
+  };
 };
 
 export const updateAgentBookingPrice = async (

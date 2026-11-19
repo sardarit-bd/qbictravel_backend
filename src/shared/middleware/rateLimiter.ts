@@ -36,3 +36,21 @@ export const refreshRateLimiter = rateLimit({
     data: null,
   },
 });
+
+/**
+ * Public rate limiter for public booking operations (e.g. Guest Checkout)
+ * to prevent automated scraping or submission flooding.
+ * Allows 20 requests per 15-minute window per IP.
+ */
+export const guestCheckoutRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => env.nodeEnv === "test" || req.method === "OPTIONS",
+  message: {
+    success: false,
+    message: "Too many checkout requests, please try again later",
+    data: null,
+  },
+});

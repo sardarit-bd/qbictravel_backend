@@ -1,11 +1,11 @@
 model Payment {
-  id                    String              @id @default(uuid())
+  id                    String                @id @default(uuid())
   bookingId             String
   customerId            String
-  amount                Decimal             @db.Decimal(10, 2)
+  amount                Decimal               @db.Decimal(10, 2)
   currency              String
   method                PaymentMethod
-  status                PaymentRecordStatus @default(INITIATED)
+  status                PaymentRecordStatus   @default(INITIATED)
   reference             String?
   stripeSessionId       String?
   stripePaymentIntentId String?
@@ -16,14 +16,15 @@ model Payment {
   reviewedById          String?
   reviewedAt            DateTime?
   reviewNotes           String?
-  createdAt             DateTime            @default(now())
-  updatedAt             DateTime            @updatedAt
-  booking               Booking             @relation(fields: [bookingId], references: [id])
-  customer              User                @relation("CustomerPayments", fields: [customerId], references: [id])
-  reviewedBy            User?               @relation("PaymentReviews", fields: [reviewedById], references: [id])
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+  booking               Booking               @relation(fields: [bookingId], references: [id])
+  customer              User                  @relation("CustomerPayments", fields: [customerId], references: [id])
+  reviewedBy            User?                 @relation("PaymentReviews", fields: [reviewedById], references: [id])
   refunds               PaymentRefund[]
   stripeWebhookEvents   StripeWebhookEvent[]
   affiliateCommissions  AffiliateCommission[]
+  invoices              Invoice[]
 
   @@unique([method, reference])
   @@index([bookingId])
@@ -35,7 +36,7 @@ model Payment {
 
 model StripeWebhookEvent {
   id          String             @id // Stripe event ID (evt_...)
-  type        String             // e.g. checkout.session.completed
+  type        String // e.g. checkout.session.completed
   status      WebhookEventStatus @default(RECEIVED)
   payload     Json
   bookingId   String?

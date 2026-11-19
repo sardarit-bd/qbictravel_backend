@@ -154,3 +154,61 @@ export const listStaffCreatedBookingsQuerySchema = yup.object({
 export const bookingIdParamSchema = yup.object({
   bookingId: yup.string().uuid("Invalid booking ID").required("Booking ID is required"),
 });
+
+export const createGuestBookingSchema = yup.object({
+  customer: yup
+    .object({
+      name: yup
+        .string()
+        .trim()
+        .min(2, "Name must be at least 2 characters")
+        .max(100, "Name must be 100 characters or less")
+        .required("Guest name is required"),
+      email: yup
+        .string()
+        .trim()
+        .email("Invalid email address")
+        .required("Guest email is required"),
+      phone: yup
+        .string()
+        .trim()
+        .max(30, "Phone must be 30 characters or less")
+        .nullable()
+        .optional(),
+    })
+    .required("Guest contact details are required"),
+  serviceId: yup
+    .string()
+    .uuid("Invalid service ID")
+    .required("Service ID is required"),
+  availabilityId: yup.string().uuid("Invalid availability ID").optional(),
+  travelDate: yup.string().trim().optional(),
+  adults: yup
+    .number()
+    .integer("Adults must be an integer")
+    .min(1, "At least 1 adult is required")
+    .max(50, "Maximum 50 adults per booking")
+    .optional(),
+  children: yup
+    .number()
+    .integer("Children must be an integer")
+    .min(0, "Children cannot be negative")
+    .max(50, "Maximum 50 children per booking")
+    .optional(),
+  infants: yup
+    .number()
+    .integer("Infants must be an integer")
+    .min(0, "Infants cannot be negative")
+    .max(50, "Maximum 50 infants per booking")
+    .optional(),
+  notes: yup
+    .string()
+    .trim()
+    .max(1000, "Notes must be at most 1000 characters")
+    .optional(),
+  referralCode: yup
+    .string()
+    .trim()
+    .max(50, "Referral code too long")
+    .optional(),
+});

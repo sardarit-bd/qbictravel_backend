@@ -64,12 +64,17 @@ export const ModelName = {
   RevokedToken: 'RevokedToken',
   Session: 'Session',
   RefreshToken: 'RefreshToken',
+  EmailVerificationToken: 'EmailVerificationToken',
   PricingRule: 'PricingRule',
   Booking: 'Booking',
   PriceApproval: 'PriceApproval',
   BookingHistory: 'BookingHistory',
   StaffDiscountRequest: 'StaffDiscountRequest',
   StaffDiscountAuditEvent: 'StaffDiscountAuditEvent',
+  GuestBookingSnapshot: 'GuestBookingSnapshot',
+  GuestBookingToken: 'GuestBookingToken',
+  BookingClaimAudit: 'BookingClaimAudit',
+  Invoice: 'Invoice',
   CommissionRule: 'CommissionRule',
   CommissionRuleAuditLog: 'CommissionRuleAuditLog',
   Commission: 'Commission',
@@ -306,6 +311,19 @@ export const RefreshTokenScalarFieldEnum = {
 export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum]
 
 
+export const EmailVerificationTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  email: 'email',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  verifiedAt: 'verifiedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type EmailVerificationTokenScalarFieldEnum = (typeof EmailVerificationTokenScalarFieldEnum)[keyof typeof EmailVerificationTokenScalarFieldEnum]
+
+
 export const PricingRuleScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -342,7 +360,8 @@ export const BookingScalarFieldEnum = {
   fulfillmentStatus: 'fulfillmentStatus',
   notes: 'notes',
   internalNotes: 'internalNotes',
-  assignedStaffId: 'assignedStaffId'
+  assignedStaffId: 'assignedStaffId',
+  isGuest: 'isGuest'
 } as const
 
 export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
@@ -425,6 +444,72 @@ export const StaffDiscountAuditEventScalarFieldEnum = {
 } as const
 
 export type StaffDiscountAuditEventScalarFieldEnum = (typeof StaffDiscountAuditEventScalarFieldEnum)[keyof typeof StaffDiscountAuditEventScalarFieldEnum]
+
+
+export const GuestBookingSnapshotScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  guestName: 'guestName',
+  guestEmail: 'guestEmail',
+  guestPhone: 'guestPhone',
+  createdAt: 'createdAt'
+} as const
+
+export type GuestBookingSnapshotScalarFieldEnum = (typeof GuestBookingSnapshotScalarFieldEnum)[keyof typeof GuestBookingSnapshotScalarFieldEnum]
+
+
+export const GuestBookingTokenScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  tokenHash: 'tokenHash',
+  email: 'email',
+  purpose: 'purpose',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  revokedAt: 'revokedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type GuestBookingTokenScalarFieldEnum = (typeof GuestBookingTokenScalarFieldEnum)[keyof typeof GuestBookingTokenScalarFieldEnum]
+
+
+export const BookingClaimAuditScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  previousUserId: 'previousUserId',
+  newUserId: 'newUserId',
+  claimedByEmail: 'claimedByEmail',
+  claimMethod: 'claimMethod',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+} as const
+
+export type BookingClaimAuditScalarFieldEnum = (typeof BookingClaimAuditScalarFieldEnum)[keyof typeof BookingClaimAuditScalarFieldEnum]
+
+
+export const InvoiceScalarFieldEnum = {
+  id: 'id',
+  invoiceNumber: 'invoiceNumber',
+  bookingId: 'bookingId',
+  paymentId: 'paymentId',
+  type: 'type',
+  status: 'status',
+  currency: 'currency',
+  subtotalAmount: 'subtotalAmount',
+  discountAmount: 'discountAmount',
+  taxAmount: 'taxAmount',
+  totalAmount: 'totalAmount',
+  paidAmount: 'paidAmount',
+  dueAmount: 'dueAmount',
+  issuedAt: 'issuedAt',
+  pdfUrl: 'pdfUrl',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
 
 
 export const CommissionRuleScalarFieldEnum = {

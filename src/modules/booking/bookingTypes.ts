@@ -34,6 +34,36 @@ export interface CreateStaffBookingInput {
   };
 }
 
+export interface CreateGuestBookingInput {
+  customer: {
+    name: string;
+    email: string;
+    phone?: string | null;
+  };
+  serviceId: string;
+  availabilityId?: string;
+  travelDate?: string;
+  adults?: number;
+  children?: number;
+  infants?: number;
+  notes?: string;
+  referralCode?: string;
+}
+
+export interface GuestBookingResult {
+  booking: BookingResponse;
+  guestSnapshot: {
+    guestName: string;
+    guestEmail: string;
+    guestPhone: string | null;
+  };
+  accessToken: string;
+  paymentLink: {
+    token: string;
+    paymentUrl: string;
+  };
+}
+
 export interface UpdateBookingPriceInput {
   proposedPrice: number | string;
 }

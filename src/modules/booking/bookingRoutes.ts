@@ -4,9 +4,11 @@ import validate from "../../shared/middleware/validate.js";
 import authMiddleware from "../../shared/middleware/authMiddleware.js";
 import requireRole from "../../shared/middleware/requireRole.js";
 import requirePermission from "../../shared/middleware/requirePermission.js";
+import { guestCheckoutRateLimiter } from "../../shared/middleware/rateLimiter.js";
 import {
   createBookingSchema,
   createStaffBookingSchema,
+  createGuestBookingSchema,
   updateBookingPriceSchema,
   reviewBookingPriceSchema,
   reviewPendingBookingSchema,
@@ -17,6 +19,51 @@ import {
 } from "./bookingValidators.js";
 
 const router = Router();
+
+/**
+ * @openapi
+ * /api/v1/bookings/guest:
+ *   post:
+ *     tags:
+ *       - Guest Bookings
+ *     summary: Create an anonymous guest booking
+ *     description: Public visitors can reserve a tour as a guest without creating an account. Generates an immutable guest snapshot, secure access token, and active payment link.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [customer, serviceId]
+ *             properties:
+ *               customer:
+ *                 type: object
+ *                 required: [name, email]
+ *                 properties:
+ *                   name: { type: string }
+ *                   email: { type: string, format: email }
+ *                   phone: { type: string, nullable: true }
+ *               serviceId: { type: string, format: uuid }
+ *               travelDate: { type: string }
+ *               adults: { type: integer, minimum: 1 }
+ *               children: { type: integer, minimum: 0 }
+ *               infants: { type: integer, minimum: 0 }
+ *               notes: { type: string }
+ *               referralCode: { type: string }
+ *     responses:
+ *       201:
+ *         description: Guest booking created successfully
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       409:
+ *         $ref: '#/components/responses/Conflict'
+ */
+router.post(
+  "/bookings/guest",
+  guestCheckoutRateLimiter,
+  validate(createGuestBookingSchema),
+  bookingController.createGuestBooking
+);
 
 /**
  * @openapi

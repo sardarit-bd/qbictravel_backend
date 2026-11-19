@@ -1,48 +1,51 @@
 model User {
-  id                    String                    @id @default(uuid())
-  name                  String
-  email                 String                    @unique
-  createdAt             DateTime                  @default(now())
-  password              String
-  phone                 String?
-  avatarUrl             String?
-  avatarKey             String?
-  role                  UserRole                  @default(customer)
-  status                UserStatus                @default(active)
-  tokenVersion          Int                       @default(0)
-  updatedAt             DateTime                  @updatedAt
-  deletedAt             DateTime?
-  agentProfile          AgentProfile?
-  agentBookings         Booking[]                 @relation("AgentBookings")
-  createdBookings       Booking[]                 @relation("CreatedBookings")
-  assignedBookings      Booking[]                 @relation("StaffAssignments")
-  customerBookings      Booking[]                 @relation("CustomerBookings")
-  agentCommissions      Commission[]              @relation("AgentCommissions")
-  commissionAdjustments CommissionAdjustment[]    @relation("CommissionAdjustments")
-  commissionRules       CommissionRule[]          @relation("CommissionRuleAuthor")
-  commissionRuleAudits  CommissionRuleAuditLog[]  @relation("CommissionRuleAudits")
-  uploadedMedia         Media[]
-  mediaUploadAuths      MediaUploadAuth[]
-  notificationSettings  NotificationSetting[]     @relation("NotificationSettingEditor")
-  passwordResetTokens   PasswordResetToken[]
-  customerPayments      Payment[]                 @relation("CustomerPayments")
-  reviewedPayments      Payment[]                 @relation("PaymentReviews")
-  createdPaymentLinks   PaymentLink[]             @relation("PaymentLinkCreator")
-  initiatedRefunds      PaymentRefund[]           @relation("RefundInitiators")
-  adminApprovals        PriceApproval[]           @relation("AdminApprovals")
-  staffDiscountRequests StaffDiscountRequest[]    @relation("StaffDiscountRequests")
-  reviewedDiscounts     StaffDiscountRequest[]    @relation("AdminDiscountReviews")
-  discountAuditEvents   StaffDiscountAuditEvent[] @relation("DiscountAuditActor")
-  settingAuditLogs      SettingAuditLog[]         @relation("SettingAuditActor")
-  grantedPermissions    StaffPermission[]         @relation("PermissionAssignedBy")
-  staffPermissions      StaffPermission[]         @relation("UserStaffPermissions")
-  editedSettings        SystemSetting[]           @relation("SettingEditor")
-  sessions              Session[]
-  affiliateProfile           Affiliate?                 @relation("UserAffiliateProfile")
-  approvedAffiliates         Affiliate[]                @relation("AffiliateApprover")
-  processedAffiliatePayouts  AffiliatePayout[]          @relation("AffiliatePayoutProcessor")
-  affiliateAuditEvents       AffiliateAuditEvent[]      @relation("AffiliateAuditActor")
-  updatedAffiliateSettings   AffiliateSettings[]        @relation("AffiliateSettingsEditor")
+  id                          String                    @id @default(uuid())
+  name                        String
+  email                       String                    @unique
+  createdAt                   DateTime                  @default(now())
+  password                    String
+  phone                       String?
+  avatarUrl                   String?
+  avatarKey                   String?
+  role                        UserRole                  @default(customer)
+  status                      UserStatus                @default(active)
+  tokenVersion                Int                       @default(0)
+  updatedAt                   DateTime                  @updatedAt
+  deletedAt                   DateTime?
+  agentProfile                AgentProfile?
+  agentBookings               Booking[]                 @relation("AgentBookings")
+  createdBookings             Booking[]                 @relation("CreatedBookings")
+  assignedBookings            Booking[]                 @relation("StaffAssignments")
+  customerBookings            Booking[]                 @relation("CustomerBookings")
+  agentCommissions            Commission[]              @relation("AgentCommissions")
+  commissionAdjustments       CommissionAdjustment[]    @relation("CommissionAdjustments")
+  commissionRules             CommissionRule[]          @relation("CommissionRuleAuthor")
+  commissionRuleAudits        CommissionRuleAuditLog[]  @relation("CommissionRuleAudits")
+  uploadedMedia               Media[]
+  mediaUploadAuths            MediaUploadAuth[]
+  notificationSettings        NotificationSetting[]     @relation("NotificationSettingEditor")
+  passwordResetTokens         PasswordResetToken[]
+  customerPayments            Payment[]                 @relation("CustomerPayments")
+  reviewedPayments            Payment[]                 @relation("PaymentReviews")
+  createdPaymentLinks         PaymentLink[]             @relation("PaymentLinkCreator")
+  initiatedRefunds            PaymentRefund[]           @relation("RefundInitiators")
+  adminApprovals              PriceApproval[]           @relation("AdminApprovals")
+  staffDiscountRequests       StaffDiscountRequest[]    @relation("StaffDiscountRequests")
+  reviewedDiscounts           StaffDiscountRequest[]    @relation("AdminDiscountReviews")
+  discountAuditEvents         StaffDiscountAuditEvent[] @relation("DiscountAuditActor")
+  settingAuditLogs            SettingAuditLog[]         @relation("SettingAuditActor")
+  grantedPermissions          StaffPermission[]         @relation("PermissionAssignedBy")
+  staffPermissions            StaffPermission[]         @relation("UserStaffPermissions")
+  editedSettings              SystemSetting[]           @relation("SettingEditor")
+  sessions                    Session[]
+  emailVerificationTokens     EmailVerificationToken[]
+  claimAuditsAsPreviousUser   BookingClaimAudit[]       @relation("ClaimAuditsAsPreviousUser")
+  claimAuditsAsNewUser        BookingClaimAudit[]       @relation("ClaimAuditsAsNewUser")
+  affiliateProfile            Affiliate?                @relation("UserAffiliateProfile")
+  approvedAffiliates          Affiliate[]               @relation("AffiliateApprover")
+  processedAffiliatePayouts   AffiliatePayout[]         @relation("AffiliatePayoutProcessor")
+  affiliateAuditEvents        AffiliateAuditEvent[]     @relation("AffiliateAuditActor")
+  updatedAffiliateSettings    AffiliateSettings[]       @relation("AffiliateSettingsEditor")
   createdAffiliateCommissions AffiliateCommission[]     @relation("AffiliateCommissionCreator")
 
   @@index([deletedAt])

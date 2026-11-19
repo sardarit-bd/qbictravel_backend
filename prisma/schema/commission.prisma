@@ -1,16 +1,16 @@
 model CommissionRule {
-  id          String                 @id @default(uuid())
+  id          String                   @id @default(uuid())
   name        String?
   description String?
   rateType    CommissionRateType
-  rateValue   Decimal                @db.Decimal(10, 2)
-  status      CommissionPolicyStatus @default(DRAFT)
-  isActive    Boolean                @default(false)
+  rateValue   Decimal                  @db.Decimal(10, 2)
+  status      CommissionPolicyStatus   @default(DRAFT)
+  isActive    Boolean                  @default(false)
   createdById String
-  createdAt   DateTime               @default(now())
-  updatedAt   DateTime               @default(now()) @updatedAt
+  createdAt   DateTime                 @default(now())
+  updatedAt   DateTime                 @default(now()) @updatedAt
   commissions Commission[]
-  createdBy   User                   @relation("CommissionRuleAuthor", fields: [createdById], references: [id])
+  createdBy   User                     @relation("CommissionRuleAuthor", fields: [createdById], references: [id])
   auditLogs   CommissionRuleAuditLog[]
 
   @@index([status])

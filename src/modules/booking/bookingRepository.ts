@@ -12,6 +12,7 @@ export const createBooking = async (
     source?: "AGENT" | "ADMIN" | "CUSTOMER" | "DIRECT";
     historyAction?: string;
     actorRole?: string;
+    isGuest?: boolean;
   },
   txClient?: any
 ) => {
@@ -31,6 +32,7 @@ export const createBooking = async (
         status: input.status as any,
         requiresApproval: input.requiresApproval,
         notes: input.notes || null,
+        isGuest: input.isGuest ?? false,
       },
       include: {
         priceApproval: true,
