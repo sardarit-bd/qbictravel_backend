@@ -4,11 +4,18 @@ import env from "../../config/env.js";
 import logger from "../logger/logger.js";
 import AppError from "./AppError.js";
 
+export interface MailAttachment {
+  filename: string;
+  content: Buffer | string;
+  contentType?: string;
+}
+
 export interface MailMessage {
   to: string;
   subject: string;
   text: string;
   html?: string;
+  attachments?: MailAttachment[];
 }
 
 export interface MailDeliveryResult {
@@ -107,6 +114,7 @@ export const sendEmail = async (message: MailMessage): Promise<MailDeliveryResul
         subject: message.subject,
         text: message.text,
         html: message.html,
+        attachments: message.attachments,
       });
 
       const accepted = Array.isArray(info.accepted)

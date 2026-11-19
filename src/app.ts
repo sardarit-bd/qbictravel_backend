@@ -24,6 +24,7 @@ import permissionRoutes, { myPermissionsRouter } from "./modules/permission/perm
 import agentRoutes from "./modules/agent/agentRoutes.js";
 import settingRoutes from "./modules/setting/settingRoutes.js";
 import customerRoutes from "./modules/customer/customerRoutes.js";
+import invoiceRoutes from "./modules/invoice/invoiceRoutes.js";
 import discountRoutes from "./modules/discount/discountRoutes.js";
 import {
   publicAffiliateRouter,
@@ -173,6 +174,7 @@ app.use("/api/v1", notificationRoutes);
 app.use("/api/v1", commissionRoutes);
 app.use("/api/v1", reportRoutes);
 app.use("/api/v1", customerRoutes);
+app.use("/api/v1", invoiceRoutes);
 app.use("/api/v1", discountRoutes);
 app.use("/api/v1/affiliates", publicAffiliateRouter);
 app.use("/api/v1/affiliate", affiliatePortalRouter);

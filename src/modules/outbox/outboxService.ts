@@ -153,6 +153,7 @@ export const processOutboxMessage = async (
 
       case "SEND_BOOKING_VOUCHER_EMAIL": {
         const bookingId = payload.bookingId;
+        const paymentId = payload.paymentId;
         const decision = payload.decision || "CONFIRMED";
         if (!bookingId) {
           throw new Error("Missing bookingId in SEND_BOOKING_VOUCHER_EMAIL payload");
@@ -160,7 +161,7 @@ export const processOutboxMessage = async (
         if (handlers?.onNotification) {
           await handlers.onNotification(bookingId, decision);
         } else {
-          await notificationService.notifyPaymentDecision(bookingId, decision);
+          await notificationService.notifyPaymentDecision(bookingId, decision, paymentId);
         }
         break;
       }

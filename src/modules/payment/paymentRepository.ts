@@ -344,7 +344,7 @@ export const transitionPayment = async (params: {
 
       await enqueueOutboxMessage(tx, {
         topic: "SEND_BOOKING_VOUCHER_EMAIL",
-        payload: { bookingId: params.bookingId, decision: "CONFIRMED" },
+        payload: { bookingId: params.bookingId, paymentId: params.paymentId, decision: "CONFIRMED" },
         dedupeKey: `voucher_email:${params.paymentId}`,
       });
     }
@@ -761,7 +761,7 @@ export const verifyStripePaymentAtomically = async (params: {
 
     await enqueueOutboxMessage(tx, {
       topic: "SEND_BOOKING_VOUCHER_EMAIL",
-      payload: { bookingId: params.bookingId, decision: "CONFIRMED" },
+      payload: { bookingId: params.bookingId, paymentId: payment.id, decision: "CONFIRMED" },
       dedupeKey: `voucher_email:${payment.id}`,
     });
 
@@ -1106,7 +1106,7 @@ export const recordVerifiedPayPalPayment = async (params: {
 
         await enqueueOutboxMessage(tx, {
           topic: "SEND_BOOKING_VOUCHER_EMAIL",
-          payload: { bookingId: params.bookingId, decision: "CONFIRMED" },
+          payload: { bookingId: params.bookingId, paymentId: payment.id, decision: "CONFIRMED" },
           dedupeKey: `voucher_email:${payment.id}`,
         });
       }
