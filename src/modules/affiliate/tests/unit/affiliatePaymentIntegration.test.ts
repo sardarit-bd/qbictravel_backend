@@ -197,6 +197,37 @@ describe("Affiliate Payment & Refund Integration", () => {
         currency: "THB",
       })).created
     ).toBe(false);
+    // 4. Existing Affiliate profile owned by an ineligible role (agent/staff/admin)
+    for (const ineligibleRole of ["agent", "staff", "admin"]) {
+      const roleCtx = createMockTx();
+      roleCtx.tx.booking.findUnique.mockResolvedValue({
+        id: `booking-${ineligibleRole}`,
+        customerId: "cust-1",
+        agentId: null,
+        source: "CUSTOMER",
+        currency: "THB",
+        basePrice: "1000.00",
+        finalPrice: "1000.00",
+        affiliateAttribution: {
+          affiliateId: "aff-ineligible",
+          affiliate: {
+            id: "aff-ineligible",
+            userId: "u-ineligible",
+            status: "APPROVED",
+            commissionRateOverride: null,
+            user: { id: "u-ineligible", name: "Staff", email: "s@ex.com", role: ineligibleRole },
+          },
+        },
+      });
+      expect(
+        (await recordAffiliateCommissionForVerifiedPayment(roleCtx.tx, {
+          paymentId: `p-${ineligibleRole}`,
+          bookingId: `booking-${ineligibleRole}`,
+          paidAmount: 1000,
+          currency: "THB",
+        })).created
+      ).toBe(false);
+    }
   });
 
   it("handles partial refund, full refund, reversal cap, and duplicate refund idempotency without deleting history", async () => {

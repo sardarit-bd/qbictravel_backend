@@ -59,7 +59,7 @@ export async function recordAffiliateCommissionForVerifiedPayment(
       affiliateAttribution: {
         include: {
           affiliate: {
-            include: { user: { select: { id: true, name: true, email: true } } },
+            include: { user: { select: { id: true, name: true, email: true, role: true } } },
           },
         },
       },
@@ -77,6 +77,15 @@ export async function recordAffiliateCommissionForVerifiedPayment(
 
   const { affiliate } = booking.affiliateAttribution;
   if (!affiliate || affiliate.status !== "APPROVED") {
+    return { created: false, commission: null };
+  }
+
+  // Ineligible roles (Agent, Staff, Admin) can never generate affiliate commissions
+  if (
+    affiliate.user?.role === "agent" ||
+    affiliate.user?.role === "staff" ||
+    affiliate.user?.role === "admin"
+  ) {
     return { created: false, commission: null };
   }
 

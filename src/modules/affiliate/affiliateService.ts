@@ -17,6 +17,17 @@ import { affiliateNotification } from "./affiliateNotification.js";
 
 type DbClient = Prisma.TransactionClient | typeof prisma;
 
+const INELIGIBLE_ROLES = new Set(["agent", "staff", "admin"]);
+
+function assertEligibleForAffiliate(role: string): void {
+  if (INELIGIBLE_ROLES.has(role)) {
+    throw new AppError(
+      "Agent, Staff, and Admin accounts are not eligible for the Affiliate Program",
+      403
+    );
+  }
+}
+
 async function generateUniqueCode(db: DbClient): Promise<string> {
   for (let i = 0; i < 10; i++) {
     const candidate = generateAffiliateCode();
@@ -214,11 +225,12 @@ export const affiliateService = {
   ) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, name: true, email: true, status: true },
+      select: { id: true, name: true, email: true, role: true, status: true },
     });
     if (!user || user.status !== "active") {
       throw new AppError("User account is not active", 403);
     }
+    assertEligibleForAffiliate(user.role);
 
     const existing = await prisma.affiliate.findUnique({ where: { userId } });
     if (existing) {
@@ -336,9 +348,10 @@ export const affiliateService = {
   async requireApprovedAffiliate(userId: string) {
     const affiliate = await prisma.affiliate.findUnique({
       where: { userId },
-      include: { user: { select: { id: true, name: true, email: true } } },
+      include: { user: { select: { id: true, name: true, email: true, role: true } } },
     });
     if (!affiliate) throw new AppError("Affiliate profile not found", 404);
+    assertEligibleForAffiliate(affiliate.user.role);
     if (affiliate.status !== "APPROVED") {
       throw new AppError(`Affiliate account is ${affiliate.status}`, 403);
     }
@@ -683,13 +696,22 @@ export const affiliateService = {
   },
 
   async approveAffiliate(affiliateId: string, adminId: string) {
-    const affiliate = await prisma.affiliate.findUnique({
-      where: { id: affiliateId },
-      include: { user: { select: { id: true, name: true, email: true, role: true } } },
-    });
-    if (!affiliate) throw new AppError("Affiliate not found", 404);
-
     const updated = await prisma.$transaction(async (tx) => {
+      const affiliate = await tx.affiliate.findUnique({
+        where: { id: affiliateId },
+        include: { user: { select: { id: true, name: true, email: true, role: true } } },
+      });
+      if (!affiliate) throw new AppError("Affiliate not found", 404);
+
+      // Recheck eligibility inside transaction — never approve Agent/Staff/Admin
+      if (INELIGIBLE_ROLES.has(affiliate.user.role)) {
+        throw new AppError(
+          `Cannot approve affiliate application for ineligible role (${affiliate.user.role})`,
+          409
+        );
+      }
+
+      // Preserve User.role — never overwrite Customer/Agent/Staff/Admin primary role
       const aff = await tx.affiliate.update({
         where: { id: affiliateId },
         data: {
@@ -700,13 +722,6 @@ export const affiliateService = {
           suspendedAt: null,
         },
       });
-      // Upgrade customer role to affiliate while keeping existing admin/staff/agent roles intact
-      if (affiliate.user.role === "customer") {
-        await tx.user.update({
-          where: { id: affiliate.userId },
-          data: { role: "affiliate" },
-        });
-      }
       await tx.affiliateAuditEvent.create({
         data: {
           affiliateId: aff.id,
@@ -717,16 +732,16 @@ export const affiliateService = {
           actorRole: "admin",
         },
       });
-      return aff;
+      return { aff, user: affiliate.user };
     });
 
     void affiliateNotification.notifyAffiliateApplicationApproved({
-      email: affiliate.user.email,
-      name: affiliate.user.name,
-      code: updated.code,
+      email: updated.user.email,
+      name: updated.user.name,
+      code: updated.aff.code,
     });
 
-    return updated;
+    return updated.aff;
   },
 
   async rejectAffiliate(affiliateId: string, adminId: string, reason: string) {

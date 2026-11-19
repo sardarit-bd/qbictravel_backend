@@ -84,6 +84,21 @@ describe("Affiliate API routes", () => {
     expect(res.body.data.status).toBe("PENDING");
   });
 
+  it("blocks Agent, Staff, and Admin from applying or accessing Affiliate portal endpoints (403)", async () => {
+    for (const role of ["agent", "staff", "admin"]) {
+      const applyRes = await request(app)
+        .post("/api/v1/affiliate/apply")
+        .set("x-test-role", role)
+        .send({ promotionChannels: "My channel" });
+      expect(applyRes.status).toBe(403);
+
+      const dashRes = await request(app)
+        .get("/api/v1/affiliate/dashboard")
+        .set("x-test-role", role);
+      expect(dashRes.status).toBe(403);
+    }
+  });
+
   it("GET /api/v1/admin/affiliates/overview blocks non-admin roles with 403", async () => {
     const res = await request(app)
       .get("/api/v1/admin/affiliates/overview")

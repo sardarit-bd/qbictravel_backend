@@ -22,7 +22,17 @@ publicAffiliateRouter.post("/track-click", validate(trackClickSchema), affiliate
 
 // 2. Affiliate Portal Router (/api/v1/affiliate)
 export const affiliatePortalRouter = Router();
-affiliatePortalRouter.use(authMiddleware);
+affiliatePortalRouter.use(authMiddleware, (req, res, next) => {
+  const role = req.user?.role;
+  if (role === "agent" || role === "staff" || role === "admin") {
+    res.status(403).json({
+      success: false,
+      message: "Agent, Staff, and Admin accounts are not eligible for the Affiliate Program",
+    });
+    return;
+  }
+  next();
+});
 affiliatePortalRouter.post("/apply", validate(applyAffiliateSchema), affiliateController.apply);
 affiliatePortalRouter.get("/me", affiliateController.getMyProfile);
 affiliatePortalRouter.patch("/profile", validate(updateAffiliateProfileSchema), affiliateController.updateMyProfile);
