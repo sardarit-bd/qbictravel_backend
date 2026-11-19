@@ -99,6 +99,24 @@ export const affiliateController = {
     }
   },
 
+  async updateMyLink(req: Request, res: Response, next: NextFunction) {
+    try {
+      const link = await affiliateService.updateMyLink(req.user!.id, String(req.params.id), req.body);
+      sendResponse(res, 200, true, "Affiliate link updated", link);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async deleteMyLink(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await affiliateService.deleteMyLink(req.user!.id, String(req.params.id));
+      sendResponse(res, 200, true, "Affiliate link deleted successfully", result);
+    } catch (err) {
+      next(err);
+    }
+  },
+
   async getMyClicks(req: Request, res: Response, next: NextFunction) {
     try {
       const { page, limit } = parsePagination(req.query);

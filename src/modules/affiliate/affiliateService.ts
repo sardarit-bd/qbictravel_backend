@@ -115,6 +115,21 @@ export const affiliateService = {
         select: { id: true },
       });
       if (link) validLinkId = link.id;
+    } else if (params.landingUrl) {
+      // Resolve link by destination URL path (e.g. /tours/uuid or /)
+      const cleanPath = params.landingUrl.split("?")[0]?.trim() || "/";
+      const matchedLink = await prisma.affiliateLink.findFirst({
+        where: {
+          affiliateId: affiliate.id,
+          targetPath: cleanPath,
+          isActive: true,
+        },
+        orderBy: { createdAt: "desc" },
+        select: { id: true },
+      });
+      if (matchedLink) {
+        validLinkId = matchedLink.id;
+      }
     }
 
     const click = await prisma.$transaction(async (tx) => {
@@ -402,26 +417,97 @@ export const affiliateService = {
     input: { label?: string | null; tourId?: string | null; targetPath?: string }
   ) {
     const affiliate = await this.requireApprovedAffiliate(userId);
-    let targetPath = input.targetPath || "/";
+    let targetPath = input.targetPath?.trim() || "/";
+    let campaignLabel = input.label?.trim() || null;
+
     if (input.tourId) {
-      const tour = await prisma.service.findUnique({
-        where: { id: input.tourId },
-        select: { id: true },
+      const tour = await prisma.service.findFirst({
+        where: { id: input.tourId, status: "PUBLISHED" },
+        select: { id: true, name: true },
       });
-      if (!tour) throw new AppError("Tour not found", 404);
-      if (targetPath === "/") {
-        targetPath = `/tours/${tour.id}`;
+      if (!tour) {
+        throw new AppError("Selected tour is not found or is not publicly published", 404);
+      }
+      targetPath = `/tours/${tour.id}`;
+      if (!campaignLabel) {
+        campaignLabel = tour.name;
+      }
+    } else {
+      targetPath = "/";
+      if (!campaignLabel) {
+        campaignLabel = "PhuketTours Website";
       }
     }
 
     return prisma.affiliateLink.create({
       data: {
         affiliateId: affiliate.id,
-        label: input.label ?? null,
+        label: campaignLabel,
         tourId: input.tourId ?? null,
         targetPath,
       },
     });
+  },
+
+  async updateMyLink(
+    userId: string,
+    linkId: string,
+    input: { label?: string; isActive?: boolean }
+  ) {
+    const affiliate = await this.requireApprovedAffiliate(userId);
+    const existing = await prisma.affiliateLink.findFirst({
+      where: { id: linkId, affiliateId: affiliate.id },
+    });
+    if (!existing) {
+      throw new AppError("Affiliate link not found", 404);
+    }
+
+    return prisma.affiliateLink.update({
+      where: { id: existing.id },
+      data: {
+        label: input.label !== undefined ? input.label.trim() : existing.label,
+        isActive: input.isActive !== undefined ? input.isActive : existing.isActive,
+      },
+    });
+  },
+
+  async deleteMyLink(userId: string, linkId: string) {
+    const affiliate = await this.requireApprovedAffiliate(userId);
+    const existing = await prisma.affiliateLink.findFirst({
+      where: { id: linkId, affiliateId: affiliate.id },
+      include: {
+        _count: {
+          select: {
+            clicks: true,
+          },
+        },
+      },
+    });
+    if (!existing) {
+      throw new AppError("Affiliate link not found", 404);
+    }
+
+    // Safety rule: If the link has historical click records or was tracked,
+    // de-activate it (isActive: false) and mark label with deleted suffix if not already,
+    // OR if zero clicks exist, safely delete the link.
+    // In both cases, past attribution is 100% preserved.
+    if (existing._count.clicks > 0 || existing.clickCount > 0) {
+      return prisma.affiliateLink.update({
+        where: { id: existing.id },
+        data: {
+          isActive: false,
+          label: existing.label?.startsWith("[Deleted] ")
+            ? existing.label
+            : `[Deleted] ${existing.label || "Link"}`,
+        },
+      });
+    }
+
+    await prisma.affiliateLink.delete({
+      where: { id: existing.id },
+    });
+
+    return { id: existing.id, deleted: true };
   },
 
   async getMyClicks(userId: string, page = 1, limit = 20) {

@@ -13,21 +13,9 @@ import {
 
 const router = Router();
 
-router.use(authMiddleware);
-
-/**
- * @openapi
- * /api/v1/staff/bookings/{bookingId}/discount-requests:
- *   post:
- *     tags:
- *       - Staff Discount Requests
- *     summary: Submit a discount request for a staff-managed booking
- *     security:
- *       - bearerAuth: []
- *       - cookieAuth: []
- */
 router.post(
   "/staff/bookings/:bookingId/discount-requests",
+  authMiddleware,
   requirePermission("bookings.create"),
   validate(bookingIdParamSchema, "params"),
   validate(createStaffDiscountRequestSchema),
@@ -47,6 +35,7 @@ router.post(
  */
 router.get(
   "/admin/discounts",
+  authMiddleware,
   requirePermission("bookings.approve_price"),
   validate(listStaffDiscountRequestsQuerySchema, "query"),
   discountController.listStaffDiscountRequests
@@ -65,6 +54,7 @@ router.get(
  */
 router.get(
   "/admin/discounts/summary",
+  authMiddleware,
   requirePermission("bookings.approve_price"),
   discountController.getStaffDiscountSummary
 );
@@ -82,6 +72,7 @@ router.get(
  */
 router.post(
   "/admin/discounts/:requestId/review",
+  authMiddleware,
   requirePermission("bookings.approve_price"),
   validate(discountRequestIdParamSchema, "params"),
   validate(reviewStaffDiscountRequestSchema),

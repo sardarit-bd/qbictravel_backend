@@ -29,7 +29,12 @@ export const createAffiliateLinkSchema = yup.object({
     .trim()
     .matches(/^\/[^\s]*$/, "targetPath must start with /")
     .max(500)
-    .default("/"),
+    .optional(),
+});
+
+export const updateAffiliateLinkSchema = yup.object({
+  label: yup.string().trim().max(120).optional(),
+  isActive: yup.boolean().optional(),
 });
 
 export const requestPayoutSchema = yup.object({

@@ -31,6 +31,9 @@ vi.mock("../../affiliateService.js", () => ({
     getMyProfile: vi.fn(),
     getMyDashboard: vi.fn(),
     requestPayout: vi.fn(),
+    createMyLink: vi.fn(),
+    updateMyLink: vi.fn(),
+    deleteMyLink: vi.fn(),
     getAdminOverview: vi.fn(),
     approveAffiliate: vi.fn(),
     rejectAffiliate: vi.fn(),
@@ -131,5 +134,59 @@ describe("Affiliate API routes", () => {
     expect(res.status).toBe(200);
     expect(res.body.data.status).toBe("PAID");
     expect(res.body.data.transactionReference).toBe("TXN-2026-001");
+  });
+
+  it("POST /api/v1/affiliate/links creates an affiliate referral link", async () => {
+    vi.mocked(affiliateService.createMyLink).mockResolvedValue({
+      id: "link-1",
+      affiliateId: "aff-1",
+      label: "PhuketTours Website",
+      tourId: null,
+      targetPath: "/",
+      isActive: true,
+      clickCount: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as any);
+
+    const res = await request(app)
+      .post("/api/v1/affiliate/links")
+      .set("x-test-role", "customer")
+      .send({ label: "PhuketTours Website" });
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.label).toBe("PhuketTours Website");
+    expect(res.body.data.targetPath).toBe("/");
+  });
+
+  it("PATCH /api/v1/affiliate/links/:id updates link status (archiving)", async () => {
+    vi.mocked(affiliateService.updateMyLink).mockResolvedValue({
+      id: "link-1",
+      affiliateId: "aff-1",
+      label: "PhuketTours Website",
+      isActive: false,
+    } as any);
+
+    const res = await request(app)
+      .patch("/api/v1/affiliate/links/link-1")
+      .set("x-test-role", "customer")
+      .send({ isActive: false });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.isActive).toBe(false);
+  });
+
+  it("DELETE /api/v1/affiliate/links/:id removes or deactivates affiliate link", async () => {
+    vi.mocked(affiliateService.deleteMyLink).mockResolvedValue({
+      id: "link-1",
+      deleted: true,
+    } as any);
+
+    const res = await request(app)
+      .delete("/api/v1/affiliate/links/link-1")
+      .set("x-test-role", "customer");
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.deleted).toBe(true);
   });
 });

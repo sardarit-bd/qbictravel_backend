@@ -6,6 +6,7 @@ import validate from "../../shared/middleware/validate.js";
 import {
   applyAffiliateSchema,
   createAffiliateLinkSchema,
+  updateAffiliateLinkSchema,
   markPayoutPaidSchema,
   rejectReasonSchema,
   requestPayoutSchema,
@@ -39,6 +40,8 @@ affiliatePortalRouter.patch("/profile", validate(updateAffiliateProfileSchema), 
 affiliatePortalRouter.get("/dashboard", affiliateController.getMyDashboard);
 affiliatePortalRouter.get("/links", affiliateController.listMyLinks);
 affiliatePortalRouter.post("/links", validate(createAffiliateLinkSchema), affiliateController.createMyLink);
+affiliatePortalRouter.patch("/links/:id", validate(updateAffiliateLinkSchema), affiliateController.updateMyLink);
+affiliatePortalRouter.delete("/links/:id", affiliateController.deleteMyLink);
 affiliatePortalRouter.get("/clicks", affiliateController.getMyClicks);
 affiliatePortalRouter.get("/bookings", affiliateController.getMyBookings);
 affiliatePortalRouter.get("/commissions", affiliateController.getMyCommissions);
