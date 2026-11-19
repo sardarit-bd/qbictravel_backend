@@ -333,6 +333,8 @@ export type PaymentWhereInput = {
   reviewedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   refunds?: Prisma.PaymentRefundListRelationFilter
   stripeWebhookEvents?: Prisma.StripeWebhookEventListRelationFilter
+  affiliateCommissions?: Prisma.AffiliateCommissionListRelationFilter
+  invoices?: Prisma.InvoiceListRelationFilter
 }
 
 export type PaymentOrderByWithRelationInput = {
@@ -360,6 +362,8 @@ export type PaymentOrderByWithRelationInput = {
   reviewedBy?: Prisma.UserOrderByWithRelationInput
   refunds?: Prisma.PaymentRefundOrderByRelationAggregateInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventOrderByRelationAggregateInput
+  affiliateCommissions?: Prisma.AffiliateCommissionOrderByRelationAggregateInput
+  invoices?: Prisma.InvoiceOrderByRelationAggregateInput
 }
 
 export type PaymentWhereUniqueInput = Prisma.AtLeast<{
@@ -391,6 +395,8 @@ export type PaymentWhereUniqueInput = Prisma.AtLeast<{
   reviewedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   refunds?: Prisma.PaymentRefundListRelationFilter
   stripeWebhookEvents?: Prisma.StripeWebhookEventListRelationFilter
+  affiliateCommissions?: Prisma.AffiliateCommissionListRelationFilter
+  invoices?: Prisma.InvoiceListRelationFilter
 }, "id" | "method_reference">
 
 export type PaymentOrderByWithAggregationInput = {
@@ -467,6 +473,8 @@ export type PaymentCreateInput = {
   reviewedBy?: Prisma.UserCreateNestedOneWithoutReviewedPaymentsInput
   refunds?: Prisma.PaymentRefundCreateNestedManyWithoutPaymentInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventCreateNestedManyWithoutPaymentInput
+  affiliateCommissions?: Prisma.AffiliateCommissionCreateNestedManyWithoutPaymentInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentUncheckedCreateInput = {
@@ -491,6 +499,8 @@ export type PaymentUncheckedCreateInput = {
   updatedAt?: Date | string
   refunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutPaymentInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventUncheckedCreateNestedManyWithoutPaymentInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUncheckedCreateNestedManyWithoutPaymentInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentUpdateInput = {
@@ -515,6 +525,8 @@ export type PaymentUpdateInput = {
   reviewedBy?: Prisma.UserUpdateOneWithoutReviewedPaymentsNestedInput
   refunds?: Prisma.PaymentRefundUpdateManyWithoutPaymentNestedInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventUpdateManyWithoutPaymentNestedInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUpdateManyWithoutPaymentNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateInput = {
@@ -539,6 +551,8 @@ export type PaymentUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutPaymentNestedInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventUncheckedUpdateManyWithoutPaymentNestedInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUncheckedUpdateManyWithoutPaymentNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentCreateManyInput = {
@@ -602,6 +616,11 @@ export type PaymentUncheckedUpdateManyInput = {
   reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PaymentNullableScalarRelationFilter = {
+  is?: Prisma.PaymentWhereInput | null
+  isNot?: Prisma.PaymentWhereInput | null
 }
 
 export type PaymentListRelationFilter = {
@@ -693,14 +712,25 @@ export type PaymentSumOrderByAggregateInput = {
   amount?: Prisma.SortOrder
 }
 
-export type PaymentNullableScalarRelationFilter = {
-  is?: Prisma.PaymentWhereInput | null
-  isNot?: Prisma.PaymentWhereInput | null
-}
-
 export type PaymentScalarRelationFilter = {
   is?: Prisma.PaymentWhereInput
   isNot?: Prisma.PaymentWhereInput
+}
+
+export type PaymentCreateNestedOneWithoutAffiliateCommissionsInput = {
+  create?: Prisma.XOR<Prisma.PaymentCreateWithoutAffiliateCommissionsInput, Prisma.PaymentUncheckedCreateWithoutAffiliateCommissionsInput>
+  connectOrCreate?: Prisma.PaymentCreateOrConnectWithoutAffiliateCommissionsInput
+  connect?: Prisma.PaymentWhereUniqueInput
+}
+
+export type PaymentUpdateOneWithoutAffiliateCommissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.PaymentCreateWithoutAffiliateCommissionsInput, Prisma.PaymentUncheckedCreateWithoutAffiliateCommissionsInput>
+  connectOrCreate?: Prisma.PaymentCreateOrConnectWithoutAffiliateCommissionsInput
+  upsert?: Prisma.PaymentUpsertWithoutAffiliateCommissionsInput
+  disconnect?: Prisma.PaymentWhereInput | boolean
+  delete?: Prisma.PaymentWhereInput | boolean
+  connect?: Prisma.PaymentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PaymentUpdateToOneWithWhereWithoutAffiliateCommissionsInput, Prisma.PaymentUpdateWithoutAffiliateCommissionsInput>, Prisma.PaymentUncheckedUpdateWithoutAffiliateCommissionsInput>
 }
 
 export type PaymentCreateNestedManyWithoutBookingInput = {
@@ -743,6 +773,22 @@ export type PaymentUncheckedUpdateManyWithoutBookingNestedInput = {
   update?: Prisma.PaymentUpdateWithWhereUniqueWithoutBookingInput | Prisma.PaymentUpdateWithWhereUniqueWithoutBookingInput[]
   updateMany?: Prisma.PaymentUpdateManyWithWhereWithoutBookingInput | Prisma.PaymentUpdateManyWithWhereWithoutBookingInput[]
   deleteMany?: Prisma.PaymentScalarWhereInput | Prisma.PaymentScalarWhereInput[]
+}
+
+export type PaymentCreateNestedOneWithoutInvoicesInput = {
+  create?: Prisma.XOR<Prisma.PaymentCreateWithoutInvoicesInput, Prisma.PaymentUncheckedCreateWithoutInvoicesInput>
+  connectOrCreate?: Prisma.PaymentCreateOrConnectWithoutInvoicesInput
+  connect?: Prisma.PaymentWhereUniqueInput
+}
+
+export type PaymentUpdateOneWithoutInvoicesNestedInput = {
+  create?: Prisma.XOR<Prisma.PaymentCreateWithoutInvoicesInput, Prisma.PaymentUncheckedCreateWithoutInvoicesInput>
+  connectOrCreate?: Prisma.PaymentCreateOrConnectWithoutInvoicesInput
+  upsert?: Prisma.PaymentUpsertWithoutInvoicesInput
+  disconnect?: Prisma.PaymentWhereInput | boolean
+  delete?: Prisma.PaymentWhereInput | boolean
+  connect?: Prisma.PaymentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PaymentUpdateToOneWithWhereWithoutInvoicesInput, Prisma.PaymentUpdateWithoutInvoicesInput>, Prisma.PaymentUncheckedUpdateWithoutInvoicesInput>
 }
 
 export type EnumPaymentMethodFieldUpdateOperationsInput = {
@@ -867,6 +913,122 @@ export type PaymentUncheckedUpdateManyWithoutReviewedByNestedInput = {
   deleteMany?: Prisma.PaymentScalarWhereInput | Prisma.PaymentScalarWhereInput[]
 }
 
+export type PaymentCreateWithoutAffiliateCommissionsInput = {
+  id?: string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency: string
+  method: $Enums.PaymentMethod
+  status?: $Enums.PaymentRecordStatus
+  reference?: string | null
+  stripeSessionId?: string | null
+  stripePaymentIntentId?: string | null
+  failureReason?: string | null
+  receiptNote?: string | null
+  submittedAt?: Date | string | null
+  receivedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  booking: Prisma.BookingCreateNestedOneWithoutPaymentsInput
+  customer: Prisma.UserCreateNestedOneWithoutCustomerPaymentsInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutReviewedPaymentsInput
+  refunds?: Prisma.PaymentRefundCreateNestedManyWithoutPaymentInput
+  stripeWebhookEvents?: Prisma.StripeWebhookEventCreateNestedManyWithoutPaymentInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutPaymentInput
+}
+
+export type PaymentUncheckedCreateWithoutAffiliateCommissionsInput = {
+  id?: string
+  bookingId: string
+  customerId: string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency: string
+  method: $Enums.PaymentMethod
+  status?: $Enums.PaymentRecordStatus
+  reference?: string | null
+  stripeSessionId?: string | null
+  stripePaymentIntentId?: string | null
+  failureReason?: string | null
+  receiptNote?: string | null
+  submittedAt?: Date | string | null
+  receivedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutPaymentInput
+  stripeWebhookEvents?: Prisma.StripeWebhookEventUncheckedCreateNestedManyWithoutPaymentInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPaymentInput
+}
+
+export type PaymentCreateOrConnectWithoutAffiliateCommissionsInput = {
+  where: Prisma.PaymentWhereUniqueInput
+  create: Prisma.XOR<Prisma.PaymentCreateWithoutAffiliateCommissionsInput, Prisma.PaymentUncheckedCreateWithoutAffiliateCommissionsInput>
+}
+
+export type PaymentUpsertWithoutAffiliateCommissionsInput = {
+  update: Prisma.XOR<Prisma.PaymentUpdateWithoutAffiliateCommissionsInput, Prisma.PaymentUncheckedUpdateWithoutAffiliateCommissionsInput>
+  create: Prisma.XOR<Prisma.PaymentCreateWithoutAffiliateCommissionsInput, Prisma.PaymentUncheckedCreateWithoutAffiliateCommissionsInput>
+  where?: Prisma.PaymentWhereInput
+}
+
+export type PaymentUpdateToOneWithWhereWithoutAffiliateCommissionsInput = {
+  where?: Prisma.PaymentWhereInput
+  data: Prisma.XOR<Prisma.PaymentUpdateWithoutAffiliateCommissionsInput, Prisma.PaymentUncheckedUpdateWithoutAffiliateCommissionsInput>
+}
+
+export type PaymentUpdateWithoutAffiliateCommissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  status?: Prisma.EnumPaymentRecordStatusFieldUpdateOperationsInput | $Enums.PaymentRecordStatus
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  failureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  receivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  booking?: Prisma.BookingUpdateOneRequiredWithoutPaymentsNestedInput
+  customer?: Prisma.UserUpdateOneRequiredWithoutCustomerPaymentsNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutReviewedPaymentsNestedInput
+  refunds?: Prisma.PaymentRefundUpdateManyWithoutPaymentNestedInput
+  stripeWebhookEvents?: Prisma.StripeWebhookEventUpdateManyWithoutPaymentNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutPaymentNestedInput
+}
+
+export type PaymentUncheckedUpdateWithoutAffiliateCommissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  bookingId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  status?: Prisma.EnumPaymentRecordStatusFieldUpdateOperationsInput | $Enums.PaymentRecordStatus
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  failureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  receivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutPaymentNestedInput
+  stripeWebhookEvents?: Prisma.StripeWebhookEventUncheckedUpdateManyWithoutPaymentNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPaymentNestedInput
+}
+
 export type PaymentCreateWithoutBookingInput = {
   id?: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -888,6 +1050,8 @@ export type PaymentCreateWithoutBookingInput = {
   reviewedBy?: Prisma.UserCreateNestedOneWithoutReviewedPaymentsInput
   refunds?: Prisma.PaymentRefundCreateNestedManyWithoutPaymentInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventCreateNestedManyWithoutPaymentInput
+  affiliateCommissions?: Prisma.AffiliateCommissionCreateNestedManyWithoutPaymentInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentUncheckedCreateWithoutBookingInput = {
@@ -911,6 +1075,8 @@ export type PaymentUncheckedCreateWithoutBookingInput = {
   updatedAt?: Date | string
   refunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutPaymentInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventUncheckedCreateNestedManyWithoutPaymentInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUncheckedCreateNestedManyWithoutPaymentInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentCreateOrConnectWithoutBookingInput = {
@@ -964,6 +1130,122 @@ export type PaymentScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
 }
 
+export type PaymentCreateWithoutInvoicesInput = {
+  id?: string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency: string
+  method: $Enums.PaymentMethod
+  status?: $Enums.PaymentRecordStatus
+  reference?: string | null
+  stripeSessionId?: string | null
+  stripePaymentIntentId?: string | null
+  failureReason?: string | null
+  receiptNote?: string | null
+  submittedAt?: Date | string | null
+  receivedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  booking: Prisma.BookingCreateNestedOneWithoutPaymentsInput
+  customer: Prisma.UserCreateNestedOneWithoutCustomerPaymentsInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutReviewedPaymentsInput
+  refunds?: Prisma.PaymentRefundCreateNestedManyWithoutPaymentInput
+  stripeWebhookEvents?: Prisma.StripeWebhookEventCreateNestedManyWithoutPaymentInput
+  affiliateCommissions?: Prisma.AffiliateCommissionCreateNestedManyWithoutPaymentInput
+}
+
+export type PaymentUncheckedCreateWithoutInvoicesInput = {
+  id?: string
+  bookingId: string
+  customerId: string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency: string
+  method: $Enums.PaymentMethod
+  status?: $Enums.PaymentRecordStatus
+  reference?: string | null
+  stripeSessionId?: string | null
+  stripePaymentIntentId?: string | null
+  failureReason?: string | null
+  receiptNote?: string | null
+  submittedAt?: Date | string | null
+  receivedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  reviewNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutPaymentInput
+  stripeWebhookEvents?: Prisma.StripeWebhookEventUncheckedCreateNestedManyWithoutPaymentInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUncheckedCreateNestedManyWithoutPaymentInput
+}
+
+export type PaymentCreateOrConnectWithoutInvoicesInput = {
+  where: Prisma.PaymentWhereUniqueInput
+  create: Prisma.XOR<Prisma.PaymentCreateWithoutInvoicesInput, Prisma.PaymentUncheckedCreateWithoutInvoicesInput>
+}
+
+export type PaymentUpsertWithoutInvoicesInput = {
+  update: Prisma.XOR<Prisma.PaymentUpdateWithoutInvoicesInput, Prisma.PaymentUncheckedUpdateWithoutInvoicesInput>
+  create: Prisma.XOR<Prisma.PaymentCreateWithoutInvoicesInput, Prisma.PaymentUncheckedCreateWithoutInvoicesInput>
+  where?: Prisma.PaymentWhereInput
+}
+
+export type PaymentUpdateToOneWithWhereWithoutInvoicesInput = {
+  where?: Prisma.PaymentWhereInput
+  data: Prisma.XOR<Prisma.PaymentUpdateWithoutInvoicesInput, Prisma.PaymentUncheckedUpdateWithoutInvoicesInput>
+}
+
+export type PaymentUpdateWithoutInvoicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  status?: Prisma.EnumPaymentRecordStatusFieldUpdateOperationsInput | $Enums.PaymentRecordStatus
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  failureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  receivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  booking?: Prisma.BookingUpdateOneRequiredWithoutPaymentsNestedInput
+  customer?: Prisma.UserUpdateOneRequiredWithoutCustomerPaymentsNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutReviewedPaymentsNestedInput
+  refunds?: Prisma.PaymentRefundUpdateManyWithoutPaymentNestedInput
+  stripeWebhookEvents?: Prisma.StripeWebhookEventUpdateManyWithoutPaymentNestedInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUpdateManyWithoutPaymentNestedInput
+}
+
+export type PaymentUncheckedUpdateWithoutInvoicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  bookingId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  status?: Prisma.EnumPaymentRecordStatusFieldUpdateOperationsInput | $Enums.PaymentRecordStatus
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  failureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  receivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutPaymentNestedInput
+  stripeWebhookEvents?: Prisma.StripeWebhookEventUncheckedUpdateManyWithoutPaymentNestedInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUncheckedUpdateManyWithoutPaymentNestedInput
+}
+
 export type PaymentCreateWithoutStripeWebhookEventsInput = {
   id?: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -985,6 +1267,8 @@ export type PaymentCreateWithoutStripeWebhookEventsInput = {
   customer: Prisma.UserCreateNestedOneWithoutCustomerPaymentsInput
   reviewedBy?: Prisma.UserCreateNestedOneWithoutReviewedPaymentsInput
   refunds?: Prisma.PaymentRefundCreateNestedManyWithoutPaymentInput
+  affiliateCommissions?: Prisma.AffiliateCommissionCreateNestedManyWithoutPaymentInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentUncheckedCreateWithoutStripeWebhookEventsInput = {
@@ -1008,6 +1292,8 @@ export type PaymentUncheckedCreateWithoutStripeWebhookEventsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   refunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutPaymentInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUncheckedCreateNestedManyWithoutPaymentInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentCreateOrConnectWithoutStripeWebhookEventsInput = {
@@ -1047,6 +1333,8 @@ export type PaymentUpdateWithoutStripeWebhookEventsInput = {
   customer?: Prisma.UserUpdateOneRequiredWithoutCustomerPaymentsNestedInput
   reviewedBy?: Prisma.UserUpdateOneWithoutReviewedPaymentsNestedInput
   refunds?: Prisma.PaymentRefundUpdateManyWithoutPaymentNestedInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUpdateManyWithoutPaymentNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutStripeWebhookEventsInput = {
@@ -1070,6 +1358,8 @@ export type PaymentUncheckedUpdateWithoutStripeWebhookEventsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutPaymentNestedInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUncheckedUpdateManyWithoutPaymentNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentCreateWithoutRefundsInput = {
@@ -1093,6 +1383,8 @@ export type PaymentCreateWithoutRefundsInput = {
   customer: Prisma.UserCreateNestedOneWithoutCustomerPaymentsInput
   reviewedBy?: Prisma.UserCreateNestedOneWithoutReviewedPaymentsInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventCreateNestedManyWithoutPaymentInput
+  affiliateCommissions?: Prisma.AffiliateCommissionCreateNestedManyWithoutPaymentInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentUncheckedCreateWithoutRefundsInput = {
@@ -1116,6 +1408,8 @@ export type PaymentUncheckedCreateWithoutRefundsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   stripeWebhookEvents?: Prisma.StripeWebhookEventUncheckedCreateNestedManyWithoutPaymentInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUncheckedCreateNestedManyWithoutPaymentInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentCreateOrConnectWithoutRefundsInput = {
@@ -1155,6 +1449,8 @@ export type PaymentUpdateWithoutRefundsInput = {
   customer?: Prisma.UserUpdateOneRequiredWithoutCustomerPaymentsNestedInput
   reviewedBy?: Prisma.UserUpdateOneWithoutReviewedPaymentsNestedInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventUpdateManyWithoutPaymentNestedInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUpdateManyWithoutPaymentNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutRefundsInput = {
@@ -1178,6 +1474,8 @@ export type PaymentUncheckedUpdateWithoutRefundsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stripeWebhookEvents?: Prisma.StripeWebhookEventUncheckedUpdateManyWithoutPaymentNestedInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUncheckedUpdateManyWithoutPaymentNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentCreateWithoutCustomerInput = {
@@ -1201,6 +1499,8 @@ export type PaymentCreateWithoutCustomerInput = {
   reviewedBy?: Prisma.UserCreateNestedOneWithoutReviewedPaymentsInput
   refunds?: Prisma.PaymentRefundCreateNestedManyWithoutPaymentInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventCreateNestedManyWithoutPaymentInput
+  affiliateCommissions?: Prisma.AffiliateCommissionCreateNestedManyWithoutPaymentInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentUncheckedCreateWithoutCustomerInput = {
@@ -1224,6 +1524,8 @@ export type PaymentUncheckedCreateWithoutCustomerInput = {
   updatedAt?: Date | string
   refunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutPaymentInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventUncheckedCreateNestedManyWithoutPaymentInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUncheckedCreateNestedManyWithoutPaymentInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentCreateOrConnectWithoutCustomerInput = {
@@ -1257,6 +1559,8 @@ export type PaymentCreateWithoutReviewedByInput = {
   customer: Prisma.UserCreateNestedOneWithoutCustomerPaymentsInput
   refunds?: Prisma.PaymentRefundCreateNestedManyWithoutPaymentInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventCreateNestedManyWithoutPaymentInput
+  affiliateCommissions?: Prisma.AffiliateCommissionCreateNestedManyWithoutPaymentInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentUncheckedCreateWithoutReviewedByInput = {
@@ -1280,6 +1584,8 @@ export type PaymentUncheckedCreateWithoutReviewedByInput = {
   updatedAt?: Date | string
   refunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutPaymentInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventUncheckedCreateNestedManyWithoutPaymentInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUncheckedCreateNestedManyWithoutPaymentInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentCreateOrConnectWithoutReviewedByInput = {
@@ -1366,6 +1672,8 @@ export type PaymentUpdateWithoutBookingInput = {
   reviewedBy?: Prisma.UserUpdateOneWithoutReviewedPaymentsNestedInput
   refunds?: Prisma.PaymentRefundUpdateManyWithoutPaymentNestedInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventUpdateManyWithoutPaymentNestedInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUpdateManyWithoutPaymentNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutBookingInput = {
@@ -1389,6 +1697,8 @@ export type PaymentUncheckedUpdateWithoutBookingInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutPaymentNestedInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventUncheckedUpdateManyWithoutPaymentNestedInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUncheckedUpdateManyWithoutPaymentNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateManyWithoutBookingInput = {
@@ -1475,6 +1785,8 @@ export type PaymentUpdateWithoutCustomerInput = {
   reviewedBy?: Prisma.UserUpdateOneWithoutReviewedPaymentsNestedInput
   refunds?: Prisma.PaymentRefundUpdateManyWithoutPaymentNestedInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventUpdateManyWithoutPaymentNestedInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUpdateManyWithoutPaymentNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutCustomerInput = {
@@ -1498,6 +1810,8 @@ export type PaymentUncheckedUpdateWithoutCustomerInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutPaymentNestedInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventUncheckedUpdateManyWithoutPaymentNestedInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUncheckedUpdateManyWithoutPaymentNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateManyWithoutCustomerInput = {
@@ -1542,6 +1856,8 @@ export type PaymentUpdateWithoutReviewedByInput = {
   customer?: Prisma.UserUpdateOneRequiredWithoutCustomerPaymentsNestedInput
   refunds?: Prisma.PaymentRefundUpdateManyWithoutPaymentNestedInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventUpdateManyWithoutPaymentNestedInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUpdateManyWithoutPaymentNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutReviewedByInput = {
@@ -1565,6 +1881,8 @@ export type PaymentUncheckedUpdateWithoutReviewedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutPaymentNestedInput
   stripeWebhookEvents?: Prisma.StripeWebhookEventUncheckedUpdateManyWithoutPaymentNestedInput
+  affiliateCommissions?: Prisma.AffiliateCommissionUncheckedUpdateManyWithoutPaymentNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateManyWithoutReviewedByInput = {
@@ -1596,11 +1914,15 @@ export type PaymentUncheckedUpdateManyWithoutReviewedByInput = {
 export type PaymentCountOutputType = {
   refunds: number
   stripeWebhookEvents: number
+  affiliateCommissions: number
+  invoices: number
 }
 
 export type PaymentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   refunds?: boolean | PaymentCountOutputTypeCountRefundsArgs
   stripeWebhookEvents?: boolean | PaymentCountOutputTypeCountStripeWebhookEventsArgs
+  affiliateCommissions?: boolean | PaymentCountOutputTypeCountAffiliateCommissionsArgs
+  invoices?: boolean | PaymentCountOutputTypeCountInvoicesArgs
 }
 
 /**
@@ -1625,6 +1947,20 @@ export type PaymentCountOutputTypeCountRefundsArgs<ExtArgs extends runtime.Types
  */
 export type PaymentCountOutputTypeCountStripeWebhookEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.StripeWebhookEventWhereInput
+}
+
+/**
+ * PaymentCountOutputType without action
+ */
+export type PaymentCountOutputTypeCountAffiliateCommissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AffiliateCommissionWhereInput
+}
+
+/**
+ * PaymentCountOutputType without action
+ */
+export type PaymentCountOutputTypeCountInvoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InvoiceWhereInput
 }
 
 
@@ -1653,6 +1989,8 @@ export type PaymentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   reviewedBy?: boolean | Prisma.Payment$reviewedByArgs<ExtArgs>
   refunds?: boolean | Prisma.Payment$refundsArgs<ExtArgs>
   stripeWebhookEvents?: boolean | Prisma.Payment$stripeWebhookEventsArgs<ExtArgs>
+  affiliateCommissions?: boolean | Prisma.Payment$affiliateCommissionsArgs<ExtArgs>
+  invoices?: boolean | Prisma.Payment$invoicesArgs<ExtArgs>
   _count?: boolean | Prisma.PaymentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["payment"]>
 
@@ -1735,6 +2073,8 @@ export type PaymentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   reviewedBy?: boolean | Prisma.Payment$reviewedByArgs<ExtArgs>
   refunds?: boolean | Prisma.Payment$refundsArgs<ExtArgs>
   stripeWebhookEvents?: boolean | Prisma.Payment$stripeWebhookEventsArgs<ExtArgs>
+  affiliateCommissions?: boolean | Prisma.Payment$affiliateCommissionsArgs<ExtArgs>
+  invoices?: boolean | Prisma.Payment$invoicesArgs<ExtArgs>
   _count?: boolean | Prisma.PaymentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PaymentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1756,6 +2096,8 @@ export type $PaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     reviewedBy: Prisma.$UserPayload<ExtArgs> | null
     refunds: Prisma.$PaymentRefundPayload<ExtArgs>[]
     stripeWebhookEvents: Prisma.$StripeWebhookEventPayload<ExtArgs>[]
+    affiliateCommissions: Prisma.$AffiliateCommissionPayload<ExtArgs>[]
+    invoices: Prisma.$InvoicePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2176,6 +2518,8 @@ export interface Prisma__PaymentClient<T, Null = never, ExtArgs extends runtime.
   reviewedBy<T extends Prisma.Payment$reviewedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Payment$reviewedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   refunds<T extends Prisma.Payment$refundsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Payment$refundsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentRefundPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   stripeWebhookEvents<T extends Prisma.Payment$stripeWebhookEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Payment$stripeWebhookEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StripeWebhookEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  affiliateCommissions<T extends Prisma.Payment$affiliateCommissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Payment$affiliateCommissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AffiliateCommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  invoices<T extends Prisma.Payment$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Payment$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2689,6 +3033,54 @@ export type Payment$stripeWebhookEventsArgs<ExtArgs extends runtime.Types.Extens
   take?: number
   skip?: number
   distinct?: Prisma.StripeWebhookEventScalarFieldEnum | Prisma.StripeWebhookEventScalarFieldEnum[]
+}
+
+/**
+ * Payment.affiliateCommissions
+ */
+export type Payment$affiliateCommissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AffiliateCommission
+   */
+  select?: Prisma.AffiliateCommissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AffiliateCommission
+   */
+  omit?: Prisma.AffiliateCommissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AffiliateCommissionInclude<ExtArgs> | null
+  where?: Prisma.AffiliateCommissionWhereInput
+  orderBy?: Prisma.AffiliateCommissionOrderByWithRelationInput | Prisma.AffiliateCommissionOrderByWithRelationInput[]
+  cursor?: Prisma.AffiliateCommissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AffiliateCommissionScalarFieldEnum | Prisma.AffiliateCommissionScalarFieldEnum[]
+}
+
+/**
+ * Payment.invoices
+ */
+export type Payment$invoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Invoice
+   */
+  select?: Prisma.InvoiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Invoice
+   */
+  omit?: Prisma.InvoiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InvoiceInclude<ExtArgs> | null
+  where?: Prisma.InvoiceWhereInput
+  orderBy?: Prisma.InvoiceOrderByWithRelationInput | Prisma.InvoiceOrderByWithRelationInput[]
+  cursor?: Prisma.InvoiceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InvoiceScalarFieldEnum | Prisma.InvoiceScalarFieldEnum[]
 }
 
 /**

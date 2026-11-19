@@ -2,6 +2,7 @@ import { prisma } from "../../lib/prisma.js";
 import AppError from "../../shared/utils/AppError.js";
 import type { PaymentFilters, PaymentMethodValue, PaymentRecordStatusValue } from "./paymentTypes.js";
 import { createCommissionForBooking } from "../commission/commissionRepository.js";
+import { recordAffiliateCommissionForVerifiedPayment } from "../affiliate/affiliateCommissionService.js";
 import { enqueueOutboxMessage } from "../outbox/outboxService.js";
 import type { OutboxTopic } from "../../../generated/prisma/enums.js";
 
@@ -317,6 +318,35 @@ export const transitionPayment = async (params: {
       }
 
       await createCommissionForBooking(tx, params.bookingId);
+
+      const targetPaymentRecord = typeof tx.payment?.findUnique === "function"
+        ? await tx.payment.findUnique({
+            where: { id: params.paymentId },
+            select: { currency: true },
+          })
+        : null;
+
+      if (tx.affiliateCommission && tx.affiliateBookingAttribution) {
+        await recordAffiliateCommissionForVerifiedPayment(tx, {
+          paymentId: params.paymentId,
+          bookingId: params.bookingId,
+          paidAmount: params.amount.toString(),
+          currency: targetPaymentRecord?.currency || "THB",
+        });
+      }
+
+      // Transactional Outbox for asynchronous durability
+      await enqueueOutboxMessage(tx, {
+        topic: "CALCULATE_COMMISSION",
+        payload: { bookingId: params.bookingId, paymentId: params.paymentId },
+        dedupeKey: `commission:${params.paymentId}`,
+      });
+
+      await enqueueOutboxMessage(tx, {
+        topic: "SEND_BOOKING_VOUCHER_EMAIL",
+        payload: { bookingId: params.bookingId, paymentId: params.paymentId, decision: "CONFIRMED" },
+        dedupeKey: `voucher_email:${params.paymentId}`,
+      });
     }
 
     await tx.bookingHistory.create({
@@ -713,15 +743,26 @@ export const verifyStripePaymentAtomically = async (params: {
     await enqueueOutboxMessage(tx, {
       topic: "CALCULATE_COMMISSION",
       payload: { bookingId: params.bookingId, paymentId: payment.id },
+      dedupeKey: `commission:${payment.id}`,
     });
 
     if (tx.commission && tx.commissionRule) {
       await createCommissionForBooking(tx, params.bookingId);
     }
 
+    if (tx.affiliateCommission && tx.affiliateBookingAttribution) {
+      await recordAffiliateCommissionForVerifiedPayment(tx, {
+        paymentId: payment.id,
+        bookingId: params.bookingId,
+        paidAmount: payment.amount.toString(),
+        currency: payment.currency,
+      });
+    }
+
     await enqueueOutboxMessage(tx, {
       topic: "SEND_BOOKING_VOUCHER_EMAIL",
-      payload: { bookingId: params.bookingId, decision: "CONFIRMED" },
+      payload: { bookingId: params.bookingId, paymentId: payment.id, decision: "CONFIRMED" },
+      dedupeKey: `voucher_email:${payment.id}`,
     });
 
     return { payment: updatedPayment, isDuplicateSuccess: false, isOverpayment: false };
@@ -785,7 +826,7 @@ export const createOrUpdatePaymentLink = async (params: {
   bookingId: string;
   tokenHash: string;
   expiresAt: Date;
-  createdById?: string;
+  createdById?: string | null;
   actorRole?: string;
 }) => {
   return prisma.$transaction(async (tx) => {
@@ -1032,6 +1073,15 @@ export const recordVerifiedPayPalPayment = async (params: {
         },
       });
 
+      if (tx.affiliateCommission && tx.affiliateBookingAttribution) {
+        await recordAffiliateCommissionForVerifiedPayment(tx, {
+          paymentId: payment.id,
+          bookingId: params.bookingId,
+          paidAmount: params.amount,
+          currency: params.currency,
+        });
+      }
+
       if (newPaymentStatus === "PAID") {
         await tx.paymentLink.updateMany({
           where: { bookingId: params.bookingId, status: "ACTIVE" },
@@ -1046,6 +1096,19 @@ export const recordVerifiedPayPalPayment = async (params: {
             console.error("[PayPal] Failed to create commission:", commErr);
           }
         }
+
+        // Transactional Outbox for asynchronous durability
+        await enqueueOutboxMessage(tx, {
+          topic: "CALCULATE_COMMISSION",
+          payload: { bookingId: params.bookingId, paymentId: payment.id },
+          dedupeKey: `commission:${payment.id}`,
+        });
+
+        await enqueueOutboxMessage(tx, {
+          topic: "SEND_BOOKING_VOUCHER_EMAIL",
+          payload: { bookingId: params.bookingId, paymentId: payment.id, decision: "CONFIRMED" },
+          dedupeKey: `voucher_email:${payment.id}`,
+        });
       }
 
       return { payment, isDuplicate: false };

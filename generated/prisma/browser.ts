@@ -18,6 +18,46 @@ export { Prisma }
 export * as $Enums from './enums.js'
 export * from './enums.js';
 /**
+ * Model Affiliate
+ * 
+ */
+export type Affiliate = Prisma.AffiliateModel
+/**
+ * Model AffiliateLink
+ * 
+ */
+export type AffiliateLink = Prisma.AffiliateLinkModel
+/**
+ * Model AffiliateClick
+ * 
+ */
+export type AffiliateClick = Prisma.AffiliateClickModel
+/**
+ * Model AffiliateBookingAttribution
+ * 
+ */
+export type AffiliateBookingAttribution = Prisma.AffiliateBookingAttributionModel
+/**
+ * Model AffiliateCommission
+ * 
+ */
+export type AffiliateCommission = Prisma.AffiliateCommissionModel
+/**
+ * Model AffiliatePayout
+ * 
+ */
+export type AffiliatePayout = Prisma.AffiliatePayoutModel
+/**
+ * Model AffiliateSettings
+ * 
+ */
+export type AffiliateSettings = Prisma.AffiliateSettingsModel
+/**
+ * Model AffiliateAuditEvent
+ * 
+ */
+export type AffiliateAuditEvent = Prisma.AffiliateAuditEventModel
+/**
  * Model AgentProfile
  * 
  */
@@ -42,6 +82,11 @@ export type Session = Prisma.SessionModel
  * 
  */
 export type RefreshToken = Prisma.RefreshTokenModel
+/**
+ * Model EmailVerificationToken
+ * 
+ */
+export type EmailVerificationToken = Prisma.EmailVerificationTokenModel
 /**
  * Model PricingRule
  * 
@@ -72,6 +117,26 @@ export type StaffDiscountRequest = Prisma.StaffDiscountRequestModel
  * 
  */
 export type StaffDiscountAuditEvent = Prisma.StaffDiscountAuditEventModel
+/**
+ * Model GuestBookingSnapshot
+ * 
+ */
+export type GuestBookingSnapshot = Prisma.GuestBookingSnapshotModel
+/**
+ * Model GuestBookingToken
+ * 
+ */
+export type GuestBookingToken = Prisma.GuestBookingTokenModel
+/**
+ * Model BookingClaimAudit
+ * 
+ */
+export type BookingClaimAudit = Prisma.BookingClaimAuditModel
+/**
+ * Model Invoice
+ * 
+ */
+export type Invoice = Prisma.InvoiceModel
 /**
  * Model CommissionRule
  * 

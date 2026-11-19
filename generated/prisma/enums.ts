@@ -9,6 +9,63 @@
 * 🟢 You can import this file directly.
 */
 
+export const AffiliateStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  SUSPENDED: 'SUSPENDED'
+} as const
+
+export type AffiliateStatus = (typeof AffiliateStatus)[keyof typeof AffiliateStatus]
+
+
+export const AffiliateCommissionEntryType = {
+  EARNED: 'EARNED',
+  REVERSAL: 'REVERSAL',
+  ADJUSTMENT: 'ADJUSTMENT'
+} as const
+
+export type AffiliateCommissionEntryType = (typeof AffiliateCommissionEntryType)[keyof typeof AffiliateCommissionEntryType]
+
+
+export const AffiliateCommissionStatus = {
+  PENDING: 'PENDING',
+  AVAILABLE: 'AVAILABLE',
+  PAID: 'PAID',
+  REVERSED: 'REVERSED'
+} as const
+
+export type AffiliateCommissionStatus = (typeof AffiliateCommissionStatus)[keyof typeof AffiliateCommissionStatus]
+
+
+export const AffiliatePayoutStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  PAID: 'PAID'
+} as const
+
+export type AffiliatePayoutStatus = (typeof AffiliatePayoutStatus)[keyof typeof AffiliatePayoutStatus]
+
+
+export const AffiliateEligibleAmountPolicy = {
+  NET_AFTER_DISCOUNTS: 'NET_AFTER_DISCOUNTS',
+  GROSS: 'GROSS'
+} as const
+
+export type AffiliateEligibleAmountPolicy = (typeof AffiliateEligibleAmountPolicy)[keyof typeof AffiliateEligibleAmountPolicy]
+
+
+export const AffiliateAuditEntityType = {
+  AFFILIATE: 'AFFILIATE',
+  COMMISSION: 'COMMISSION',
+  PAYOUT: 'PAYOUT',
+  SETTINGS: 'SETTINGS'
+} as const
+
+export type AffiliateAuditEntityType = (typeof AffiliateAuditEntityType)[keyof typeof AffiliateAuditEntityType]
+
+
 export const DiscountType = {
   PERCENTAGE: 'PERCENTAGE',
   FIXED_AMOUNT: 'FIXED_AMOUNT'
@@ -93,6 +150,32 @@ export const FulfillmentStatus = {
 } as const
 
 export type FulfillmentStatus = (typeof FulfillmentStatus)[keyof typeof FulfillmentStatus]
+
+
+export const GuestTokenPurpose = {
+  ACCESS_ONLY: 'ACCESS_ONLY',
+  ACCESS_AND_CLAIM: 'ACCESS_AND_CLAIM'
+} as const
+
+export type GuestTokenPurpose = (typeof GuestTokenPurpose)[keyof typeof GuestTokenPurpose]
+
+
+export const InvoiceType = {
+  TAX_INVOICE: 'TAX_INVOICE',
+  PAYMENT_RECEIPT: 'PAYMENT_RECEIPT',
+  INTERIM_STATEMENT: 'INTERIM_STATEMENT'
+} as const
+
+export type InvoiceType = (typeof InvoiceType)[keyof typeof InvoiceType]
+
+
+export const InvoiceStatus = {
+  ISSUED: 'ISSUED',
+  VOID: 'VOID',
+  REFUNDED: 'REFUNDED'
+} as const
+
+export type InvoiceStatus = (typeof InvoiceStatus)[keyof typeof InvoiceStatus]
 
 
 export const CommissionPolicyStatus = {
@@ -232,7 +315,8 @@ export const UserRole = {
   customer: 'customer',
   agent: 'agent',
   staff: 'staff',
-  admin: 'admin'
+  admin: 'admin',
+  affiliate: 'affiliate'
 } as const
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]

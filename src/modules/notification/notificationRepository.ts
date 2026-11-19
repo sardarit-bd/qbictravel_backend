@@ -34,9 +34,17 @@ export const findBookingRecipients = async (bookingId: string) => {
       status: true,
       paymentStatus: true,
       fulfillmentStatus: true,
+      isGuest: true,
       service: { select: { name: true } },
-      customer: { select: { name: true, email: true, status: true } },
-      agent: { select: { name: true, email: true, status: true } },
+      customer: { select: { id: true, name: true, email: true, status: true } },
+      agent: { select: { id: true, name: true, email: true, status: true } },
+      guestSnapshot: {
+        select: {
+          guestName: true,
+          guestEmail: true,
+          guestPhone: true,
+        },
+      },
     },
   });
 };

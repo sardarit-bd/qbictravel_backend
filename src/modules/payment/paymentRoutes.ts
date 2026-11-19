@@ -49,7 +49,7 @@ const router = Router();
 router.post(
   "/bookings/:bookingId/payments",
   authMiddleware,
-  requireRole("customer"),
+  requireRole("customer", "affiliate"),
   validate(paymentBookingIdParamSchema, "params"),
   validate(createPaymentSchema),
   paymentController.createPayment
@@ -81,7 +81,7 @@ router.post(
 router.post(
   "/bookings/:bookingId/stripe-session",
   authMiddleware,
-  requireRole("customer"),
+  requireRole("customer", "affiliate"),
   validate(paymentBookingIdParamSchema, "params"),
   validate(createStripeSessionSchema),
   paymentController.createStripeSession
@@ -125,7 +125,7 @@ router.post(
 router.get(
   "/customer/payments",
   authMiddleware,
-  requireRole("customer"),
+  requireRole("customer", "affiliate"),
   paymentController.listCustomerPayments
 );
 
@@ -145,7 +145,7 @@ router.get(
 router.get(
   "/customer/payments/:paymentId",
   authMiddleware,
-  requireRole("customer"),
+  requireRole("customer", "affiliate"),
   validate(paymentIdParamSchema, "params"),
   paymentController.getCustomerPayment
 );
@@ -166,7 +166,7 @@ router.get(
 router.post(
   "/customer/payments/:paymentId/reconcile",
   authMiddleware,
-  requireRole("customer"),
+  requireRole("customer", "affiliate"),
   validate(paymentIdParamSchema, "params"),
   paymentController.reconcilePayment
 );

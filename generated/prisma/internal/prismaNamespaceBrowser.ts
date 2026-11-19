@@ -51,17 +51,30 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  Affiliate: 'Affiliate',
+  AffiliateLink: 'AffiliateLink',
+  AffiliateClick: 'AffiliateClick',
+  AffiliateBookingAttribution: 'AffiliateBookingAttribution',
+  AffiliateCommission: 'AffiliateCommission',
+  AffiliatePayout: 'AffiliatePayout',
+  AffiliateSettings: 'AffiliateSettings',
+  AffiliateAuditEvent: 'AffiliateAuditEvent',
   AgentProfile: 'AgentProfile',
   PasswordResetToken: 'PasswordResetToken',
   RevokedToken: 'RevokedToken',
   Session: 'Session',
   RefreshToken: 'RefreshToken',
+  EmailVerificationToken: 'EmailVerificationToken',
   PricingRule: 'PricingRule',
   Booking: 'Booking',
   PriceApproval: 'PriceApproval',
   BookingHistory: 'BookingHistory',
   StaffDiscountRequest: 'StaffDiscountRequest',
   StaffDiscountAuditEvent: 'StaffDiscountAuditEvent',
+  GuestBookingSnapshot: 'GuestBookingSnapshot',
+  GuestBookingToken: 'GuestBookingToken',
+  BookingClaimAudit: 'BookingClaimAudit',
+  Invoice: 'Invoice',
   CommissionRule: 'CommissionRule',
   CommissionRuleAuditLog: 'CommissionRuleAuditLog',
   Commission: 'Commission',
@@ -98,6 +111,142 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const AffiliateScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  code: 'code',
+  status: 'status',
+  commissionRateOverride: 'commissionRateOverride',
+  payoutMethod: 'payoutMethod',
+  payoutDetails: 'payoutDetails',
+  websiteUrl: 'websiteUrl',
+  promotionChannels: 'promotionChannels',
+  rejectionReason: 'rejectionReason',
+  approvedAt: 'approvedAt',
+  approvedById: 'approvedById',
+  suspendedAt: 'suspendedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AffiliateScalarFieldEnum = (typeof AffiliateScalarFieldEnum)[keyof typeof AffiliateScalarFieldEnum]
+
+
+export const AffiliateLinkScalarFieldEnum = {
+  id: 'id',
+  affiliateId: 'affiliateId',
+  label: 'label',
+  tourId: 'tourId',
+  targetPath: 'targetPath',
+  isActive: 'isActive',
+  clickCount: 'clickCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AffiliateLinkScalarFieldEnum = (typeof AffiliateLinkScalarFieldEnum)[keyof typeof AffiliateLinkScalarFieldEnum]
+
+
+export const AffiliateClickScalarFieldEnum = {
+  id: 'id',
+  affiliateId: 'affiliateId',
+  affiliateLinkId: 'affiliateLinkId',
+  referralCode: 'referralCode',
+  visitorToken: 'visitorToken',
+  landingUrl: 'landingUrl',
+  referrer: 'referrer',
+  ipHash: 'ipHash',
+  userAgent: 'userAgent',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+} as const
+
+export type AffiliateClickScalarFieldEnum = (typeof AffiliateClickScalarFieldEnum)[keyof typeof AffiliateClickScalarFieldEnum]
+
+
+export const AffiliateBookingAttributionScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  affiliateId: 'affiliateId',
+  affiliateClickId: 'affiliateClickId',
+  referralCode: 'referralCode',
+  windowDays: 'windowDays',
+  attributedAt: 'attributedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type AffiliateBookingAttributionScalarFieldEnum = (typeof AffiliateBookingAttributionScalarFieldEnum)[keyof typeof AffiliateBookingAttributionScalarFieldEnum]
+
+
+export const AffiliateCommissionScalarFieldEnum = {
+  id: 'id',
+  affiliateId: 'affiliateId',
+  bookingId: 'bookingId',
+  paymentId: 'paymentId',
+  entryType: 'entryType',
+  eligibleAmount: 'eligibleAmount',
+  commissionRate: 'commissionRate',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  idempotencyKey: 'idempotencyKey',
+  notes: 'notes',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AffiliateCommissionScalarFieldEnum = (typeof AffiliateCommissionScalarFieldEnum)[keyof typeof AffiliateCommissionScalarFieldEnum]
+
+
+export const AffiliatePayoutScalarFieldEnum = {
+  id: 'id',
+  affiliateId: 'affiliateId',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  payoutMethod: 'payoutMethod',
+  payoutDetailsSnapshot: 'payoutDetailsSnapshot',
+  rejectionReason: 'rejectionReason',
+  transactionReference: 'transactionReference',
+  paidAt: 'paidAt',
+  processedById: 'processedById',
+  requestedAt: 'requestedAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AffiliatePayoutScalarFieldEnum = (typeof AffiliatePayoutScalarFieldEnum)[keyof typeof AffiliatePayoutScalarFieldEnum]
+
+
+export const AffiliateSettingsScalarFieldEnum = {
+  id: 'id',
+  globalCommissionRate: 'globalCommissionRate',
+  attributionWindowDays: 'attributionWindowDays',
+  minimumPayoutAmount: 'minimumPayoutAmount',
+  eligibleAmountPolicy: 'eligibleAmountPolicy',
+  isProgramActive: 'isProgramActive',
+  updatedById: 'updatedById',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AffiliateSettingsScalarFieldEnum = (typeof AffiliateSettingsScalarFieldEnum)[keyof typeof AffiliateSettingsScalarFieldEnum]
+
+
+export const AffiliateAuditEventScalarFieldEnum = {
+  id: 'id',
+  affiliateId: 'affiliateId',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  action: 'action',
+  actorId: 'actorId',
+  actorRole: 'actorRole',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type AffiliateAuditEventScalarFieldEnum = (typeof AffiliateAuditEventScalarFieldEnum)[keyof typeof AffiliateAuditEventScalarFieldEnum]
 
 
 export const AgentProfileScalarFieldEnum = {
@@ -162,6 +311,19 @@ export const RefreshTokenScalarFieldEnum = {
 export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum]
 
 
+export const EmailVerificationTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  email: 'email',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  verifiedAt: 'verifiedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type EmailVerificationTokenScalarFieldEnum = (typeof EmailVerificationTokenScalarFieldEnum)[keyof typeof EmailVerificationTokenScalarFieldEnum]
+
+
 export const PricingRuleScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -198,7 +360,8 @@ export const BookingScalarFieldEnum = {
   fulfillmentStatus: 'fulfillmentStatus',
   notes: 'notes',
   internalNotes: 'internalNotes',
-  assignedStaffId: 'assignedStaffId'
+  assignedStaffId: 'assignedStaffId',
+  isGuest: 'isGuest'
 } as const
 
 export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
@@ -281,6 +444,72 @@ export const StaffDiscountAuditEventScalarFieldEnum = {
 } as const
 
 export type StaffDiscountAuditEventScalarFieldEnum = (typeof StaffDiscountAuditEventScalarFieldEnum)[keyof typeof StaffDiscountAuditEventScalarFieldEnum]
+
+
+export const GuestBookingSnapshotScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  guestName: 'guestName',
+  guestEmail: 'guestEmail',
+  guestPhone: 'guestPhone',
+  createdAt: 'createdAt'
+} as const
+
+export type GuestBookingSnapshotScalarFieldEnum = (typeof GuestBookingSnapshotScalarFieldEnum)[keyof typeof GuestBookingSnapshotScalarFieldEnum]
+
+
+export const GuestBookingTokenScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  tokenHash: 'tokenHash',
+  email: 'email',
+  purpose: 'purpose',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  revokedAt: 'revokedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type GuestBookingTokenScalarFieldEnum = (typeof GuestBookingTokenScalarFieldEnum)[keyof typeof GuestBookingTokenScalarFieldEnum]
+
+
+export const BookingClaimAuditScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  previousUserId: 'previousUserId',
+  newUserId: 'newUserId',
+  claimedByEmail: 'claimedByEmail',
+  claimMethod: 'claimMethod',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+} as const
+
+export type BookingClaimAuditScalarFieldEnum = (typeof BookingClaimAuditScalarFieldEnum)[keyof typeof BookingClaimAuditScalarFieldEnum]
+
+
+export const InvoiceScalarFieldEnum = {
+  id: 'id',
+  invoiceNumber: 'invoiceNumber',
+  bookingId: 'bookingId',
+  paymentId: 'paymentId',
+  type: 'type',
+  status: 'status',
+  currency: 'currency',
+  subtotalAmount: 'subtotalAmount',
+  discountAmount: 'discountAmount',
+  taxAmount: 'taxAmount',
+  totalAmount: 'totalAmount',
+  paidAmount: 'paidAmount',
+  dueAmount: 'dueAmount',
+  issuedAt: 'issuedAt',
+  pdfUrl: 'pdfUrl',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
 
 
 export const CommissionRuleScalarFieldEnum = {
@@ -608,19 +837,19 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-export const JsonNullValueInput = {
-  JsonNull: JsonNull
-} as const
-
-export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
-
-
 export const NullableJsonNullValueInput = {
   DbNull: DbNull,
   JsonNull: JsonNull
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -631,14 +860,6 @@ export const QueryMode = {
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
-export const NullsOrder = {
-  first: 'first',
-  last: 'last'
-} as const
-
-export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
-
-
 export const JsonNullValueFilter = {
   DbNull: DbNull,
   JsonNull: JsonNull,
@@ -646,4 +867,12 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

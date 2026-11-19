@@ -1,11 +1,35 @@
 import type { Request, Response, NextFunction } from "express";
 import sendResponse from "../../shared/utils/response.js";
 import * as bookingService from "./bookingService.js";
+import { getAttributionFromRequest } from "../affiliate/affiliateAttribution.js";
+import { affiliateService } from "../affiliate/affiliateService.js";
+import { prisma } from "../../lib/prisma.js";
 
 export const createBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const isAgent = req.user!.role === "agent";
     const booking = await bookingService.createBooking(req.body, isAgent, req.user!.id);
+
+    // Attach server-validated last-click affiliate attribution ONLY for eligible customer bookings
+    if (!isAgent && booking?.id && req.user!.role !== "admin" && req.user!.role !== "staff") {
+      const attributionPayload = getAttributionFromRequest(req);
+      const fallbackCode = typeof req.body?.referralCode === "string" ? req.body.referralCode : null;
+      if (attributionPayload || fallbackCode) {
+        try {
+          await prisma.$transaction(async (tx) => {
+            await affiliateService.attachAttributionToBooking(tx, {
+              bookingId: booking.id,
+              customerId: req.user!.id,
+              attributionPayload,
+              fallbackCode,
+            });
+          });
+        } catch {
+          // Non-blocking: never fail booking creation due to attribution
+        }
+      }
+    }
+
     const status = booking.status === "AWAITING_APPROVAL" ? 202 : 201;
     sendResponse(res, status, true, "Booking created successfully", booking);
   } catch (error) {
@@ -17,6 +41,34 @@ export const createStaffBooking = async (req: Request, res: Response, next: Next
   try {
     const booking = await bookingService.createStaffBooking(req.body, req.user!.id);
     sendResponse(res, 201, true, "Booking created successfully", booking);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createGuestBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await bookingService.createGuestBooking(req.body);
+
+    // Attach server-validated last-click affiliate attribution for guest booking
+    const attributionPayload = getAttributionFromRequest(req);
+    const fallbackCode = typeof req.body?.referralCode === "string" ? req.body.referralCode : null;
+    if (attributionPayload || fallbackCode) {
+      try {
+        await prisma.$transaction(async (tx) => {
+          await affiliateService.attachAttributionToBooking(tx, {
+            bookingId: result.booking.id,
+            customerId: result.booking.customerId,
+            attributionPayload,
+            fallbackCode,
+          });
+        });
+      } catch {
+        // Non-blocking: never fail booking creation due to attribution
+      }
+    }
+
+    sendResponse(res, 201, true, "Guest booking created successfully", result);
   } catch (error) {
     next(error);
   }
@@ -135,4 +187,26 @@ export const listStaffCreatedBookings = async (req: Request, res: Response, next
     next(error);
   }
 };
+
+/**
+ * Public endpoint to access guest booking itinerary details via magic link token.
+ * GET /api/v1/public/bookings/access/:token
+ * Rate-limited, generic 404/410/403 responses, no caching, sanitized payload.
+ */
+export const getPublicGuestBookingAccess = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const rawToken = req.params.token as string;
+
+    // Prevent caching of private guest itinerary data
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+
+    const result = await bookingService.getPublicGuestBookingDetails(rawToken);
+    sendResponse(res, 200, true, "Guest booking itinerary retrieved successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 

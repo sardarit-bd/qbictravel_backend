@@ -4,9 +4,14 @@ import * as bookingRepository from "./bookingRepository.js";
 import * as pricingService from "../pricing/pricingService.js";
 import * as notificationService from "../notification/notificationService.js";
 import { parsePagination } from "../../shared/utils/pagination.js";
+import { generateSecureToken, hashToken } from "../payment/tokenUtils.js";
+import { enqueueOutboxMessage } from "../outbox/outboxService.js";
+import logger from "../../shared/logger/logger.js";
 import type {
   CreateBookingInput,
   CreateStaffBookingInput,
+  CreateGuestBookingInput,
+  GuestBookingResult,
   UpdateBookingPriceInput,
   ReviewBookingPriceInput,
   ReviewPendingBookingInput,
@@ -568,6 +573,411 @@ export const createStaffBooking = async (
     await notificationService.notifyBookingCreated(booking.id);
   }
   return mapBookingToResponse(booking);
+};
+
+export const createGuestBooking = async (
+  input: CreateGuestBookingInput
+): Promise<GuestBookingResult> => {
+  // 1. Fetch tour service and active standard pricing
+  const service = await prisma.service.findUnique({
+    where: { id: input.serviceId },
+    include: { pricing: true },
+  });
+
+  if (!service) {
+    throw new AppError("Service not found", 404);
+  }
+  if (service.status !== "PUBLISHED") {
+    throw new AppError("Cannot book unpublished tour", 400);
+  }
+
+  const now = new Date();
+  const activePricings = service.pricing.filter(
+    (p) =>
+      (!p.validFrom || p.validFrom <= now) && (!p.validTo || p.validTo >= now)
+  );
+
+  if (activePricings.length === 0) {
+    throw new AppError("Service has no active pricing", 400);
+  }
+
+  if (activePricings.length > 1) {
+    throw new AppError(
+      "Service has multiple active pricing tiers. Please contact support.",
+      409
+    );
+  }
+
+  const activePricing = activePricings[0]!;
+  const rawBasePrice = Number(activePricing.basePrice);
+  const currency = activePricing.currency;
+
+  const hasGuestCounts =
+    input.adults !== undefined ||
+    input.children !== undefined ||
+    input.infants !== undefined;
+
+  let basePrice = rawBasePrice;
+
+  if (hasGuestCounts) {
+    const adults = Math.max(1, Number(input.adults ?? 1));
+    const children = Math.max(0, Number(input.children ?? 0));
+    const infants = Math.max(0, Number(input.infants ?? 0));
+
+    const unitAdultPrice =
+      activePricing.discountedPrice != null &&
+      Number(activePricing.discountedPrice) > 0
+        ? Number(activePricing.discountedPrice)
+        : rawBasePrice;
+
+    const metadata = (service as any).metadata as Record<string, any> | null;
+    const tiers: Array<{ tierName?: string; price?: number }> = Array.isArray(
+      metadata?.pricingTiers
+    )
+      ? metadata!.pricingTiers
+      : [];
+
+    const childTier = tiers.find((t) =>
+      /child/i.test(String(t?.tierName || ""))
+    );
+    const infantTier = tiers.find((t) =>
+      /infant/i.test(String(t?.tierName || ""))
+    );
+
+    const unitChildPrice =
+      childTier && typeof childTier.price === "number" && childTier.price >= 0
+        ? Number(childTier.price)
+        : Math.round(unitAdultPrice * 0.7 * 100) / 100;
+
+    const unitInfantPrice =
+      infantTier &&
+      typeof infantTier.price === "number" &&
+      infantTier.price >= 0
+        ? Number(infantTier.price)
+        : 0;
+
+    basePrice =
+      Math.round(
+        (adults * unitAdultPrice +
+          children * unitChildPrice +
+          infants * unitInfantPrice) *
+          100
+      ) / 100;
+  }
+
+  const finalPrice = basePrice;
+  const status = "PENDING";
+  const requiresApproval = false;
+
+  // 2. Parse travel date
+  let travelDateObj: Date | undefined;
+  if (input.travelDate && input.travelDate.trim()) {
+    travelDateObj = new Date(input.travelDate.trim());
+    if (isNaN(travelDateObj.getTime())) {
+      throw new AppError("Invalid travel date format", 400);
+    }
+  }
+
+  const totalGuests = Math.max(
+    1,
+    (input.adults ?? 1) + (input.children ?? 0) + (input.infants ?? 0)
+  );
+
+  // 3. Build structured notes
+  const noteParts: string[] = [];
+  if (input.travelDate && input.travelDate.trim()) {
+    noteParts.push(`Travel Date: ${input.travelDate.trim()}`);
+  }
+  if (hasGuestCounts) {
+    const adults = Math.max(1, Number(input.adults ?? 1));
+    const children = Math.max(0, Number(input.children ?? 0));
+    const infants = Math.max(0, Number(input.infants ?? 0));
+    const guestParts: string[] = [`${adults} Adult${adults > 1 ? "s" : ""}`];
+    if (children > 0) {
+      guestParts.push(`${children} Child${children > 1 ? "ren" : ""}`);
+    }
+    if (infants > 0) {
+      guestParts.push(`${infants} Infant${infants > 1 ? "s" : ""}`);
+    }
+    noteParts.push(`Guests: ${guestParts.join(", ")}`);
+  }
+  if (input.notes && input.notes.trim()) {
+    noteParts.push(input.notes.trim());
+  }
+  const formattedNotes = noteParts.length > 0 ? noteParts.join(" | ") : undefined;
+
+  // Generate tokens
+  const rawAccessToken = generateSecureToken();
+  const accessTokenHash = hashToken(rawAccessToken);
+  const tokenExpiresAt = new Date();
+  tokenExpiresAt.setDate(tokenExpiresAt.getDate() + 30); // 30-day guest token
+
+  const rawPaymentToken = generateSecureToken();
+  const paymentTokenHash = hashToken(rawPaymentToken);
+  const paymentExpiresAt = new Date();
+  paymentExpiresAt.setDate(paymentExpiresAt.getDate() + 7); // 7-day payment link
+
+  const normalizedEmail = input.customer.email.trim().toLowerCase();
+  const normalizedName = input.customer.name.trim();
+  const normalizedPhone = input.customer.phone?.trim() || null;
+
+  // 4. Atomic transaction
+  const result = await prisma.$transaction(async (tx) => {
+    // 4a. Resolve or create shadow customer
+    const customer = await resolveOrCreateCustomer(
+      {
+        customer: {
+          name: normalizedName,
+          email: normalizedEmail,
+          phone: normalizedPhone,
+        },
+      },
+      tx
+    );
+
+    // 4b. Capacity reservation
+    let resolvedAvailabilityId = input.availabilityId;
+    if (travelDateObj) {
+      const defaultCapacity = (service as any).capacity || 50;
+      await tx.$executeRaw`
+        INSERT INTO "ServiceAvailability" ("id", "serviceId", "date", "capacity", "bookedCount", "isAvailable", "lastVerifiedAt")
+        VALUES (gen_random_uuid(), ${input.serviceId}, ${travelDateObj}, ${defaultCapacity}, 0, true, NOW())
+        ON CONFLICT ("serviceId", "date") DO NOTHING;
+      `;
+
+      const updatedList: any[] = await tx.$queryRaw`
+        UPDATE "ServiceAvailability"
+        SET "bookedCount" = "bookedCount" + ${totalGuests},
+            "lastVerifiedAt" = NOW()
+        WHERE "serviceId" = ${input.serviceId}
+          AND "date" = ${travelDateObj}
+          AND "isAvailable" = true
+          AND ("capacity" - "bookedCount") >= ${totalGuests}
+        RETURNING "id", "bookedCount", "capacity";
+      `;
+
+      if (!updatedList || updatedList.length === 0) {
+        const currentAvail = await tx.serviceAvailability.findUnique({
+          where: {
+            serviceId_date: {
+              serviceId: input.serviceId,
+              date: travelDateObj,
+            },
+          },
+          select: { isAvailable: true, capacity: true, bookedCount: true },
+        });
+
+        if (currentAvail && !currentAvail.isAvailable) {
+          throw new AppError("Tour is not available on the selected date", 400);
+        }
+        throw new AppError("Selected date does not have sufficient capacity", 409);
+      }
+
+      resolvedAvailabilityId = updatedList[0].id;
+    }
+
+    // 4c. Create Booking
+    const booking = await bookingRepository.createBooking(
+      {
+        customerId: customer.id,
+        agentId: null,
+        createdById: null, // Explicitly NULL for anonymous guest checkout
+        source: "DIRECT",
+        serviceId: input.serviceId,
+        availabilityId: resolvedAvailabilityId,
+        currency,
+        basePrice,
+        finalPrice,
+        status,
+        requiresApproval,
+        ...(formattedNotes !== undefined ? { notes: formattedNotes } : {}),
+        historyAction: "BOOKING_CREATED_BY_GUEST",
+        actorRole: "customer",
+        isGuest: true,
+      },
+      tx
+    );
+
+    // 4d. Create immutable GuestBookingSnapshot
+    await tx.guestBookingSnapshot.create({
+      data: {
+        bookingId: booking.id,
+        guestName: normalizedName,
+        guestEmail: normalizedEmail,
+        guestPhone: normalizedPhone,
+      },
+    });
+
+    // 4e. Create GuestBookingToken
+    await tx.guestBookingToken.create({
+      data: {
+        bookingId: booking.id,
+        tokenHash: accessTokenHash,
+        email: normalizedEmail,
+        purpose: "ACCESS_AND_CLAIM",
+        expiresAt: tokenExpiresAt,
+      },
+    });
+
+    // 4f. Create active PaymentLink
+    await tx.paymentLink.create({
+      data: {
+        bookingId: booking.id,
+        tokenHash: paymentTokenHash,
+        expiresAt: paymentExpiresAt,
+        status: "ACTIVE",
+        createdById: null,
+      },
+    });
+
+    return {
+      booking: mapBookingToResponse(booking),
+      guestSnapshot: {
+        guestName: normalizedName,
+        guestEmail: normalizedEmail,
+        guestPhone: normalizedPhone,
+      },
+      accessToken: rawAccessToken,
+      rawPaymentToken,
+    };
+  });
+
+  const frontendBaseUrl = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/$/, "");
+  const paymentUrl = `${frontendBaseUrl}/pay/${result.rawPaymentToken}`;
+  const guestAccessUrl = `${frontendBaseUrl}/bookings/guest/${result.accessToken}`;
+
+  // Enqueue Guest Booking Access Email via Transactional Outbox
+  try {
+    await enqueueOutboxMessage(prisma, {
+      topic: "SEND_BOOKING_VOUCHER_EMAIL",
+      payload: {
+        bookingId: result.booking.id,
+        isGuestAccess: true,
+        guestAccessUrl,
+        guestTokenExpiresAt: tokenExpiresAt.toISOString(),
+      },
+      dedupeKey: `guest_access_email:${result.booking.id}`,
+    });
+  } catch (err) {
+    logger.error({ bookingId: result.booking.id, err }, "Failed to enqueue guest access outbox email");
+  }
+
+  return {
+    booking: result.booking,
+    guestSnapshot: result.guestSnapshot,
+    accessToken: result.accessToken,
+    guestAccessUrl,
+    paymentLink: {
+      token: result.rawPaymentToken,
+      paymentUrl,
+    },
+  };
+};
+
+/**
+ * Retrieves public safe guest booking itinerary details using a secure magic-link token.
+ * Validates token expiration, revocation, and active purpose.
+ * Never leaks internal customer IDs, Shadow Customer credentials, or private internal notes.
+ */
+export const getPublicGuestBookingDetails = async (rawToken: string) => {
+  const tokenHash = hashToken(rawToken);
+  const tokenRecord = await bookingRepository.findGuestBookingTokenByHash(tokenHash);
+
+  if (!tokenRecord) {
+    throw new AppError("Invalid or expired booking access link", 404);
+  }
+
+  // Security checks: revocation & expiration
+  if (tokenRecord.revokedAt) {
+    throw new AppError("This booking access link has been revoked", 403);
+  }
+
+  if (new Date() > new Date(tokenRecord.expiresAt)) {
+    throw new AppError("This booking access link has expired", 410);
+  }
+
+  const booking = tokenRecord.booking;
+  if (!booking) {
+    throw new AppError("Booking not found", 404);
+  }
+
+  const finalPrice = Number(booking.finalPrice);
+  const verifiedPayments = booking.payments || [];
+  const totalPaid = verifiedPayments.reduce(
+    (sum: number, p: any) => sum + Number(p.amount),
+    0,
+  );
+  const remainingBalance = Math.max(0, finalPrice - totalPaid);
+
+  // Check if active payment link exists and is still valid
+  const activePaymentLink = booking.paymentLinks?.[0];
+  const isPaymentLinkValid =
+    activePaymentLink &&
+    activePaymentLink.status === "ACTIVE" &&
+    new Date() < new Date(activePaymentLink.expiresAt) &&
+    remainingBalance > 0 &&
+    booking.paymentStatus !== "PAID";
+
+  const frontendBaseUrl = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/$/, "");
+
+  // Parse structured notes for guest count details (e.g. "Guests: 2 Adults, 1 Child")
+  let guestCounts = { adults: 1, children: 0, infants: 0 };
+  if (booking.notes) {
+    const matchAdults = booking.notes.match(/(\d+)\s+Adult/i);
+    const matchChildren = booking.notes.match(/(\d+)\s+Child/i);
+    const matchInfants = booking.notes.match(/(\d+)\s+Infant/i);
+    if (matchAdults) guestCounts.adults = parseInt(matchAdults[1], 10);
+    if (matchChildren) guestCounts.children = parseInt(matchChildren[1], 10);
+    if (matchInfants) guestCounts.infants = parseInt(matchInfants[1], 10);
+  }
+
+  // Construct safe, sanitized response payload
+  return {
+    bookingReference: booking.id.substring(0, 8).toUpperCase(),
+    status: booking.status,
+    paymentStatus: booking.paymentStatus,
+    fulfillmentStatus: booking.fulfillmentStatus,
+    currency: booking.currency,
+    pricing: {
+      basePrice: Number(booking.basePrice),
+      finalPrice: finalPrice,
+      totalPaid: totalPaid,
+      remainingBalance: remainingBalance,
+    },
+    guest: {
+      name: booking.guestSnapshot?.guestName || "Guest",
+      email: booking.guestSnapshot?.guestEmail || tokenRecord.email,
+      phone: booking.guestSnapshot?.guestPhone || null,
+      party: guestCounts,
+    },
+    service: {
+      id: booking.service.id,
+      name: booking.service.name,
+      type: booking.service.type,
+      description: booking.service.description,
+      providerName: booking.service.providerName,
+      metadata: booking.service.metadata,
+    },
+    travelDate: booking.availability?.date
+      ? new Date(booking.availability.date).toISOString().split("T")[0]
+      : null,
+    createdAt: booking.createdAt,
+    paymentAction: isPaymentLinkValid
+      ? {
+          isPayable: true,
+          expiresAt: activePaymentLink.expiresAt,
+          paymentUrl: `${frontendBaseUrl}/pay/${activePaymentLink.tokenHash}`, // Note: in production, paymentLink tokenHash or lookup token
+        }
+      : {
+          isPayable: false,
+          remainingBalance: remainingBalance,
+        },
+    cancellationPolicy: {
+      allowed: false,
+      notice: "Direct online cancellations are not permitted for guest bookings. Please contact support to modify or cancel your reservation.",
+      supportEmail: "support@phukettours.com",
+    },
+  };
 };
 
 export const updateAgentBookingPrice = async (

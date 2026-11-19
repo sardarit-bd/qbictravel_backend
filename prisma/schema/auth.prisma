@@ -18,17 +18,17 @@ model RevokedToken {
 }
 
 model Session {
-  id           String         @id @default(uuid())
+  id           String    @id @default(uuid())
   userId       String
   userAgent    String?
   ipAddress    String?
   revokedAt    DateTime?
   expiresAt    DateTime
-  lastActiveAt DateTime       @default(now())
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  lastActiveAt DateTime  @default(now())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   refreshTokens RefreshToken[]
 
   @@index([userId])
@@ -37,21 +37,37 @@ model Session {
 }
 
 model RefreshToken {
-  id          String    @id @default(uuid())
-  sessionId   String
-  tokenHash   String    @unique
-  familyId    String
-  sequence    Int       @default(1)
-  isConsumed  Boolean   @default(false)
-  consumedAt  DateTime?
-  revokedAt   DateTime?
-  expiresAt   DateTime
-  createdAt   DateTime  @default(now())
+  id         String    @id @default(uuid())
+  sessionId  String
+  tokenHash  String    @unique
+  familyId   String
+  sequence   Int       @default(1)
+  isConsumed Boolean   @default(false)
+  consumedAt DateTime?
+  revokedAt  DateTime?
+  expiresAt  DateTime
+  createdAt  DateTime  @default(now())
 
-  session     Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@index([sessionId])
   @@index([tokenHash])
   @@index([familyId])
   @@index([expiresAt])
+}
+
+model EmailVerificationToken {
+  id         String    @id @default(uuid())
+  userId     String
+  email      String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  verifiedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@index([email])
 }

@@ -4,9 +4,12 @@ import validate from "../../shared/middleware/validate.js";
 import authMiddleware from "../../shared/middleware/authMiddleware.js";
 import requireRole from "../../shared/middleware/requireRole.js";
 import requirePermission from "../../shared/middleware/requirePermission.js";
+import { guestCheckoutRateLimiter, guestAccessRateLimiter } from "../../shared/middleware/rateLimiter.js";
 import {
   createBookingSchema,
   createStaffBookingSchema,
+  createGuestBookingSchema,
+  guestAccessTokenParamSchema,
   updateBookingPriceSchema,
   reviewBookingPriceSchema,
   reviewPendingBookingSchema,
@@ -17,6 +20,85 @@ import {
 } from "./bookingValidators.js";
 
 const router = Router();
+
+/**
+ * @openapi
+ * /api/v1/bookings/guest:
+ *   post:
+ *     tags:
+ *       - Guest Bookings
+ *     summary: Create an anonymous guest booking
+ *     description: Public visitors can reserve a tour as a guest without creating an account. Generates an immutable guest snapshot, secure access token, and active payment link.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [customer, serviceId]
+ *             properties:
+ *               customer:
+ *                 type: object
+ *                 required: [name, email]
+ *                 properties:
+ *                   name: { type: string }
+ *                   email: { type: string, format: email }
+ *                   phone: { type: string, nullable: true }
+ *               serviceId: { type: string, format: uuid }
+ *               travelDate: { type: string }
+ *               adults: { type: integer, minimum: 1 }
+ *               children: { type: integer, minimum: 0 }
+ *               infants: { type: integer, minimum: 0 }
+ *               notes: { type: string }
+ *               referralCode: { type: string }
+ *     responses:
+ *       201:
+ *         description: Guest booking created successfully
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       409:
+ *         $ref: '#/components/responses/Conflict'
+ */
+router.post(
+  "/bookings/guest",
+  guestCheckoutRateLimiter,
+  validate(createGuestBookingSchema),
+  bookingController.createGuestBooking
+);
+
+/**
+ * @openapi
+ * /api/v1/public/bookings/access/{token}:
+ *   get:
+ *     tags:
+ *       - Guest Bookings
+ *     summary: Retrieve guest booking itinerary using a secure magic link token
+ *     description: Returns sanitized, read-only itinerary details for anonymous guests without requiring an account or exposing internal customer records.
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 64-character hex guest access token
+ *     responses:
+ *       200:
+ *         description: Guest booking details retrieved successfully
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       403:
+ *         description: Token revoked
+ *       404:
+ *         description: Invalid or unknown token
+ *       410:
+ *         description: Token expired
+ */
+router.get(
+  "/public/bookings/access/:token",
+  guestAccessRateLimiter,
+  validate(guestAccessTokenParamSchema, "params"),
+  bookingController.getPublicGuestBookingAccess
+);
 
 /**
  * @openapi
@@ -61,7 +143,7 @@ const router = Router();
 router.post(
   "/bookings",
   authMiddleware,
-  requireRole("customer"),
+  requireRole("customer", "affiliate"),
   validate(createBookingSchema),
   bookingController.createBooking
 );

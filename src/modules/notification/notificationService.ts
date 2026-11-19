@@ -1,5 +1,5 @@
 import logger from "../../shared/logger/logger.js";
-import { sendEmail } from "../../shared/utils/mailer.js";
+import { sendEmail, type MailAttachment } from "../../shared/utils/mailer.js";
 import * as notificationRepository from "./notificationRepository.js";
 import { NOTIFICATION_EVENTS } from "./notificationTypes.js";
 import type {
@@ -7,6 +7,7 @@ import type {
   NotificationEventValue,
   UpdateNotificationSettingsInput,
 } from "./notificationTypes.js";
+import { getOrCreatePaymentReceipt } from "../invoice/invoiceService.js";
 
 const humanize = (value: string): string => value.replace(/_/g, " ").toLowerCase();
 
@@ -33,6 +34,7 @@ const notifyBookingParties = async (
   event: NotificationEventValue,
   subject: string,
   compose: (context: MessageContext) => string,
+  attachments?: MailAttachment[],
 ): Promise<void> => {
   try {
     const setting = await notificationRepository.findSetting(event);
@@ -45,9 +47,31 @@ const notifyBookingParties = async (
       return;
     }
 
-    const recipients = [booking.customer, booking.agent].filter(
-      (user): user is NonNullable<typeof user> => user !== null && user.status === "active",
-    );
+    // Determine customer/guest recipient
+    interface Recipient {
+      name: string;
+      email: string;
+    }
+    const recipients: Recipient[] = [];
+
+    if (booking.isGuest && booking.guestSnapshot) {
+      recipients.push({
+        name: booking.guestSnapshot.guestName,
+        email: booking.guestSnapshot.guestEmail,
+      });
+    } else if (booking.customer && booking.customer.status === "active") {
+      recipients.push({
+        name: booking.customer.name,
+        email: booking.customer.email,
+      });
+    }
+
+    if (booking.agent && booking.agent.status === "active") {
+      recipients.push({
+        name: booking.agent.name,
+        email: booking.agent.email,
+      });
+    }
 
     for (const recipient of recipients) {
       try {
@@ -61,6 +85,7 @@ const notifyBookingParties = async (
             paymentStatus: booking.paymentStatus,
             fulfillmentStatus: booking.fulfillmentStatus,
           }),
+          attachments,
         });
       } catch (error) {
         logger.error({ err: error, bookingId, event }, "Failed to send booking notification");
@@ -90,18 +115,76 @@ export const notifyBookingStatusChanged = async (bookingId: string): Promise<voi
 export const notifyPaymentDecision = async (
   bookingId: string,
   outcome: "CONFIRMED" | "REJECTED",
-): Promise<void> =>
-  notifyBookingParties(
+  paymentId?: string,
+): Promise<void> => {
+  let attachments: MailAttachment[] | undefined;
+
+  // For confirmed payments, generate or retrieve the official payment receipt PDF
+  if (outcome === "CONFIRMED") {
+    try {
+      const receipt = await getOrCreatePaymentReceipt(bookingId, paymentId);
+      attachments = [
+        {
+          filename: receipt.filename,
+          content: receipt.pdfBuffer,
+          contentType: "application/pdf",
+        },
+      ];
+    } catch (err: any) {
+      logger.error(
+        { bookingId, paymentId, err: err?.message || err },
+        "Failed to generate payment receipt PDF for email attachment; proceeding without attachment",
+      );
+    }
+  }
+
+  return notifyBookingParties(
     bookingId,
     "PAYMENT_CONFIRMATION",
     outcome === "CONFIRMED" ? "Your payment has been confirmed" : "Your payment could not be verified",
     (c) =>
       outcome === "CONFIRMED"
-        ? `Hello ${c.recipientName},\n\nWe have confirmed the payment for your ${c.serviceName} booking.`
+        ? `Hello ${c.recipientName},\n\nWe have confirmed the payment for your ${c.serviceName} booking. Please find your official payment receipt attached.\n\nThank you for choosing PhuketTours!`
         : `Hello ${c.recipientName},\n\nWe could not verify the payment for your ${c.serviceName} booking. Please contact us or submit a new payment.`,
+    attachments,
   );
+};
 
 export const notifyOperationalUpdate = async (bookingId: string): Promise<void> =>
   notifyBookingParties(bookingId, "OPERATIONAL_UPDATE", "An update on your booking", (c) =>
     `Hello ${c.recipientName},\n\nYour ${c.serviceName} booking is now ${humanize(c.fulfillmentStatus)}.`,
   );
+
+/**
+ * Sends a secure Guest Booking Access magic link email.
+ * Recipient is retrieved safely from GuestBookingSnapshot without exposing Shadow Customer data.
+ */
+export const notifyGuestBookingAccess = async (
+  bookingId: string,
+  guestAccessUrl: string,
+  expiresAtIso?: string,
+): Promise<void> => {
+  const expiryFormatted = expiresAtIso
+    ? new Date(expiresAtIso).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    : "30 days";
+
+  return notifyBookingParties(
+    bookingId,
+    "BOOKING_CONFIRMATION",
+    "Your PhuketTours Booking Access Link",
+    (c) =>
+      `Hello ${c.recipientName},\n\n` +
+      `Thank you for booking your Phuket experience with us!\n\n` +
+      `Booking Reference: ${bookingId.substring(0, 8).toUpperCase()}\n` +
+      `Experience: ${c.serviceName}\n\n` +
+      `You can view your full itinerary and manage your booking anytime without an account using your secure access link:\n` +
+      `${guestAccessUrl}\n\n` +
+      `This link is valid until ${expiryFormatted}. Please keep this email safe.\n\n` +
+      `If you have questions or need to modify your booking, our support team is available at support@phukettours.com.\n\n` +
+      `Warm regards,\nThe PhuketTours Team`,
+  );
+};
