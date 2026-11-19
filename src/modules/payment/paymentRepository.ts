@@ -826,7 +826,7 @@ export const createOrUpdatePaymentLink = async (params: {
   bookingId: string;
   tokenHash: string;
   expiresAt: Date;
-  createdById?: string;
+  createdById?: string | null;
   actorRole?: string;
 }) => {
   return prisma.$transaction(async (tx) => {

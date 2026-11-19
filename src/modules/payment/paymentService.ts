@@ -903,9 +903,10 @@ export const recordPayment = async (adminId: string, paymentId: string, input: R
 // ── CUSTOMER SECURE PAYMENT LINK WORKFLOW ────────────────────────────────────
 
 /**
- * Generates or retrieves an active secure customer payment link for an active guest booking.
+ * Generates or retrieves an active secure customer payment link for an agent booking.
  */
-export const generateGuestPaymentLink = async (
+export const generateAgentPaymentLink = async (
+  agentId: string,
   bookingId: string,
   expiresInDays = 7,
 ) => {
@@ -913,43 +914,6 @@ export const generateGuestPaymentLink = async (
   if (!booking) {
     throw new AppError("Booking not found", 404);
   }
-
-  if (!booking.isGuest) {
-    throw new AppError("This is not a guest booking", 400);
-  }
-
-  if (booking.paymentStatus === "PAID") {
-    throw new AppError("Booking is already fully paid", 400);
-  }
-
-  const rawToken = generateSecureToken();
-  const tokenHash = hashToken(rawToken);
-
-  const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + expiresInDays);
-
-  const paymentLink = await paymentRepository.createOrUpdatePaymentLink({
-    bookingId,
-    tokenHash,
-    expiresAt,
-    createdById: null,
-  });
-
-  const frontendBaseUrl = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/$/, "");
-  const paymentUrl = `${frontendBaseUrl}/pay/${rawToken}`;
-
-  return {
-    paymentLinkId: paymentLink.id,
-    bookingId: paymentLink.bookingId,
-    paymentUrl,
-    rawToken,
-    expiresAt: paymentLink.expiresAt,
-    status: paymentLink.status,
-  };
-};
-
-/**
- * Generates or retrieves an active secure customer payment link for an agent booking.
 
   // Security check: Must belong to requesting agent
   if (booking.agentId !== agentId) {
