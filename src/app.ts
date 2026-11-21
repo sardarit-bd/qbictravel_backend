@@ -26,6 +26,7 @@ import settingRoutes from "./modules/setting/settingRoutes.js";
 import customerRoutes from "./modules/customer/customerRoutes.js";
 import invoiceRoutes from "./modules/invoice/invoiceRoutes.js";
 import discountRoutes from "./modules/discount/discountRoutes.js";
+import eventRoutes from "./modules/event/eventRoutes.js";
 import {
   publicAffiliateRouter,
   affiliatePortalRouter,
@@ -176,6 +177,7 @@ app.use("/api/v1", reportRoutes);
 app.use("/api/v1", customerRoutes);
 app.use("/api/v1", invoiceRoutes);
 app.use("/api/v1", discountRoutes);
+app.use("/api/v1", eventRoutes);
 app.use("/api/v1/affiliates", publicAffiliateRouter);
 app.use("/api/v1/affiliate", affiliatePortalRouter);
 app.use("/api/v1/admin/affiliates", adminAffiliateRouter);
