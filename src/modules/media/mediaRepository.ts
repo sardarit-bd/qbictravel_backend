@@ -229,27 +229,10 @@ export const findReferencingServices = async (
     name: `System Setting (${s.key})`,
   }));
 
-  // Check Bookings metadata (e.g. customized tour vouchers, attached ticket media)
-  const bookingMatches = await prisma.$queryRaw<Array<{ id: string; bookingReference: string }>>`
-    SELECT id, "bookingReference" FROM "Booking"
-    WHERE metadata IS NOT NULL
-      AND (
-        metadata::text LIKE ${"%" + secureUrl + "%"}
-        OR metadata::text LIKE ${"%" + publicId + "%"}
-      )
-    LIMIT 5;
-  `;
-
-  const formattedBookingMatches = bookingMatches.map((b) => ({
-    id: b.id,
-    name: `Booking (${b.bookingReference})`,
-  }));
-
   return [
     ...serviceMatches,
     ...formattedUserMatches,
     ...formattedSettingMatches,
-    ...formattedBookingMatches,
   ];
 };
 
