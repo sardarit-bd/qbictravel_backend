@@ -63,6 +63,20 @@ export const listMedia = async (
   }
 };
 
+export const getMediaById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const mediaId = String(req.params.mediaId);
+    const media = await mediaService.getMediaById(mediaId);
+    sendResponse(res, 200, true, "Media details retrieved successfully", media);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const deleteMedia = async (
   req: Request,
   res: Response,
@@ -72,6 +86,47 @@ export const deleteMedia = async (
     const mediaId = String(req.params.mediaId);
     const result = await mediaService.deleteMedia(mediaId);
     sendResponse(res, 200, true, "Media deleted successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const bulkDeleteMedia = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { mediaIds } = req.body as { mediaIds: string[] };
+    const result = await mediaService.bulkDeleteMedia(mediaIds);
+    sendResponse(res, 200, true, "Bulk deletion processed", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const bulkAttachDetachMedia = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const result = await mediaService.bulkAttachDetachMedia(req.body);
+    sendResponse(res, 200, true, "Bulk attachment processed successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const syncAsset = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const mediaId = String(req.params.mediaId);
+    const result = await mediaService.syncAssetFromCloudinary(mediaId);
+    sendResponse(res, 200, true, "Asset synchronization processed", result);
   } catch (error) {
     next(error);
   }

@@ -47,6 +47,9 @@ export interface GetMediaQuery {
   serviceId?: string;
   unattached?: boolean | string;
   search?: string;
+  format?: string;
+  folder?: string;
+  sortBy?: "newest" | "oldest" | "name";
 }
 
 export interface MediaResponse {
@@ -75,4 +78,20 @@ export interface MediaResponse {
 export interface PaginatedMediaResponse {
   items: MediaResponse[];
   pagination: PaginationMeta;
+}
+
+export interface BulkDeleteMediaResponse {
+  deleted: Array<{ id: string; publicId: string }>;
+  blocked: Array<{ id: string; publicId?: string; reason: string }>;
+  failed: Array<{ id: string; publicId?: string; reason: string }>;
+}
+
+export interface BulkAttachDetachInput {
+  mediaIds: string[];
+  serviceId?: string | null;
+  action: "attach" | "detach";
+}
+
+export interface SyncAssetInput {
+  mediaId: string;
 }

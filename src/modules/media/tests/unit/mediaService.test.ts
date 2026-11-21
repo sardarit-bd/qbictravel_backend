@@ -482,24 +482,47 @@ describe("Media Service Unit Tests — Security Hardened", () => {
     it("calls repository with parsed pagination and filter parameters", async () => {
       const mockList = {
         items: [],
-        pagination: { page: 1, limit: 20, total: 0, totalPages: 1 },
+        pagination: { page: 1, limit: 24, total: 0, totalPages: 1 },
       };
       mockedRepo.listMedia.mockResolvedValue(mockList as any);
 
       const result = await mediaService.listMedia({
         page: 2,
-        limit: 10,
+        limit: 36,
         unattached: "true",
+        format: "webp",
+        folder: "phukettours/tours",
+        sortBy: "name",
       });
 
       expect(mockedRepo.listMedia).toHaveBeenCalledWith({
         page: 2,
-        limit: 10,
+        limit: 36,
         serviceId: undefined,
         unattached: true,
         search: undefined,
+        format: "webp",
+        folder: "phukettours/tours",
+        sortBy: "name",
       });
       expect(result).toBe(mockList);
+    });
+
+    it("defaults limit to 24 if unspecified", async () => {
+      const mockList = {
+        items: [],
+        pagination: { page: 1, limit: 24, total: 0, totalPages: 1 },
+      };
+      mockedRepo.listMedia.mockResolvedValue(mockList as any);
+
+      await mediaService.listMedia({});
+
+      expect(mockedRepo.listMedia).toHaveBeenCalledWith(
+        expect.objectContaining({
+          page: 1,
+          limit: 24,
+        }),
+      );
     });
   });
 
@@ -593,6 +616,120 @@ describe("Media Service Unit Tests — Security Hardened", () => {
       expect(mockedRepo.deleteMediaRecord).toHaveBeenCalledWith(
         existingMedia.id,
       );
+    });
+  });
+
+  describe("bulkDeleteMedia", () => {
+    it("deletes unreferenced media and marks referenced media as blocked", async () => {
+      const media1 = {
+        id: "m-1",
+        publicId: "phukettours/tours/img-1",
+        secureUrl: "https://res.cloudinary.com/img1.jpg",
+      } as any;
+      const media2 = {
+        id: "m-2",
+        publicId: "phukettours/tours/img-2",
+        secureUrl: "https://res.cloudinary.com/img2.jpg",
+      } as any;
+
+      mockedRepo.findMediaById
+        .mockResolvedValueOnce(media1)
+        .mockResolvedValueOnce(media2);
+
+      // media1 is referenced by a tour
+      mockedRepo.findReferencingServices
+        .mockResolvedValueOnce([{ id: "s-1", name: "Phi Phi Speedboat" }])
+        .mockResolvedValueOnce([]); // media2 is unreferenced
+
+      fakeCloudinary.uploader.destroy.mockResolvedValue({ result: "ok" });
+      mockedRepo.deleteMediaRecord.mockResolvedValue(undefined);
+
+      const result = await mediaService.bulkDeleteMedia(["m-1", "m-2"]);
+
+      expect(result.deleted).toEqual([{ id: "m-2", publicId: "phukettours/tours/img-2" }]);
+      expect(result.blocked).toHaveLength(1);
+      expect(result.blocked[0]?.id).toBe("m-1");
+      expect(result.blocked[0]?.reason).toContain("Phi Phi Speedboat");
+      expect(mockedRepo.deleteMediaRecord).toHaveBeenCalledWith("m-2");
+      expect(mockedRepo.deleteMediaRecord).not.toHaveBeenCalledWith("m-1");
+    });
+  });
+
+  describe("bulkAttachDetachMedia", () => {
+    it("attaches media items to service when action is attach", async () => {
+      mockedRepo.findServiceById.mockResolvedValue({ id: "serv-1", name: "Tour A" });
+      mockedRepo.findMediaById.mockResolvedValue({ id: "m-1", serviceId: null } as any);
+      mockedRepo.updateMediaRecord.mockResolvedValue({ id: "m-1", serviceId: "serv-1" } as any);
+
+      const result = await mediaService.bulkAttachDetachMedia({
+        mediaIds: ["m-1"],
+        action: "attach",
+        serviceId: "serv-1",
+      });
+
+      expect(result.updatedCount).toBe(1);
+      expect(mockedRepo.updateMediaRecord).toHaveBeenCalledWith("m-1", {
+        serviceId: "serv-1",
+      });
+    });
+
+    it("detaches media items when action is detach", async () => {
+      mockedRepo.findMediaById.mockResolvedValue({ id: "m-1", serviceId: "serv-1" } as any);
+      mockedRepo.updateMediaRecord.mockResolvedValue({ id: "m-1", serviceId: null } as any);
+
+      const result = await mediaService.bulkAttachDetachMedia({
+        mediaIds: ["m-1"],
+        action: "detach",
+      });
+
+      expect(result.updatedCount).toBe(1);
+      expect(mockedRepo.updateMediaRecord).toHaveBeenCalledWith("m-1", {
+        serviceId: null,
+      });
+    });
+  });
+
+  describe("syncAssetFromCloudinary", () => {
+    it("updates media metadata if asset exists in Cloudinary", async () => {
+      const media = {
+        id: "m-1",
+        publicId: "phukettours/tours/img-1",
+        secureUrl: "https://res.cloudinary.com/old.jpg",
+        format: "jpg",
+        bytes: 1000,
+        width: 100,
+        height: 100,
+      } as any;
+      mockedRepo.findMediaById.mockResolvedValue(media);
+      fakeCloudinary.api.resource.mockResolvedValue({
+        format: "webp",
+        bytes: 800,
+        width: 120,
+        height: 120,
+        secure_url: "https://res.cloudinary.com/new.webp",
+      });
+      mockedRepo.updateMediaRecord.mockResolvedValue({
+        ...media,
+        format: "webp",
+      });
+
+      const res = await mediaService.syncAssetFromCloudinary("m-1");
+      expect(res.status).toBe("synced");
+      expect(mockedRepo.updateMediaRecord).toHaveBeenCalledWith("m-1", {
+        format: "webp",
+        bytes: 800,
+        width: 120,
+        height: 120,
+        secureUrl: "https://res.cloudinary.com/new.webp",
+      });
+    });
+
+    it("returns missing_on_cloudinary status if asset not found in Cloudinary", async () => {
+      mockedRepo.findMediaById.mockResolvedValue({ id: "m-1", publicId: "missing" } as any);
+      fakeCloudinary.api.resource.mockRejectedValue({ http_code: 404 });
+
+      const res = await mediaService.syncAssetFromCloudinary("m-1");
+      expect(res.status).toBe("missing_on_cloudinary");
     });
   });
 });
