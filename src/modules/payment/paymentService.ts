@@ -21,6 +21,7 @@ import { recordAffiliateCommissionReversal } from "../affiliate/affiliateCommiss
 import { generateSecureToken, hashToken } from "./tokenUtils.js";
 import logger from "../../shared/logger/logger.js";
 import env from "../../config/env.js";
+import { emitPaymentEvent, emitBookingEvent } from "../event/eventEmitter.js";
 
 const toCents = (value: unknown): number => Math.round(Number(value) * 100);
 
@@ -336,6 +337,15 @@ export const handleStripeWebhook = async (
 
         await paymentRepository.completeWebhookEvent(eventId, "PROCESSED", targetBookingId, targetPayment.id);
 
+        emitPaymentEvent("payment.verified", targetPayment.id).catch((err) =>
+          logger.error({ paymentId: targetPayment.id, err }, "Failed to emit payment.verified event")
+        );
+        emitBookingEvent("booking.status_changed", targetBookingId, {
+          paymentStatus: "PAID",
+        }).catch((err) =>
+          logger.error({ bookingId: targetBookingId, err }, "Failed to emit booking.status_changed event")
+        );
+
         return {
           received: true,
           eventId,
@@ -461,6 +471,16 @@ export const handleStripeWebhook = async (
           targetPayment?.bookingId,
           targetPayment?.id
         );
+
+        if (targetPayment) {
+          emitPaymentEvent("payment.refunded", targetPayment.id).catch((err) =>
+            logger.error({ paymentId: targetPayment.id, err }, "Failed to emit payment.refunded event")
+          );
+          emitBookingEvent("booking.updated", targetPayment.bookingId).catch((err) =>
+            logger.error({ bookingId: targetPayment.bookingId, err }, "Failed to emit booking.updated event")
+          );
+        }
+
         return { received: true, eventId, type: eventType, status: "PROCESSED", paymentId };
       }
 
@@ -840,6 +860,15 @@ export const verifyPayment = async (adminId: string, paymentId: string, input: V
   // If rejected, notify customer synchronously; if verified, notification is handled durably via outbox
   if (input.decision === "REJECTED") {
     await notificationService.notifyPaymentDecision(payment.bookingId, "REJECTED");
+  } else if (input.decision === "VERIFIED") {
+    emitPaymentEvent("payment.verified", paymentId).catch((err) =>
+      logger.error({ paymentId, err }, "Failed to emit payment.verified event")
+    );
+    emitBookingEvent("booking.status_changed", payment.bookingId, {
+      paymentStatus: "PAID",
+    }).catch((err) =>
+      logger.error({ bookingId: payment.bookingId, err }, "Failed to emit booking.status_changed event")
+    );
   }
 
   return mapPayment(updated);

@@ -6,6 +6,7 @@ import * as notificationService from "../notification/notificationService.js";
 import { parsePagination } from "../../shared/utils/pagination.js";
 import { generateSecureToken, hashToken } from "../payment/tokenUtils.js";
 import { enqueueOutboxMessage } from "../outbox/outboxService.js";
+import { emitBookingEvent } from "../event/eventEmitter.js";
 import logger from "../../shared/logger/logger.js";
 import type {
   CreateBookingInput,
@@ -253,10 +254,16 @@ export const createBooking = async (
     await bookingRepository.createPriceApproval(booking.id, proposedPrice);
     const updated = await bookingRepository.findBookingById(booking.id);
     await notificationService.notifyBookingCreated(booking.id);
+    emitBookingEvent("booking.created", booking.id).catch((err) =>
+      logger.error({ bookingId: booking.id, err }, "Failed to emit booking.created event")
+    );
     return mapBookingToResponse(updated);
   }
 
   await notificationService.notifyBookingCreated(booking.id);
+  emitBookingEvent("booking.created", booking.id).catch((err) =>
+    logger.error({ bookingId: booking.id, err }, "Failed to emit booking.created event")
+  );
   return mapBookingToResponse(booking);
 };
 
@@ -572,6 +579,9 @@ export const createStaffBooking = async (
   if (!requiresApproval) {
     await notificationService.notifyBookingCreated(booking.id);
   }
+  emitBookingEvent("booking.created", booking.id).catch((err) =>
+    logger.error({ bookingId: booking.id, err }, "Failed to emit booking.created event")
+  );
   return mapBookingToResponse(booking);
 };
 
@@ -862,6 +872,10 @@ export const createGuestBooking = async (
     logger.error({ bookingId: result.booking.id, err }, "Failed to enqueue guest access outbox email");
   }
 
+  emitBookingEvent("booking.created", result.booking.id).catch((err) =>
+    logger.error({ bookingId: result.booking.id, err }, "Failed to emit booking.created event")
+  );
+
   return {
     booking: result.booking,
     guestSnapshot: result.guestSnapshot,
@@ -1112,6 +1126,9 @@ export const reviewBookingPrice = async (
       },
     );
     await notificationService.notifyBookingStatusChanged(bookingId);
+    emitBookingEvent("booking.approved", bookingId, { approvedPrice: Number(input.approvedPrice) }).catch((err) =>
+      logger.error({ bookingId, err }, "Failed to emit booking.approved event")
+    );
     return mapBookingToResponse(updated);
   }
 
@@ -1121,6 +1138,9 @@ export const reviewBookingPrice = async (
     input.notes,
   );
   await notificationService.notifyBookingStatusChanged(bookingId);
+  emitBookingEvent("booking.rejected", bookingId).catch((err) =>
+    logger.error({ bookingId, err }, "Failed to emit booking.rejected event")
+  );
   return mapBookingToResponse(rejected);
 };
 
@@ -1189,6 +1209,9 @@ export const reviewPendingReservation = async (
         throw new AppError("Booking not found", 404);
       }
       await notificationService.notifyBookingStatusChanged(bookingId);
+      emitBookingEvent("booking.approved", bookingId).catch((err) =>
+        logger.error({ bookingId, err }, "Failed to emit booking.approved event")
+      );
       return updated;
     } catch (err: any) {
       if (err instanceof AppError) throw err;
@@ -1207,6 +1230,9 @@ export const reviewPendingReservation = async (
       throw new AppError("Booking not found", 404);
     }
     await notificationService.notifyBookingStatusChanged(bookingId);
+    emitBookingEvent("booking.rejected", bookingId).catch((err) =>
+      logger.error({ bookingId, err }, "Failed to emit booking.rejected event")
+    );
     return updated;
   } catch (err: any) {
     if (err instanceof AppError) throw err;

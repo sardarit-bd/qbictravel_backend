@@ -99,8 +99,11 @@ export const listMedia = async (params: {
   serviceId?: string;
   unattached?: boolean;
   search?: string;
+  format?: string;
+  folder?: string;
+  sortBy?: "newest" | "oldest" | "name";
 }): Promise<PaginatedMediaResponse> => {
-  const { page, limit, serviceId, unattached, search } = params;
+  const { page, limit, serviceId, unattached, search, format, folder, sortBy } = params;
   const skip = (page - 1) * limit;
 
   const where: Prisma.MediaWhereInput = {};
@@ -111,6 +114,14 @@ export const listMedia = async (params: {
     where.serviceId = null;
   }
 
+  if (format) {
+    where.format = format.toLowerCase();
+  }
+
+  if (folder) {
+    where.folder = folder;
+  }
+
   if (search) {
     where.OR = [
       { originalFilename: { contains: search, mode: "insensitive" } },
@@ -118,12 +129,19 @@ export const listMedia = async (params: {
     ];
   }
 
+  let orderBy: Prisma.MediaOrderByWithRelationInput = { createdAt: "desc" };
+  if (sortBy === "oldest") {
+    orderBy = { createdAt: "asc" };
+  } else if (sortBy === "name") {
+    orderBy = { originalFilename: "asc" };
+  }
+
   const [items, total] = await Promise.all([
     prisma.media.findMany({
       where,
       skip,
       take: limit,
-      orderBy: { createdAt: "desc" },
+      orderBy,
       include: {
         service: {
           select: {
@@ -155,30 +173,67 @@ export const findReferencingServices = async (
   publicId: string,
   serviceId?: string | null,
 ): Promise<Array<{ id: string; name: string }>> => {
-  if (serviceId) {
-    return prisma.$queryRaw<Array<{ id: string; name: string }>>`
-      SELECT id, name FROM "Service"
-      WHERE id = ${serviceId}
-        OR (
-          metadata IS NOT NULL
+  const serviceMatches = serviceId
+    ? await prisma.$queryRaw<Array<{ id: string; name: string }>>`
+        SELECT id, name FROM "Service"
+        WHERE id = ${serviceId}
+          OR (
+            metadata IS NOT NULL
+            AND (
+              metadata::text LIKE ${"%" + secureUrl + "%"}
+              OR metadata::text LIKE ${"%" + publicId + "%"}
+            )
+          )
+        LIMIT 5;
+      `
+    : await prisma.$queryRaw<Array<{ id: string; name: string }>>`
+        SELECT id, name FROM "Service"
+        WHERE metadata IS NOT NULL
           AND (
             metadata::text LIKE ${"%" + secureUrl + "%"}
             OR metadata::text LIKE ${"%" + publicId + "%"}
           )
-        )
-      LIMIT 5;
-    `;
-  }
+        LIMIT 5;
+      `;
 
-  return prisma.$queryRaw<Array<{ id: string; name: string }>>`
-    SELECT id, name FROM "Service"
-    WHERE metadata IS NOT NULL
-      AND (
-        metadata::text LIKE ${"%" + secureUrl + "%"}
-        OR metadata::text LIKE ${"%" + publicId + "%"}
-      )
-    LIMIT 5;
-  `;
+  const userMatches = await prisma.user.findMany({
+    where: {
+      OR: [
+        { avatarUrl: { contains: secureUrl } },
+        { avatarKey: publicId },
+      ],
+    },
+    select: { id: true, name: true },
+    take: 5,
+  });
+
+  const formattedUserMatches = userMatches.map((u) => ({
+    id: u.id,
+    name: `User Avatar (${u.name || "User"})`,
+  }));
+
+  // Check Settings (e.g. site logo, banner, custom settings)
+  const settingMatches = await prisma.systemSetting.findMany({
+    where: {
+      OR: [
+        { value: { contains: secureUrl } },
+        { value: { contains: publicId } },
+      ],
+    },
+    select: { id: true, key: true },
+    take: 5,
+  });
+
+  const formattedSettingMatches = settingMatches.map((s) => ({
+    id: s.id,
+    name: `System Setting (${s.key})`,
+  }));
+
+  return [
+    ...serviceMatches,
+    ...formattedUserMatches,
+    ...formattedSettingMatches,
+  ];
 };
 
 export const findServiceById = async (serviceId: string) => {

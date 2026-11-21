@@ -315,13 +315,24 @@ export const confirmUploadedAsset = async (
 };
 
 /**
+ * Retrieves a single media record by ID.
+ */
+export const getMediaById = async (mediaId: string): Promise<MediaResponse> => {
+  const media = await findMediaById(mediaId);
+  if (!media) {
+    throw new AppError("Media not found", 404);
+  }
+  return media;
+};
+
+/**
  * Retrieves paginated media list for the Admin Media Manager.
  */
 export const listMedia = async (
   query: GetMediaQuery,
 ): Promise<PaginatedMediaResponse> => {
   const page = Number(query.page) || 1;
-  const limit = Math.min(Math.max(Number(query.limit) || 20, 1), 100);
+  const limit = Math.min(Math.max(Number(query.limit) || 24, 1), 100);
   const unattached = query.unattached === "true" || query.unattached === true;
 
   return listMediaRepo({
@@ -330,6 +341,9 @@ export const listMedia = async (
     serviceId: query.serviceId,
     unattached,
     search: query.search,
+    format: query.format,
+    folder: query.folder,
+    sortBy: query.sortBy,
   });
 };
 
@@ -388,4 +402,158 @@ export const deleteMedia = async (
   await deleteMediaRecord(media.id);
 
   return { id: media.id, publicId: media.publicId };
+};
+
+/**
+ * Bulk deletes multiple media assets safely.
+ * Verifies referencing services and entities for each asset, deletes unreferenced assets from Cloudinary and DB,
+ * and reports deleted, blocked (skipped due to active references), and failed assets separately.
+ */
+export const bulkDeleteMedia = async (
+  mediaIds: string[],
+): Promise<{
+  deleted: Array<{ id: string; publicId: string }>;
+  blocked: Array<{ id: string; publicId?: string; reason: string }>;
+  failed: Array<{ id: string; publicId?: string; reason: string }>;
+}> => {
+  getCloudinaryConfig();
+  const cloudinary = getCloudinaryClient();
+
+  const deleted: Array<{ id: string; publicId: string }> = [];
+  const blocked: Array<{ id: string; publicId?: string; reason: string }> = [];
+  const failed: Array<{ id: string; publicId?: string; reason: string }> = [];
+
+  for (const mediaId of mediaIds) {
+    const media = await findMediaById(mediaId);
+    if (!media) {
+      failed.push({ id: mediaId, reason: "Media not found in database" });
+      continue;
+    }
+
+    const referencingServices = await findReferencingServices(
+      media.secureUrl,
+      media.publicId,
+      media.serviceId,
+    );
+
+    if (referencingServices.length > 0) {
+      const tourNames = referencingServices.map((s) => `"${s.name}"`).join(", ");
+      blocked.push({
+        id: media.id,
+        publicId: media.publicId,
+        reason: `Referenced by active entity/tour(s): ${tourNames}`,
+      });
+      continue;
+    }
+
+    try {
+      const destroyResult = await cloudinary.uploader.destroy(media.publicId, {
+        resource_type: "image",
+        invalidate: true,
+      });
+
+      if (destroyResult.result !== "ok" && destroyResult.result !== "not found") {
+        failed.push({
+          id: media.id,
+          publicId: media.publicId,
+          reason: `Cloudinary error response: ${destroyResult.result}`,
+        });
+        continue;
+      }
+
+      await deleteMediaRecord(media.id);
+      deleted.push({ id: media.id, publicId: media.publicId });
+    } catch (err: any) {
+      failed.push({
+        id: media.id,
+        publicId: media.publicId,
+        reason: err.message || "Failed to delete from Cloudinary",
+      });
+    }
+  }
+
+  return { deleted, blocked, failed };
+};
+
+/**
+ * Bulk attaches or detaches media records to/from a Service.
+ */
+export const bulkAttachDetachMedia = async (input: {
+  mediaIds: string[];
+  action: "attach" | "detach";
+  serviceId?: string | null;
+}): Promise<{
+  updatedCount: number;
+  items: MediaResponse[];
+}> => {
+  const { mediaIds, action, serviceId } = input;
+
+  if (action === "attach") {
+    if (!serviceId) {
+      throw new AppError("serviceId is required when attaching media", 400);
+    }
+    const service = await findServiceById(serviceId);
+    if (!service) {
+      throw new AppError("Target service not found", 404);
+    }
+  }
+
+  const targetServiceId = action === "attach" ? serviceId! : null;
+
+  const items: MediaResponse[] = [];
+  for (const mediaId of mediaIds) {
+    const existing = await findMediaById(mediaId);
+    if (existing) {
+      const updated = await updateMediaRecord(mediaId, {
+        serviceId: targetServiceId,
+      });
+      items.push(updated);
+    }
+  }
+
+  return { updatedCount: items.length, items };
+};
+
+/**
+ * Synchronizes single media asset metadata from Cloudinary.
+ * Handles deleted or unavailable Cloudinary assets gracefully.
+ */
+export const syncAssetFromCloudinary = async (
+  mediaId: string,
+): Promise<{
+  media: MediaResponse | null;
+  status: "synced" | "missing_on_cloudinary";
+}> => {
+  getCloudinaryConfig();
+  const cloudinary = getCloudinaryClient();
+
+  const media = await findMediaById(mediaId);
+  if (!media) {
+    throw new AppError("Media not found in database", 404);
+  }
+
+  let resource: any;
+  try {
+    resource = await cloudinary.api.resource(media.publicId, {
+      resource_type: "image",
+    });
+  } catch (err: any) {
+    if (err?.error?.http_code === 404 || err?.http_code === 404) {
+      return { media, status: "missing_on_cloudinary" };
+    }
+    throw new AppError(
+      `Cloudinary sync error: ${err.message || "Unknown error"}`,
+      502,
+    );
+  }
+
+  const updated = await updateMediaRecord(media.id, {
+    format: resource.format || media.format,
+    bytes: resource.bytes || media.bytes,
+    width: typeof resource.width === "number" ? resource.width : media.width,
+    height: typeof resource.height === "number" ? resource.height : media.height,
+    secureUrl: resource.secure_url || media.secureUrl,
+  });
+
+  return { media: updated, status: "synced" };
 };

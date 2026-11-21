@@ -7,6 +7,46 @@ model NotificationSetting {
   updatedBy   User?             @relation("NotificationSettingEditor", fields: [updatedById], references: [id])
 }
 
+model Notification {
+  id              String    @id @default(uuid())
+  recipientUserId String
+  type            String
+  title           String
+  message         String
+  entityType      String
+  entityId        String
+  actionUrl       String?
+  metadata        Json?
+  idempotencyKey  String?   @unique
+  isRead          Boolean   @default(false)
+  readAt          DateTime?
+  createdAt       DateTime  @default(now())
+
+  recipientUser User @relation("NotificationRecipient", fields: [recipientUserId], references: [id], onDelete: Cascade)
+
+  @@index([recipientUserId, createdAt])
+  @@index([recipientUserId, isRead, createdAt])
+  @@index([entityType, entityId])
+}
+
+model NotificationPreference {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  bookingInApp    Boolean  @default(true)
+  paymentInApp    Boolean  @default(true)
+  commissionInApp Boolean  @default(true)
+  assignmentInApp Boolean  @default(true)
+  bookingEmail    Boolean  @default(true)
+  paymentEmail    Boolean  @default(true)
+  commissionEmail Boolean  @default(true)
+  assignmentEmail Boolean  @default(true)
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
 enum NotificationEvent {
   BOOKING_CONFIRMATION
   BOOKING_STATUS_CHANGE

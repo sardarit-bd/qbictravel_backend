@@ -197,6 +197,16 @@ export type MediaUploadAuth = Prisma.MediaUploadAuthModel
  */
 export type NotificationSetting = Prisma.NotificationSettingModel
 /**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel
+/**
+ * Model NotificationPreference
+ * 
+ */
+export type NotificationPreference = Prisma.NotificationPreferenceModel
+/**
  * Model Payment
  * 
  */

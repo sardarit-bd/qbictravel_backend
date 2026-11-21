@@ -11,6 +11,8 @@ import type {
   UpdateOperationalStatusInput,
 } from "./operationsTypes.js";
 import * as notificationService from "../notification/notificationService.js";
+import { emitBookingEvent } from "../event/eventEmitter.js";
+import logger from "../../shared/logger/logger.js";
 interface Transition {
   from: FulfillmentStatusValue;
   to: FulfillmentStatusValue;
@@ -129,6 +131,14 @@ export const updateOperationalStatus = async (
 
     await notificationService.notifyOperationalUpdate(bookingId);
 
+    const eventType = transition.bookingTo === "COMPLETED" ? "booking.completed" : "booking.status_changed";
+    emitBookingEvent(eventType, bookingId, {
+      fulfillmentStatus: transition.to,
+      status: transition.bookingTo,
+    }).catch((err) =>
+      logger.error({ bookingId, err }, "Failed to emit operational update event")
+    );
+
   return updated;
 };
 
@@ -165,6 +175,25 @@ export const assignBooking = async (adminId: string, bookingId: string, input: A
 
   if (!updated) {
     throw new AppError("This booking can no longer be reassigned", 409);
+  }
+
+  emitBookingEvent("booking.staff_assigned", bookingId, {
+    assignedStaffId: input.staffId ?? null,
+  }).catch((err) =>
+    logger.error({ bookingId, err }, "Failed to emit booking.staff_assigned event")
+  );
+
+  if (input.staffId) {
+    try {
+      const dispatchPromise = notificationService.notifyStaffAssignment(bookingId, input.staffId);
+      if (dispatchPromise && typeof dispatchPromise.catch === "function") {
+        dispatchPromise.catch((err) =>
+          logger.error({ bookingId, staffId: input.staffId, err }, "Failed to dispatch staff assignment notification")
+        );
+      }
+    } catch (err) {
+      logger.error({ bookingId, staffId: input.staffId, err }, "Failed to dispatch staff assignment notification");
+    }
   }
 
   return updated;

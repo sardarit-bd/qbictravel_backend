@@ -55,7 +55,7 @@ export const getMediaQuerySchema = yup.object().shape({
   limit: yup
     .number()
     .optional()
-    .default(20)
+    .default(24)
     .min(1, "limit must be at least 1")
     .max(100, "limit cannot exceed 100"),
   serviceId: yup
@@ -70,6 +70,53 @@ export const getMediaQuerySchema = yup.object().shape({
     .string()
     .optional()
     .trim(),
+  format: yup
+    .string()
+    .optional()
+    .trim()
+    .lowercase(),
+  folder: yup
+    .string()
+    .optional()
+    .trim(),
+  sortBy: yup
+    .string()
+    .optional()
+    .oneOf(["newest", "oldest", "name"], "sortBy must be one of: newest, oldest, name"),
+});
+
+export const bulkDeleteMediaSchema = yup.object().shape({
+  mediaIds: yup
+    .array()
+    .of(yup.string().required().uuid("Each mediaId must be a valid UUID"))
+    .required("mediaIds array is required")
+    .min(1, "mediaIds must contain at least 1 ID")
+    .max(50, "Cannot delete more than 50 media assets at once"),
+});
+
+export const bulkAttachDetachSchema = yup.object().shape({
+  mediaIds: yup
+    .array()
+    .of(yup.string().required().uuid("Each mediaId must be a valid UUID"))
+    .required("mediaIds array is required")
+    .min(1, "mediaIds must contain at least 1 ID")
+    .max(50, "Cannot operate on more than 50 media assets at once"),
+  action: yup
+    .string()
+    .required("action is required")
+    .oneOf(["attach", "detach"], "action must be either attach or detach"),
+  serviceId: yup
+    .string()
+    .optional()
+    .nullable()
+    .uuid("serviceId must be a valid UUID"),
+});
+
+export const syncAssetSchema = yup.object().shape({
+  mediaId: yup
+    .string()
+    .required("mediaId is required")
+    .uuid("mediaId must be a valid UUID"),
 });
 
 export const mediaIdParamSchema = yup.object().shape({
