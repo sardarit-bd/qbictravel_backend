@@ -292,6 +292,8 @@ export type UserWhereInput = {
   uploadedMedia?: Prisma.MediaListRelationFilter
   mediaUploadAuths?: Prisma.MediaUploadAuthListRelationFilter
   notificationSettings?: Prisma.NotificationSettingListRelationFilter
+  receivedNotifications?: Prisma.NotificationListRelationFilter
+  notificationPreferences?: Prisma.XOR<Prisma.NotificationPreferenceNullableScalarRelationFilter, Prisma.NotificationPreferenceWhereInput> | null
   passwordResetTokens?: Prisma.PasswordResetTokenListRelationFilter
   customerPayments?: Prisma.PaymentListRelationFilter
   reviewedPayments?: Prisma.PaymentListRelationFilter
@@ -343,6 +345,8 @@ export type UserOrderByWithRelationInput = {
   uploadedMedia?: Prisma.MediaOrderByRelationAggregateInput
   mediaUploadAuths?: Prisma.MediaUploadAuthOrderByRelationAggregateInput
   notificationSettings?: Prisma.NotificationSettingOrderByRelationAggregateInput
+  receivedNotifications?: Prisma.NotificationOrderByRelationAggregateInput
+  notificationPreferences?: Prisma.NotificationPreferenceOrderByWithRelationInput
   passwordResetTokens?: Prisma.PasswordResetTokenOrderByRelationAggregateInput
   customerPayments?: Prisma.PaymentOrderByRelationAggregateInput
   reviewedPayments?: Prisma.PaymentOrderByRelationAggregateInput
@@ -397,6 +401,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   uploadedMedia?: Prisma.MediaListRelationFilter
   mediaUploadAuths?: Prisma.MediaUploadAuthListRelationFilter
   notificationSettings?: Prisma.NotificationSettingListRelationFilter
+  receivedNotifications?: Prisma.NotificationListRelationFilter
+  notificationPreferences?: Prisma.XOR<Prisma.NotificationPreferenceNullableScalarRelationFilter, Prisma.NotificationPreferenceWhereInput> | null
   passwordResetTokens?: Prisma.PasswordResetTokenListRelationFilter
   customerPayments?: Prisma.PaymentListRelationFilter
   reviewedPayments?: Prisma.PaymentListRelationFilter
@@ -488,6 +494,8 @@ export type UserCreateInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -539,6 +547,8 @@ export type UserUncheckedCreateInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -590,6 +600,8 @@ export type UserUpdateInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -641,6 +653,8 @@ export type UserUncheckedUpdateInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -1180,6 +1194,34 @@ export type UserUpdateOneWithoutNotificationSettingsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationSettingsInput, Prisma.UserUpdateWithoutNotificationSettingsInput>, Prisma.UserUncheckedUpdateWithoutNotificationSettingsInput>
 }
 
+export type UserCreateNestedOneWithoutReceivedNotificationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReceivedNotificationsInput, Prisma.UserUncheckedCreateWithoutReceivedNotificationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReceivedNotificationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutReceivedNotificationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReceivedNotificationsInput, Prisma.UserUncheckedCreateWithoutReceivedNotificationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReceivedNotificationsInput
+  upsert?: Prisma.UserUpsertWithoutReceivedNotificationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReceivedNotificationsInput, Prisma.UserUpdateWithoutReceivedNotificationsInput>, Prisma.UserUncheckedUpdateWithoutReceivedNotificationsInput>
+}
+
+export type UserCreateNestedOneWithoutNotificationPreferencesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationPreferencesInput, Prisma.UserUncheckedCreateWithoutNotificationPreferencesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationPreferencesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutNotificationPreferencesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationPreferencesInput, Prisma.UserUncheckedCreateWithoutNotificationPreferencesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationPreferencesInput
+  upsert?: Prisma.UserUpsertWithoutNotificationPreferencesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationPreferencesInput, Prisma.UserUpdateWithoutNotificationPreferencesInput>, Prisma.UserUncheckedUpdateWithoutNotificationPreferencesInput>
+}
+
 export type UserCreateNestedOneWithoutCustomerPaymentsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutCustomerPaymentsInput, Prisma.UserUncheckedCreateWithoutCustomerPaymentsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutCustomerPaymentsInput
@@ -1338,6 +1380,8 @@ export type UserCreateWithoutAffiliateProfileInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -1388,6 +1432,8 @@ export type UserUncheckedCreateWithoutAffiliateProfileInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -1443,6 +1489,8 @@ export type UserCreateWithoutApprovedAffiliatesInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -1493,6 +1541,8 @@ export type UserUncheckedCreateWithoutApprovedAffiliatesInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -1559,6 +1609,8 @@ export type UserUpdateWithoutAffiliateProfileInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -1609,6 +1661,8 @@ export type UserUncheckedUpdateWithoutAffiliateProfileInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -1670,6 +1724,8 @@ export type UserUpdateWithoutApprovedAffiliatesInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -1720,6 +1776,8 @@ export type UserUncheckedUpdateWithoutApprovedAffiliatesInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -1770,6 +1828,8 @@ export type UserCreateWithoutCreatedAffiliateCommissionsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -1820,6 +1880,8 @@ export type UserUncheckedCreateWithoutCreatedAffiliateCommissionsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -1886,6 +1948,8 @@ export type UserUpdateWithoutCreatedAffiliateCommissionsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -1936,6 +2000,8 @@ export type UserUncheckedUpdateWithoutCreatedAffiliateCommissionsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -1986,6 +2052,8 @@ export type UserCreateWithoutProcessedAffiliatePayoutsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -2036,6 +2104,8 @@ export type UserUncheckedCreateWithoutProcessedAffiliatePayoutsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -2102,6 +2172,8 @@ export type UserUpdateWithoutProcessedAffiliatePayoutsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -2152,6 +2224,8 @@ export type UserUncheckedUpdateWithoutProcessedAffiliatePayoutsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -2202,6 +2276,8 @@ export type UserCreateWithoutUpdatedAffiliateSettingsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -2252,6 +2328,8 @@ export type UserUncheckedCreateWithoutUpdatedAffiliateSettingsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -2318,6 +2396,8 @@ export type UserUpdateWithoutUpdatedAffiliateSettingsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -2368,6 +2448,8 @@ export type UserUncheckedUpdateWithoutUpdatedAffiliateSettingsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -2418,6 +2500,8 @@ export type UserCreateWithoutAffiliateAuditEventsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -2468,6 +2552,8 @@ export type UserUncheckedCreateWithoutAffiliateAuditEventsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -2534,6 +2620,8 @@ export type UserUpdateWithoutAffiliateAuditEventsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -2584,6 +2672,8 @@ export type UserUncheckedUpdateWithoutAffiliateAuditEventsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -2633,6 +2723,8 @@ export type UserCreateWithoutAgentProfileInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -2683,6 +2775,8 @@ export type UserUncheckedCreateWithoutAgentProfileInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -2749,6 +2843,8 @@ export type UserUpdateWithoutAgentProfileInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -2799,6 +2895,8 @@ export type UserUncheckedUpdateWithoutAgentProfileInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -2850,6 +2948,8 @@ export type UserCreateWithoutPasswordResetTokensInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
   createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
@@ -2900,6 +3000,8 @@ export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
   createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2966,6 +3068,8 @@ export type UserUpdateWithoutPasswordResetTokensInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
   createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
@@ -3016,6 +3120,8 @@ export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
   createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -3066,6 +3172,8 @@ export type UserCreateWithoutSessionsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -3116,6 +3224,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -3182,6 +3292,8 @@ export type UserUpdateWithoutSessionsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -3232,6 +3344,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -3282,6 +3396,8 @@ export type UserCreateWithoutEmailVerificationTokensInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -3332,6 +3448,8 @@ export type UserUncheckedCreateWithoutEmailVerificationTokensInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -3398,6 +3516,8 @@ export type UserUpdateWithoutEmailVerificationTokensInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -3448,6 +3568,8 @@ export type UserUncheckedUpdateWithoutEmailVerificationTokensInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -3497,6 +3619,8 @@ export type UserCreateWithoutAgentBookingsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -3547,6 +3671,8 @@ export type UserUncheckedCreateWithoutAgentBookingsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -3602,6 +3728,8 @@ export type UserCreateWithoutCreatedBookingsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -3652,6 +3780,8 @@ export type UserUncheckedCreateWithoutCreatedBookingsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -3707,6 +3837,8 @@ export type UserCreateWithoutAssignedBookingsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -3757,6 +3889,8 @@ export type UserUncheckedCreateWithoutAssignedBookingsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -3812,6 +3946,8 @@ export type UserCreateWithoutCustomerBookingsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -3862,6 +3998,8 @@ export type UserUncheckedCreateWithoutCustomerBookingsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -3928,6 +4066,8 @@ export type UserUpdateWithoutAgentBookingsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -3978,6 +4118,8 @@ export type UserUncheckedUpdateWithoutAgentBookingsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -4039,6 +4181,8 @@ export type UserUpdateWithoutCreatedBookingsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -4089,6 +4233,8 @@ export type UserUncheckedUpdateWithoutCreatedBookingsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -4150,6 +4296,8 @@ export type UserUpdateWithoutAssignedBookingsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -4200,6 +4348,8 @@ export type UserUncheckedUpdateWithoutAssignedBookingsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -4261,6 +4411,8 @@ export type UserUpdateWithoutCustomerBookingsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -4311,6 +4463,8 @@ export type UserUncheckedUpdateWithoutCustomerBookingsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -4362,6 +4516,8 @@ export type UserCreateWithoutAdminApprovalsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -4412,6 +4568,8 @@ export type UserUncheckedCreateWithoutAdminApprovalsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -4478,6 +4636,8 @@ export type UserUpdateWithoutAdminApprovalsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -4528,6 +4688,8 @@ export type UserUncheckedUpdateWithoutAdminApprovalsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -4578,6 +4740,8 @@ export type UserCreateWithoutStaffDiscountRequestsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -4628,6 +4792,8 @@ export type UserUncheckedCreateWithoutStaffDiscountRequestsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -4683,6 +4849,8 @@ export type UserCreateWithoutReviewedDiscountsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -4733,6 +4901,8 @@ export type UserUncheckedCreateWithoutReviewedDiscountsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -4799,6 +4969,8 @@ export type UserUpdateWithoutStaffDiscountRequestsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -4849,6 +5021,8 @@ export type UserUncheckedUpdateWithoutStaffDiscountRequestsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -4910,6 +5084,8 @@ export type UserUpdateWithoutReviewedDiscountsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -4960,6 +5136,8 @@ export type UserUncheckedUpdateWithoutReviewedDiscountsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -5010,6 +5188,8 @@ export type UserCreateWithoutDiscountAuditEventsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -5060,6 +5240,8 @@ export type UserUncheckedCreateWithoutDiscountAuditEventsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -5126,6 +5308,8 @@ export type UserUpdateWithoutDiscountAuditEventsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -5176,6 +5360,8 @@ export type UserUncheckedUpdateWithoutDiscountAuditEventsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -5226,6 +5412,8 @@ export type UserCreateWithoutClaimAuditsAsPreviousUserInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -5276,6 +5464,8 @@ export type UserUncheckedCreateWithoutClaimAuditsAsPreviousUserInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -5331,6 +5521,8 @@ export type UserCreateWithoutClaimAuditsAsNewUserInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -5381,6 +5573,8 @@ export type UserUncheckedCreateWithoutClaimAuditsAsNewUserInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -5447,6 +5641,8 @@ export type UserUpdateWithoutClaimAuditsAsPreviousUserInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -5497,6 +5693,8 @@ export type UserUncheckedUpdateWithoutClaimAuditsAsPreviousUserInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -5558,6 +5756,8 @@ export type UserUpdateWithoutClaimAuditsAsNewUserInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -5608,6 +5808,8 @@ export type UserUncheckedUpdateWithoutClaimAuditsAsNewUserInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -5657,6 +5859,8 @@ export type UserCreateWithoutCommissionRulesInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -5707,6 +5911,8 @@ export type UserUncheckedCreateWithoutCommissionRulesInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -5773,6 +5979,8 @@ export type UserUpdateWithoutCommissionRulesInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -5823,6 +6031,8 @@ export type UserUncheckedUpdateWithoutCommissionRulesInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -5873,6 +6083,8 @@ export type UserCreateWithoutCommissionRuleAuditsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -5923,6 +6135,8 @@ export type UserUncheckedCreateWithoutCommissionRuleAuditsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -5989,6 +6203,8 @@ export type UserUpdateWithoutCommissionRuleAuditsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -6039,6 +6255,8 @@ export type UserUncheckedUpdateWithoutCommissionRuleAuditsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -6089,6 +6307,8 @@ export type UserCreateWithoutAgentCommissionsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -6139,6 +6359,8 @@ export type UserUncheckedCreateWithoutAgentCommissionsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -6205,6 +6427,8 @@ export type UserUpdateWithoutAgentCommissionsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -6255,6 +6479,8 @@ export type UserUncheckedUpdateWithoutAgentCommissionsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -6305,6 +6531,8 @@ export type UserCreateWithoutCommissionAdjustmentsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -6355,6 +6583,8 @@ export type UserUncheckedCreateWithoutCommissionAdjustmentsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -6421,6 +6651,8 @@ export type UserUpdateWithoutCommissionAdjustmentsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -6471,6 +6703,8 @@ export type UserUncheckedUpdateWithoutCommissionAdjustmentsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -6521,6 +6755,8 @@ export type UserCreateWithoutUploadedMediaInput = {
   commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -6571,6 +6807,8 @@ export type UserUncheckedCreateWithoutUploadedMediaInput = {
   commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -6637,6 +6875,8 @@ export type UserUpdateWithoutUploadedMediaInput = {
   commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -6687,6 +6927,8 @@ export type UserUncheckedUpdateWithoutUploadedMediaInput = {
   commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -6737,6 +6979,8 @@ export type UserCreateWithoutMediaUploadAuthsInput = {
   commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -6787,6 +7031,8 @@ export type UserUncheckedCreateWithoutMediaUploadAuthsInput = {
   commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -6853,6 +7099,8 @@ export type UserUpdateWithoutMediaUploadAuthsInput = {
   commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -6903,6 +7151,8 @@ export type UserUncheckedUpdateWithoutMediaUploadAuthsInput = {
   commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -6953,6 +7203,8 @@ export type UserCreateWithoutNotificationSettingsInput = {
   commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -7003,6 +7255,8 @@ export type UserUncheckedCreateWithoutNotificationSettingsInput = {
   commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -7069,6 +7323,8 @@ export type UserUpdateWithoutNotificationSettingsInput = {
   commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -7119,6 +7375,456 @@ export type UserUncheckedUpdateWithoutNotificationSettingsInput = {
   commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  staffDiscountRequests?: Prisma.StaffDiscountRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+  reviewedDiscounts?: Prisma.StaffDiscountRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+  discountAuditEvents?: Prisma.StaffDiscountAuditEventUncheckedUpdateManyWithoutActorNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+  claimAuditsAsPreviousUser?: Prisma.BookingClaimAuditUncheckedUpdateManyWithoutPreviousUserNestedInput
+  claimAuditsAsNewUser?: Prisma.BookingClaimAuditUncheckedUpdateManyWithoutNewUserNestedInput
+  affiliateProfile?: Prisma.AffiliateUncheckedUpdateOneWithoutUserNestedInput
+  approvedAffiliates?: Prisma.AffiliateUncheckedUpdateManyWithoutApprovedByNestedInput
+  processedAffiliatePayouts?: Prisma.AffiliatePayoutUncheckedUpdateManyWithoutProcessedByNestedInput
+  affiliateAuditEvents?: Prisma.AffiliateAuditEventUncheckedUpdateManyWithoutActorNestedInput
+  updatedAffiliateSettings?: Prisma.AffiliateSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdAffiliateCommissions?: Prisma.AffiliateCommissionUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutReceivedNotificationsInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  avatarUrl?: string | null
+  avatarKey?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
+  uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
+  initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  staffDiscountRequests?: Prisma.StaffDiscountRequestCreateNestedManyWithoutRequestedByInput
+  reviewedDiscounts?: Prisma.StaffDiscountRequestCreateNestedManyWithoutReviewedByInput
+  discountAuditEvents?: Prisma.StaffDiscountAuditEventCreateNestedManyWithoutActorInput
+  settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
+  claimAuditsAsPreviousUser?: Prisma.BookingClaimAuditCreateNestedManyWithoutPreviousUserInput
+  claimAuditsAsNewUser?: Prisma.BookingClaimAuditCreateNestedManyWithoutNewUserInput
+  affiliateProfile?: Prisma.AffiliateCreateNestedOneWithoutUserInput
+  approvedAffiliates?: Prisma.AffiliateCreateNestedManyWithoutApprovedByInput
+  processedAffiliatePayouts?: Prisma.AffiliatePayoutCreateNestedManyWithoutProcessedByInput
+  affiliateAuditEvents?: Prisma.AffiliateAuditEventCreateNestedManyWithoutActorInput
+  updatedAffiliateSettings?: Prisma.AffiliateSettingsCreateNestedManyWithoutUpdatedByInput
+  createdAffiliateCommissions?: Prisma.AffiliateCommissionCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutReceivedNotificationsInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  avatarUrl?: string | null
+  avatarKey?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
+  uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  staffDiscountRequests?: Prisma.StaffDiscountRequestUncheckedCreateNestedManyWithoutRequestedByInput
+  reviewedDiscounts?: Prisma.StaffDiscountRequestUncheckedCreateNestedManyWithoutReviewedByInput
+  discountAuditEvents?: Prisma.StaffDiscountAuditEventUncheckedCreateNestedManyWithoutActorInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
+  claimAuditsAsPreviousUser?: Prisma.BookingClaimAuditUncheckedCreateNestedManyWithoutPreviousUserInput
+  claimAuditsAsNewUser?: Prisma.BookingClaimAuditUncheckedCreateNestedManyWithoutNewUserInput
+  affiliateProfile?: Prisma.AffiliateUncheckedCreateNestedOneWithoutUserInput
+  approvedAffiliates?: Prisma.AffiliateUncheckedCreateNestedManyWithoutApprovedByInput
+  processedAffiliatePayouts?: Prisma.AffiliatePayoutUncheckedCreateNestedManyWithoutProcessedByInput
+  affiliateAuditEvents?: Prisma.AffiliateAuditEventUncheckedCreateNestedManyWithoutActorInput
+  updatedAffiliateSettings?: Prisma.AffiliateSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdAffiliateCommissions?: Prisma.AffiliateCommissionUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutReceivedNotificationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutReceivedNotificationsInput, Prisma.UserUncheckedCreateWithoutReceivedNotificationsInput>
+}
+
+export type UserUpsertWithoutReceivedNotificationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutReceivedNotificationsInput, Prisma.UserUncheckedUpdateWithoutReceivedNotificationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutReceivedNotificationsInput, Prisma.UserUncheckedCreateWithoutReceivedNotificationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutReceivedNotificationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutReceivedNotificationsInput, Prisma.UserUncheckedUpdateWithoutReceivedNotificationsInput>
+}
+
+export type UserUpdateWithoutReceivedNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
+  uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  staffDiscountRequests?: Prisma.StaffDiscountRequestUpdateManyWithoutRequestedByNestedInput
+  reviewedDiscounts?: Prisma.StaffDiscountRequestUpdateManyWithoutReviewedByNestedInput
+  discountAuditEvents?: Prisma.StaffDiscountAuditEventUpdateManyWithoutActorNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
+  claimAuditsAsPreviousUser?: Prisma.BookingClaimAuditUpdateManyWithoutPreviousUserNestedInput
+  claimAuditsAsNewUser?: Prisma.BookingClaimAuditUpdateManyWithoutNewUserNestedInput
+  affiliateProfile?: Prisma.AffiliateUpdateOneWithoutUserNestedInput
+  approvedAffiliates?: Prisma.AffiliateUpdateManyWithoutApprovedByNestedInput
+  processedAffiliatePayouts?: Prisma.AffiliatePayoutUpdateManyWithoutProcessedByNestedInput
+  affiliateAuditEvents?: Prisma.AffiliateAuditEventUpdateManyWithoutActorNestedInput
+  updatedAffiliateSettings?: Prisma.AffiliateSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdAffiliateCommissions?: Prisma.AffiliateCommissionUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutReceivedNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
+  uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedUpdateManyWithoutInitiatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedUpdateManyWithoutAdminNestedInput
+  staffDiscountRequests?: Prisma.StaffDiscountRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+  reviewedDiscounts?: Prisma.StaffDiscountRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+  discountAuditEvents?: Prisma.StaffDiscountAuditEventUncheckedUpdateManyWithoutActorNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+  claimAuditsAsPreviousUser?: Prisma.BookingClaimAuditUncheckedUpdateManyWithoutPreviousUserNestedInput
+  claimAuditsAsNewUser?: Prisma.BookingClaimAuditUncheckedUpdateManyWithoutNewUserNestedInput
+  affiliateProfile?: Prisma.AffiliateUncheckedUpdateOneWithoutUserNestedInput
+  approvedAffiliates?: Prisma.AffiliateUncheckedUpdateManyWithoutApprovedByNestedInput
+  processedAffiliatePayouts?: Prisma.AffiliatePayoutUncheckedUpdateManyWithoutProcessedByNestedInput
+  affiliateAuditEvents?: Prisma.AffiliateAuditEventUncheckedUpdateManyWithoutActorNestedInput
+  updatedAffiliateSettings?: Prisma.AffiliateSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdAffiliateCommissions?: Prisma.AffiliateCommissionUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutNotificationPreferencesInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  avatarUrl?: string | null
+  avatarKey?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingCreateNestedManyWithoutCreatedByInput
+  assignedBookings?: Prisma.BookingCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogCreateNestedManyWithoutAdminInput
+  uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
+  initiatedRefunds?: Prisma.PaymentRefundCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalCreateNestedManyWithoutAdminInput
+  staffDiscountRequests?: Prisma.StaffDiscountRequestCreateNestedManyWithoutRequestedByInput
+  reviewedDiscounts?: Prisma.StaffDiscountRequestCreateNestedManyWithoutReviewedByInput
+  discountAuditEvents?: Prisma.StaffDiscountAuditEventCreateNestedManyWithoutActorInput
+  settingAuditLogs?: Prisma.SettingAuditLogCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
+  claimAuditsAsPreviousUser?: Prisma.BookingClaimAuditCreateNestedManyWithoutPreviousUserInput
+  claimAuditsAsNewUser?: Prisma.BookingClaimAuditCreateNestedManyWithoutNewUserInput
+  affiliateProfile?: Prisma.AffiliateCreateNestedOneWithoutUserInput
+  approvedAffiliates?: Prisma.AffiliateCreateNestedManyWithoutApprovedByInput
+  processedAffiliatePayouts?: Prisma.AffiliatePayoutCreateNestedManyWithoutProcessedByInput
+  affiliateAuditEvents?: Prisma.AffiliateAuditEventCreateNestedManyWithoutActorInput
+  updatedAffiliateSettings?: Prisma.AffiliateSettingsCreateNestedManyWithoutUpdatedByInput
+  createdAffiliateCommissions?: Prisma.AffiliateCommissionCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutNotificationPreferencesInput = {
+  id?: string
+  name: string
+  email: string
+  createdAt?: Date | string
+  password: string
+  phone?: string | null
+  avatarUrl?: string | null
+  avatarKey?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  tokenVersion?: number
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedCreateNestedOneWithoutUserInput
+  agentBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAgentInput
+  createdBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutAssignedStaffInput
+  customerBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutCustomerInput
+  agentCommissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutAgentInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedCreateNestedManyWithoutAdminInput
+  commissionRules?: Prisma.CommissionRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedCreateNestedManyWithoutAdminInput
+  uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
+  reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
+  createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  initiatedRefunds?: Prisma.PaymentRefundUncheckedCreateNestedManyWithoutInitiatedByInput
+  adminApprovals?: Prisma.PriceApprovalUncheckedCreateNestedManyWithoutAdminInput
+  staffDiscountRequests?: Prisma.StaffDiscountRequestUncheckedCreateNestedManyWithoutRequestedByInput
+  reviewedDiscounts?: Prisma.StaffDiscountRequestUncheckedCreateNestedManyWithoutReviewedByInput
+  discountAuditEvents?: Prisma.StaffDiscountAuditEventUncheckedCreateNestedManyWithoutActorInput
+  settingAuditLogs?: Prisma.SettingAuditLogUncheckedCreateNestedManyWithoutActorInput
+  grantedPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutAssignedByInput
+  staffPermissions?: Prisma.StaffPermissionUncheckedCreateNestedManyWithoutUserInput
+  editedSettings?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
+  claimAuditsAsPreviousUser?: Prisma.BookingClaimAuditUncheckedCreateNestedManyWithoutPreviousUserInput
+  claimAuditsAsNewUser?: Prisma.BookingClaimAuditUncheckedCreateNestedManyWithoutNewUserInput
+  affiliateProfile?: Prisma.AffiliateUncheckedCreateNestedOneWithoutUserInput
+  approvedAffiliates?: Prisma.AffiliateUncheckedCreateNestedManyWithoutApprovedByInput
+  processedAffiliatePayouts?: Prisma.AffiliatePayoutUncheckedCreateNestedManyWithoutProcessedByInput
+  affiliateAuditEvents?: Prisma.AffiliateAuditEventUncheckedCreateNestedManyWithoutActorInput
+  updatedAffiliateSettings?: Prisma.AffiliateSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdAffiliateCommissions?: Prisma.AffiliateCommissionUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutNotificationPreferencesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationPreferencesInput, Prisma.UserUncheckedCreateWithoutNotificationPreferencesInput>
+}
+
+export type UserUpsertWithoutNotificationPreferencesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutNotificationPreferencesInput, Prisma.UserUncheckedUpdateWithoutNotificationPreferencesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationPreferencesInput, Prisma.UserUncheckedCreateWithoutNotificationPreferencesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutNotificationPreferencesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutNotificationPreferencesInput, Prisma.UserUncheckedUpdateWithoutNotificationPreferencesInput>
+}
+
+export type UserUpdateWithoutNotificationPreferencesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUpdateManyWithoutCreatedByNestedInput
+  assignedBookings?: Prisma.BookingUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUpdateManyWithoutAdminNestedInput
+  uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
+  reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
+  createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
+  initiatedRefunds?: Prisma.PaymentRefundUpdateManyWithoutInitiatedByNestedInput
+  adminApprovals?: Prisma.PriceApprovalUpdateManyWithoutAdminNestedInput
+  staffDiscountRequests?: Prisma.StaffDiscountRequestUpdateManyWithoutRequestedByNestedInput
+  reviewedDiscounts?: Prisma.StaffDiscountRequestUpdateManyWithoutReviewedByNestedInput
+  discountAuditEvents?: Prisma.StaffDiscountAuditEventUpdateManyWithoutActorNestedInput
+  settingAuditLogs?: Prisma.SettingAuditLogUpdateManyWithoutActorNestedInput
+  grantedPermissions?: Prisma.StaffPermissionUpdateManyWithoutAssignedByNestedInput
+  staffPermissions?: Prisma.StaffPermissionUpdateManyWithoutUserNestedInput
+  editedSettings?: Prisma.SystemSettingUpdateManyWithoutUpdatedByNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
+  claimAuditsAsPreviousUser?: Prisma.BookingClaimAuditUpdateManyWithoutPreviousUserNestedInput
+  claimAuditsAsNewUser?: Prisma.BookingClaimAuditUpdateManyWithoutNewUserNestedInput
+  affiliateProfile?: Prisma.AffiliateUpdateOneWithoutUserNestedInput
+  approvedAffiliates?: Prisma.AffiliateUpdateManyWithoutApprovedByNestedInput
+  processedAffiliatePayouts?: Prisma.AffiliatePayoutUpdateManyWithoutProcessedByNestedInput
+  affiliateAuditEvents?: Prisma.AffiliateAuditEventUpdateManyWithoutActorNestedInput
+  updatedAffiliateSettings?: Prisma.AffiliateSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdAffiliateCommissions?: Prisma.AffiliateCommissionUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutNotificationPreferencesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  agentProfile?: Prisma.AgentProfileUncheckedUpdateOneWithoutUserNestedInput
+  agentBookings?: Prisma.BookingUncheckedUpdateManyWithoutAgentNestedInput
+  createdBookings?: Prisma.BookingUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedBookings?: Prisma.BookingUncheckedUpdateManyWithoutAssignedStaffNestedInput
+  customerBookings?: Prisma.BookingUncheckedUpdateManyWithoutCustomerNestedInput
+  agentCommissions?: Prisma.CommissionUncheckedUpdateManyWithoutAgentNestedInput
+  commissionAdjustments?: Prisma.CommissionAdjustmentUncheckedUpdateManyWithoutAdminNestedInput
+  commissionRules?: Prisma.CommissionRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  commissionRuleAudits?: Prisma.CommissionRuleAuditLogUncheckedUpdateManyWithoutAdminNestedInput
+  uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
+  mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
+  notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -7170,6 +7876,8 @@ export type UserCreateWithoutCustomerPaymentsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
   createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
@@ -7220,6 +7928,8 @@ export type UserUncheckedCreateWithoutCustomerPaymentsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
   createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
@@ -7275,6 +7985,8 @@ export type UserCreateWithoutReviewedPaymentsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   createdPaymentLinks?: Prisma.PaymentLinkCreateNestedManyWithoutCreatedByInput
@@ -7325,6 +8037,8 @@ export type UserUncheckedCreateWithoutReviewedPaymentsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   createdPaymentLinks?: Prisma.PaymentLinkUncheckedCreateNestedManyWithoutCreatedByInput
@@ -7391,6 +8105,8 @@ export type UserUpdateWithoutCustomerPaymentsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
   createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
@@ -7441,6 +8157,8 @@ export type UserUncheckedUpdateWithoutCustomerPaymentsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
   createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -7502,6 +8220,8 @@ export type UserUpdateWithoutReviewedPaymentsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   createdPaymentLinks?: Prisma.PaymentLinkUpdateManyWithoutCreatedByNestedInput
@@ -7552,6 +8272,8 @@ export type UserUncheckedUpdateWithoutReviewedPaymentsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   createdPaymentLinks?: Prisma.PaymentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -7602,6 +8324,8 @@ export type UserCreateWithoutInitiatedRefundsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -7652,6 +8376,8 @@ export type UserUncheckedCreateWithoutInitiatedRefundsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -7718,6 +8444,8 @@ export type UserUpdateWithoutInitiatedRefundsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -7768,6 +8496,8 @@ export type UserUncheckedUpdateWithoutInitiatedRefundsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -7818,6 +8548,8 @@ export type UserCreateWithoutCreatedPaymentLinksInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -7868,6 +8600,8 @@ export type UserUncheckedCreateWithoutCreatedPaymentLinksInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -7934,6 +8668,8 @@ export type UserUpdateWithoutCreatedPaymentLinksInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -7984,6 +8720,8 @@ export type UserUncheckedUpdateWithoutCreatedPaymentLinksInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -8034,6 +8772,8 @@ export type UserCreateWithoutGrantedPermissionsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -8084,6 +8824,8 @@ export type UserUncheckedCreateWithoutGrantedPermissionsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -8139,6 +8881,8 @@ export type UserCreateWithoutStaffPermissionsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -8189,6 +8933,8 @@ export type UserUncheckedCreateWithoutStaffPermissionsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -8255,6 +9001,8 @@ export type UserUpdateWithoutGrantedPermissionsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -8305,6 +9053,8 @@ export type UserUncheckedUpdateWithoutGrantedPermissionsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -8366,6 +9116,8 @@ export type UserUpdateWithoutStaffPermissionsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -8416,6 +9168,8 @@ export type UserUncheckedUpdateWithoutStaffPermissionsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -8466,6 +9220,8 @@ export type UserCreateWithoutEditedSettingsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -8516,6 +9272,8 @@ export type UserUncheckedCreateWithoutEditedSettingsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -8582,6 +9340,8 @@ export type UserUpdateWithoutEditedSettingsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -8632,6 +9392,8 @@ export type UserUncheckedUpdateWithoutEditedSettingsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -8682,6 +9444,8 @@ export type UserCreateWithoutSettingAuditLogsInput = {
   uploadedMedia?: Prisma.MediaCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentCreateNestedManyWithoutReviewedByInput
@@ -8732,6 +9496,8 @@ export type UserUncheckedCreateWithoutSettingAuditLogsInput = {
   uploadedMedia?: Prisma.MediaUncheckedCreateNestedManyWithoutUploadedByInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedCreateNestedManyWithoutAdminInput
   notificationSettings?: Prisma.NotificationSettingUncheckedCreateNestedManyWithoutUpdatedByInput
+  receivedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   customerPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
   reviewedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutReviewedByInput
@@ -8798,6 +9564,8 @@ export type UserUpdateWithoutSettingAuditLogsInput = {
   uploadedMedia?: Prisma.MediaUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUpdateManyWithoutReviewedByNestedInput
@@ -8848,6 +9616,8 @@ export type UserUncheckedUpdateWithoutSettingAuditLogsInput = {
   uploadedMedia?: Prisma.MediaUncheckedUpdateManyWithoutUploadedByNestedInput
   mediaUploadAuths?: Prisma.MediaUploadAuthUncheckedUpdateManyWithoutAdminNestedInput
   notificationSettings?: Prisma.NotificationSettingUncheckedUpdateManyWithoutUpdatedByNestedInput
+  receivedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   customerPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
   reviewedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutReviewedByNestedInput
@@ -8889,6 +9659,7 @@ export type UserCountOutputType = {
   uploadedMedia: number
   mediaUploadAuths: number
   notificationSettings: number
+  receivedNotifications: number
   passwordResetTokens: number
   customerPayments: number
   reviewedPayments: number
@@ -8925,6 +9696,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   uploadedMedia?: boolean | UserCountOutputTypeCountUploadedMediaArgs
   mediaUploadAuths?: boolean | UserCountOutputTypeCountMediaUploadAuthsArgs
   notificationSettings?: boolean | UserCountOutputTypeCountNotificationSettingsArgs
+  receivedNotifications?: boolean | UserCountOutputTypeCountReceivedNotificationsArgs
   passwordResetTokens?: boolean | UserCountOutputTypeCountPasswordResetTokensArgs
   customerPayments?: boolean | UserCountOutputTypeCountCustomerPaymentsArgs
   reviewedPayments?: boolean | UserCountOutputTypeCountReviewedPaymentsArgs
@@ -9034,6 +9806,13 @@ export type UserCountOutputTypeCountMediaUploadAuthsArgs<ExtArgs extends runtime
  */
 export type UserCountOutputTypeCountNotificationSettingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.NotificationSettingWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountReceivedNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NotificationWhereInput
 }
 
 /**
@@ -9217,6 +9996,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   uploadedMedia?: boolean | Prisma.User$uploadedMediaArgs<ExtArgs>
   mediaUploadAuths?: boolean | Prisma.User$mediaUploadAuthsArgs<ExtArgs>
   notificationSettings?: boolean | Prisma.User$notificationSettingsArgs<ExtArgs>
+  receivedNotifications?: boolean | Prisma.User$receivedNotificationsArgs<ExtArgs>
+  notificationPreferences?: boolean | Prisma.User$notificationPreferencesArgs<ExtArgs>
   passwordResetTokens?: boolean | Prisma.User$passwordResetTokensArgs<ExtArgs>
   customerPayments?: boolean | Prisma.User$customerPaymentsArgs<ExtArgs>
   reviewedPayments?: boolean | Prisma.User$reviewedPaymentsArgs<ExtArgs>
@@ -9305,6 +10086,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   uploadedMedia?: boolean | Prisma.User$uploadedMediaArgs<ExtArgs>
   mediaUploadAuths?: boolean | Prisma.User$mediaUploadAuthsArgs<ExtArgs>
   notificationSettings?: boolean | Prisma.User$notificationSettingsArgs<ExtArgs>
+  receivedNotifications?: boolean | Prisma.User$receivedNotificationsArgs<ExtArgs>
+  notificationPreferences?: boolean | Prisma.User$notificationPreferencesArgs<ExtArgs>
   passwordResetTokens?: boolean | Prisma.User$passwordResetTokensArgs<ExtArgs>
   customerPayments?: boolean | Prisma.User$customerPaymentsArgs<ExtArgs>
   reviewedPayments?: boolean | Prisma.User$reviewedPaymentsArgs<ExtArgs>
@@ -9348,6 +10131,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     uploadedMedia: Prisma.$MediaPayload<ExtArgs>[]
     mediaUploadAuths: Prisma.$MediaUploadAuthPayload<ExtArgs>[]
     notificationSettings: Prisma.$NotificationSettingPayload<ExtArgs>[]
+    receivedNotifications: Prisma.$NotificationPayload<ExtArgs>[]
+    notificationPreferences: Prisma.$NotificationPreferencePayload<ExtArgs> | null
     passwordResetTokens: Prisma.$PasswordResetTokenPayload<ExtArgs>[]
     customerPayments: Prisma.$PaymentPayload<ExtArgs>[]
     reviewedPayments: Prisma.$PaymentPayload<ExtArgs>[]
@@ -9792,6 +10577,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   uploadedMedia<T extends Prisma.User$uploadedMediaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$uploadedMediaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MediaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mediaUploadAuths<T extends Prisma.User$mediaUploadAuthsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mediaUploadAuthsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MediaUploadAuthPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notificationSettings<T extends Prisma.User$notificationSettingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationSettingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationSettingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  receivedNotifications<T extends Prisma.User$receivedNotificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$receivedNotificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notificationPreferences<T extends Prisma.User$notificationPreferencesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationPreferencesArgs<ExtArgs>>): Prisma.Prisma__NotificationPreferenceClient<runtime.Types.Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   passwordResetTokens<T extends Prisma.User$passwordResetTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$passwordResetTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   customerPayments<T extends Prisma.User$customerPaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$customerPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviewedPayments<T extends Prisma.User$reviewedPaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reviewedPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -10530,6 +11317,49 @@ export type User$notificationSettingsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.NotificationSettingScalarFieldEnum | Prisma.NotificationSettingScalarFieldEnum[]
+}
+
+/**
+ * User.receivedNotifications
+ */
+export type User$receivedNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Notification
+   */
+  select?: Prisma.NotificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Notification
+   */
+  omit?: Prisma.NotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationInclude<ExtArgs> | null
+  where?: Prisma.NotificationWhereInput
+  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
+  cursor?: Prisma.NotificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
+}
+
+/**
+ * User.notificationPreferences
+ */
+export type User$notificationPreferencesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the NotificationPreference
+   */
+  select?: Prisma.NotificationPreferenceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the NotificationPreference
+   */
+  omit?: Prisma.NotificationPreferenceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationPreferenceInclude<ExtArgs> | null
+  where?: Prisma.NotificationPreferenceWhereInput
 }
 
 /**

@@ -82,6 +82,8 @@ export const ModelName = {
   Media: 'Media',
   MediaUploadAuth: 'MediaUploadAuth',
   NotificationSetting: 'NotificationSetting',
+  Notification: 'Notification',
+  NotificationPreference: 'NotificationPreference',
   Payment: 'Payment',
   StripeWebhookEvent: 'StripeWebhookEvent',
   OutboxMessage: 'OutboxMessage',
@@ -615,6 +617,42 @@ export const NotificationSettingScalarFieldEnum = {
 } as const
 
 export type NotificationSettingScalarFieldEnum = (typeof NotificationSettingScalarFieldEnum)[keyof typeof NotificationSettingScalarFieldEnum]
+
+
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  recipientUserId: 'recipientUserId',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  actionUrl: 'actionUrl',
+  metadata: 'metadata',
+  idempotencyKey: 'idempotencyKey',
+  isRead: 'isRead',
+  readAt: 'readAt',
+  createdAt: 'createdAt'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
+export const NotificationPreferenceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  bookingInApp: 'bookingInApp',
+  paymentInApp: 'paymentInApp',
+  commissionInApp: 'commissionInApp',
+  assignmentInApp: 'assignmentInApp',
+  bookingEmail: 'bookingEmail',
+  paymentEmail: 'paymentEmail',
+  commissionEmail: 'commissionEmail',
+  assignmentEmail: 'assignmentEmail',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NotificationPreferenceScalarFieldEnum = (typeof NotificationPreferenceScalarFieldEnum)[keyof typeof NotificationPreferenceScalarFieldEnum]
 
 
 export const PaymentScalarFieldEnum = {

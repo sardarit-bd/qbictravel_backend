@@ -8,9 +8,12 @@ export type DashboardEventType =
   | "payment.refunded"
   | "booking.staff_assigned"
   | "booking.completed"
-  | "booking.cancelled";
+  | "booking.cancelled"
+  | "notification.created";
 
 export interface DashboardEventMetadata {
+  recipientUserId?: string | null;
+  notificationId?: string | null;
   customerId?: string | null;
   agentId?: string | null;
   assignedStaffId?: string | null;

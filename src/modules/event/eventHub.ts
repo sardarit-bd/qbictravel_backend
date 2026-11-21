@@ -178,6 +178,11 @@ class DashboardEventHub extends EventEmitter {
     const role = (user.role || "").toLowerCase();
     const meta = event.metadata || {};
 
+    // Specific user targeted notifications (e.g. notification.created)
+    if (meta.recipientUserId) {
+      return meta.recipientUserId === user.id;
+    }
+
     if (role === "admin") {
       return true;
     }

@@ -24,6 +24,8 @@ model User {
   uploadedMedia               Media[]
   mediaUploadAuths            MediaUploadAuth[]
   notificationSettings        NotificationSetting[]     @relation("NotificationSettingEditor")
+  receivedNotifications       Notification[]            @relation("NotificationRecipient")
+  notificationPreferences     NotificationPreference?
   passwordResetTokens         PasswordResetToken[]
   customerPayments            Payment[]                 @relation("CustomerPayments")
   reviewedPayments            Payment[]                 @relation("PaymentReviews")

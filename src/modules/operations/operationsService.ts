@@ -183,5 +183,11 @@ export const assignBooking = async (adminId: string, bookingId: string, input: A
     logger.error({ bookingId, err }, "Failed to emit booking.staff_assigned event")
   );
 
+  if (input.staffId) {
+    notificationService.notifyStaffAssignment(bookingId, input.staffId).catch((err) =>
+      logger.error({ bookingId, staffId: input.staffId, err }, "Failed to dispatch staff assignment notification")
+    );
+  }
+
   return updated;
 };

@@ -3,68 +3,78 @@ import * as notificationController from "./notificationController.js";
 import validate from "../../shared/middleware/validate.js";
 import authMiddleware from "../../shared/middleware/authMiddleware.js";
 import requireRole from "../../shared/middleware/requireRole.js";
-import { updateNotificationSettingsSchema } from "./notificationValidators.js";
+import {
+  listNotificationsQuerySchema,
+  updateNotificationSettingsSchema,
+  updatePreferencesSchema,
+} from "./notificationValidators.js";
 
 const router = Router();
 
 /**
- * @openapi
- * /api/v1/admin/notification-settings:
- *   get:
- *     tags: [Admin Notifications]
- *     summary: View email notification settings
- *     description: Every event is enabled by default until an administrator changes it. Password recovery emails are always sent and are not configurable.
- *     security: [{ bearerAuth: [] }, { cookieAuth: [] }]
- *     responses:
- *       200: { description: Notification settings retrieved successfully }
- *       401: { $ref: '#/components/responses/Unauthorized' }
- *       403: { $ref: '#/components/responses/Forbidden' }
+ * User Notification Endpoints (Accessible to all authenticated roles)
+ */
+
+// GET /api/v1/notifications - List user's notifications (paginated, unread filter)
+router.get(
+  "/notifications",
+  authMiddleware,
+  validate(listNotificationsQuerySchema, "query"),
+  notificationController.listNotifications,
+);
+
+// GET /api/v1/notifications/unread-count - Efficient unread count for badges
+router.get(
+  "/notifications/unread-count",
+  authMiddleware,
+  notificationController.getUnreadCount,
+);
+
+// PATCH /api/v1/notifications/read-all - Mark all user notifications as read
+router.patch(
+  "/notifications/read-all",
+  authMiddleware,
+  notificationController.markAllAsRead,
+);
+
+// PATCH /api/v1/notifications/:id/read - Mark single notification as read
+router.patch(
+  "/notifications/:id/read",
+  authMiddleware,
+  notificationController.markAsRead,
+);
+
+// GET /api/v1/notifications/preferences - Get notification preferences
+router.get(
+  "/notifications/preferences",
+  authMiddleware,
+  notificationController.getPreferences,
+);
+
+// PUT /api/v1/notifications/preferences - Update notification preferences
+router.put(
+  "/notifications/preferences",
+  authMiddleware,
+  validate(updatePreferencesSchema, "body"),
+  notificationController.updatePreferences,
+);
+
+/**
+ * Admin System Notification Settings
  */
 router.get(
   "/admin/notification-settings",
   authMiddleware,
   requireRole("admin"),
-  notificationController.getSettings
+  notificationController.getSettings,
 );
 
-/**
- * @openapi
- * /api/v1/admin/notification-settings:
- *   put:
- *     tags: [Admin Notifications]
- *     summary: Enable or disable email notifications per event
- *     security: [{ bearerAuth: [] }, { cookieAuth: [] }]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [settings]
- *             properties:
- *               settings:
- *                 type: array
- *                 minItems: 1
- *                 items:
- *                   type: object
- *                   required: [event, enabled]
- *                   properties:
- *                     event:
- *                       type: string
- *                       enum: [BOOKING_CONFIRMATION, BOOKING_STATUS_CHANGE, PAYMENT_CONFIRMATION, OPERATIONAL_UPDATE]
- *                     enabled: { type: boolean }
- *     responses:
- *       200: { description: Notification settings updated successfully }
- *       400: { $ref: '#/components/responses/ValidationError' }
- *       401: { $ref: '#/components/responses/Unauthorized' }
- *       403: { $ref: '#/components/responses/Forbidden' }
- */
 router.put(
   "/admin/notification-settings",
   authMiddleware,
   requireRole("admin"),
-  validate(updateNotificationSettingsSchema),
-  notificationController.updateSettings
+  validate(updateNotificationSettingsSchema, "body"),
+  notificationController.updateSettings,
 );
 
 export default router;
