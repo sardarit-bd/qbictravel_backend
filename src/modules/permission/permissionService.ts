@@ -4,6 +4,7 @@ import {
   SUPPORTED_PERMISSIONS,
   SUPPORTED_PERMISSION_IDS_SET,
   PERMISSION_MODULES,
+  DEFAULT_STAFF_PERMISSIONS,
   type PermissionDefinition,
 } from "./permissionConstants.js";
 import * as permissionRepo from "./permissionRepository.js";
@@ -63,7 +64,14 @@ export const getStaffPermissions = async (
     );
   }
 
-  const permissions = await permissionRepo.getStaffAssignedPermissions(staffId);
+  let permissions = await permissionRepo.getStaffAssignedPermissions(staffId);
+
+  // Backward-compatible safety: If an existing staff account has 0 permissions recorded in the database
+  // (e.g. legacy staff accounts created prior to automatic default provisioning),
+  // automatically provision the default booking operational permissions once so they are immediately usable.
+  if (permissions.length === 0) {
+    permissions = await permissionRepo.assignStaffDefaultPermissions(staffId);
+  }
 
   return {
     staffId: user.id,
@@ -134,7 +142,13 @@ export const getEffectivePermissions = async (
   userId: string,
   role: string
 ): Promise<EffectivePermissionsResponse> => {
-  const permissions = await permissionRepo.getUserEffectivePermissions(userId, role);
+  let permissions = await permissionRepo.getUserEffectivePermissions(userId, role);
+
+  // Backward-compatible safety: If active staff has 0 permissions assigned,
+  // provision defaults so they can immediately access booking operations.
+  if (role === "staff" && permissions.length === 0) {
+    permissions = await permissionRepo.assignStaffDefaultPermissions(userId);
+  }
 
   return {
     userId,

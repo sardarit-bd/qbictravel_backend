@@ -2,6 +2,7 @@ import { prisma } from "../../lib/prisma.js";
 import {
   SUPPORTED_PERMISSIONS,
   ALL_PERMISSION_IDS,
+  DEFAULT_STAFF_PERMISSIONS,
   type PermissionDefinition,
 } from "./permissionConstants.js";
 
@@ -92,6 +93,38 @@ export const replaceStaffPermissions = async (
 
     return updated.map((r) => r.permissionId);
   });
+};
+
+/**
+ * Assign the standard default operational permissions to a newly created staff member.
+ * Safe and idempotent: skips duplicates if any permission is already present.
+ */
+export const assignStaffDefaultPermissions = async (
+  staffId: string,
+  assignedById?: string,
+  tx?: any
+): Promise<string[]> => {
+  await seedSupportedPermissions();
+  const client = tx || prisma;
+
+  if (DEFAULT_STAFF_PERMISSIONS.length > 0) {
+    await client.staffPermission.createMany({
+      data: DEFAULT_STAFF_PERMISSIONS.map((pId) => ({
+        userId: staffId,
+        permissionId: pId,
+        assignedById: assignedById ?? null,
+      })),
+      skipDuplicates: true,
+    });
+  }
+
+  const assigned = await client.staffPermission.findMany({
+    where: { userId: staffId },
+    select: { permissionId: true },
+    orderBy: { permissionId: "asc" },
+  });
+
+  return assigned.map((r: any) => r.permissionId);
 };
 
 /**
