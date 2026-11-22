@@ -364,11 +364,7 @@ export const createStaffBooking = async (
       ) / 100;
   }
 
-  const finalPrice = basePrice;
   const hasDiscount = Boolean(input.discount && input.discount.discountValue > 0);
-  const requiresApproval = hasDiscount;
-  const status = hasDiscount ? "AWAITING_APPROVAL" : "PENDING";
-
   let discountAmount = 0;
   let proposedFinalPrice = basePrice;
 
@@ -403,6 +399,11 @@ export const createStaffBooking = async (
       throw new AppError("A reason is mandatory when requesting a discount", 400);
     }
   }
+
+  // Staff can create bookings directly without waiting for Admin approval
+  const finalPrice = hasDiscount ? proposedFinalPrice : basePrice;
+  const requiresApproval = false;
+  const status = "CONFIRMED";
 
   // 3. Resolve Availability, Capacity Validation, Customer & Booking Creation atomically
   let travelDateObj: Date | undefined;
@@ -513,6 +514,7 @@ export const createStaffBooking = async (
         customerId: customer.id,
         agentId: null,
         createdById: staffId,
+        assignedStaffId: staffId,
         source: "DIRECT",
         serviceId: input.serviceId,
         availabilityId: resolvedAvailabilityId,
@@ -528,7 +530,7 @@ export const createStaffBooking = async (
       tx
     );
 
-    // 5d. Atomically persist StaffDiscountRequest and StaffDiscountAuditEvent if discount requested
+    // 5d. Atomically persist StaffDiscountRequest and StaffDiscountAuditEvent if discount applied
     if (hasDiscount && input.discount) {
       const discountRecord = await tx.staffDiscountRequest.create({
         data: {
@@ -538,9 +540,14 @@ export const createStaffBooking = async (
           originalPrice: basePrice,
           discountAmount,
           proposedFinalPrice,
-          status: "PENDING",
+          approvedDiscountAmount: discountAmount,
+          approvedFinalPrice: proposedFinalPrice,
+          status: "APPROVED",
           reason: input.discount.reason.trim(),
           requestedById: staffId,
+          reviewedById: staffId,
+          reviewedAt: new Date(),
+          adminNotes: "Direct staff discount applied at booking creation",
         },
       });
 
@@ -555,14 +562,16 @@ export const createStaffBooking = async (
           bookingId: created.id,
           actorId: staffId,
           actorRole: staffUser?.role || "staff",
-          action: "DISCOUNT_REQUESTED",
+          action: "DISCOUNT_APPROVED",
           previousStatus: null,
-          newStatus: "PENDING",
+          newStatus: "APPROVED",
           originalPrice: basePrice,
           discountType: input.discount.discountType,
           discountValue: input.discount.discountValue,
           requestedDiscountAmount: discountAmount,
           proposedFinalPrice,
+          approvedDiscountAmount: discountAmount,
+          finalPrice: proposedFinalPrice,
           reason: input.discount.reason.trim(),
           metadata: {
             currency,
@@ -1316,4 +1325,348 @@ export const getAgentBookingHistory = async (
 export const listStaffCustomers = async (query: Record<string, unknown>) => {
   return bookingRepository.listStaffCustomers(query);
 };
+
+export const amendStaffBooking = async (
+  bookingId: string,
+  input: {
+    customerName?: string;
+    customerEmail?: string;
+    customerPhone?: string | null;
+    travelDate?: string;
+    adults?: number;
+    children?: number;
+    infants?: number;
+    pickupLocation?: string;
+    departureTime?: string;
+    notes?: string;
+    discount?: {
+      discountType: "PERCENTAGE" | "FIXED_AMOUNT";
+      discountValue: number;
+      reason: string;
+    };
+  },
+  actorId: string,
+  actorRole: string
+) => {
+  // 1. Fetch existing booking
+  const existing = await prisma.booking.findUnique({
+    where: { id: bookingId },
+    include: {
+      customer: { select: { id: true, name: true, email: true, phone: true } },
+      service: { include: { pricing: true } },
+      availability: { select: { id: true, date: true } },
+      payments: { where: { status: "VERIFIED" } },
+    },
+  });
+
+  if (!existing) {
+    throw new AppError("Booking not found", 404);
+  }
+
+  if (existing.status === "CANCELLED" || existing.status === "FAILED") {
+    throw new AppError("Cannot amend a cancelled or failed booking", 409);
+  }
+
+  // Parse existing notes to preserve existing metadata if not modified
+  const rawNotes = existing.notes || "";
+  let oldAdults = 1;
+  let oldChildren = 0;
+  let oldInfants = 0;
+  let oldTravelDate: string | null = null;
+  let oldPickup: string | null = null;
+
+  const notesSegments = rawNotes.split(" | ");
+  for (const seg of notesSegments) {
+    if (seg.startsWith("Travel Date: ")) {
+      oldTravelDate = seg.replace("Travel Date: ", "").trim();
+    } else if (seg.startsWith("Guests: ")) {
+      const gStr = seg.replace("Guests: ", "");
+      const aMatch = gStr.match(/(\d+)\s*Adult/i);
+      const cMatch = gStr.match(/(\d+)\s*Child/i);
+      const iMatch = gStr.match(/(\d+)\s*Infant/i);
+      if (aMatch) oldAdults = parseInt(aMatch[1], 10);
+      if (cMatch) oldChildren = parseInt(cMatch[1], 10);
+      if (iMatch) oldInfants = parseInt(iMatch[1], 10);
+    } else if (seg.startsWith("Pickup: ")) {
+      oldPickup = seg.replace("Pickup: ", "").trim();
+    }
+  }
+
+  const effectiveAdults = input.adults !== undefined ? input.adults : oldAdults;
+  const effectiveChildren = input.children !== undefined ? input.children : oldChildren;
+  const effectiveInfants = input.infants !== undefined ? input.infants : oldInfants;
+  const effectiveTravelDate = input.travelDate !== undefined ? input.travelDate : oldTravelDate;
+  const effectivePickup = input.pickupLocation !== undefined ? input.pickupLocation : oldPickup;
+
+  // Validate travel date format if given
+  let travelDateObj: Date | undefined;
+  if (effectiveTravelDate && effectiveTravelDate.trim()) {
+    travelDateObj = new Date(effectiveTravelDate.trim());
+    if (isNaN(travelDateObj.getTime())) {
+      throw new AppError("Invalid travel date format", 400);
+    }
+  }
+
+  // Calculate guest deltas for capacity check
+  const oldTotalGuests = Math.max(1, oldAdults + oldChildren + oldInfants);
+  const newTotalGuests = Math.max(1, effectiveAdults + effectiveChildren + effectiveInfants);
+  const guestDelta = newTotalGuests - oldTotalGuests;
+
+  // Re-calculate base price from active pricing tiers
+  const now = new Date();
+  const activePricings = existing.service.pricing.filter(
+    (p: any) => (!p.validFrom || p.validFrom <= now) && (!p.validTo || p.validTo >= now)
+  );
+
+  const activePricing = activePricings[0] || existing.service.pricing[0];
+  if (!activePricing) {
+    throw new AppError("Tour service has no pricing rules configured", 400);
+  }
+
+  const rawBasePrice = Number(activePricing.basePrice);
+  const unitAdultPrice =
+    activePricing.discountedPrice != null && Number(activePricing.discountedPrice) > 0
+      ? Number(activePricing.discountedPrice)
+      : rawBasePrice;
+
+  const metadata = (existing.service as any).metadata as Record<string, any> | null;
+  const tiers: Array<{ tierName?: string; price?: number }> = Array.isArray(metadata?.pricingTiers)
+    ? metadata!.pricingTiers
+    : [];
+  const childTier = tiers.find((t) => /child/i.test(String(t?.tierName || "")));
+  const infantTier = tiers.find((t) => /infant/i.test(String(t?.tierName || "")));
+
+  const unitChildPrice =
+    childTier && typeof childTier.price === "number" && childTier.price >= 0
+      ? Number(childTier.price)
+      : Math.round(unitAdultPrice * 0.7 * 100) / 100;
+
+  const unitInfantPrice =
+    infantTier && typeof infantTier.price === "number" && infantTier.price >= 0
+      ? Number(infantTier.price)
+      : 0;
+
+  const newBasePrice =
+    Math.round((effectiveAdults * unitAdultPrice + effectiveChildren * unitChildPrice + effectiveInfants * unitInfantPrice) * 100) / 100;
+
+  let discountData: any = undefined;
+  let newFinalPrice = newBasePrice;
+
+  if (input.discount && input.discount.discountValue > 0) {
+    const dVal = Number(input.discount.discountValue);
+    let discountAmount = 0;
+    if (input.discount.discountType === "PERCENTAGE") {
+      if (dVal <= 0 || dVal > 100) {
+        throw new AppError("Percentage discount must be between 1 and 100", 400);
+      }
+      discountAmount = Math.round(newBasePrice * (dVal / 100) * 100) / 100;
+    } else if (input.discount.discountType === "FIXED_AMOUNT") {
+      if (dVal <= 0) {
+        throw new AppError("Fixed discount must be greater than zero", 400);
+      }
+      if (dVal >= newBasePrice) {
+        throw new AppError(`Fixed discount (${dVal}) must be strictly less than base price (${newBasePrice})`, 400);
+      }
+      discountAmount = Math.round(dVal * 100) / 100;
+    }
+
+    newFinalPrice = Math.round((newBasePrice - discountAmount) * 100) / 100;
+    if (newFinalPrice <= 0) {
+      throw new AppError("Final price after discount must be greater than zero", 400);
+    }
+    discountData = {
+      discountType: input.discount.discountType,
+      discountValue: dVal,
+      discountAmount,
+      reason: input.discount.reason,
+    };
+  }
+
+  // Re-build structured notes
+  const noteParts: string[] = [];
+  if (effectiveTravelDate && effectiveTravelDate.trim()) {
+    noteParts.push(`Travel Date: ${effectiveTravelDate.trim()}`);
+  }
+  const guestParts: string[] = [`${effectiveAdults} Adult${effectiveAdults > 1 ? "s" : ""}`];
+  if (effectiveChildren > 0) guestParts.push(`${effectiveChildren} Child${effectiveChildren > 1 ? "ren" : ""}`);
+  if (effectiveInfants > 0) guestParts.push(`${effectiveInfants} Infant${effectiveInfants > 1 ? "s" : ""}`);
+  noteParts.push(`Guests: ${guestParts.join(", ")}`);
+
+  if (effectivePickup && effectivePickup.trim()) {
+    noteParts.push(`Pickup: ${effectivePickup.trim()}`);
+  }
+  if (input.departureTime && input.departureTime.trim()) {
+    noteParts.push(`Departure: ${input.departureTime.trim()}`);
+  }
+  if (input.notes && input.notes.trim()) {
+    noteParts.push(input.notes.trim());
+  }
+  const formattedNotes = noteParts.join(" | ");
+
+  // Collect changes for audit trail
+  const changes: Record<string, any> = {
+    previousBasePrice: Number(existing.basePrice),
+    newBasePrice,
+    previousFinalPrice: Number(existing.finalPrice),
+    newFinalPrice,
+  };
+
+  if (input.customerName || input.customerEmail || input.customerPhone !== undefined) {
+    changes.customer = {
+      name: { from: existing.customer?.name, to: input.customerName ?? existing.customer?.name },
+      email: { from: existing.customer?.email, to: input.customerEmail ?? existing.customer?.email },
+      phone: { from: existing.customer?.phone, to: input.customerPhone !== undefined ? input.customerPhone : existing.customer?.phone },
+    };
+  }
+  if (guestDelta !== 0) {
+    changes.guests = {
+      from: { adults: oldAdults, children: oldChildren, infants: oldInfants },
+      to: { adults: effectiveAdults, children: effectiveChildren, infants: effectiveInfants },
+    };
+  }
+  if (travelDateObj && existing.availability?.date && travelDateObj.getTime() !== new Date(existing.availability.date).getTime()) {
+    changes.travelDate = {
+      from: existing.availability.date,
+      to: travelDateObj,
+    };
+  }
+  if (effectivePickup !== oldPickup) {
+    changes.pickupLocation = { from: oldPickup, to: effectivePickup };
+  }
+  if (discountData) {
+    changes.discount = discountData;
+  }
+
+  try {
+    const updated = await bookingRepository.amendBookingRecord({
+      bookingId,
+      actorId,
+      actorRole,
+      previousBooking: {
+        ...existing,
+        adults: oldAdults,
+        children: oldChildren,
+        infants: oldInfants,
+      },
+      service: existing.service,
+      customerUpdates: {
+        name: input.customerName,
+        email: input.customerEmail,
+        phone: input.customerPhone,
+      },
+      travelDateObj,
+      guestDelta,
+      adults: effectiveAdults,
+      children: effectiveChildren,
+      infants: effectiveInfants,
+      newBasePrice,
+      newFinalPrice,
+      formattedNotes,
+      discountData,
+      changes,
+    });
+
+    emitBookingEvent("booking.status_changed", bookingId, { action: "AMENDED" }).catch((err) =>
+      logger.error({ bookingId, err }, "Failed to emit amendment event")
+    );
+
+    return mapBookingToResponse(updated);
+  } catch (err: any) {
+    if (err?.message === "CAPACITY_EXCEEDED") {
+      throw new AppError("Selected date or passenger count exceeds tour capacity", 409);
+    }
+    throw err;
+  }
+};
+
+export const cancelStaffBooking = async (
+  bookingId: string,
+  actorId: string,
+  actorRole: string,
+  reason?: string
+) => {
+  const existing = await prisma.booking.findUnique({
+    where: { id: bookingId },
+    include: {
+      availability: { select: { id: true, date: true } },
+    },
+  });
+
+  if (!existing) {
+    throw new AppError("Booking not found", 404);
+  }
+
+  if (existing.status === "CANCELLED" || existing.status === "FAILED") {
+    throw new AppError("Booking is already cancelled or failed", 409);
+  }
+
+  // Parse notes for guests
+  let adults = 1;
+  let children = 0;
+  let infants = 0;
+  const gMatch = (existing.notes || "").match(/Guests:\s*([^|]+)/i);
+  if (gMatch) {
+    const aMatch = gMatch[1].match(/(\d+)\s*Adult/i);
+    const cMatch = gMatch[1].match(/(\d+)\s*Child/i);
+    const iMatch = gMatch[1].match(/(\d+)\s*Infant/i);
+    if (aMatch) adults = parseInt(aMatch[1], 10);
+    if (cMatch) children = parseInt(cMatch[1], 10);
+    if (iMatch) infants = parseInt(iMatch[1], 10);
+  }
+
+  const updated = await bookingRepository.cancelBookingRecord({
+    bookingId,
+    actorId,
+    actorRole,
+    reason,
+    previousBooking: {
+      ...existing,
+      adults,
+      children,
+      infants,
+    },
+  });
+
+  emitBookingEvent("booking.status_changed", bookingId, { status: "CANCELLED" }).catch((err) =>
+    logger.error({ bookingId, err }, "Failed to emit cancellation event")
+  );
+
+  return mapBookingToResponse(updated);
+};
+
+export const getAdminActivityHistory = async (query: Record<string, unknown>) => {
+  const { page, limit, skip } = parsePagination({ limit: 50, ...query });
+
+  let startDate: Date | undefined;
+  if (typeof query.startDate === "string" && query.startDate.trim()) {
+    startDate = new Date(query.startDate.trim());
+    if (isNaN(startDate.getTime())) startDate = undefined;
+  }
+
+  let endDate: Date | undefined;
+  if (typeof query.endDate === "string" && query.endDate.trim()) {
+    endDate = new Date(query.endDate.trim());
+    if (isNaN(endDate.getTime())) endDate = undefined;
+  }
+
+  const result = await bookingRepository.listAllBookingActivities({
+    bookingId: typeof query.bookingId === "string" ? query.bookingId : undefined,
+    actorId: typeof query.actorId === "string" ? query.actorId : undefined,
+    action: typeof query.action === "string" ? query.action : undefined,
+    search: typeof query.search === "string" ? query.search : undefined,
+    startDate,
+    endDate,
+    skip,
+    take: limit,
+  });
+
+  return {
+    items: result.items,
+    page,
+    limit,
+    total: result.total,
+    totalPages: Math.ceil(result.total / limit),
+  };
+};
+
 

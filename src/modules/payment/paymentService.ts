@@ -1016,7 +1016,7 @@ export const generateStaffPaymentLink = async (
     booking.requiresApproval ||
     (booking.status as any) === "AWAITING_APPROVAL" ||
     booking.status === "PENDING" ||
-    ((booking as any).discountRequests && (booking as any).discountRequests.length > 0)
+    ((booking as any).discountRequests && (booking as any).discountRequests.some((dr: any) => dr.status === "PENDING" || !dr.status))
   ) {
     throw new AppError("Cannot create a payment link while booking is awaiting admin approval", 409);
   }

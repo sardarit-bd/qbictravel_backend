@@ -17,6 +17,9 @@ import {
   bookingIdParamSchema,
   listStaffCustomersQuerySchema,
   listStaffCreatedBookingsQuerySchema,
+  amendStaffBookingSchema,
+  cancelStaffBookingSchema,
+  listAllActivityHistoryQuerySchema,
 } from "./bookingValidators.js";
 
 const router = Router();
@@ -567,5 +570,67 @@ router.get(
   validate(listStaffCreatedBookingsQuerySchema, "query"),
   bookingController.listStaffCreatedBookings
 );
+
+/**
+ * @openapi
+ * /api/v1/staff/bookings/{bookingId}:
+ *   patch:
+ *     tags:
+ *       - Staff Bookings
+ *     summary: Amend an existing booking
+ *     description: Staff and Admin can update customer details, travel dates, passenger counts, pickup location, notes, and price/discount.
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ */
+router.patch(
+  "/staff/bookings/:bookingId",
+  authMiddleware,
+  requirePermission("bookings.create"),
+  validate(bookingIdParamSchema, "params"),
+  validate(amendStaffBookingSchema),
+  bookingController.amendStaffBooking
+);
+
+/**
+ * @openapi
+ * /api/v1/staff/bookings/{bookingId}/cancel:
+ *   post:
+ *     tags:
+ *       - Staff Bookings
+ *     summary: Cancel a booking
+ *     description: Staff and Admin can cancel a booking, releasing reserved seats.
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ */
+router.post(
+  "/staff/bookings/:bookingId/cancel",
+  authMiddleware,
+  requirePermission("bookings.update_status"),
+  validate(bookingIdParamSchema, "params"),
+  validate(cancelStaffBookingSchema),
+  bookingController.cancelStaffBooking
+);
+
+/**
+ * @openapi
+ * /api/v1/admin/activity-history:
+ *   get:
+ *     tags:
+ *       - Admin Bookings
+ *     summary: Global activity and audit history across all bookings and staff actions
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ */
+router.get(
+  "/admin/activity-history",
+  authMiddleware,
+  requirePermission("bookings.view"),
+  validate(listAllActivityHistoryQuerySchema, "query"),
+  bookingController.getAdminActivityHistory
+);
+
 
 export default router;
