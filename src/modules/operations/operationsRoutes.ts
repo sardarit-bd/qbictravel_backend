@@ -9,9 +9,26 @@ import {
   assignBookingSchema,
   operationsBookingIdParamSchema,
   updateOperationalStatusSchema,
+  operationsScheduleQuerySchema,
 } from "./operationsValidators.js";
 
 const router = Router();
+
+/**
+ * @openapi
+ * /api/v1/operations/schedule:
+ *   get:
+ *     tags: [Operations Schedule]
+ *     summary: View daily/weekly operational tour schedule and manifest
+ *     security: [{ bearerAuth: [] }, { cookieAuth: [] }]
+ */
+router.get(
+  "/operations/schedule",
+  authMiddleware,
+  requirePermission("bookings.view"),
+  validate(operationsScheduleQuerySchema, "query"),
+  operationsController.getOperationsSchedule
+);
 
 /**
  * @openapi
@@ -101,14 +118,19 @@ router.patch(
  *     parameters:
  *       - { name: page, in: query, schema: { type: integer } }
  *       - { name: limit, in: query, schema: { type: integer } }
- *       - { name: fulfillmentStatus, in: query, schema: { type: string } }
+ *       - { name: fulfillmentStatus, in: query, schema: { type: string, enum: [NOT_STARTED, IN_PROGRESS, FULFILLED] } }
  *       - { name: assignedStaffId, in: query, schema: { type: string, format: uuid } }
+ *       - { name: agentId, in: query, schema: { type: string, format: uuid } }
+ *       - { name: createdById, in: query, schema: { type: string, format: uuid } }
+ *       - { name: source, in: query, schema: { type: string, enum: [DIRECT, AGENT, ADMIN, CUSTOMER] } }
  *     responses:
  *       200: { description: Operational bookings retrieved successfully }
+ *       403: { $ref: '#/components/responses/Forbidden' }
  */
 router.get(
   "/admin/operations/bookings",
   authMiddleware,
+  requireRole("admin"),
   requirePermission("bookings.view"),
   operationsController.listAdminBookings
 );
@@ -118,7 +140,7 @@ router.get(
  * /api/v1/admin/operations/bookings/{bookingId}/assignment:
  *   patch:
  *     tags: [Admin Operations]
- *     summary: Assign operational responsibility to a staff member (null to unassign)
+ *     summary: Assign or unassign operational ownership of a booking
  *     security: [{ bearerAuth: [] }, { cookieAuth: [] }]
  *     parameters:
  *       - { name: bookingId, in: path, required: true, schema: { type: string, format: uuid } }
@@ -133,15 +155,16 @@ router.get(
  *               staffId: { type: string, format: uuid, nullable: true }
  *               notes: { type: string }
  *     responses:
- *       200: { description: Booking assignment updated successfully }
+ *       200: { description: Booking assigned successfully }
  *       400: { $ref: '#/components/responses/ValidationError' }
+ *       403: { $ref: '#/components/responses/Forbidden' }
  *       404: { $ref: '#/components/responses/NotFound' }
- *       409: { description: Booking can no longer be reassigned }
+ *       409: { description: Closed bookings cannot be reassigned }
  */
 router.patch(
   "/admin/operations/bookings/:bookingId/assignment",
   authMiddleware,
-  requirePermission("bookings.assign"),
+  requireRole("admin"),
   validate(operationsBookingIdParamSchema, "params"),
   validate(assignBookingSchema),
   operationsController.assignBooking
@@ -152,8 +175,8 @@ router.patch(
  * /api/v1/admin/operations/bookings/{bookingId}/status:
  *   patch:
  *     tags: [Admin Operations]
- *     summary: Update or correct the fulfillment status
- *     description: Includes backward corrections. A note is required and every change is recorded in the booking history.
+ *     summary: Update or correct the fulfillment status of any booking
+ *     description: Admins may step backwards (IN_PROGRESS to NOT_STARTED, FULFILLED to IN_PROGRESS) to correct operational mistakes.
  *     security: [{ bearerAuth: [] }, { cookieAuth: [] }]
  *     parameters:
  *       - { name: bookingId, in: path, required: true, schema: { type: string, format: uuid } }
@@ -168,15 +191,16 @@ router.patch(
  *               fulfillmentStatus: { type: string, enum: [NOT_STARTED, IN_PROGRESS, FULFILLED] }
  *               notes: { type: string }
  *     responses:
- *       200: { description: Fulfillment status updated successfully }
+ *       200: { description: Fulfillment status corrected successfully }
  *       400: { $ref: '#/components/responses/ValidationError' }
+ *       403: { $ref: '#/components/responses/Forbidden' }
  *       404: { $ref: '#/components/responses/NotFound' }
  *       409: { description: Transition not allowed for the current booking state }
  */
 router.patch(
   "/admin/operations/bookings/:bookingId/status",
   authMiddleware,
-  requirePermission("bookings.update_status"),
+  requireRole("admin"),
   validate(operationsBookingIdParamSchema, "params"),
   validate(adminUpdateOperationalStatusSchema),
   operationsController.updateAdminBookingStatus

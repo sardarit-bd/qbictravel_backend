@@ -142,6 +142,7 @@ export const findBookingForTransition = async (bookingId: string) => {
       fulfillmentStatus: true,
       paymentStatus: true,
       assignedStaffId: true,
+      createdById: true,
       assignedStaff: { select: { id: true, name: true } },
     },
   });
@@ -232,5 +233,153 @@ export const applyAssignment = async (params: {
       where: { id: params.bookingId },
       select: adminOperationalSelect,
     });
+  });
+};
+
+/**
+ * Query bookings for the Operations Schedule and Daily Manifest
+ */
+export const queryScheduleBookings = async (params: {
+  startDate: Date;
+  endDate: Date;
+  serviceId?: string;
+  bookingStatus?: string;
+  fulfillmentStatus?: FulfillmentStatusValue;
+  search?: string;
+  actorRole: "staff" | "admin";
+  actorId: string;
+}) => {
+  const where: any = {
+    // Exclude permanently failed or draft bookings, but include operational & confirmed ones
+    status: params.bookingStatus
+      ? params.bookingStatus
+      : { in: ["CONFIRMED", "IN_PROGRESS", "COMPLETED", "PENDING"] },
+  };
+
+  if (params.fulfillmentStatus) {
+    where.fulfillmentStatus = params.fulfillmentStatus;
+  }
+
+  if (params.serviceId) {
+    where.serviceId = params.serviceId;
+  }
+
+  const andConditions: any[] = [];
+
+  // Date filtering: Match bookings whose availability.date falls in the window
+  // OR bookings whose notes contain the travel date in the window
+  andConditions.push({
+    OR: [
+      {
+        availability: {
+          date: {
+            gte: params.startDate,
+            lte: params.endDate,
+          },
+        },
+      },
+      // Also include bookings created in the range if availability is open/unlinked
+      {
+        availabilityId: null,
+        createdAt: {
+          gte: params.startDate,
+          lte: params.endDate,
+        },
+      },
+    ],
+  });
+
+  // Staff booking visibility policy:
+  // Staff can only view bookings where they are assigned (assignedStaffId === actorId)
+  // OR where they created the booking (createdById === actorId).
+  // If actorRole is not admin, a valid non-empty actorId is strictly required.
+  if (params.actorRole !== "admin") {
+    if (!params.actorId || typeof params.actorId !== "string" || !params.actorId.trim()) {
+      // Safe guard: Staff request without a valid authenticated actorId must match nothing
+      andConditions.push({ id: "__UNAUTHORIZED_STAFF_MISSING_ACTOR_ID__" });
+    } else {
+      andConditions.push({
+        OR: [
+          { assignedStaffId: params.actorId.trim() },
+          { createdById: params.actorId.trim() },
+        ],
+      });
+    }
+  }
+
+  if (params.search) {
+    const term = params.search.trim();
+    andConditions.push({
+      OR: [
+        { id: { contains: term, mode: "insensitive" } },
+        { service: { name: { contains: term, mode: "insensitive" } } },
+        { customer: { name: { contains: term, mode: "insensitive" } } },
+        { customer: { email: { contains: term, mode: "insensitive" } } },
+        { notes: { contains: term, mode: "insensitive" } },
+      ],
+    });
+  }
+
+  where.AND = andConditions;
+
+  return prisma.booking.findMany({
+    where,
+    select: {
+      id: true,
+      status: true,
+      fulfillmentStatus: true,
+      paymentStatus: true,
+      source: true,
+      notes: true,
+      internalNotes: true,
+      createdAt: true,
+      service: {
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          metadata: true,
+          availability: {
+            where: {
+              date: {
+                gte: params.startDate,
+                lte: params.endDate,
+              },
+            },
+            select: {
+              id: true,
+              date: true,
+              capacity: true,
+              bookedCount: true,
+            },
+          },
+        },
+      },
+      availability: {
+        select: {
+          id: true,
+          date: true,
+          capacity: true,
+          bookedCount: true,
+        },
+      },
+      customer: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+        },
+      },
+      assignedStaff: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+    orderBy: [
+      { createdAt: "asc" },
+    ],
   });
 };

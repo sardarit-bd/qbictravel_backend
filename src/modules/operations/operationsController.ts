@@ -2,6 +2,17 @@ import type { Request, Response, NextFunction } from "express";
 import sendResponse from "../../shared/utils/response.js";
 import * as operationsService from "./operationsService.js";
 
+export const getOperationsSchedule = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const actorRole = (req.user?.role || "staff") as "staff" | "admin";
+    const actorId = req.user!.id;
+    const result = await operationsService.getOperationsSchedule(actorRole, actorId, req.query);
+    sendResponse(res, 200, true, "Operations schedule retrieved successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const listStaffBookings = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const result = await operationsService.listStaffBookings(req.user!.id, req.query);
@@ -64,7 +75,7 @@ export const updateAdminBookingStatus = async (req: Request, res: Response, next
       req.params.bookingId as string,
       req.body,
     );
-    sendResponse(res, 200, true, "Fulfillment status updated successfully", booking);
+    sendResponse(res, 200, true, "Fulfillment status corrected successfully", booking);
   } catch (error) {
     next(error);
   }
