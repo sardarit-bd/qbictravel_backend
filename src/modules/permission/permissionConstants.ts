@@ -213,11 +213,11 @@ export const ALL_PERMISSION_IDS: readonly PermissionId[] = SUPPORTED_PERMISSIONS
 export const SUPPORTED_PERMISSION_IDS_SET = new Set<string>(ALL_PERMISSION_IDS);
 
 /**
- * Standard default permissions assigned to all newly created or onboarded Staff members.
- * Grants complete access for routine booking operations, tours viewing, fulfillment status updates,
- * and offline payment collection without granting Admin-only or sensitive configuration permissions.
+ * Mandatory system-level Staff permissions.
+ * These permissions are ALWAYS available to every Staff account and cannot be removed
+ * or revoked by Admin in the UI or API.
  */
-export const DEFAULT_STAFF_PERMISSIONS: readonly PermissionId[] = [
+export const MANDATORY_STAFF_PERMISSIONS: readonly PermissionId[] = [
   "bookings.view",
   "bookings.create",
   "bookings.update_status",
@@ -225,4 +225,12 @@ export const DEFAULT_STAFF_PERMISSIONS: readonly PermissionId[] = [
   "payments.view",
   "payments.record",
 ] as const;
+
+export const MANDATORY_STAFF_PERMISSIONS_SET = new Set<string>(MANDATORY_STAFF_PERMISSIONS);
+
+/**
+ * Backward-compatibility alias for MANDATORY_STAFF_PERMISSIONS
+ */
+export const DEFAULT_STAFF_PERMISSIONS = MANDATORY_STAFF_PERMISSIONS;
+
 

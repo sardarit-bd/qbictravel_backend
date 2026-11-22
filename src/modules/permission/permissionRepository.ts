@@ -2,6 +2,8 @@ import { prisma } from "../../lib/prisma.js";
 import {
   SUPPORTED_PERMISSIONS,
   ALL_PERMISSION_IDS,
+  MANDATORY_STAFF_PERMISSIONS,
+  MANDATORY_STAFF_PERMISSIONS_SET,
   DEFAULT_STAFF_PERMISSIONS,
   type PermissionDefinition,
 } from "./permissionConstants.js";
@@ -58,7 +60,8 @@ export const getStaffAssignedPermissions = async (
 };
 
 /**
- * Replace all permissions for a staff member in a single atomic transaction
+ * Replace all permissions for a staff member in a single atomic transaction.
+ * Always ensures MANDATORY_STAFF_PERMISSIONS are retained and cannot be removed by Admin.
  */
 export const replaceStaffPermissions = async (
   staffId: string,
@@ -66,16 +69,22 @@ export const replaceStaffPermissions = async (
   assignedById?: string
 ): Promise<string[]> => {
   await seedSupportedPermissions();
+
+  // Ensure mandatory permissions are always included
+  const mergedPermissions = Array.from(
+    new Set([...MANDATORY_STAFF_PERMISSIONS, ...permissionIds])
+  );
+
   return prisma.$transaction(async (tx) => {
     // 1. Delete all currently assigned permissions for this staff member
     await tx.staffPermission.deleteMany({
       where: { userId: staffId },
     });
 
-    // 2. Insert new permission assignments (if any provided)
-    if (permissionIds.length > 0) {
+    // 2. Insert merged permission assignments
+    if (mergedPermissions.length > 0) {
       await tx.staffPermission.createMany({
-        data: permissionIds.map((pId) => ({
+        data: mergedPermissions.map((pId) => ({
           userId: staffId,
           permissionId: pId,
           assignedById: assignedById ?? null,
@@ -128,12 +137,17 @@ export const assignStaffDefaultPermissions = async (
 };
 
 /**
- * Check if a specific staff member has a given permission
+ * Check if a specific staff member has a given permission.
+ * System-level mandatory staff permissions always return true for any valid staff member.
  */
 export const checkStaffPermission = async (
   staffId: string,
   permissionId: string
 ): Promise<boolean> => {
+  if (MANDATORY_STAFF_PERMISSIONS_SET.has(permissionId)) {
+    return true;
+  }
+
   const count = await prisma.staffPermission.count({
     where: {
       userId: staffId,
@@ -144,7 +158,8 @@ export const checkStaffPermission = async (
 };
 
 /**
- * Get all effective permission IDs for a user based on role and database assignments
+ * Get all effective permission IDs for a user based on role and database assignments.
+ * Effective Staff permissions ALWAYS include all mandatory permissions.
  */
 export const getUserEffectivePermissions = async (
   userId: string,
@@ -156,7 +171,8 @@ export const getUserEffectivePermissions = async (
   }
 
   if (role === "staff") {
-    return getStaffAssignedPermissions(userId);
+    const assigned = await getStaffAssignedPermissions(userId);
+    return Array.from(new Set([...MANDATORY_STAFF_PERMISSIONS, ...assigned]));
   }
 
   // Customers and agents have 0 administrative permissions
