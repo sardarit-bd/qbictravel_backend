@@ -9,6 +9,7 @@ model Payment {
   reference             String?
   stripeSessionId       String?
   stripePaymentIntentId String?
+  omiseChargeId         String?
   failureReason         String?
   receiptNote           String?
   submittedAt           DateTime?
@@ -31,6 +32,7 @@ model Payment {
   @@index([customerId])
   @@index([stripeSessionId])
   @@index([stripePaymentIntentId])
+  @@index([omiseChargeId])
   @@index([status])
 }
 
@@ -125,6 +127,7 @@ enum PaymentMethod {
   OTHER
   STRIPE
   PAYPAL
+  OMISE
 }
 
 enum PaymentRecordStatus {
