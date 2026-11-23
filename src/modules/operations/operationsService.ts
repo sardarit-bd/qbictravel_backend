@@ -330,13 +330,18 @@ export const getOperationsSchedule = async (
 
     const totalPax = Math.max(1, parsed.adults + parsed.children + parsed.infants);
 
+    const sMeta = b.service?.metadata as any;
+    const serviceImage = sMeta?.featuredImage || (Array.isArray(sMeta?.images) && sMeta.images.length > 0 ? sMeta.images[0] : null) || null;
+    const serviceTitle = (sMeta?.title as string) || (sMeta?.subtitle as string) || b.service.name || "Tour Departure";
+
     const item: OperationsScheduleItem = {
       id: b.id,
       reference: `#${b.id.slice(0, 8)}`,
       bookingRef: `#${b.id.slice(0, 8)}`,
       serviceId: b.service.id,
       serviceName: b.service.name,
-      serviceTitle: b.service.name,
+      serviceTitle,
+      serviceImage,
       serviceType: b.service.type,
       travelDate,
       departureTime,
@@ -386,7 +391,8 @@ export const getOperationsSchedule = async (
         travelDate,
         serviceId: b.service.id,
         serviceName: b.service.name,
-        serviceTitle: b.service.name,
+        serviceTitle,
+        serviceImage,
         serviceType: b.service.type,
         departureTime,
         hasDepartureTime,

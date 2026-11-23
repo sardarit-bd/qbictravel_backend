@@ -29,6 +29,7 @@ export interface OperationsScheduleItem {
   serviceId: string;
   serviceName: string;
   serviceTitle?: string;
+  serviceImage?: string | null;
   serviceType: string;
   travelDate: string;
   departureTime: string | null;
@@ -55,6 +56,7 @@ export interface OperationsScheduleGroup {
   serviceId: string;
   serviceName: string;
   serviceTitle?: string;
+  serviceImage?: string | null;
   serviceType: string;
   departureTime: string | null;
   hasDepartureTime: boolean;
