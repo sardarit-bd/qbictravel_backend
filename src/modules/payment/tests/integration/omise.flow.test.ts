@@ -55,6 +55,7 @@ describe("Phase 2: Omise Payment Lifecycle & Settlement", () => {
   });
 
   afterAll(async () => {
+    await resetDatabase();
     await prisma.$disconnect();
   });
 

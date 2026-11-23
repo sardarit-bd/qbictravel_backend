@@ -88,3 +88,17 @@ export const publicInitiatePaymentSchema = yup.object({
 export const publicPayPalCaptureSchema = yup.object({
   orderId: yup.string().trim().required("PayPal Order ID is required"),
 });
+
+export const createOmiseChargeSchema = yup.object({
+  token: yup
+    .string()
+    .trim()
+    .matches(/^tokn_/, "Token must be a valid Omise card token starting with tokn_")
+    .required("Omise card token is required"),
+  returnUrl: yup.string().trim().url("returnUrl must be a valid URL").optional(),
+});
+
+export const publicOmiseVerifySchema = yup.object({
+  paymentId: yup.string().uuid("Invalid payment ID").required("Payment ID is required"),
+});
+
