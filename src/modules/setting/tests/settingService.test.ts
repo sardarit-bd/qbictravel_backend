@@ -63,6 +63,62 @@ describe("Setting Service Unit Tests", () => {
       );
       expect(result).toBeDefined();
     });
+
+    it("should update Omise credentials and securely encrypt secrets", async () => {
+      vi.mocked(repo.setPlaintextSetting).mockResolvedValue({} as any);
+      vi.mocked(repo.setSecretSetting).mockResolvedValue({} as any);
+      vi.mocked(repo.logSettingAudit).mockResolvedValue({} as any);
+      vi.mocked(repo.getAllSettings).mockResolvedValue([]);
+
+      const result = await settingService.updatePaymentSettings(
+        {
+          activeProvider: "omise",
+          providerName: "Omise Card Payment",
+          omise: {
+            enabled: true,
+            environment: "sandbox",
+            publicKey: "pkey_test_5678",
+            secretKey: "skey_test_12345678",
+            webhookSecret: "omise_wh_sec_12345678",
+          },
+        },
+        mockActor
+      );
+
+      expect(repo.setPlaintextSetting).toHaveBeenCalledWith(
+        "PAYMENT",
+        "payment.active_provider",
+        "omise",
+        mockActor.id
+      );
+      expect(repo.setPlaintextSetting).toHaveBeenCalledWith(
+        "PAYMENT",
+        "payment.omise.enabled",
+        "true",
+        mockActor.id
+      );
+      expect(repo.setPlaintextSetting).toHaveBeenCalledWith(
+        "PAYMENT",
+        "payment.omise.public_key",
+        "pkey_test_5678",
+        mockActor.id
+      );
+      expect(repo.setSecretSetting).toHaveBeenCalledWith(
+        "PAYMENT",
+        "payment.omise.secret_key",
+        "skey_test_12345678",
+        mockActor.id,
+        "Omise Secret Key"
+      );
+      expect(repo.setSecretSetting).toHaveBeenCalledWith(
+        "PAYMENT",
+        "payment.omise.webhook_secret",
+        "omise_wh_sec_12345678",
+        mockActor.id,
+        "Omise Webhook Secret"
+      );
+      expect(result).toBeDefined();
+    });
   });
 
   describe("General Settings", () => {

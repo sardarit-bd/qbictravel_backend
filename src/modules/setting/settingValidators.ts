@@ -10,7 +10,7 @@ export const updateGeneralSettingsSchema = yup.object({
 });
 
 export const updatePaymentSettingsSchema = yup.object({
-  activeProvider: yup.string().oneOf(["stripe", "paypal"]).optional(),
+  activeProvider: yup.string().oneOf(["omise", "stripe", "paypal"]).optional(),
   providerName: yup.string().trim().min(2, "Provider name must be at least 2 characters").max(100).optional(),
   enabled: yup.boolean().optional(),
   environment: yup.string().oneOf(["sandbox", "live"], "Environment must be sandbox or live").optional(),
@@ -18,6 +18,16 @@ export const updatePaymentSettingsSchema = yup.object({
   secretKey: yup.string().trim().min(8, "Secret key must be at least 8 characters").max(500).optional(),
   merchantId: yup.string().trim().max(100).optional(),
   confirmLiveMode: yup.boolean().optional(),
+
+  omise: yup
+    .object({
+      enabled: yup.boolean().optional(),
+      environment: yup.string().oneOf(["sandbox", "live"]).optional(),
+      publicKey: yup.string().trim().max(500).optional(),
+      secretKey: yup.string().trim().min(8, "Secret key must be at least 8 characters").max(500).optional(),
+      webhookSecret: yup.string().trim().min(8, "Webhook secret must be at least 8 characters").max(500).optional(),
+    })
+    .optional(),
 
   stripe: yup
     .object({

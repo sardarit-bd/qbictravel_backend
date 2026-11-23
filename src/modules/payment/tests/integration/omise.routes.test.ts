@@ -9,6 +9,7 @@ import {
 import * as paymentService from "../../paymentService.js";
 import { OmiseClient } from "../../omiseClient.js";
 import { generateSecureToken, hashToken } from "../../tokenUtils.js";
+import { invalidateRuntimeConfigCache } from "../../../setting/settingRuntimeConfig.js";
 import crypto from "crypto";
 
 describe("Phase 3: Omise API Routes & Controllers Integration", () => {
@@ -22,6 +23,7 @@ describe("Phase 3: Omise API Routes & Controllers Integration", () => {
 
   beforeEach(async () => {
     await resetDatabase();
+    invalidateRuntimeConfigCache();
 
     customer = await createUser({ role: "customer", name: "Alice Customer" });
     customerSession = await loginAgent(customer.email);
@@ -382,6 +384,46 @@ describe("Phase 3: Omise API Routes & Controllers Integration", () => {
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
       expect(res.body.message).toContain("Invalid Omise webhook signature");
+    });
+  });
+
+  describe("Admin Omise Gateway Enable/Disable Enforcement", () => {
+    it("rejects customer payment with 400 when Omise gateway is disabled by admin", async () => {
+      const freshCustomer = await createUser({ role: "customer", name: "David Customer" });
+      const freshSession = await loginAgent(freshCustomer.email);
+
+      const freshBooking = await prisma.booking.create({
+        data: {
+          customerId: freshCustomer.id,
+          serviceId: service.id,
+          currency: "THB",
+          basePrice: 5000,
+          finalPrice: 5000,
+          status: "PENDING",
+          paymentStatus: "UNPAID",
+        },
+      });
+
+      // Disable omise in system settings
+      await prisma.systemSetting.upsert({
+        where: { key: "payment.omise.enabled" },
+        update: { value: "false" },
+        create: {
+          key: "payment.omise.enabled",
+          value: "false",
+          category: "PAYMENT",
+          isSecret: false,
+        },
+      });
+      invalidateRuntimeConfigCache();
+
+      const res = await freshSession
+        .post(`/api/v1/bookings/${freshBooking.id}/omise-charge`)
+        .send({ token: "tokn_test_123" });
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toContain("Omise card payments are currently disabled by administrator");
     });
   });
 });

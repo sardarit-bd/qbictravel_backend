@@ -23,6 +23,7 @@ import { generateSecureToken, hashToken } from "./tokenUtils.js";
 import logger from "../../shared/logger/logger.js";
 import env from "../../config/env.js";
 import { emitPaymentEvent, emitBookingEvent } from "../event/eventEmitter.js";
+import { isOmiseGatewayEnabled } from "../setting/settingRuntimeConfig.js";
 
 const toCents = (value: unknown): number => Math.round(Number(value) * 100);
 
@@ -1429,6 +1430,11 @@ export const createCustomerOmiseCharge = async (
   customerId: string,
   input: CreateOmiseChargeInput,
 ): Promise<OmiseChargeResult> => {
+  const isEnabled = await isOmiseGatewayEnabled();
+  if (!isEnabled) {
+    throw new AppError("Omise card payments are currently disabled by administrator", 400);
+  }
+
   if (!activeOmiseClient.isConfigured()) {
     throw new AppError("Omise payment gateway is not configured on this server", 503);
   }
@@ -1589,6 +1595,11 @@ export const createPublicOmiseCharge = async (
   rawToken: string,
   input: { token: string; returnUrl?: string },
 ): Promise<OmiseChargeResult> => {
+  const isEnabled = await isOmiseGatewayEnabled();
+  if (!isEnabled) {
+    throw new AppError("Omise card payments are currently disabled by administrator", 400);
+  }
+
   if (!activeOmiseClient.isConfigured()) {
     throw new AppError("Omise payment gateway is not configured", 503);
   }

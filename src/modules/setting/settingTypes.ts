@@ -53,8 +53,26 @@ export interface PayPalPaymentConfigSummary {
   source: PaymentCredentialSource;
 }
 
+export interface OmisePaymentConfigSummary {
+  /**
+   * Effective availability. Never true when required credentials are missing.
+   * Reflects the DB preference (payment.omise.enabled) gated by `configured`.
+   */
+  enabled: boolean;
+  environment: "sandbox" | "live";
+  publicKey: string;
+  hasSecretKey: boolean;
+  maskedSecretKey: string;
+  hasWebhookSecret: boolean;
+  maskedWebhookSecret: string;
+  /** True when the required secret key is available (DB or env). */
+  configured: boolean;
+  /** Source of the primary (secret key) credential. */
+  source: PaymentCredentialSource;
+}
+
 export interface PaymentGatewaySummary {
-  activeProvider: "stripe" | "paypal";
+  activeProvider: "omise" | "stripe" | "paypal";
   providerName: string;
   enabled: boolean;
   environment: "sandbox" | "live";
@@ -62,6 +80,7 @@ export interface PaymentGatewaySummary {
   hasSecretKey: boolean;
   maskedSecretKey: string;
   merchantId: string;
+  omise: OmisePaymentConfigSummary;
   stripe: StripePaymentConfigSummary;
   paypal: PayPalPaymentConfigSummary;
   isCustomized: boolean;
@@ -132,7 +151,7 @@ export interface UpdateGeneralSettingsInput {
 }
 
 export interface UpdatePaymentSettingsInput {
-  activeProvider?: "stripe" | "paypal";
+  activeProvider?: "omise" | "stripe" | "paypal";
   providerName?: string;
   enabled?: boolean;
   environment?: "sandbox" | "live";
@@ -142,6 +161,13 @@ export interface UpdatePaymentSettingsInput {
   confirmLiveMode?: boolean;
 
   // Provider-specific configs
+  omise?: {
+    enabled?: boolean;
+    environment?: "sandbox" | "live";
+    publicKey?: string;
+    secretKey?: string;
+    webhookSecret?: string;
+  };
   stripe?: {
     enabled?: boolean;
     environment?: "sandbox" | "live";
