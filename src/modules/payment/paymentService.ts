@@ -874,8 +874,27 @@ export const verifyPayment = async (adminId: string, paymentId: string, input: V
   return mapPayment(updated);
 };
 
-export const recordPayment = async (adminId: string, paymentId: string, input: RecordPaymentInput) => {
+export const recordPayment = async (
+  actor: { id: string; role?: string } | string,
+  paymentId: string,
+  input: RecordPaymentInput,
+) => {
+  const actorId = typeof actor === "string" ? actor : actor.id;
+  const actorRole = typeof actor === "string" ? undefined : actor.role;
+
   const payment = await getPaymentOr404(paymentId);
+
+  // Authorization check for Staff:
+  // Staff can only record offline payments for bookings they are authorized to manage (created by them or assigned to them)
+  if (actorRole === "staff") {
+    const booking = payment.booking as any;
+    const isCreator = booking?.createdById === actorId;
+    const isAssigned = booking?.assignedStaffId === actorId;
+
+    if (!isCreator && !isAssigned) {
+      throw new AppError("You are not authorized to record payments for this booking", 403);
+    }
+  }
 
   if (payment.status !== "INITIATED") {
     throw new AppError("Only an initiated payment can be recorded. Use verify for submitted receipts.", 409);
@@ -899,7 +918,7 @@ export const recordPayment = async (adminId: string, paymentId: string, input: R
       amount: amountCents / 100,
       fromStatus: "INITIATED",
       toStatus: "VERIFIED",
-      adminId,
+      adminId: actorId,
       notes: input.notes,
       reference: input.reference,
       receivedAt,
