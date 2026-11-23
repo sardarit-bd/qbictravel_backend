@@ -30,3 +30,23 @@ export const assignBookingSchema = yup.object({
   staffId: yup.string().uuid("Invalid staff ID").nullable().defined("staffId is required (use null to unassign)"),
   notes: yup.string().trim().max(500, "Notes must be at most 500 characters").optional(),
 });
+
+export const operationsScheduleQuerySchema = yup.object({
+  startDate: yup
+    .string()
+    .matches(/^\d{4}-\d{2}-\d{2}$/, "startDate must be YYYY-MM-DD")
+    .optional(),
+  endDate: yup
+    .string()
+    .matches(/^\d{4}-\d{2}-\d{2}$/, "endDate must be YYYY-MM-DD")
+    .optional(),
+  serviceId: yup.string().uuid("Invalid serviceId").optional(),
+  bookingStatus: yup.string().trim().optional(),
+  fulfillmentStatus: yup
+    .string()
+    .oneOf([...FULFILLMENT_STATUSES, "ALL"], "Invalid fulfillment status")
+    .optional(),
+  search: yup.string().trim().optional(),
+  page: yup.number().integer().min(1).default(1),
+  limit: yup.number().integer().min(1).max(200).default(50),
+});

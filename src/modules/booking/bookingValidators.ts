@@ -219,3 +219,48 @@ export const guestAccessTokenParamSchema = yup.object({
     .required("Access token is required")
     .matches(/^[0-9a-fA-F]{64}$/, "Invalid token format"),
 });
+
+export const amendStaffBookingSchema = yup.object({
+  customerName: yup.string().trim().max(100, "Name must be 100 characters or less").optional(),
+  customerEmail: yup.string().trim().email("Invalid email address").optional(),
+  customerPhone: yup.string().trim().max(30, "Phone must be 30 characters or less").nullable().optional(),
+  travelDate: yup.string().trim().optional(),
+  adults: yup.number().integer("Adults must be an integer").min(1, "At least 1 adult is required").max(50).optional(),
+  children: yup.number().integer("Children must be an integer").min(0).max(50).optional(),
+  infants: yup.number().integer("Infants must be an integer").min(0).max(50).optional(),
+  pickupLocation: yup.string().trim().max(500, "Pickup location must be at most 500 characters").optional(),
+  departureTime: yup.string().trim().max(50).optional(),
+  notes: yup.string().trim().max(1000, "Notes must be at most 1000 characters").optional(),
+  discount: yup
+    .object({
+      discountType: yup.string().oneOf(["PERCENTAGE", "FIXED_AMOUNT"]).required("Discount type is required"),
+      discountValue: yup
+        .number()
+        .typeError("Discount value must be a number")
+        .positive("Discount value must be greater than zero")
+        .required("Discount value is required"),
+      reason: yup
+        .string()
+        .trim()
+        .min(1, "Reason is required when discount is provided")
+        .max(1000)
+        .required("Reason is required when discount is provided"),
+    })
+    .notRequired()
+    .default(undefined),
+});
+
+export const cancelStaffBookingSchema = yup.object({
+  reason: yup.string().trim().max(1000, "Cancellation reason must be at most 1000 characters").optional(),
+});
+
+export const listAllActivityHistoryQuerySchema = yup.object({
+  bookingId: yup.string().uuid("Invalid booking ID").optional(),
+  actorId: yup.string().uuid("Invalid actor ID").optional(),
+  action: yup.string().trim().optional(),
+  startDate: yup.string().trim().optional(),
+  endDate: yup.string().trim().optional(),
+  search: yup.string().trim().optional(),
+  page: yup.number().integer().min(1).optional(),
+  limit: yup.number().integer().min(1).max(100).optional(),
+});

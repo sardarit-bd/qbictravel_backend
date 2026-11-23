@@ -209,4 +209,42 @@ export const getPublicGuestBookingAccess = async (req: Request, res: Response, n
   }
 };
 
+export const amendStaffBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const booking = await bookingService.amendStaffBooking(
+      req.params.bookingId as string,
+      req.body,
+      req.user!.id,
+      req.user!.role
+    );
+    sendResponse(res, 200, true, "Booking amended successfully", booking);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const cancelStaffBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const booking = await bookingService.cancelStaffBooking(
+      req.params.bookingId as string,
+      req.user!.id,
+      req.user!.role,
+      req.body.reason
+    );
+    sendResponse(res, 200, true, "Booking cancelled successfully", booking);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAdminActivityHistory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await bookingService.getAdminActivityHistory(req.query as any);
+    sendResponse(res, 200, true, "Activity history retrieved successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 

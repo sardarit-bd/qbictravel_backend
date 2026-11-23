@@ -128,10 +128,11 @@ describe("Staff Booking Creation Unit Tests", () => {
         customerId,
         agentId: null,
         createdById: staffId,
+        assignedStaffId: staffId,
         source: "DIRECT",
         basePrice: 90,
         finalPrice: 90,
-        status: "PENDING",
+        status: "CONFIRMED",
         requiresApproval: false,
         historyAction: "BOOKING_CREATED_BY_STAFF",
         actorRole: "staff",
@@ -381,13 +382,13 @@ describe("Staff Booking Creation Unit Tests", () => {
   });
 
   describe("Unified Staff Booking with Optional Discount Request", () => {
-    it("creates booking in AWAITING_APPROVAL status with pending StaffDiscountRequest and audit event when discount is requested", async () => {
+    it("creates booking directly in CONFIRMED status with approved StaffDiscountRequest and audit event when discount is applied", async () => {
       vi.mocked(prisma.user.findUnique).mockResolvedValue(mockActiveCustomer as any);
       vi.mocked(prisma.service.findUnique).mockResolvedValue(mockService as any);
       vi.mocked(prisma.staffDiscountRequest.create).mockResolvedValue({
         id: "discount-req-1",
         bookingId: "booking-discount-1",
-        status: "PENDING",
+        status: "APPROVED",
       } as any);
       vi.mocked(prisma.staffDiscountAuditEvent.create).mockResolvedValue({
         id: "audit-req-1",
@@ -400,13 +401,14 @@ describe("Staff Booking Creation Unit Tests", () => {
         customerId,
         agentId: null,
         createdById: staffId,
+        assignedStaffId: staffId,
         source: "DIRECT",
         serviceId,
         currency: "USD",
         basePrice: 90,
-        finalPrice: 90,
-        status: "AWAITING_APPROVAL",
-        requiresApproval: true,
+        finalPrice: 81,
+        status: "CONFIRMED",
+        requiresApproval: false,
       });
 
       const result = await bookingService.createStaffBooking(
@@ -425,18 +427,19 @@ describe("Staff Booking Creation Unit Tests", () => {
       );
 
       expect(result.id).toBe("booking-discount-1");
-      expect(result.status).toBe("AWAITING_APPROVAL");
+      expect(result.status).toBe("CONFIRMED");
       expect(bookingRepository.createBooking).toHaveBeenCalledWith(
         expect.objectContaining({
-          status: "AWAITING_APPROVAL",
-          requiresApproval: true,
+          status: "CONFIRMED",
+          requiresApproval: false,
           basePrice: 90,
-          finalPrice: 90,
+          finalPrice: 81,
+          assignedStaffId: staffId,
         }),
         expect.anything()
       );
 
-      // Verify StaffDiscountRequest was created with PENDING
+      // Verify StaffDiscountRequest was created with APPROVED
       expect(prisma.staffDiscountRequest.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
@@ -446,30 +449,33 @@ describe("Staff Booking Creation Unit Tests", () => {
             originalPrice: 90,
             discountAmount: 9,
             proposedFinalPrice: 81,
-            status: "PENDING",
+            approvedDiscountAmount: 9,
+            approvedFinalPrice: 81,
+            status: "APPROVED",
             reason: "VIP Loyal Customer discount",
             requestedById: staffId,
           }),
         })
       );
 
-      // Verify audit event DISCOUNT_REQUESTED was logged
+      // Verify audit event DISCOUNT_APPROVED was logged
       expect(prisma.staffDiscountAuditEvent.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
             discountRequestId: "discount-req-1",
             bookingId: "booking-discount-1",
             actorId: staffId,
-            action: "DISCOUNT_REQUESTED",
-            newStatus: "PENDING",
+            action: "DISCOUNT_APPROVED",
+            newStatus: "APPROVED",
             originalPrice: 90,
             proposedFinalPrice: 81,
+            finalPrice: 81,
           }),
         })
       );
 
-      // Verify customer booking confirmation email was NOT dispatched
-      expect(notificationService.notifyBookingCreated).not.toHaveBeenCalled();
+      // Verify customer booking confirmation email WAS dispatched for confirmed booking
+      expect(notificationService.notifyBookingCreated).toHaveBeenCalledWith("booking-discount-1");
     });
 
     it("rejects booking creation if percentage discount exceeds 100%", async () => {

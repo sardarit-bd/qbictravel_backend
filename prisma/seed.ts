@@ -1,6 +1,7 @@
 import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { prisma } from "../src/lib/prisma.js";
+import { assignStaffDefaultPermissions } from "../src/modules/permission/permissionRepository.js";
 
 const name = process.env.ADMIN_NAME || "Platform Admin";
 const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
@@ -15,19 +16,33 @@ async function main() {
 
   if (existing) {
     console.log(`Admin seed skipped: ${email} already exists`);
-    return;
+  } else {
+    await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: await bcrypt.hash(password, 10),
+        role: "admin",
+      },
+    });
+    console.log(`Admin created: ${email}`);
   }
 
-  await prisma.user.create({
-    data: {
-      name,
-      email,
-      password: await bcrypt.hash(password, 10),
-      role: "admin",
-    },
+  // Ensure any existing staff accounts without permissions receive default operational permissions
+  const staffUsers = await prisma.user.findMany({
+    where: { role: "staff", deletedAt: null },
+    select: { id: true, email: true },
   });
 
-  console.log(`Admin created: ${email}`);
+  for (const staff of staffUsers) {
+    const existingPermsCount = await prisma.staffPermission.count({
+      where: { userId: staff.id },
+    });
+    if (existingPermsCount === 0) {
+      await assignStaffDefaultPermissions(staff.id);
+      console.log(`Default staff permissions assigned to: ${staff.email}`);
+    }
+  }
 }
 
 main()

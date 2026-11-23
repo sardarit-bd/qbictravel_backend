@@ -9,6 +9,7 @@ export const createBooking = async (
     status: string; 
     requiresApproval: boolean;
     createdById?: string | null;
+    assignedStaffId?: string | null;
     source?: "AGENT" | "ADMIN" | "CUSTOMER" | "DIRECT";
     historyAction?: string;
     actorRole?: string;
@@ -22,6 +23,7 @@ export const createBooking = async (
         customerId: input.customerId,
         agentId: input.agentId || null,
         createdById: input.createdById ?? (input.agentId || input.customerId),
+        assignedStaffId: input.assignedStaffId ?? null,
         source: input.source || (input.agentId ? "AGENT" : "CUSTOMER"),
         serviceId: input.serviceId,
         availabilityId: input.availabilityId || null,
@@ -892,3 +894,418 @@ export const findGuestBookingTokenByHash = async (tokenHash: string) => {
     },
   });
 };
+
+/**
+ * Atomically amend an existing booking.
+ * Handles capacity adjustment, customer information update, notes/pickup update,
+ * price recalculation, status adjustments, invoice voiding, and audit logging.
+ */
+export const amendBookingRecord = async (params: {
+  bookingId: string;
+  actorId: string;
+  actorRole: string;
+  previousBooking: any;
+  service: any;
+  customerUpdates?: { name?: string; email?: string; phone?: string | null };
+  travelDateObj?: Date;
+  newAvailabilityId?: string | null;
+  guestDelta?: number; // difference in guests on the same date
+  adults?: number;
+  children?: number;
+  infants?: number;
+  newBasePrice: number;
+  newFinalPrice: number;
+  formattedNotes?: string;
+  discountData?: {
+    discountType: "PERCENTAGE" | "FIXED_AMOUNT";
+    discountValue: number;
+    discountAmount: number;
+    reason: string;
+  };
+  changes: Record<string, any>;
+}) => {
+  return prisma.$transaction(async (tx) => {
+    const { bookingId, actorId, actorRole, previousBooking, customerUpdates, travelDateObj, newBasePrice, newFinalPrice, formattedNotes, changes } = params;
+
+    // 1. Update customer if details provided
+    if (customerUpdates && (customerUpdates.name || customerUpdates.email || customerUpdates.phone !== undefined)) {
+      await tx.user.update({
+        where: { id: previousBooking.customerId },
+        data: {
+          ...(customerUpdates.name ? { name: customerUpdates.name } : {}),
+          ...(customerUpdates.email ? { email: customerUpdates.email } : {}),
+          ...(customerUpdates.phone !== undefined ? { phone: customerUpdates.phone } : {}),
+        },
+      });
+
+      // Update GuestBookingSnapshot if guest booking
+      if (previousBooking.isGuest) {
+        await tx.guestBookingSnapshot.updateMany({
+          where: { bookingId },
+          data: {
+            ...(customerUpdates.name ? { guestName: customerUpdates.name } : {}),
+            ...(customerUpdates.email ? { guestEmail: customerUpdates.email } : {}),
+            ...(customerUpdates.phone !== undefined ? { guestPhone: customerUpdates.phone } : {}),
+          },
+        });
+      }
+    }
+
+    // 2. Adjust capacity
+    let finalAvailabilityId = previousBooking.availabilityId;
+
+    // If date changed: release old date capacity and reserve new date capacity
+    if (travelDateObj && previousBooking.availability?.date && travelDateObj.getTime() !== new Date(previousBooking.availability.date).getTime()) {
+      const oldGuests = Math.max(1, (previousBooking.adults ?? 1) + (previousBooking.children ?? 0) + (previousBooking.infants ?? 0));
+      const newGuests = Math.max(1, (params.adults ?? 1) + (params.children ?? 0) + (params.infants ?? 0));
+
+      // Release old capacity
+      if (previousBooking.availabilityId) {
+        await tx.$queryRaw`
+          UPDATE "ServiceAvailability"
+          SET "bookedCount" = GREATEST(0, "bookedCount" - ${oldGuests}),
+              "lastVerifiedAt" = NOW()
+          WHERE "id" = ${previousBooking.availabilityId}
+        `;
+      }
+
+      // Upsert availability for new date
+      await tx.serviceAvailability.upsert({
+        where: {
+          serviceId_date: {
+            serviceId: previousBooking.serviceId,
+            date: travelDateObj,
+          },
+        },
+        create: {
+          serviceId: previousBooking.serviceId,
+          date: travelDateObj,
+          isAvailable: true,
+          bookedCount: 0,
+          lastVerifiedAt: new Date(),
+        },
+        update: {},
+      });
+
+      // Atomically reserve new capacity
+      const updatedList = await tx.$queryRaw<Array<{ id: string }>>`
+        UPDATE "ServiceAvailability"
+        SET "bookedCount" = "bookedCount" + ${newGuests},
+            "lastVerifiedAt" = NOW()
+        WHERE "serviceId" = ${previousBooking.serviceId}
+          AND "date" = ${travelDateObj}::date
+          AND "isAvailable" = true
+          AND ("capacity" IS NULL OR "bookedCount" + ${newGuests} <= "capacity")
+        RETURNING "id"
+      `;
+
+      if (!updatedList || updatedList.length === 0) {
+        throw new Error("CAPACITY_EXCEEDED");
+      }
+
+      finalAvailabilityId = updatedList[0].id;
+    } else if (params.guestDelta && params.guestDelta !== 0 && previousBooking.availabilityId) {
+      // Same date, but guest count changed
+      if (params.guestDelta > 0) {
+        const delta = params.guestDelta;
+        const updatedList = await tx.$queryRaw<Array<{ id: string }>>`
+          UPDATE "ServiceAvailability"
+          SET "bookedCount" = "bookedCount" + ${delta},
+              "lastVerifiedAt" = NOW()
+          WHERE "id" = ${previousBooking.availabilityId}
+            AND "isAvailable" = true
+            AND ("capacity" IS NULL OR "bookedCount" + ${delta} <= "capacity")
+          RETURNING "id"
+        `;
+        if (!updatedList || updatedList.length === 0) {
+          throw new Error("CAPACITY_EXCEEDED");
+        }
+      } else {
+        const releaseCount = Math.abs(params.guestDelta);
+        await tx.$queryRaw`
+          UPDATE "ServiceAvailability"
+          SET "bookedCount" = GREATEST(0, "bookedCount" - ${releaseCount}),
+              "lastVerifiedAt" = NOW()
+          WHERE "id" = ${previousBooking.availabilityId}
+        `;
+      }
+    }
+
+    // 3. Check payment status changes if final price changed
+    let updatedPaymentStatus = previousBooking.paymentStatus;
+    const paidSumResult = await tx.payment.aggregate({
+      where: { bookingId, status: "VERIFIED" },
+      _sum: { amount: true },
+    });
+    const totalPaid = Number(paidSumResult._sum.amount ?? 0);
+
+    if (totalPaid > 0) {
+      if (totalPaid >= newFinalPrice) {
+        updatedPaymentStatus = "PAID";
+      } else {
+        updatedPaymentStatus = "PARTIALLY_PAID";
+      }
+    }
+
+    // 4. Update Booking
+    const updated = await tx.booking.update({
+      where: { id: bookingId },
+      data: {
+        basePrice: newBasePrice,
+        finalPrice: newFinalPrice,
+        paymentStatus: updatedPaymentStatus,
+        availabilityId: finalAvailabilityId,
+        ...(formattedNotes !== undefined ? { notes: formattedNotes } : {}),
+      },
+      include: {
+        customer: { select: { id: true, name: true, email: true, phone: true } },
+        service: { select: { id: true, name: true, type: true } },
+        availability: { select: { id: true, date: true } },
+        assignedStaff: { select: { id: true, name: true, email: true } },
+        createdBy: { select: { id: true, name: true, role: true } },
+        discountRequests: { orderBy: { createdAt: "desc" }, take: 1 },
+      },
+    });
+
+    // 5. If price changed, void old active tax invoices so new correct statements can be issued
+    if (newFinalPrice !== Number(previousBooking.finalPrice)) {
+      await tx.invoice.updateMany({
+        where: { bookingId, status: "ISSUED" },
+        data: { status: "VOID" },
+      });
+    }
+
+    // 6. Record discount if provided
+    if (params.discountData) {
+      const discountRecord = await tx.staffDiscountRequest.create({
+        data: {
+          bookingId,
+          discountType: params.discountData.discountType,
+          discountValue: params.discountData.discountValue,
+          originalPrice: newBasePrice,
+          discountAmount: params.discountData.discountAmount,
+          proposedFinalPrice: newFinalPrice,
+          approvedDiscountAmount: params.discountData.discountAmount,
+          approvedFinalPrice: newFinalPrice,
+          status: "APPROVED",
+          reason: params.discountData.reason.trim(),
+          requestedById: actorId,
+          reviewedById: actorId,
+          reviewedAt: new Date(),
+          adminNotes: "Direct amendment discount applied by staff",
+        },
+      });
+
+      await tx.staffDiscountAuditEvent.create({
+        data: {
+          discountRequestId: discountRecord.id,
+          bookingId,
+          actorId,
+          actorRole,
+          action: "DISCOUNT_APPROVED",
+          previousStatus: null,
+          newStatus: "APPROVED",
+          originalPrice: newBasePrice,
+          discountType: params.discountData.discountType,
+          discountValue: params.discountData.discountValue,
+          requestedDiscountAmount: params.discountData.discountAmount,
+          proposedFinalPrice: newFinalPrice,
+          approvedDiscountAmount: params.discountData.discountAmount,
+          finalPrice: newFinalPrice,
+          reason: params.discountData.reason.trim(),
+          metadata: {
+            source: "BOOKING_AMENDMENT",
+          },
+        },
+      });
+    }
+
+    // 7. Audit log in BookingHistory
+    await tx.bookingHistory.create({
+      data: {
+        bookingId,
+        actorId,
+        actorRole,
+        action: "BOOKING_AMENDED",
+        changes,
+      },
+    });
+
+    return updated;
+  });
+};
+
+/**
+ * Cancel a booking by staff/admin.
+ * Releases reserved seats, cancels commissions, updates status to CANCELLED,
+ * and logs to BookingHistory.
+ */
+export const cancelBookingRecord = async (params: {
+  bookingId: string;
+  actorId: string;
+  actorRole: string;
+  reason?: string;
+  previousBooking: any;
+}) => {
+  return prisma.$transaction(async (tx) => {
+    const { bookingId, actorId, actorRole, reason, previousBooking } = params;
+
+    // 1. Release capacity
+    if (previousBooking.availabilityId) {
+      const guests = Math.max(1, (previousBooking.adults ?? 1) + (previousBooking.children ?? 0) + (previousBooking.infants ?? 0));
+      await tx.$queryRaw`
+        UPDATE "ServiceAvailability"
+        SET "bookedCount" = GREATEST(0, "bookedCount" - ${guests}),
+            "lastVerifiedAt" = NOW()
+        WHERE "id" = ${previousBooking.availabilityId}
+      `;
+    }
+
+    // 2. Void open invoices
+    await tx.invoice.updateMany({
+      where: { bookingId, status: "ISSUED" },
+      data: { status: "VOID" },
+    });
+
+    // 3. Cancel open discount requests
+    await tx.staffDiscountRequest.updateMany({
+      where: { bookingId, status: "PENDING" },
+      data: { status: "CANCELLED", rejectionReason: reason ?? "Booking cancelled" },
+    });
+
+    // 4. Update booking status
+    const updated = await tx.booking.update({
+      where: { id: bookingId },
+      data: {
+        status: "CANCELLED",
+      },
+      include: {
+        customer: { select: { id: true, name: true, email: true, phone: true } },
+        service: { select: { id: true, name: true, type: true } },
+        availability: { select: { id: true, date: true } },
+      },
+    });
+
+    // 5. BookingHistory
+    await tx.bookingHistory.create({
+      data: {
+        bookingId,
+        actorId,
+        actorRole,
+        action: "BOOKING_CANCELLED",
+        changes: {
+          previousStatus: previousBooking.status,
+          newStatus: "CANCELLED",
+          reason: reason || null,
+        },
+      },
+    });
+
+    return updated;
+  });
+};
+
+/**
+ * Global Admin Activity History across all bookings, staff, and system events.
+ */
+export const listAllBookingActivities = async (params: {
+  bookingId?: string;
+  actorId?: string;
+  action?: string;
+  startDate?: Date;
+  endDate?: Date;
+  search?: string;
+  skip: number;
+  take: number;
+}) => {
+  const where: any = {};
+
+  if (params.bookingId) {
+    where.bookingId = params.bookingId;
+  }
+  if (params.actorId) {
+    where.actorId = params.actorId;
+  }
+  if (params.action) {
+    where.action = params.action;
+  }
+  if (params.startDate || params.endDate) {
+    where.createdAt = {};
+    if (params.startDate) where.createdAt.gte = params.startDate;
+    if (params.endDate) where.createdAt.lte = params.endDate;
+  }
+  if (params.search && params.search.trim()) {
+    const q = params.search.trim();
+    where.OR = [
+      { bookingId: { contains: q, mode: "insensitive" } },
+      { action: { contains: q, mode: "insensitive" } },
+      { booking: { customer: { name: { contains: q, mode: "insensitive" } } } },
+      { booking: { customer: { email: { contains: q, mode: "insensitive" } } } },
+      { booking: { service: { name: { contains: q, mode: "insensitive" } } } },
+    ];
+  }
+
+  const [rawItems, total] = await Promise.all([
+    prisma.bookingHistory.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: params.skip,
+      take: params.take,
+      include: {
+        booking: {
+          select: {
+            id: true,
+            status: true,
+            finalPrice: true,
+            currency: true,
+            customer: { select: { id: true, name: true, email: true } },
+            service: { select: { id: true, name: true } },
+          },
+        },
+      },
+    }),
+    prisma.bookingHistory.count({ where }),
+  ]);
+
+  // Resolve user actor names
+  const userIdsSet = new Set<string>();
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  for (const item of rawItems) {
+    if (item.actorId && uuidRegex.test(item.actorId)) {
+      userIdsSet.add(item.actorId);
+    }
+  }
+
+  const userIds = Array.from(userIdsSet);
+  const users = userIds.length > 0
+    ? await prisma.user.findMany({
+        where: { id: { in: userIds } },
+        select: { id: true, name: true, role: true, email: true },
+      })
+    : [];
+
+  const userMap = new Map<string, { id: string; name: string | null; role: string; email: string }>();
+  for (const u of users) {
+    userMap.set(u.id, u);
+  }
+
+  const items = rawItems.map((item) => {
+    const actorUser = userMap.get(item.actorId);
+    const isSystem = item.action.startsWith("STRIPE_") || item.action === "BOOKING_AUTO_CONFIRMED";
+    return {
+      id: item.id,
+      bookingId: item.bookingId,
+      actorId: item.actorId,
+      actorName: actorUser?.name || (isSystem ? "Automated System" : null),
+      actorEmail: actorUser?.email || null,
+      actorRole: item.actorRole,
+      action: item.action,
+      changes: item.changes,
+      createdAt: item.createdAt,
+      booking: item.booking,
+    };
+  });
+
+  return { items, total };
+};
+

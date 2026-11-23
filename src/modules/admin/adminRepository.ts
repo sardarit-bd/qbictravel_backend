@@ -1,5 +1,6 @@
 import { db } from "../../config/database/index.js";
 import type { PaginatedResult } from "../../types/common.js";
+import { assignStaffDefaultPermissions } from "../permission/permissionRepository.js";
 import type {
   AdminUser,
   CreateAccountInput,
@@ -177,6 +178,15 @@ export const createAccount = async (
     },
     select: adminUserSelect,
   });
+
+  // Automatically provision default operational booking permissions for newly invited staff
+  if (data.role === "staff") {
+    try {
+      await assignStaffDefaultPermissions(created.id);
+    } catch {
+      // Graceful fallback: do not break account creation if permissions seeding encounters an issue
+    }
+  }
 
   return formatAdminUser(created);
 };

@@ -41,6 +41,7 @@ const paymentInclude = {
       requiresApproval: true,
       currency: true,
       finalPrice: true,
+      assignedStaffId: true,
       agent: {
         select: {
           id: true,

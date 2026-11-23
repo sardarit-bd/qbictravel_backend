@@ -4,6 +4,9 @@ import {
   SUPPORTED_PERMISSIONS,
   SUPPORTED_PERMISSION_IDS_SET,
   PERMISSION_MODULES,
+  MANDATORY_STAFF_PERMISSIONS,
+  MANDATORY_STAFF_PERMISSIONS_SET,
+  DEFAULT_STAFF_PERMISSIONS,
   type PermissionDefinition,
 } from "./permissionConstants.js";
 import * as permissionRepo from "./permissionRepository.js";
@@ -14,7 +17,8 @@ import type {
 } from "./permissionTypes.js";
 
 /**
- * Retrieve the full categorized permissions catalog
+ * Retrieve the full categorized permissions catalog.
+ * Excludes mandatory system-level staff permissions so Admin only sees and manages optional permissions.
  */
 export const getPermissionCatalog = async (): Promise<PermissionCatalogResponse> => {
   // Ensure the permission catalog is seeded in the database
@@ -22,11 +26,16 @@ export const getPermissionCatalog = async (): Promise<PermissionCatalogResponse>
 
   const permissions = await permissionRepo.listAllPermissions();
 
+  // Filter out mandatory system permissions from editable catalog
+  const optionalPermissions = permissions.filter(
+    (p) => !MANDATORY_STAFF_PERMISSIONS_SET.has(p.id)
+  );
+
   // Group by module according to PERMISSION_MODULES sequence
   const groupedModules: { module: string; permissions: PermissionDefinition[] }[] = [];
 
   for (const mod of PERMISSION_MODULES) {
-    const modPermissions = permissions.filter((p) => p.module === mod);
+    const modPermissions = optionalPermissions.filter((p) => p.module === mod);
     if (modPermissions.length > 0) {
       groupedModules.push({
         module: mod,
@@ -37,12 +46,16 @@ export const getPermissionCatalog = async (): Promise<PermissionCatalogResponse>
 
   return {
     modules: groupedModules,
-    totalPermissions: permissions.length,
+    totalPermissions: optionalPermissions.length,
   };
 };
 
 /**
  * Retrieve assigned permissions for a staff member
+ */
+/**
+ * Retrieve assigned permissions for a staff member.
+ * Filters out system-level mandatory permissions so Admin only sees and manages optional permissions.
  */
 export const getStaffPermissions = async (
   staffId: string
@@ -65,16 +78,23 @@ export const getStaffPermissions = async (
 
   const permissions = await permissionRepo.getStaffAssignedPermissions(staffId);
 
+  // Return only optional permissions for Admin management
+  const optionalPermissions = permissions.filter(
+    (pId) => !MANDATORY_STAFF_PERMISSIONS_SET.has(pId)
+  );
+
   return {
     staffId: user.id,
     staffName: user.name,
     staffEmail: user.email,
-    permissions,
+    permissions: optionalPermissions,
   };
 };
 
 /**
- * Replace permissions assigned to a staff member (Admin-only)
+ * Replace permissions assigned to a staff member (Admin-only).
+ * Filters out mandatory permissions from input, merges mandatory permissions at repository level,
+ * and returns only the granted optional permissions.
  */
 export const updateStaffPermissions = async (
   actorId: string,
@@ -112,23 +132,29 @@ export const updateStaffPermissions = async (
   // Deduplicate IDs safely
   const uniqueIds = Array.from(new Set(permissionIds));
 
-  // Atomic update in PostgreSQL
+  // Atomic update in PostgreSQL (repository ensures mandatory permissions are retained)
   const updatedPermissions = await permissionRepo.replaceStaffPermissions(
     staffId,
     uniqueIds,
     actorId
   );
 
+  // Return only optional permissions to the Admin management API
+  const optionalPermissions = updatedPermissions.filter(
+    (pId) => !MANDATORY_STAFF_PERMISSIONS_SET.has(pId)
+  );
+
   return {
     staffId: user.id,
     staffName: user.name,
     staffEmail: user.email,
-    permissions: updatedPermissions,
+    permissions: optionalPermissions,
   };
 };
 
 /**
- * Retrieve effective permissions for the authenticated user
+ * Retrieve effective permissions for the authenticated user.
+ * Always includes mandatory permissions for staff.
  */
 export const getEffectivePermissions = async (
   userId: string,

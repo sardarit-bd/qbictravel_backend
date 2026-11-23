@@ -7,6 +7,7 @@ type Client = Awaited<ReturnType<typeof loginAgent>>;
 
 let adminId: string;
 let agentId: string;
+let staffId: string;
 let customerId: string;
 let otherCustomerId: string;
 let serviceId: string;
@@ -19,6 +20,8 @@ let otherCustomerClient: Client;
 type BookingOverrides = Partial<{
   customerId: string;
   agentId: string | null;
+  createdById: string | null;
+  assignedStaffId: string | null;
   status: "PENDING" | "CONFIRMED" | "AWAITING_APPROVAL" | "CANCELLED";
   paymentStatus: "UNPAID" | "PAID";
   requiresApproval: boolean;
@@ -91,6 +94,7 @@ describe("Payment flow (real database)", () => {
 
     adminId = admin.id;
     agentId = agent.id;
+    staffId = staff.id;
     customerId = customer.id;
     otherCustomerId = otherCustomer.id;
     serviceId = service.id;
@@ -133,7 +137,8 @@ describe("Payment flow (real database)", () => {
       ["agent cannot use the admin list", () => agentClient, "get", "/api/v1/admin/payments"],
       ["staff cannot verify", () => staffClient, "post", `/api/v1/admin/payments/${MISSING_ID}/verify`],
       ["customer cannot verify", () => customerClient, "post", `/api/v1/admin/payments/${MISSING_ID}/verify`],
-      ["staff cannot record", () => staffClient, "post", `/api/v1/admin/payments/${MISSING_ID}/record`],
+      ["customer cannot record", () => customerClient, "post", `/api/v1/admin/payments/${MISSING_ID}/record`],
+      ["agent cannot record", () => agentClient, "post", `/api/v1/admin/payments/${MISSING_ID}/record`],
     ] as const)("returns 403: %s", async (_label, pick, method, path) => {
       const req = (pick() as any)[method](path);
       const res = await (method === "get" ? req : req.send({ method: "CASH", decision: "VERIFIED" }));
@@ -475,6 +480,34 @@ describe("Payment flow (real database)", () => {
       expect(res.status).toBe(409);
       expect((await reloadPayment(initiated.id)).status).toBe("INITIATED");
       expect((await reloadBooking(second.id)).paymentStatus).toBe("UNPAID");
+    });
+
+    it("allows authorized staff (creator or assigned) to record payment", async () => {
+      const createdBooking = await createBooking({ createdById: staffId });
+      const createdPayment = await createPaymentRow(createdBooking.id, { method: "CASH", status: "INITIATED" });
+
+      const resCreator = await staffClient
+        .post(`/api/v1/admin/payments/${createdPayment.id}/record`)
+        .send({ reference: "RCPT-STAFF-1" });
+      expect(resCreator.status).toBe(200);
+
+      const assignedBooking = await createBooking({ assignedStaffId: staffId });
+      const assignedPayment = await createPaymentRow(assignedBooking.id, { method: "CASH", status: "INITIATED" });
+
+      const resAssigned = await staffClient
+        .post(`/api/v1/admin/payments/${assignedPayment.id}/record`)
+        .send({ reference: "RCPT-STAFF-2" });
+      expect(resAssigned.status).toBe(200);
+    });
+
+    it("returns 403 when staff attempts to record payment for an unassigned booking created by someone else", async () => {
+      const otherBooking = await createBooking({ createdById: adminId, assignedStaffId: null });
+      const otherPayment = await createPaymentRow(otherBooking.id, { method: "CASH", status: "INITIATED" });
+
+      const res = await staffClient
+        .post(`/api/v1/admin/payments/${otherPayment.id}/record`)
+        .send({ reference: "RCPT-UNAUTH" });
+      expect(res.status).toBe(403);
     });
   });
 

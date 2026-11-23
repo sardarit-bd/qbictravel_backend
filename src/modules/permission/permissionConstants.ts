@@ -211,3 +211,26 @@ export const ALL_PERMISSION_IDS: readonly PermissionId[] = SUPPORTED_PERMISSIONS
 );
 
 export const SUPPORTED_PERMISSION_IDS_SET = new Set<string>(ALL_PERMISSION_IDS);
+
+/**
+ * Mandatory system-level Staff permissions.
+ * These permissions are ALWAYS available to every Staff account and cannot be removed
+ * or revoked by Admin in the UI or API.
+ */
+export const MANDATORY_STAFF_PERMISSIONS: readonly PermissionId[] = [
+  "bookings.view",
+  "bookings.create",
+  "bookings.update_status",
+  "tours.view",
+  "payments.view",
+  "payments.record",
+] as const;
+
+export const MANDATORY_STAFF_PERMISSIONS_SET = new Set<string>(MANDATORY_STAFF_PERMISSIONS);
+
+/**
+ * Backward-compatibility alias for MANDATORY_STAFF_PERMISSIONS
+ */
+export const DEFAULT_STAFF_PERMISSIONS = MANDATORY_STAFF_PERMISSIONS;
+
+

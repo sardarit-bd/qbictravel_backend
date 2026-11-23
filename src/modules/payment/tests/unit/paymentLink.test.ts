@@ -277,7 +277,7 @@ describe("PaymentLink Unit & Security Tests", () => {
         paymentStatus: "UNPAID",
         currency: "THB",
         finalPrice: 12578 as any,
-        discountRequests: [{ id: "dr-pending" }],
+        discountRequests: [{ id: "dr-pending", status: "PENDING" }],
       } as any);
 
       await expect(

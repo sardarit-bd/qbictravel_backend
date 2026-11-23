@@ -146,7 +146,7 @@ export const verifyPayment = async (req: Request, res: Response, next: NextFunct
 export const recordPayment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const payment = await paymentService.recordPayment(
-      req.user!.id,
+      req.user!.role === "admin" ? req.user!.id : req.user!,
       req.params.paymentId as string,
       req.body,
     );

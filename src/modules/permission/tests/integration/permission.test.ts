@@ -6,7 +6,7 @@ import {
   prisma,
   resetDatabase,
 } from "../../../../test/helpers.js";
-import { ALL_PERMISSION_IDS } from "../../permissionConstants.js";
+import { ALL_PERMISSION_IDS, MANDATORY_STAFF_PERMISSIONS } from "../../permissionConstants.js";
 
 const PERMISSIONS_BASE = "/api/v1/admin/permissions";
 const STAFF_PERM_BASE = "/api/v1/admin/staff";
@@ -66,7 +66,10 @@ describe("Permission Catalog API (GET /api/v1/admin/permissions)", () => {
     const res = await adminSession.get(PERMISSIONS_BASE);
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data.totalPermissions).toBe(ALL_PERMISSION_IDS.length);
+    // The editable catalog excludes the 6 mandatory staff permissions
+    expect(res.body.data.totalPermissions).toBe(
+      ALL_PERMISSION_IDS.length - MANDATORY_STAFF_PERMISSIONS.length
+    );
     expect(Array.isArray(res.body.data.modules)).toBe(true);
 
     const moduleNames = res.body.data.modules.map((m: any) => m.module);
@@ -114,35 +117,35 @@ describe("Staff Permissions Management API", () => {
   });
 
   it("allows admin to assign, retrieve, and update staff permissions", async () => {
-    // 1. Initial assigned permissions should be empty
+    // 1. Initial assigned optional permissions should be empty
     const initRes = await adminSession.get(
       `${STAFF_PERM_BASE}/${staff.id}/permissions`
     );
     expect(initRes.status).toBe(200);
     expect(initRes.body.data.permissions).toEqual([]);
 
-    // 2. Assign users.view and tours.view
+    // 2. Assign optional permissions: users.view and reports.view
     const assignRes = await adminSession
       .put(`${STAFF_PERM_BASE}/${staff.id}/permissions`)
-      .send({ permissions: ["users.view", "tours.view"] });
+      .send({ permissions: ["users.view", "reports.view"] });
     expect(assignRes.status).toBe(200);
     expect(assignRes.body.data.permissions).toHaveLength(2);
     expect(assignRes.body.data.permissions).toContain("users.view");
-    expect(assignRes.body.data.permissions).toContain("tours.view");
+    expect(assignRes.body.data.permissions).toContain("reports.view");
 
-    // 3. Verify retrieval reflects the new assignments
+    // 3. Verify retrieval reflects the new optional assignments
     const getRes = await adminSession.get(
       `${STAFF_PERM_BASE}/${staff.id}/permissions`
     );
     expect(getRes.status).toBe(200);
-    expect(getRes.body.data.permissions).toEqual(["tours.view", "users.view"]);
+    expect(getRes.body.data.permissions).toEqual(["reports.view", "users.view"]);
 
-    // 4. Update (replace) with only tours.view
+    // 4. Update (replace) with only reports.view
     const updateRes = await adminSession
       .put(`${STAFF_PERM_BASE}/${staff.id}/permissions`)
-      .send({ permissions: ["tours.view"] });
+      .send({ permissions: ["reports.view"] });
     expect(updateRes.status).toBe(200);
-    expect(updateRes.body.data.permissions).toEqual(["tours.view"]);
+    expect(updateRes.body.data.permissions).toEqual(["reports.view"]);
   });
 });
 
@@ -162,16 +165,20 @@ describe("Dynamic Authorization & Enforcement", () => {
     res = await staffSession.get("/api/v1/admin/users");
     expect(res.status).toBe(200);
 
-    // Staff still cannot access /admin/services (tours.view required)
-    const toursRes = await staffSession.get("/api/v1/admin/services");
-    expect(toursRes.status).toBe(403);
+    // Staff has mandatory tours.view, so /admin/services is accessible
+    const servicesRes = await staffSession.get("/api/v1/admin/services");
+    expect(servicesRes.status).toBe(200);
+
+    // Staff cannot access /admin/reports/bookings without optional reports.view
+    const reportsRes = await staffSession.get("/api/v1/admin/reports/bookings");
+    expect(reportsRes.status).toBe(403);
 
     // Admin revokes users.view
     await adminSession
       .put(`${STAFF_PERM_BASE}/${staff.id}/permissions`)
       .send({ permissions: [] });
 
-    // Staff is immediately blocked again with 403
+    // Staff is immediately blocked again with 403 from /admin/users
     res = await staffSession.get("/api/v1/admin/users");
     expect(res.status).toBe(403);
   });
@@ -214,22 +221,32 @@ describe("Effective Permissions (GET /api/v1/auth/me/permissions)", () => {
     expect(res.body.data.permissions).toEqual(ALL_PERMISSION_IDS);
   });
 
-  it("returns explicitly assigned permissions and isAdmin: false for staff", async () => {
-    // Before assignment
+  it("returns mandatory and explicitly assigned permissions and isAdmin: false for staff", async () => {
+    // Before optional assignment: staff has the 6 mandatory permissions
     let res = await staffSession.get(AUTH_PERM_BASE);
     expect(res.status).toBe(200);
     expect(res.body.data.isAdmin).toBe(false);
-    expect(res.body.data.permissions).toEqual([]);
+    expect(res.body.data.permissions).toEqual(
+      expect.arrayContaining([...MANDATORY_STAFF_PERMISSIONS])
+    );
+    expect(res.body.data.permissions).toHaveLength(
+      MANDATORY_STAFF_PERMISSIONS.length
+    );
 
-    // Assign permissions
+    // Assign optional permissions (e.g. reports.view)
     await adminSession
       .put(`${STAFF_PERM_BASE}/${staff.id}/permissions`)
-      .send({ permissions: ["payments.view", "payments.verify"] });
+      .send({ permissions: ["reports.view"] });
 
     res = await staffSession.get(AUTH_PERM_BASE);
     expect(res.status).toBe(200);
     expect(res.body.data.isAdmin).toBe(false);
-    expect(res.body.data.permissions).toEqual(["payments.verify", "payments.view"]);
+    expect(res.body.data.permissions).toEqual(
+      expect.arrayContaining([...MANDATORY_STAFF_PERMISSIONS, "reports.view"])
+    );
+    expect(res.body.data.permissions).toHaveLength(
+      MANDATORY_STAFF_PERMISSIONS.length + 1
+    );
   });
 
   it("returns empty permissions and isAdmin: false for customer and agent", async () => {

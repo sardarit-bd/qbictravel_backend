@@ -197,4 +197,49 @@ describe("paymentService.recordPayment", () => {
     repo.transitionPayment.mockRejectedValue(Object.assign(new Error("dup"), { code: "P2002" }));
     await expectAppError(paymentService.recordPayment(ADMIN_ID, PAYMENT_ID, { reference: "RCPT-9" }), 409);
   });
+
+  it("allows staff to record payment when booking is created by them", async () => {
+    repo.findPaymentById.mockResolvedValue(
+      makePayment({
+        status: "INITIATED",
+        booking: { id: BOOKING_ID, finalPrice: "450.00", paymentStatus: "UNPAID", createdById: "staff-1", assignedStaffId: null },
+      }),
+    );
+    await paymentService.recordPayment({ id: "staff-1", role: "staff" }, PAYMENT_ID, { reference: "RCPT-STAFF" });
+    expect(repo.transitionPayment).toHaveBeenCalledWith(
+      expect.objectContaining({
+        adminId: "staff-1",
+        fromStatus: "INITIATED",
+        toStatus: "VERIFIED",
+      }),
+    );
+  });
+
+  it("allows staff to record payment when booking is assigned to them", async () => {
+    repo.findPaymentById.mockResolvedValue(
+      makePayment({
+        status: "INITIATED",
+        booking: { id: BOOKING_ID, finalPrice: "450.00", paymentStatus: "UNPAID", createdById: "admin-1", assignedStaffId: "staff-1" },
+      }),
+    );
+    await paymentService.recordPayment({ id: "staff-1", role: "staff" }, PAYMENT_ID, { reference: "RCPT-STAFF" });
+    expect(repo.transitionPayment).toHaveBeenCalledWith(
+      expect.objectContaining({
+        adminId: "staff-1",
+        fromStatus: "INITIATED",
+        toStatus: "VERIFIED",
+      }),
+    );
+  });
+
+  it("returns 403 when staff attempts to record payment for an unassigned booking created by another user", async () => {
+    repo.findPaymentById.mockResolvedValue(
+      makePayment({
+        status: "INITIATED",
+        booking: { id: BOOKING_ID, finalPrice: "450.00", paymentStatus: "UNPAID", createdById: "other-staff", assignedStaffId: null },
+      }),
+    );
+    await expectAppError(paymentService.recordPayment({ id: "staff-1", role: "staff" }, PAYMENT_ID, {}), 403);
+    expect(repo.transitionPayment).not.toHaveBeenCalled();
+  });
 });
