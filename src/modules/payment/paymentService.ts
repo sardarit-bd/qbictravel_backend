@@ -1839,9 +1839,20 @@ export const verifyOmiseChargeReturn = async (
 export const handleOmiseWebhook = async (
   rawBody: Buffer | string,
   signatureHeader: string,
-  webhookSecret = process.env.OMISE_WEBHOOK_SECRET || "",
+  timestampHeader?: string,
+  webhookSecretOverride?: string,
 ): Promise<WebhookProcessingResult> => {
-  const isValid = activeOmiseClient.verifyWebhookSignature(rawBody, signatureHeader, webhookSecret);
+  const webhookSecret =
+    webhookSecretOverride ||
+    activeOmiseClient.getWebhookSecret() ||
+    process.env.OMISE_WEBHOOK_SECRET ||
+    "";
+  const isValid = activeOmiseClient.verifyWebhookSignature(
+    rawBody,
+    signatureHeader,
+    timestampHeader,
+    webhookSecret,
+  );
   if (!isValid) {
     logger.warn("Invalid Omise webhook signature");
     throw new AppError("Invalid Omise webhook signature", 400);

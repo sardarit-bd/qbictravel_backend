@@ -120,6 +120,10 @@ export class OmiseClient {
     this.timeoutMs = config?.timeoutMs || 20000;
   }
 
+  public getWebhookSecret(): string {
+    return this.webhookSecret;
+  }
+
   public isConfigured(): boolean {
     return Boolean(this.secretKey);
   }
@@ -291,37 +295,90 @@ export class OmiseClient {
   }
 
   /**
-   * Cryptographically verifies an Omise webhook signature.
-   * Omise sends `Omise-Signature` (HMAC-SHA256 hex) and optionally timestamp headers.
+   * Cryptographically verifies an Omise webhook signature against official Omise documentation.
+   *
+   * Official Specification (https://docs.omise.co/api-webhooks):
+   * 1. Headers: `Omise-Signature` and `Omise-Signature-Timestamp`
+   * 2. Signed Payload: `${timestamp}.${rawBody}`
+   * 3. Secret: Base64-decoded into raw bytes before HMAC-SHA256 calculation.
+   *    (Fallback gracefully to raw string secret if not valid base64).
+   * 4. Multi-secret support: comma-separated secrets for key rotation.
+   * 5. Multi-signature support: comma-separated signatures during 24-hr grace period.
+   * 6. Timestamp tolerance: default 300 seconds (5 minutes) to protect against replay attacks.
    */
   public verifyWebhookSignature(
     rawBody: Buffer | string,
     signatureHeader: string,
+    timestampHeader?: string,
     secretOverride?: string,
+    toleranceSeconds = 300,
   ): boolean {
-    const secret = secretOverride || this.webhookSecret;
-    if (!signatureHeader || !secret) {
+    const rawSecret = secretOverride || this.webhookSecret;
+    if (!signatureHeader || !rawSecret) {
       return false;
     }
 
-    const payloadString = Buffer.isBuffer(rawBody) ? rawBody.toString("utf8") : rawBody;
-    const expectedSignature = crypto
-      .createHmac("sha256", secret)
-      .update(payloadString, "utf8")
-      .digest("hex");
+    const bodyString = Buffer.isBuffer(rawBody) ? rawBody.toString("utf8") : rawBody;
 
-    // Split on comma in case of rolled webhook secrets during 24-hr grace period
-    const candidateSignatures = signatureHeader.split(",").map((s) => s.trim());
-
-    for (const sig of candidateSignatures) {
-      try {
-        const sigBuf = Buffer.from(sig, "hex");
-        const expBuf = Buffer.from(expectedSignature, "hex");
-        if (sigBuf.length === expBuf.length && crypto.timingSafeEqual(sigBuf, expBuf)) {
-          return true;
+    // Verify timestamp freshness if timestamp is provided
+    if (timestampHeader) {
+      const timestampNum = parseInt(timestampHeader.trim(), 10);
+      if (isNaN(timestampNum)) {
+        return false;
+      }
+      if (toleranceSeconds > 0) {
+        const currentUnix = Math.floor(Date.now() / 1000);
+        // Allow up to toleranceSeconds skew in past or future
+        if (Math.abs(currentUnix - timestampNum) > toleranceSeconds) {
+          return false;
         }
-      } catch {
-        // continue
+      }
+    }
+
+    // Signed payload construction according to official spec:
+    // When timestamp is present: `<timestamp>.<raw_body>`
+    // If timestamp is absent (legacy/test fallback): `<raw_body>`
+    const signedPayload = timestampHeader ? `${timestampHeader.trim()}.${bodyString}` : bodyString;
+
+    // Support comma-separated secrets (for dual-key rotation on the recipient side)
+    const secretCandidates = rawSecret.split(",").map((s) => s.trim()).filter(Boolean);
+
+    // Split on comma for multi-signature header (e.g. Omise sending signatures during key rotation)
+    const candidateSignatures = signatureHeader.split(",").map((s) => s.trim()).filter(Boolean);
+
+    for (const secretStr of secretCandidates) {
+      // Decode Base64-encoded webhook secret into raw bytes as specified in docs
+      let secretKeyBuf: Buffer;
+      const base64Regex = /^[A-Za-z0-9+/]+={0,2}$/;
+      if (base64Regex.test(secretStr) && secretStr.length % 4 === 0) {
+        try {
+          secretKeyBuf = Buffer.from(secretStr, "base64");
+          // If decoded buffer is empty, fall back to utf-8 buffer
+          if (secretKeyBuf.length === 0) {
+            secretKeyBuf = Buffer.from(secretStr, "utf8");
+          }
+        } catch {
+          secretKeyBuf = Buffer.from(secretStr, "utf8");
+        }
+      } else {
+        secretKeyBuf = Buffer.from(secretStr, "utf8");
+      }
+
+      const expectedSignatureHex = crypto
+        .createHmac("sha256", secretKeyBuf)
+        .update(signedPayload, "utf8")
+        .digest("hex");
+
+      for (const sig of candidateSignatures) {
+        try {
+          const sigBuf = Buffer.from(sig, "hex");
+          const expBuf = Buffer.from(expectedSignatureHex, "hex");
+          if (sigBuf.length === expBuf.length && crypto.timingSafeEqual(sigBuf, expBuf)) {
+            return true;
+          }
+        } catch {
+          // continue
+        }
       }
     }
 

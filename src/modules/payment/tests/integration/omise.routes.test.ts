@@ -343,20 +343,45 @@ describe("Phase 3: Omise API Routes & Controllers Integration", () => {
         data: { id: "chrg_test_wh_api" },
       });
 
+      const timestamp = Math.floor(Date.now() / 1000).toString();
+      const signedPayload = `${timestamp}.${payload}`;
+      const rawSecretBuf = Buffer.from("whsec_test_phase3", "utf8");
+
       const signature = crypto
-        .createHmac("sha256", "whsec_test_phase3")
-        .update(payload, "utf8")
+        .createHmac("sha256", rawSecretBuf)
+        .update(signedPayload, "utf8")
         .digest("hex");
 
       const res = await api()
         .post("/api/v1/webhooks/omise")
         .set("Content-Type", "application/json")
         .set("omise-signature", signature)
+        .set("omise-signature-timestamp", timestamp)
         .send(payload);
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.status).toBe("PROCESSED");
+    });
+
+    it("rejects webhook route when signature is invalid and returns 400", async () => {
+      const payload = JSON.stringify({
+        object: "event",
+        id: "evnt_test_route_wh_bad",
+        key: "charge.complete",
+        data: { id: "chrg_test_bad" },
+      });
+
+      const res = await api()
+        .post("/api/v1/webhooks/omise")
+        .set("Content-Type", "application/json")
+        .set("omise-signature", "invalid_signature_hex")
+        .set("omise-signature-timestamp", Math.floor(Date.now() / 1000).toString())
+        .send(payload);
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toContain("Invalid Omise webhook signature");
     });
   });
 });

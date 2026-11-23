@@ -363,29 +363,54 @@ describe("OmiseClient Unit Tests", () => {
     }
   });
 
-  it("verifies webhook signature correctly using HMAC-SHA256", () => {
+  it("verifies webhook signature correctly using HMAC-SHA256 and Base64 secret", () => {
+    // 32-byte secret encoded in base64
+    const base64Secret = Buffer.from("super_secure_32_byte_webhook_sec").toString("base64");
+    const rawSecretBytes = Buffer.from(base64Secret, "base64");
+
     const payload = JSON.stringify({
       object: "event",
       id: "evnt_test_123",
       data: { id: "chrg_test_1" },
     });
+    const timestamp = Math.floor(Date.now() / 1000).toString();
+    const signedPayload = `${timestamp}.${payload}`;
 
-    const signature = crypto
-      .createHmac("sha256", mockWebhookSecret)
-      .update(payload, "utf8")
+    const validSignature = crypto
+      .createHmac("sha256", rawSecretBytes)
+      .update(signedPayload, "utf8")
       .digest("hex");
 
-    expect(client.verifyWebhookSignature(payload, signature)).toBe(true);
-    expect(client.verifyWebhookSignature(Buffer.from(payload), signature)).toBe(true);
+    // Standard verification with timestamp and base64 secret
+    expect(client.verifyWebhookSignature(payload, validSignature, timestamp, base64Secret)).toBe(true);
+    expect(client.verifyWebhookSignature(Buffer.from(payload), validSignature, timestamp, base64Secret)).toBe(true);
 
-    // Tampered payload
-    expect(client.verifyWebhookSignature(payload + "tamper", signature)).toBe(false);
+    // Tampered payload fails
+    expect(client.verifyWebhookSignature(payload + "tampered", validSignature, timestamp, base64Secret)).toBe(false);
 
-    // Wrong signature
-    expect(client.verifyWebhookSignature(payload, "invalid_signature")).toBe(false);
+    // Tampered timestamp fails
+    expect(client.verifyWebhookSignature(payload, validSignature, "1000000000", base64Secret)).toBe(false);
 
-    // Comma-separated rotated signatures
-    const multiSig = `fake_sig_123, ${signature}`;
-    expect(client.verifyWebhookSignature(payload, multiSig)).toBe(true);
+    // Replay attack with expired timestamp (older than tolerance 300s) fails
+    const expiredTimestamp = (Math.floor(Date.now() / 1000) - 600).toString();
+    const expiredSignedPayload = `${expiredTimestamp}.${payload}`;
+    const expiredSignature = crypto
+      .createHmac("sha256", rawSecretBytes)
+      .update(expiredSignedPayload, "utf8")
+      .digest("hex");
+    expect(client.verifyWebhookSignature(payload, expiredSignature, expiredTimestamp, base64Secret, 300)).toBe(false);
+
+    // Comma-separated rotated signatures (e.g. Omise sending 2 signatures during rotation)
+    const multiSig = `invalid_sig_abc, ${validSignature}`;
+    expect(client.verifyWebhookSignature(payload, multiSig, timestamp, base64Secret)).toBe(true);
+
+    // Comma-separated secret rotation (recipient holding old and new secrets)
+    const oldSecret = Buffer.from("old_webhook_secret_key_12345678").toString("base64");
+    const dualSecrets = `${oldSecret}, ${base64Secret}`;
+    expect(client.verifyWebhookSignature(payload, validSignature, timestamp, dualSecrets)).toBe(true);
+
+    // Missing signature or missing secret returns false
+    expect(client.verifyWebhookSignature(payload, "", timestamp, base64Secret)).toBe(false);
+    expect(client.verifyWebhookSignature(payload, validSignature, timestamp, "")).toBe(false);
   });
 });

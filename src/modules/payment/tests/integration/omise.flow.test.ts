@@ -297,13 +297,15 @@ describe("Phase 2: Omise Payment Lifecycle & Settlement", () => {
       },
     });
 
+    const timestamp = Math.floor(Date.now() / 1000).toString();
+    const signedPayload = `${timestamp}.${payload}`;
     const signature = crypto
-      .createHmac("sha256", webhookSecret)
-      .update(payload, "utf8")
+      .createHmac("sha256", Buffer.from(webhookSecret, "utf8"))
+      .update(signedPayload, "utf8")
       .digest("hex");
 
     // 3. Process webhook
-    const res = await paymentService.handleOmiseWebhook(Buffer.from(payload), signature, webhookSecret);
+    const res = await paymentService.handleOmiseWebhook(Buffer.from(payload), signature, timestamp, webhookSecret);
     expect(res.status).toBe("PROCESSED");
 
     // Verify booking is confirmed
@@ -312,7 +314,7 @@ describe("Phase 2: Omise Payment Lifecycle & Settlement", () => {
     expect(finalBooking?.status).toBe("CONFIRMED");
 
     // 4. Repeated webhook delivery is idempotent
-    const duplicateRes = await paymentService.handleOmiseWebhook(Buffer.from(payload), signature, webhookSecret);
+    const duplicateRes = await paymentService.handleOmiseWebhook(Buffer.from(payload), signature, timestamp, webhookSecret);
     expect(duplicateRes.status).toBe("PROCESSED");
   });
 
