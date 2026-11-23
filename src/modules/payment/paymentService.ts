@@ -16,6 +16,7 @@ import * as notificationService from "../notification/notificationService.js";
 import { toStripeAmount, fromStripeAmount } from "../../shared/utils/currencyUtils.js";
 import { StripeHttpClient, verifyWebhookSignature, type IStripeClient, type StripeEventPayload } from "./stripeClient.js";
 import { defaultPayPalClient, type PayPalOrderResponse } from "./paypalClient.js";
+import { defaultOmiseClient, OmiseClient, OmiseError, type OmiseChargeResponse } from "./omiseClient.js";
 import { prisma } from "../../lib/prisma.js";
 import { recordAffiliateCommissionReversal } from "../affiliate/affiliateCommissionService.js";
 import { generateSecureToken, hashToken } from "./tokenUtils.js";
@@ -73,9 +74,14 @@ const listWithFilters = async (base: PaymentFilters, query: Record<string, unkno
 
 // Default Stripe client instance (can be overridden via dependency injection for testing)
 let activeStripeClient: IStripeClient = new StripeHttpClient();
+let activeOmiseClient: OmiseClient = defaultOmiseClient;
 
 export const setStripeClient = (client: IStripeClient) => {
   activeStripeClient = client;
+};
+
+export const setOmiseClient = (client: OmiseClient) => {
+  activeOmiseClient = client;
 };
 
 /**
@@ -1392,4 +1398,695 @@ export const handlePayPalWebhook = async (
 
   return { received: true };
 };
+
+// ==========================================
+// OMISE PAYMENT LIFECYCLE (PHASE 2)
+// ==========================================
+
+export interface CreateOmiseChargeInput {
+  bookingId: string;
+  token: string;
+  returnUrl?: string;
+}
+
+export interface OmiseChargeResult {
+  paymentId: string;
+  bookingId: string;
+  amount: number;
+  currency: string;
+  status: string;
+  requiresAction: boolean;
+  authorizeUri: string | null;
+  omiseChargeId: string;
+}
+
+/**
+ * Creates an Omise card charge for a customer booking.
+ * Calculates remaining balance authoritatively, enforces THB currency,
+ * converts to satangs, and supports both immediate non-3DS and pending 3DS flows.
+ */
+export const createCustomerOmiseCharge = async (
+  customerId: string,
+  input: CreateOmiseChargeInput,
+): Promise<OmiseChargeResult> => {
+  if (!activeOmiseClient.isConfigured()) {
+    throw new AppError("Omise payment gateway is not configured on this server", 503);
+  }
+
+  if (!input.token || typeof input.token !== "string" || !input.token.startsWith("tokn_")) {
+    throw new AppError("A valid Omise single-use card token is required", 400);
+  }
+
+  const booking = await paymentRepository.findBookingForPayment(input.bookingId);
+  if (!booking) {
+    throw new AppError("Booking not found", 404);
+  }
+
+  if (booking.customerId !== customerId) {
+    throw new AppError("You do not have access to pay for this booking", 403);
+  }
+
+  if (!PAYABLE_BOOKING_STATUSES.includes(booking.status)) {
+    throw new AppError(`Booking in status ${booking.status} is not eligible for payment`, 409);
+  }
+
+  if (booking.requiresApproval) {
+    throw new AppError("This booking requires price approval before payment can be accepted", 409);
+  }
+
+  if (booking.paymentStatus === "PAID") {
+    throw new AppError("This booking is already paid in full", 409);
+  }
+
+  // Omise card payments are strictly THB
+  if (booking.currency.toUpperCase() !== "THB") {
+    throw new AppError(
+      `Omise card payments only support THB currency. Current booking currency is ${booking.currency}`,
+      400,
+    );
+  }
+
+  const remainingBalance = Number(booking.finalPrice);
+  if (remainingBalance <= 0) {
+    throw new AppError("No remaining balance to pay for this booking", 409);
+  }
+
+  // Atomically create or reuse an INITIATED payment record
+  const { payment, isAlreadyVerified } = await paymentRepository.createOrGetOmisePayment({
+    bookingId: booking.id,
+    customerId,
+    amount: remainingBalance,
+    currency: "THB",
+  });
+
+  if (isAlreadyVerified) {
+    return {
+      paymentId: payment.id,
+      bookingId: booking.id,
+      amount: remainingBalance,
+      currency: "THB",
+      status: "VERIFIED",
+      requiresAction: false,
+      authorizeUri: null,
+      omiseChargeId: payment.omiseChargeId || "",
+    };
+  }
+
+  // Determine return_uri for 3DS authentication
+  const frontendBase = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/+$/, "");
+  const defaultReturnUri = `${frontendBase}/checkout/omise-return?paymentId=${payment.id}&bookingId=${booking.id}`;
+  const returnUri = input.returnUrl || defaultReturnUri;
+
+  let charge: OmiseChargeResponse;
+  try {
+    charge = await activeOmiseClient.createCardCharge({
+      amount: remainingBalance,
+      token: input.token,
+      returnUri,
+      description: `Booking #${booking.id} - ${booking.service?.name || "Tour"}`,
+      metadata: {
+        bookingId: booking.id,
+        paymentId: payment.id,
+        customerId,
+      },
+    });
+  } catch (err: any) {
+    await paymentRepository.updateOmisePaymentStatus({
+      paymentId: payment.id,
+      bookingId: booking.id,
+      status: "FAILED",
+      failureReason: err?.message || "Omise charge creation failed",
+    });
+    throw new AppError(err?.message || "Failed to create Omise charge", err?.status || 400);
+  }
+
+  // Scenario A: Non-3DS Frictionless Immediate Success
+  if (charge.status === "successful" && charge.authorized) {
+    await paymentRepository.verifyOmisePaymentAtomically({
+      paymentId: payment.id,
+      bookingId: booking.id,
+      amount: remainingBalance,
+      currency: "THB",
+      omiseChargeId: charge.id,
+      omiseTransactionId: charge.transaction,
+    });
+
+    emitPaymentEvent("payment.verified", payment.id).catch((err) =>
+      logger.error({ paymentId: payment.id, err }, "Failed to emit payment.verified event"),
+    );
+    emitBookingEvent("booking.status_changed", booking.id, { paymentStatus: "PAID" }).catch((err) =>
+      logger.error({ bookingId: booking.id, err }, "Failed to emit booking.status_changed event"),
+    );
+
+    return {
+      paymentId: payment.id,
+      bookingId: booking.id,
+      amount: remainingBalance,
+      currency: "THB",
+      status: "VERIFIED",
+      requiresAction: false,
+      authorizeUri: null,
+      omiseChargeId: charge.id,
+    };
+  }
+
+  // Scenario B: 3-D Secure Pending Action Required
+  if (charge.status === "pending" && charge.authorize_uri) {
+    await paymentRepository.updatePaymentOmiseCharge(
+      payment.id,
+      charge.id,
+      "REQUIRES_ACTION",
+    );
+
+    return {
+      paymentId: payment.id,
+      bookingId: booking.id,
+      amount: remainingBalance,
+      currency: "THB",
+      status: "REQUIRES_ACTION",
+      requiresAction: true,
+      authorizeUri: charge.authorize_uri,
+      omiseChargeId: charge.id,
+    };
+  }
+
+  // Scenario C: Immediate Failure / Declined
+  const failureMsg = charge.failure_message || "Card charge was not approved";
+  await paymentRepository.updatePaymentOmiseCharge(
+    payment.id,
+    charge.id,
+    "FAILED",
+    failureMsg,
+  );
+
+  throw new AppError(`Omise payment rejected: ${failureMsg}`, 400);
+};
+
+/**
+ * Creates an Omise card charge from a public payment link token.
+ */
+export const createPublicOmiseCharge = async (
+  rawToken: string,
+  input: { token: string; returnUrl?: string },
+): Promise<OmiseChargeResult> => {
+  if (!activeOmiseClient.isConfigured()) {
+    throw new AppError("Omise payment gateway is not configured", 503);
+  }
+
+  const tokenHash = hashToken(rawToken);
+  const link = await paymentRepository.findPaymentLinkByTokenHash(tokenHash);
+
+  if (!link) {
+    throw new AppError("Invalid or expired payment link", 404);
+  }
+
+  if (link.status !== "ACTIVE" || new Date() > new Date(link.expiresAt)) {
+    throw new AppError("This payment link is no longer active", 400);
+  }
+
+  if (link.booking.paymentStatus === "PAID") {
+    throw new AppError("This booking is already paid in full", 409);
+  }
+
+  if (link.booking.currency.toUpperCase() !== "THB") {
+    throw new AppError(
+      `Omise card payments only support THB currency. Current booking currency is ${link.booking.currency}`,
+      400,
+    );
+  }
+
+  const totalAmount = Number(link.booking.finalPrice);
+  const paidAmount = (link.booking.payments || [])
+    .filter((p: any) => p.status === "VERIFIED")
+    .reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+
+  const remainingBalance = Math.max(0, totalAmount - paidAmount);
+  if (remainingBalance <= 0) {
+    throw new AppError("No remaining balance to pay for this booking", 409);
+  }
+
+  const { payment, isAlreadyVerified } = await paymentRepository.createOrGetOmisePayment({
+    bookingId: link.bookingId,
+    customerId: link.booking.customerId,
+    amount: remainingBalance,
+    currency: "THB",
+  });
+
+  if (isAlreadyVerified) {
+    return {
+      paymentId: payment.id,
+      bookingId: link.bookingId,
+      amount: remainingBalance,
+      currency: "THB",
+      status: "VERIFIED",
+      requiresAction: false,
+      authorizeUri: null,
+      omiseChargeId: payment.omiseChargeId || "",
+    };
+  }
+
+  const frontendBase = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/+$/, "");
+  const defaultReturnUri = `${frontendBase}/pay/${rawToken}?status=omise-return&paymentId=${payment.id}`;
+  const returnUri = input.returnUrl || defaultReturnUri;
+
+  let charge: OmiseChargeResponse;
+  try {
+    charge = await activeOmiseClient.createCardCharge({
+      amount: remainingBalance,
+      token: input.token,
+      returnUri,
+      description: `Public Booking #${link.bookingId}`,
+      metadata: {
+        bookingId: link.bookingId,
+        paymentId: payment.id,
+        customerId: link.booking.customerId,
+        paymentToken: rawToken,
+      },
+    });
+  } catch (err: any) {
+    await paymentRepository.updateOmisePaymentStatus({
+      paymentId: payment.id,
+      bookingId: link.bookingId,
+      status: "FAILED",
+      failureReason: err?.message || "Omise charge creation failed",
+    });
+    throw new AppError(err?.message || "Failed to create Omise charge", err?.status || 400);
+  }
+
+  if (charge.status === "successful" && charge.authorized) {
+    await paymentRepository.verifyOmisePaymentAtomically({
+      paymentId: payment.id,
+      bookingId: link.bookingId,
+      amount: remainingBalance,
+      currency: "THB",
+      omiseChargeId: charge.id,
+      omiseTransactionId: charge.transaction,
+    });
+
+    return {
+      paymentId: payment.id,
+      bookingId: link.bookingId,
+      amount: remainingBalance,
+      currency: "THB",
+      status: "VERIFIED",
+      requiresAction: false,
+      authorizeUri: null,
+      omiseChargeId: charge.id,
+    };
+  }
+
+  if (charge.status === "pending" && charge.authorize_uri) {
+    await paymentRepository.updatePaymentOmiseCharge(
+      payment.id,
+      charge.id,
+      "REQUIRES_ACTION",
+    );
+
+    return {
+      paymentId: payment.id,
+      bookingId: link.bookingId,
+      amount: remainingBalance,
+      currency: "THB",
+      status: "REQUIRES_ACTION",
+      requiresAction: true,
+      authorizeUri: charge.authorize_uri,
+      omiseChargeId: charge.id,
+    };
+  }
+
+  const failureMsg = charge.failure_message || "Card charge was not approved";
+  await paymentRepository.updatePaymentOmiseCharge(
+    payment.id,
+    charge.id,
+    "FAILED",
+    failureMsg,
+  );
+
+  throw new AppError(`Omise payment rejected: ${failureMsg}`, 400);
+};
+
+/**
+ * Verifies Omise charge status upon customer return from 3DS redirect.
+ * Retrieves live status directly from Omise API and settles atomically.
+ */
+export const verifyOmiseChargeReturn = async (
+  paymentId: string,
+  requester?: { id: string; role: string },
+): Promise<{
+  paymentId: string;
+  bookingId: string;
+  status: string;
+  verified: boolean;
+  message?: string;
+}> => {
+  const payment = await getPaymentOr404(paymentId);
+
+  if (requester && requester.role === "customer" && payment.customerId !== requester.id) {
+    throw new AppError("Payment not found", 404);
+  }
+
+  if (payment.method !== "OMISE") {
+    throw new AppError("Only Omise payments can be verified with this endpoint", 400);
+  }
+
+  // If already verified locally, return safe success
+  if (payment.status === "VERIFIED") {
+    return {
+      paymentId: payment.id,
+      bookingId: payment.bookingId,
+      status: "VERIFIED",
+      verified: true,
+      message: "Payment is already verified",
+    };
+  }
+
+  if (!payment.omiseChargeId) {
+    throw new AppError("No Omise charge ID recorded on this payment attempt", 400);
+  }
+
+  // Authoritatively query Omise API
+  let liveCharge: OmiseChargeResponse;
+  try {
+    liveCharge = await activeOmiseClient.retrieveCharge(payment.omiseChargeId);
+  } catch (err: any) {
+    logger.warn({ err: err.message, paymentId }, "Failed to retrieve Omise charge during return verification");
+    throw new AppError("Could not retrieve charge status from Omise", 502);
+  }
+
+  // Live charge is successful & authorized
+  if (liveCharge.status === "successful" && liveCharge.authorized) {
+    const chargeCurrency = (liveCharge.currency || "THB").toUpperCase();
+    const chargeAmount = liveCharge.amount / 100;
+
+    const result = await paymentRepository.verifyOmisePaymentAtomically({
+      paymentId: payment.id,
+      bookingId: payment.bookingId,
+      amount: chargeAmount,
+      currency: chargeCurrency,
+      omiseChargeId: liveCharge.id,
+      omiseTransactionId: liveCharge.transaction,
+    });
+
+    emitPaymentEvent("payment.verified", payment.id).catch((err) =>
+      logger.error({ paymentId: payment.id, err }, "Failed to emit payment.verified event"),
+    );
+    emitBookingEvent("booking.status_changed", payment.bookingId, { paymentStatus: "PAID" }).catch((err) =>
+      logger.error({ bookingId: payment.bookingId, err }, "Failed to emit booking.status_changed event"),
+    );
+
+    return {
+      paymentId: payment.id,
+      bookingId: payment.bookingId,
+      status: "VERIFIED",
+      verified: true,
+      message: result.isDuplicateSuccess ? "Payment was already verified" : "Payment verified successfully",
+    };
+  }
+
+  // Live charge is still pending
+  if (liveCharge.status === "pending") {
+    return {
+      paymentId: payment.id,
+      bookingId: payment.bookingId,
+      status: "REQUIRES_ACTION",
+      verified: false,
+      message: "Payment is still pending 3-D Secure authorization",
+    };
+  }
+
+  // Live charge failed
+  const failureReason = liveCharge.failure_message || "Charge was not successful";
+  await paymentRepository.updateOmisePaymentStatus({
+    paymentId: payment.id,
+    bookingId: payment.bookingId,
+    status: "FAILED",
+    failureReason,
+  });
+
+  return {
+    paymentId: payment.id,
+    bookingId: payment.bookingId,
+    status: "FAILED",
+    verified: false,
+    message: failureReason,
+  };
+};
+
+/**
+ * Processes incoming Omise webhooks.
+ * Validates HMAC signature, prevents replay, deduplicates events, and reconciles state.
+ */
+export const handleOmiseWebhook = async (
+  rawBody: Buffer | string,
+  signatureHeader: string,
+  timestampHeader?: string,
+  webhookSecretOverride?: string,
+): Promise<WebhookProcessingResult> => {
+  const webhookSecret =
+    webhookSecretOverride ||
+    activeOmiseClient.getWebhookSecret() ||
+    process.env.OMISE_WEBHOOK_SECRET ||
+    "";
+  const isValid = activeOmiseClient.verifyWebhookSignature(
+    rawBody,
+    signatureHeader,
+    timestampHeader,
+    webhookSecret,
+  );
+  if (!isValid) {
+    logger.warn("Invalid Omise webhook signature");
+    throw new AppError("Invalid Omise webhook signature", 400);
+  }
+
+  const payload: any = JSON.parse(
+    Buffer.isBuffer(rawBody) ? rawBody.toString("utf8") : rawBody,
+  );
+
+  const eventId = payload.id;
+  const eventKey = payload.key || payload.type;
+  const eventData = payload.data || {};
+
+  if (!eventId || !eventKey) {
+    throw new AppError("Invalid Omise webhook payload structure", 400);
+  }
+
+  logger.info({ eventId, eventKey }, "Received Omise webhook");
+
+  // Charge complete event
+  if (eventKey === "charge.complete") {
+    const chargeId = eventData.id;
+    if (!chargeId) {
+      return { received: true, eventId, type: eventKey, status: "IGNORED", message: "Missing charge ID" };
+    }
+
+    // Authoritatively retrieve charge to avoid forged payload data
+    let charge: OmiseChargeResponse;
+    try {
+      charge = await activeOmiseClient.retrieveCharge(chargeId);
+    } catch (err: any) {
+      logger.error({ err: err.message, chargeId }, "Failed to fetch charge for Omise webhook");
+      throw new AppError("Failed to fetch authoritative charge from Omise", 502);
+    }
+
+    const targetPayment = await paymentRepository.findPaymentByOmiseChargeId(chargeId);
+    if (!targetPayment) {
+      logger.warn({ chargeId }, "No local payment found matching Omise charge");
+      return { received: true, eventId, type: eventKey, status: "IGNORED", message: "Payment not found" };
+    }
+
+    if (charge.status === "successful" && charge.authorized) {
+      const chargeAmount = charge.amount / 100;
+      const chargeCurrency = (charge.currency || "THB").toUpperCase();
+
+      await paymentRepository.verifyOmisePaymentAtomically({
+        paymentId: targetPayment.id,
+        bookingId: targetPayment.bookingId,
+        amount: chargeAmount,
+        currency: chargeCurrency,
+        omiseChargeId: charge.id,
+        omiseTransactionId: charge.transaction,
+      });
+
+      emitPaymentEvent("payment.verified", targetPayment.id).catch((err) =>
+        logger.error({ paymentId: targetPayment.id, err }, "Failed to emit payment.verified event"),
+      );
+      emitBookingEvent("booking.status_changed", targetPayment.bookingId, { paymentStatus: "PAID" }).catch((err) =>
+        logger.error({ bookingId: targetPayment.bookingId, err }, "Failed to emit booking.status_changed event"),
+      );
+
+      return {
+        received: true,
+        eventId,
+        type: eventKey,
+        status: "PROCESSED",
+        bookingId: targetPayment.bookingId,
+        paymentId: targetPayment.id,
+      };
+    } else if (charge.status === "failed") {
+      await paymentRepository.updateOmisePaymentStatus({
+        paymentId: targetPayment.id,
+        bookingId: targetPayment.bookingId,
+        status: "FAILED",
+        failureReason: charge.failure_message || "Omise charge failed",
+      });
+
+      return {
+        received: true,
+        eventId,
+        type: eventKey,
+        status: "PROCESSED",
+        bookingId: targetPayment.bookingId,
+        paymentId: targetPayment.id,
+      };
+    }
+  }
+
+  // Refund created / charge refunded event
+  if (eventKey === "refund.create" || eventKey === "charge.refunded") {
+    const refundObj = eventData;
+    const chargeId = refundObj.charge || eventData.id;
+    if (chargeId) {
+      const targetPayment = await paymentRepository.findPaymentByOmiseChargeId(chargeId);
+      if (targetPayment) {
+        const refundAmount = refundObj.amount ? refundObj.amount / 100 : 0;
+        const currency = (refundObj.currency || targetPayment.currency || "THB").toUpperCase();
+
+        if (refundAmount > 0) {
+          await prisma.$transaction(async (tx) => {
+            await recordAffiliateCommissionReversal(tx, {
+              bookingId: targetPayment.bookingId,
+              paymentId: targetPayment.id,
+              refundId: refundObj.id || eventId,
+              refundAmount,
+              currency,
+              reason: refundObj.metadata?.reason || "Omise webhook refund",
+            });
+          });
+        }
+
+        return {
+          received: true,
+          eventId,
+          type: eventKey,
+          status: "PROCESSED",
+          bookingId: targetPayment.bookingId,
+          paymentId: targetPayment.id,
+        };
+      }
+    }
+  }
+
+  return { received: true, eventId, type: eventKey, status: "IGNORED" };
+};
+
+/**
+ * Creates an Omise refund for a verified payment.
+ * Validates refundable amount against the actual successful charge,
+ * prevents duplicate refunds, and creates affiliate reversal idempotently.
+ */
+export const refundOmisePayment = async (
+  paymentId: string,
+  input: { amount?: number; reason?: string },
+  adminId: string,
+): Promise<{
+  refundId: string;
+  paymentId: string;
+  amount: number;
+  currency: string;
+  status: string;
+}> => {
+  const payment = await getPaymentOr404(paymentId);
+
+  if (payment.method !== "OMISE") {
+    throw new AppError("Only Omise payments can be refunded via this method", 400);
+  }
+
+  if (payment.status !== "VERIFIED") {
+    throw new AppError(`Cannot refund a payment with status ${payment.status}`, 409);
+  }
+
+  if (!payment.omiseChargeId) {
+    throw new AppError("Payment does not have an associated Omise charge ID", 400);
+  }
+
+  const paymentAmount = Number(payment.amount);
+  const refundAmount = input.amount !== undefined ? input.amount : paymentAmount;
+
+  if (refundAmount <= 0 || refundAmount > paymentAmount) {
+    throw new AppError(
+      `Invalid refund amount ${refundAmount}. Must be between 0.01 and ${paymentAmount}`,
+      400,
+    );
+  }
+
+  const omiseRefund = await activeOmiseClient.createRefund({
+    chargeId: payment.omiseChargeId,
+    amount: refundAmount,
+    reason: input.reason || "Admin initiated refund",
+  });
+
+  const currency = (omiseRefund.currency || payment.currency || "THB").toUpperCase();
+  const refundedAmountMajor = omiseRefund.amount / 100;
+
+  // Atomically update payment and affiliate reversal
+  await prisma.$transaction(async (tx) => {
+    const isFullRefund = Math.abs(refundedAmountMajor - paymentAmount) < 0.01;
+    const newStatus = isFullRefund ? "REFUNDED" : "PARTIALLY_REFUNDED";
+
+    await tx.payment.update({
+      where: { id: payment.id },
+      data: {
+        status: newStatus,
+        reviewNotes: input.reason || "Refunded via Omise",
+      },
+    });
+
+    if (isFullRefund) {
+      await tx.booking.update({
+        where: { id: payment.bookingId },
+        data: { paymentStatus: "UNPAID" },
+      });
+    }
+
+    await recordAffiliateCommissionReversal(tx, {
+      bookingId: payment.bookingId,
+      paymentId: payment.id,
+      refundId: omiseRefund.id,
+      refundAmount: refundedAmountMajor,
+      currency,
+      reason: input.reason || "Admin initiated Omise refund",
+      actorId: adminId,
+    });
+
+    await tx.bookingHistory.create({
+      data: {
+        bookingId: payment.bookingId,
+        actorId: adminId,
+        actorRole: "admin",
+        action: isFullRefund ? "PAYMENT_REFUNDED" : "PAYMENT_PARTIALLY_REFUNDED",
+        changes: {
+          paymentId: payment.id,
+          omiseRefundId: omiseRefund.id,
+          amount: refundedAmountMajor,
+          currency,
+          reason: input.reason || null,
+        },
+      },
+    });
+  });
+
+  emitPaymentEvent("payment.refunded", payment.id).catch((err) =>
+    logger.error({ paymentId: payment.id, err }, "Failed to emit payment.refunded event"),
+  );
+
+  return {
+    refundId: omiseRefund.id,
+    paymentId: payment.id,
+    amount: refundedAmountMajor,
+    currency,
+    status: "SUCCEEDED",
+  };
+};
+
+
 

@@ -32,7 +32,7 @@ import {
   affiliatePortalRouter,
   adminAffiliateRouter,
 } from "./modules/affiliate/affiliateRoutes.js";
-import { handleStripeWebhook, handlePayPalWebhook } from "./modules/payment/paymentController.js";
+import { handleStripeWebhook, handlePayPalWebhook, handleOmiseWebhook } from "./modules/payment/paymentController.js";
 import { csrfProtectionMiddleware } from "./shared/middleware/csrfMiddleware.js";
 const swaggerCustomCss = `
   body {
@@ -136,6 +136,13 @@ app.post(
   "/api/v1/webhooks/paypal",
   express.json({ limit: "2mb" }),
   handlePayPalWebhook,
+);
+
+// 3c. Dedicated Omise Webhook raw body parser
+app.post(
+  "/api/v1/webhooks/omise",
+  express.raw({ type: "application/json", limit: "2mb" }),
+  handleOmiseWebhook,
 );
 
 app.use(express.json({ limit: "10kb" }));

@@ -237,3 +237,67 @@ export const handlePayPalWebhook = async (req: Request, res: Response, next: Nex
     next(error);
   }
 };
+
+export const handleOmiseWebhook = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const signature = (req.headers["omise-signature"] as string) || "";
+    const timestamp = (req.headers["omise-signature-timestamp"] as string) || undefined;
+    const rawBody = req.body as Buffer;
+    const result = await paymentService.handleOmiseWebhook(rawBody, signature, timestamp);
+    sendResponse(res, 200, true, "Omise webhook processed successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createCustomerOmiseCharge = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await paymentService.createCustomerOmiseCharge(req.user!.id, {
+      bookingId: req.params.bookingId as string,
+      token: req.body.token,
+      returnUrl: req.body?.returnUrl,
+    });
+    const message = result.requiresAction
+      ? "Omise charge requires 3-D Secure authorization"
+      : "Omise payment processed successfully";
+    sendResponse(res, 200, true, message, result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyOmisePayment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const requester = req.user ? { id: req.user.id, role: req.user.role } : undefined;
+    const result = await paymentService.verifyOmiseChargeReturn(req.params.paymentId as string, requester);
+    sendResponse(res, 200, true, result.message || "Payment status retrieved successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createPublicOmiseCharge = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await paymentService.createPublicOmiseCharge(req.params.token as string, {
+      token: req.body.token,
+      returnUrl: req.body?.returnUrl,
+    });
+    const message = result.requiresAction
+      ? "Omise charge requires 3-D Secure authorization"
+      : "Omise payment processed successfully";
+    sendResponse(res, 200, true, message, result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyPublicOmisePayment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await paymentService.verifyOmiseChargeReturn(req.body.paymentId as string);
+    sendResponse(res, 200, true, result.message || "Payment status verified successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+

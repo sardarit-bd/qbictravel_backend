@@ -1,4 +1,4 @@
-export const PAYMENT_METHODS = ["BANK_TRANSFER", "CASH", "OTHER", "STRIPE", "PAYPAL"] as const;
+export const PAYMENT_METHODS = ["BANK_TRANSFER", "CASH", "OTHER", "STRIPE", "PAYPAL", "OMISE"] as const;
 export const PAYMENT_RECORD_STATUSES = [
   "INITIATED",
   "SUBMITTED",

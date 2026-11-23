@@ -5,12 +5,14 @@ import authMiddleware from "../../shared/middleware/authMiddleware.js";
 import requireRole from "../../shared/middleware/requireRole.js";
 import requirePermission from "../../shared/middleware/requirePermission.js";
 import {
+  createOmiseChargeSchema,
   createPaymentSchema,
   createStripeSessionSchema,
   generatePaymentLinkSchema,
   paymentBookingIdParamSchema,
   paymentIdParamSchema,
   publicInitiatePaymentSchema,
+  publicOmiseVerifySchema,
   publicPayPalCaptureSchema,
   publicPaymentTokenParamSchema,
   recordPaymentSchema,
@@ -89,6 +91,43 @@ router.post(
 
 /**
  * @openapi
+ * /api/v1/bookings/{bookingId}/omise-charge:
+ *   post:
+ *     tags: [Customer Payments]
+ *     summary: Create an Omise card charge for an owned booking
+ *     description: Creates an Omise card charge using a single-use card token. Returns authorizeUri for 3DS or verified status for immediate non-3DS charges.
+ *     security: [{ bearerAuth: [] }, { cookieAuth: [] }]
+ *     parameters:
+ *       - { name: bookingId, in: path, required: true, schema: { type: string, format: uuid } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [token]
+ *             properties:
+ *               token: { type: string, description: "Omise single-use card token starting with tokn_" }
+ *               returnUrl: { type: string, format: uri, description: "Custom 3DS return URL" }
+ *     responses:
+ *       200: { description: Omise charge created or verified }
+ *       400: { $ref: '#/components/responses/ValidationError' }
+ *       403: { description: Forbidden if not owner }
+ *       404: { $ref: '#/components/responses/NotFound' }
+ *       409: { description: Booking already paid or not payable }
+ */
+router.post(
+  "/bookings/:bookingId/omise-charge",
+  authMiddleware,
+  requireRole("customer", "affiliate"),
+  validate(paymentBookingIdParamSchema, "params"),
+  validate(createOmiseChargeSchema),
+  paymentController.createCustomerOmiseCharge
+);
+
+
+/**
+ * @openapi
  * /api/v1/payments/{paymentId}/reconcile:
  *   post:
  *     tags: [Admin Payments]
@@ -107,6 +146,30 @@ router.post(
   validate(paymentIdParamSchema, "params"),
   paymentController.reconcilePayment
 );
+
+/**
+ * @openapi
+ * /api/v1/payments/{paymentId}/omise-verify:
+ *   post:
+ *     tags: [Customer Payments]
+ *     summary: Verify Omise charge status upon customer return from 3DS authorization
+ *     description: Authoritatively retrieves charge status from Omise and settles payment atomically.
+ *     security: [{ bearerAuth: [] }, { cookieAuth: [] }]
+ *     parameters:
+ *       - { name: paymentId, in: path, required: true, schema: { type: string, format: uuid } }
+ *     responses:
+ *       200: { description: Payment status retrieved or settled }
+ *       400: { description: Invalid payment method or missing Omise charge }
+ *       404: { $ref: '#/components/responses/NotFound' }
+ */
+router.post(
+  "/payments/:paymentId/omise-verify",
+  authMiddleware,
+  requireRole("customer", "affiliate", "admin", "agent"),
+  validate(paymentIdParamSchema, "params"),
+  paymentController.verifyOmisePayment
+);
+
 
 /**
  * @openapi
@@ -313,6 +376,67 @@ router.post(
   validate(publicPayPalCaptureSchema),
   paymentController.capturePublicPayPalOrder
 );
+
+/**
+ * @openapi
+ * /api/v1/public/payment-links/{token}/omise-charge:
+ *   post:
+ *     tags: [Public Payments]
+ *     summary: Initiate Omise card payment from a public customer payment link
+ *     parameters:
+ *       - { name: token, in: path, required: true, schema: { type: string } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [token]
+ *             properties:
+ *               token: { type: string, description: "Omise single-use card token starting with tokn_" }
+ *               returnUrl: { type: string, format: uri, description: "Custom 3DS return URL" }
+ *     responses:
+ *       200: { description: Omise charge created or verified }
+ *       400: { $ref: '#/components/responses/ValidationError' }
+ *       404: { $ref: '#/components/responses/NotFound' }
+ *       409: { description: Booking already paid or payment link inactive }
+ */
+router.post(
+  "/public/payment-links/:token/omise-charge",
+  validate(publicPaymentTokenParamSchema, "params"),
+  validate(createOmiseChargeSchema),
+  paymentController.createPublicOmiseCharge
+);
+
+/**
+ * @openapi
+ * /api/v1/public/payment-links/{token}/omise-verify:
+ *   post:
+ *     tags: [Public Payments]
+ *     summary: Verify Omise charge return for a public customer payment link
+ *     parameters:
+ *       - { name: token, in: path, required: true, schema: { type: string } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [paymentId]
+ *             properties:
+ *               paymentId: { type: string, format: uuid, description: "Payment ID created for the Omise charge" }
+ *     responses:
+ *       200: { description: Omise charge verified and settled }
+ *       400: { $ref: '#/components/responses/ValidationError' }
+ *       404: { $ref: '#/components/responses/NotFound' }
+ */
+router.post(
+  "/public/payment-links/:token/omise-verify",
+  validate(publicPaymentTokenParamSchema, "params"),
+  validate(publicOmiseVerifySchema),
+  paymentController.verifyPublicOmisePayment
+);
+
 
 router.post(
   "/agent/bookings/:bookingId/stripe-session",

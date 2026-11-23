@@ -176,6 +176,25 @@ export const findPaymentByStripeSessionId = async (stripeSessionId: string) => {
   });
 };
 
+export const findPaymentByOmiseChargeId = async (omiseChargeId: string) => {
+  return prisma.payment.findFirst({
+    where: { omiseChargeId },
+    include: paymentInclude,
+  });
+};
+
+export const findActiveOmisePaymentForBooking = async (bookingId: string) => {
+  return prisma.payment.findFirst({
+    where: {
+      bookingId,
+      method: "OMISE",
+      status: { in: ["INITIATED", "PROCESSING", "REQUIRES_ACTION"] },
+    },
+    include: paymentInclude,
+    orderBy: { createdAt: "desc" },
+  });
+};
+
 export const findPaymentByStripePaymentIntentId = async (stripePaymentIntentId: string) => {
   return prisma.payment.findFirst({
     where: { stripePaymentIntentId },
@@ -1117,3 +1136,296 @@ export const recordVerifiedPayPalPayment = async (params: {
     { isolationLevel: "Serializable" },
   );
 };
+
+/**
+ * Creates or reuses an Omise payment record with serializable isolation.
+ */
+export const createOrGetOmisePayment = async (params: {
+  bookingId: string;
+  customerId: string;
+  amount: number;
+  currency: string;
+}) => {
+  return prisma.$transaction(
+    async (tx) => {
+      // 1. Check for any verified payment for this booking
+      const verified = await tx.payment.findFirst({
+        where: { bookingId: params.bookingId, status: "VERIFIED" },
+        include: paymentInclude,
+      });
+      if (verified) {
+        return { payment: verified, isAlreadyVerified: true, isExistingActive: false };
+      }
+
+      // 2. Check for active OMISE payment attempt
+      const activeOmise = await tx.payment.findFirst({
+        where: {
+          bookingId: params.bookingId,
+          method: "OMISE",
+          status: { in: ["INITIATED", "PROCESSING", "REQUIRES_ACTION"] },
+        },
+        include: paymentInclude,
+        orderBy: { createdAt: "desc" },
+      });
+
+      if (activeOmise) {
+        return { payment: activeOmise, isAlreadyVerified: false, isExistingActive: true };
+      }
+
+      // 3. Check for active manual payment awaiting verification
+      const otherActive = await tx.payment.count({
+        where: {
+          bookingId: params.bookingId,
+          method: { notIn: ["OMISE", "STRIPE", "PAYPAL"] },
+          status: { in: ["INITIATED", "SUBMITTED"] },
+        },
+      });
+
+      if (otherActive > 0) {
+        throw new AppError(
+          "This booking has an active manual payment awaiting verification. Cancel or resolve it first.",
+          409,
+        );
+      }
+
+      // 4. Create new INITIATED Omise payment
+      const payment = await tx.payment.create({
+        data: {
+          bookingId: params.bookingId,
+          customerId: params.customerId,
+          amount: params.amount,
+          currency: params.currency,
+          method: "OMISE",
+          status: "INITIATED",
+        },
+        include: paymentInclude,
+      });
+
+      await tx.bookingHistory.create({
+        data: {
+          bookingId: params.bookingId,
+          actorId: params.customerId,
+          actorRole: "customer",
+          action: "OMISE_PAYMENT_INITIATED",
+          changes: {
+            paymentId: payment.id,
+            amount: params.amount,
+            currency: params.currency,
+          },
+        },
+      });
+
+      return { payment, isAlreadyVerified: false, isExistingActive: false };
+    },
+    { isolationLevel: "Serializable" },
+  );
+};
+
+/**
+ * Updates an Omise payment with the external charge ID and status.
+ */
+export const updatePaymentOmiseCharge = async (
+  paymentId: string,
+  omiseChargeId: string,
+  status: "INITIATED" | "PROCESSING" | "REQUIRES_ACTION" | "VERIFIED" | "FAILED" = "PROCESSING",
+  failureReason?: string | null,
+) => {
+  return prisma.payment.update({
+    where: { id: paymentId },
+    data: {
+      omiseChargeId,
+      reference: omiseChargeId,
+      status,
+      ...(failureReason !== undefined ? { failureReason } : {}),
+    },
+  });
+};
+
+/**
+ * Atomically verifies an Omise payment and updates the booking and downstream entities.
+ * Idempotent: repeated executions return isDuplicateSuccess: true without duplicating operations.
+ */
+export const verifyOmisePaymentAtomically = async (params: {
+  paymentId: string;
+  bookingId: string;
+  amount: number;
+  currency: string;
+  omiseChargeId: string;
+  omiseTransactionId?: string | null;
+}) => {
+  return prisma.$transaction(async (tx) => {
+    const payment = await tx.payment.findUnique({
+      where: { id: params.paymentId },
+      include: paymentInclude,
+    });
+
+    if (!payment) {
+      throw new AppError("Payment record not found", 404);
+    }
+
+    if (payment.status === "VERIFIED") {
+      return { payment, isDuplicateSuccess: true };
+    }
+
+    const booking = await tx.booking.findUnique({
+      where: { id: params.bookingId },
+      include: {
+        payments: {
+          where: { status: "VERIFIED" },
+          select: { id: true, amount: true },
+        },
+      },
+    });
+
+    if (!booking) {
+      throw new AppError("Booking not found", 404);
+    }
+
+    // Currency must match
+    if (booking.currency.toUpperCase() !== params.currency.toUpperCase()) {
+      throw new AppError(
+        `Currency mismatch: charge currency ${params.currency} does not match booking currency ${booking.currency}`,
+        400,
+      );
+    }
+
+    // Amount validation
+    const expectedAmount = Number(payment.amount);
+    if (Math.abs(expectedAmount - params.amount) > 0.01) {
+      throw new AppError(
+        `Amount mismatch: charge amount ${params.amount} does not match expected payment amount ${expectedAmount}`,
+        400,
+      );
+    }
+
+    // Transition payment to VERIFIED
+    const updatedPayment = await tx.payment.update({
+      where: { id: params.paymentId },
+      data: {
+        status: "VERIFIED",
+        omiseChargeId: params.omiseChargeId,
+        reference: params.omiseChargeId,
+        receivedAt: new Date(),
+        failureReason: null,
+      },
+      include: paymentInclude,
+    });
+
+    // Auto-confirm booking if eligible
+    const shouldAutoConfirm = booking.status === "PENDING" && !booking.requiresApproval;
+
+    await tx.booking.update({
+      where: { id: params.bookingId },
+      data: {
+        paymentStatus: "PAID",
+        ...(shouldAutoConfirm ? { status: "CONFIRMED" } : {}),
+      },
+    });
+
+    // Booking history for payment verified
+    await tx.bookingHistory.create({
+      data: {
+        bookingId: params.bookingId,
+        actorId: payment.customerId,
+        actorRole: "customer",
+        action: "OMISE_PAYMENT_VERIFIED",
+        changes: {
+          paymentId: payment.id,
+          amount: params.amount,
+          currency: params.currency,
+          omiseChargeId: params.omiseChargeId,
+          omiseTransactionId: params.omiseTransactionId ?? null,
+          autoConfirmed: shouldAutoConfirm,
+        },
+      },
+    });
+
+    if (shouldAutoConfirm) {
+      await tx.bookingHistory.create({
+        data: {
+          bookingId: params.bookingId,
+          actorId: payment.customerId,
+          actorRole: "customer",
+          action: "BOOKING_AUTO_CONFIRMED",
+          changes: {
+            fromStatus: "PENDING",
+            toStatus: "CONFIRMED",
+            trigger: "OMISE_PAYMENT_VERIFIED",
+            paymentId: payment.id,
+          },
+        },
+      });
+    }
+
+    // Mark active payment links completed
+    await tx.paymentLink.updateMany({
+      where: { bookingId: params.bookingId, status: "ACTIVE" },
+      data: { status: "COMPLETED" },
+    });
+
+    // Commissions & outbox
+    if (booking.agentId && tx.commission && tx.commissionRule) {
+      try {
+        await createCommissionForBooking(tx, params.bookingId);
+      } catch (commErr) {
+        console.error("[Omise] Failed to create commission:", commErr);
+      }
+    }
+
+    if (tx.affiliateCommission && tx.affiliateBookingAttribution) {
+      await recordAffiliateCommissionForVerifiedPayment(tx, {
+        paymentId: payment.id,
+        bookingId: params.bookingId,
+        paidAmount: payment.amount.toString(),
+        currency: payment.currency,
+      });
+    }
+
+    await enqueueOutboxMessage(tx, {
+      topic: "CALCULATE_COMMISSION",
+      payload: { bookingId: params.bookingId, paymentId: payment.id },
+      dedupeKey: `commission:${payment.id}`,
+    });
+
+    await enqueueOutboxMessage(tx, {
+      topic: "SEND_BOOKING_VOUCHER_EMAIL",
+      payload: { bookingId: params.bookingId, paymentId: payment.id, decision: "CONFIRMED" },
+      dedupeKey: `voucher_email:${payment.id}`,
+    });
+
+    return { payment: updatedPayment, isDuplicateSuccess: false };
+  });
+};
+
+/**
+ * Updates an Omise payment status safely (e.g. FAILED, CANCELLED).
+ * Never downgrades a VERIFIED payment.
+ */
+export const updateOmisePaymentStatus = async (params: {
+  paymentId: string;
+  bookingId: string;
+  status: "FAILED" | "CANCELLED" | "PROCESSING" | "REQUIRES_ACTION";
+  failureReason?: string | null;
+  omiseChargeId?: string | null;
+}) => {
+  return prisma.$transaction(async (tx) => {
+    const payment = await tx.payment.findUnique({ where: { id: params.paymentId } });
+    if (!payment) {
+      return null;
+    }
+
+    if (payment.status === "VERIFIED") {
+      return payment;
+    }
+
+    return tx.payment.update({
+      where: { id: params.paymentId },
+      data: {
+        status: params.status,
+        ...(params.failureReason !== undefined ? { failureReason: params.failureReason } : {}),
+        ...(params.omiseChargeId ? { omiseChargeId: params.omiseChargeId } : {}),
+      },
+    });
+  });
+};
+

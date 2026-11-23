@@ -229,7 +229,8 @@ export const PaymentMethod = {
   CASH: 'CASH',
   OTHER: 'OTHER',
   STRIPE: 'STRIPE',
-  PAYPAL: 'PAYPAL'
+  PAYPAL: 'PAYPAL',
+  OMISE: 'OMISE'
 } as const
 
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
