@@ -16,6 +16,15 @@ import type {
 import * as notificationService from "../notification/notificationService.js";
 import { emitBookingEvent } from "../event/eventEmitter.js";
 import logger from "../../shared/logger/logger.js";
+import { getRuntimeGeneralConfig } from "../setting/settingRuntimeConfig.js";
+import {
+  generateTourSchedulePdfBuffer,
+  generateDailyManifestPdfBuffer,
+  type CompanyContactInfo,
+  type SchedulePdfTourRow,
+  type ManifestPdfGuestRow,
+  type ManifestTourSection,
+} from "./operationsPdfService.js";
 
 interface Transition {
   from: FulfillmentStatusValue;
@@ -454,4 +463,179 @@ export const getOperationsSchedule = async (
     totalPassengers: overallTotalPassengers,
     groups,
   };
+};
+
+/**
+ * Generates Tour Schedule PDF Buffer
+ */
+export const exportSchedulePdf = async (
+  actorRole: "staff" | "admin",
+  actorId: string,
+  query: Record<string, unknown>
+): Promise<{ pdfBuffer: Buffer; filename: string }> => {
+  const schedule = await getOperationsSchedule(actorRole, actorId, query);
+  const generalSettings = await getRuntimeGeneralConfig();
+
+  const company: CompanyContactInfo = {
+    name: generalSettings.platformName || "PhuketTours",
+    email: generalSettings.supportEmail || null,
+    phone: generalSettings.supportPhone || null,
+    website: process.env.COMPANY_WEBSITE || process.env.FRONTEND_URL || "https://phukettours.com",
+  };
+
+  const rows: SchedulePdfTourRow[] = schedule.groups.map((g) => {
+    const pickups = g.pickupLocations || g.pickupSummary?.locations || [];
+    let pickupText = "Not Provided";
+    if (pickups.length > 0) {
+      pickupText = pickups.slice(0, 2).join(", ") + (pickups.length > 2 ? ` (+${pickups.length - 2})` : "");
+    }
+
+    // Determine aggregate tour operational status
+    const allFulfilled = g.bookings.length > 0 && g.bookings.every((b) => b.fulfillmentStatus === "FULFILLED");
+    const anyActive = g.bookings.some((b) => b.fulfillmentStatus === "IN_PROGRESS" || b.fulfillmentStatus === "FULFILLED");
+    const operationalStatus = allFulfilled ? "FULFILLED" : anyActive ? "IN_PROGRESS" : "NOT_STARTED";
+
+    return {
+      travelDate: g.travelDate,
+      serviceTitle: g.serviceTitle || g.serviceName || "Tour Departure",
+      departureTime: g.departureTime || "TBD",
+      totalBookings: g.totalBookings,
+      totalPassengers: g.totalPassengers,
+      adults: g.totalAdults,
+      children: g.totalChildren,
+      infants: g.totalInfants,
+      pickupSummaryText: pickupText,
+      operationalStatus,
+    };
+  });
+
+  const now = new Date();
+  const generatedAt = `${now.toISOString().split("T")[0]} ${now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}`;
+
+  const pdfBuffer = generateTourSchedulePdfBuffer({
+    title: "TOUR SCHEDULE",
+    dateRangeText: `${schedule.startDate} to ${schedule.endDate}`,
+    generatedAt,
+    totalTours: schedule.totalGroups,
+    totalBookings: schedule.totalBookings,
+    totalPassengers: schedule.totalPassengers,
+    company,
+    rows,
+  });
+
+  const filename = `PhuketTours-Schedule-${schedule.startDate}-to-${schedule.endDate}.pdf`;
+  return { pdfBuffer, filename };
+};
+
+/**
+ * Generates Daily Tour Manifest PDF Buffer.
+ * Supports both unified date-range exports (all tours and bookings) and single tour/date exports.
+ */
+export const exportDailyManifestPdf = async (
+  actorRole: "staff" | "admin",
+  actorId: string,
+  query: Record<string, unknown>
+): Promise<{ pdfBuffer: Buffer; filename: string }> => {
+  const serviceId = typeof query.serviceId === "string" ? query.serviceId : undefined;
+  const singleDate =
+    typeof query.date === "string"
+      ? query.date
+      : typeof query.travelDate === "string"
+      ? query.travelDate
+      : undefined;
+
+  // If a single date is passed, set startDate and endDate to that date
+  const scheduleQuery: Record<string, unknown> = { ...query };
+  if (singleDate) {
+    scheduleQuery.startDate = singleDate;
+    scheduleQuery.endDate = singleDate;
+  }
+  if (serviceId) {
+    scheduleQuery.serviceId = serviceId;
+  }
+
+  const schedule = await getOperationsSchedule(actorRole, actorId, scheduleQuery);
+
+  const generalSettings = await getRuntimeGeneralConfig();
+  const company: CompanyContactInfo = {
+    name: generalSettings.platformName || "PhuketTours",
+    email: generalSettings.supportEmail || null,
+    phone: generalSettings.supportPhone || null,
+    website: process.env.COMPANY_WEBSITE || process.env.FRONTEND_URL || "https://phukettours.com",
+  };
+
+  const sections: ManifestTourSection[] = schedule.groups.map((group) => {
+    const guestRows: ManifestPdfGuestRow[] = group.bookings.map((b, idx) => {
+      const totalPax = b.totalPassengers || b.totalGuests || b.adults + b.children + b.infants;
+      const guestsLabel = `${totalPax} ${totalPax === 1 ? "Guest" : "Guests"}`;
+
+      const parts: string[] = [];
+      parts.push(`${b.adults} ${b.adults === 1 ? "Adult" : "Adults"}`);
+      if (b.children > 0) {
+        parts.push(`${b.children} ${b.children === 1 ? "Child" : "Children"}`);
+      }
+      if (b.infants > 0) {
+        parts.push(`${b.infants} ${b.infants === 1 ? "Infant" : "Infants"}`);
+      }
+      const breakdownLabel = parts.join(", ");
+
+      return {
+        index: idx + 1,
+        bookingRef: b.bookingRef || b.reference || `#${b.id.slice(0, 8)}`,
+        guestName: b.customerName || "Customer",
+        phone: b.customerPhone || "Not provided",
+        email: b.customerEmail || "Not provided",
+        guestsText: guestsLabel,
+        breakdownText: breakdownLabel,
+        pickupLocation: b.pickupLocation || "Pickup information not provided",
+      };
+    });
+
+    const depTime = group.departureTime && group.departureTime !== "TBD"
+      ? group.departureTime
+      : "Not provided";
+
+    return {
+      serviceTitle: group.serviceTitle || group.serviceName || "Tour Departure",
+      travelDate: group.travelDate,
+      departureTime: depTime,
+      totalBookings: group.totalBookings,
+      totalGuests: group.totalPassengers,
+      adults: group.totalAdults,
+      children: group.totalChildren,
+      infants: group.totalInfants,
+      guests: guestRows,
+    };
+  });
+
+  const now = new Date();
+  const generatedAt = `${now.toISOString().split("T")[0]} ${now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}`;
+
+  const isSingleTour = sections.length === 1;
+  const isSingleDate = schedule.startDate === schedule.endDate;
+
+  const dateRangeText = isSingleDate
+    ? schedule.startDate
+    : `${schedule.startDate} to ${schedule.endDate}`;
+
+  const pdfBuffer = generateDailyManifestPdfBuffer({
+    title: "DAILY TOUR MANIFEST",
+    subtitle: "Guest List & Pickup Information",
+    dateRangeText,
+    generatedAt,
+    company,
+    sections,
+  });
+
+  let filename: string;
+  if (isSingleTour) {
+    const cleanTitle = sections[0].serviceTitle.replace(/[^a-zA-Z0-9_-]/g, "_").substring(0, 25);
+    filename = `PhuketTours-Manifest-${cleanTitle}-${sections[0].travelDate}.pdf`;
+  } else if (isSingleDate) {
+    filename = `PhuketTours-Daily-Manifest-${schedule.startDate}.pdf`;
+  } else {
+    filename = `PhuketTours-Daily-Manifest-${schedule.startDate}-to-${schedule.endDate}.pdf`;
+  }
+
+  return { pdfBuffer, filename };
 };

@@ -32,6 +32,37 @@ router.get(
 
 /**
  * @openapi
+ * /api/v1/operations/schedule/export-pdf:
+ *   get:
+ *     tags: [Operations Schedule]
+ *     summary: Export authorized operational tour schedule as landscape PDF
+ *     security: [{ bearerAuth: [] }, { cookieAuth: [] }]
+ */
+router.get(
+  "/operations/schedule/export-pdf",
+  authMiddleware,
+  requirePermission("bookings.view"),
+  validate(operationsScheduleQuerySchema, "query"),
+  operationsController.exportSchedulePdf
+);
+
+/**
+ * @openapi
+ * /api/v1/operations/manifest/export-pdf:
+ *   get:
+ *     tags: [Operations Schedule]
+ *     summary: Export authorized daily tour passenger manifest as landscape PDF
+ *     security: [{ bearerAuth: [] }, { cookieAuth: [] }]
+ */
+router.get(
+  "/operations/manifest/export-pdf",
+  authMiddleware,
+  requirePermission("bookings.view"),
+  operationsController.exportDailyManifestPdf
+);
+
+/**
+ * @openapi
  * /api/v1/staff/operations/bookings:
  *   get:
  *     tags: [Staff Operations]

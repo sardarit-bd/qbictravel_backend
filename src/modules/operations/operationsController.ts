@@ -13,6 +13,36 @@ export const getOperationsSchedule = async (req: Request, res: Response, next: N
   }
 };
 
+export const exportSchedulePdf = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const actorRole = (req.user?.role || "staff") as "staff" | "admin";
+    const actorId = req.user!.id;
+    const { pdfBuffer, filename } = await operationsService.exportSchedulePdf(actorRole, actorId, req.query);
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader("Content-Length", pdfBuffer.length);
+    res.status(200).send(pdfBuffer);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const exportDailyManifestPdf = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const actorRole = (req.user?.role || "staff") as "staff" | "admin";
+    const actorId = req.user!.id;
+    const { pdfBuffer, filename } = await operationsService.exportDailyManifestPdf(actorRole, actorId, req.query);
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader("Content-Length", pdfBuffer.length);
+    res.status(200).send(pdfBuffer);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const listStaffBookings = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const result = await operationsService.listStaffBookings(req.user!.id, req.query);
