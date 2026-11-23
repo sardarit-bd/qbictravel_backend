@@ -237,3 +237,15 @@ export const handlePayPalWebhook = async (req: Request, res: Response, next: Nex
     next(error);
   }
 };
+
+export const handleOmiseWebhook = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const signature = (req.headers["omise-signature"] as string) || "";
+    const rawBody = req.body as Buffer;
+    const result = await paymentService.handleOmiseWebhook(rawBody, signature);
+    sendResponse(res, 200, true, "Omise webhook processed successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
