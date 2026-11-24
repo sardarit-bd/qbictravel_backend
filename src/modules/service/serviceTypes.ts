@@ -97,6 +97,12 @@ export interface PickupZoneRecord {
   operatorName: string | null;
   zoneName: string;
   description: string | null;
+  morningPickupTime?: string | null;
+  afternoonPickupTime?: string | null;
+  hasPrivateTransfer: boolean;
+  privateTransferCharge?: number | null;
+  morningPierArrival?: string | null;
+  afternoonPierArrival?: string | null;
   surchargeAmount: number;
   surchargeUnit: SurchargeUnit;
   currency: string;
@@ -119,20 +125,104 @@ export interface CreateServiceInput {
   name: string;
   description?: string;
   type: ServiceType;
+  status?: ServiceStatus;
   pricingType?: PricingModelType;
   providerName?: string;
   providerId?: string;
   metadata?: Prisma.InputJsonValue;
+  pricing?: PricingUpdateInput;
+  availability?: AvailabilityUpdateInput[];
+  packages?: Array<{
+    id?: string;
+    name: string;
+    description?: string;
+    durationMinutes: number;
+    boatSize?: string;
+    minPax?: number;
+    maxCapacity: number;
+    sellingPrice: number;
+    netPrice?: number;
+    currency?: string;
+    isActive?: boolean;
+    sortOrder?: number;
+  }>;
+  timeSlots?: Array<{
+    id?: string;
+    name: string;
+    departureTime: string;
+    capacity?: number;
+    isActive?: boolean;
+    sortOrder?: number;
+  }>;
+  pickupZones?: Array<{
+    id?: string;
+    operatorName?: string;
+    zoneName: string;
+    description?: string;
+    morningPickupTime?: string;
+    afternoonPickupTime?: string;
+    hasPrivateTransfer?: boolean;
+    privateTransferCharge?: number;
+    morningPierArrival?: string;
+    afternoonPierArrival?: string;
+    surchargeAmount?: number;
+    surchargeUnit?: SurchargeUnit;
+    currency?: string;
+    isActive?: boolean;
+    sortOrder?: number;
+  }>;
 }
 
 export interface UpdateServiceInput {
   name?: string;
   description?: string;
   type?: ServiceType;
+  status?: ServiceStatus;
   pricingType?: PricingModelType;
   providerName?: string;
   providerId?: string;
   metadata?: Prisma.InputJsonValue;
+  pricing?: PricingUpdateInput;
+  availability?: AvailabilityUpdateInput[];
+  packages?: Array<{
+    id?: string;
+    name: string;
+    description?: string;
+    durationMinutes: number;
+    boatSize?: string;
+    minPax?: number;
+    maxCapacity: number;
+    sellingPrice: number;
+    netPrice?: number;
+    currency?: string;
+    isActive?: boolean;
+    sortOrder?: number;
+  }>;
+  timeSlots?: Array<{
+    id?: string;
+    name: string;
+    departureTime: string;
+    capacity?: number;
+    isActive?: boolean;
+    sortOrder?: number;
+  }>;
+  pickupZones?: Array<{
+    id?: string;
+    operatorName?: string;
+    zoneName: string;
+    description?: string;
+    morningPickupTime?: string;
+    afternoonPickupTime?: string;
+    hasPrivateTransfer?: boolean;
+    privateTransferCharge?: number;
+    morningPierArrival?: string;
+    afternoonPierArrival?: string;
+    surchargeAmount?: number;
+    surchargeUnit?: SurchargeUnit;
+    currency?: string;
+    isActive?: boolean;
+    sortOrder?: number;
+  }>;
 }
 
 export interface CreateServicePackageInput {
@@ -184,6 +274,12 @@ export interface CreatePickupZoneInput {
   operatorName?: string;
   zoneName: string;
   description?: string;
+  morningPickupTime?: string;
+  afternoonPickupTime?: string;
+  hasPrivateTransfer?: boolean;
+  privateTransferCharge?: number;
+  morningPierArrival?: string;
+  afternoonPierArrival?: string;
   surchargeAmount?: number;
   surchargeUnit?: SurchargeUnit;
   currency?: string;
@@ -196,6 +292,12 @@ export interface UpdatePickupZoneInput {
   operatorName?: string;
   zoneName?: string;
   description?: string;
+  morningPickupTime?: string;
+  afternoonPickupTime?: string;
+  hasPrivateTransfer?: boolean;
+  privateTransferCharge?: number;
+  morningPierArrival?: string;
+  afternoonPierArrival?: string;
   surchargeAmount?: number;
   surchargeUnit?: SurchargeUnit;
   currency?: string;

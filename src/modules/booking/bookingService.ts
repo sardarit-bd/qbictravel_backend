@@ -71,6 +71,7 @@ export const evaluateBookingPricing = async (
     pickupZoneId?: string | null;
     departureTime?: string | null;
     pickupLocation?: string | null;
+    isPrivateTransfer?: boolean;
     adults?: number;
     children?: number;
     infants?: number;
@@ -124,7 +125,21 @@ export const evaluateBookingPricing = async (
       throw new AppError("Selected pickup zone is inactive", 400);
     }
     resolvedPickupZoneId = zone.id;
-    pickupSurcharge = Number(zone.surchargeAmount ?? 0);
+
+    if (input.isPrivateTransfer) {
+      if (!zone.hasPrivateTransfer) {
+        throw new AppError("Private transfer is not available for this pickup zone", 400);
+      }
+      pickupSurcharge = Number(zone.privateTransferCharge ?? 1600);
+    } else {
+      const stdCharge = Number(zone.surchargeAmount ?? 0);
+      if (zone.surchargeUnit === "PER_PERSON") {
+        pickupSurcharge = stdCharge * totalPassengers;
+      } else {
+        // PER_BOOKING, PER_VEHICLE, etc.
+        pickupSurcharge = stdCharge;
+      }
+    }
   }
 
   let resolvedPickupLocation = input.pickupLocation?.trim() || null;
@@ -290,6 +305,7 @@ export const createBooking = async (
     pickupZoneId: input.pickupZoneId,
     departureTime: input.departureTime,
     pickupLocation: input.pickupLocation,
+    isPrivateTransfer: input.isPrivateTransfer,
     adults: input.adults,
     children: input.children,
     infants: input.infants,
@@ -471,6 +487,7 @@ export const createStaffBooking = async (
     pickupZoneId: input.pickupZoneId,
     departureTime: input.departureTime,
     pickupLocation: input.pickupLocation,
+    isPrivateTransfer: input.isPrivateTransfer,
     adults: input.adults,
     children: input.children,
     infants: input.infants,
@@ -752,6 +769,7 @@ export const createGuestBooking = async (
     pickupZoneId: input.pickupZoneId,
     departureTime: input.departureTime,
     pickupLocation: input.pickupLocation,
+    isPrivateTransfer: input.isPrivateTransfer,
     adults: input.adults,
     children: input.children,
     infants: input.infants,

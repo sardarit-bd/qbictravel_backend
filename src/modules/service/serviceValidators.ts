@@ -95,20 +95,32 @@ export const createServiceSchema = yup.object({
   name: yup.string().trim().min(3, "Name must be at least 3 characters").required("Name is required"),
   description: yup.string().trim().optional(),
   type: serviceTypeSchema,
+  status: serviceStatusSchema.optional(),
   pricingType: pricingModelTypeSchema,
   providerName: yup.string().trim().optional(),
   providerId: yup.string().trim().optional(),
   metadata: yup.mixed().optional(),
+  pricing: yup.mixed().optional(),
+  availability: yup.array().optional(),
+  packages: yup.array().optional(),
+  timeSlots: yup.array().optional(),
+  pickupZones: yup.array().optional(),
 });
 
 export const updateServiceSchema = yup.object({
   name: yup.string().trim().min(3, "Name must be at least 3 characters").optional(),
   description: yup.string().trim().optional(),
   type: serviceTypeSchema.optional(),
+  status: serviceStatusSchema.optional(),
   pricingType: pricingModelTypeSchema,
   providerName: yup.string().trim().optional(),
   providerId: yup.string().trim().optional(),
   metadata: yup.mixed().optional(),
+  pricing: yup.mixed().optional(),
+  availability: yup.array().optional(),
+  packages: yup.array().optional(),
+  timeSlots: yup.array().optional(),
+  pickupZones: yup.array().optional(),
 });
 
 export const packageIdParamSchema = yup.object({
@@ -173,6 +185,12 @@ export const updateServiceTimeSlotSchema = yup.object({
 export const createPickupZoneSchema = yup.object({
   zoneName: yup.string().trim().min(2, "Zone name must be at least 2 characters").required("Zone name is required"),
   description: yup.string().trim().optional(),
+  morningPickupTime: yup.string().trim().optional(),
+  afternoonPickupTime: yup.string().trim().optional(),
+  hasPrivateTransfer: yup.boolean().default(false),
+  privateTransferCharge: yup.number().min(0, "Private transfer charge cannot be negative").optional(),
+  morningPierArrival: yup.string().trim().default("08:30 AM"),
+  afternoonPierArrival: yup.string().trim().default("12:30 PM"),
   surchargeAmount: yup.number().min(0, "Surcharge amount cannot be negative").default(0),
   surchargeUnit: surchargeUnitSchema.default("PER_BOOKING"),
   currency: yup.string().trim().uppercase().length(3).default("THB"),
@@ -184,6 +202,12 @@ export const createPickupZoneSchema = yup.object({
 export const updatePickupZoneSchema = yup.object({
   zoneName: yup.string().trim().min(2).optional(),
   description: yup.string().trim().optional(),
+  morningPickupTime: yup.string().trim().optional(),
+  afternoonPickupTime: yup.string().trim().optional(),
+  hasPrivateTransfer: yup.boolean().optional(),
+  privateTransferCharge: yup.number().min(0).optional(),
+  morningPierArrival: yup.string().trim().optional(),
+  afternoonPierArrival: yup.string().trim().optional(),
   surchargeAmount: yup.number().min(0).optional(),
   surchargeUnit: surchargeUnitSchema,
   currency: yup.string().trim().uppercase().length(3).optional(),

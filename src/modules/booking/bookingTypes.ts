@@ -10,6 +10,7 @@ export interface CreateBookingInput {
   pickupZoneId?: string | null;
   departureTime?: string | null;
   pickupLocation?: string | null;
+  isPrivateTransfer?: boolean;
   proposedPrice?: number | string;
   travelDate?: string;
   adults?: number;
@@ -32,6 +33,7 @@ export interface CreateStaffBookingInput {
   pickupZoneId?: string | null;
   departureTime?: string | null;
   pickupLocation?: string | null;
+  isPrivateTransfer?: boolean;
   travelDate?: string;
   adults?: number;
   children?: number;
@@ -57,6 +59,7 @@ export interface CreateGuestBookingInput {
   pickupZoneId?: string | null;
   departureTime?: string | null;
   pickupLocation?: string | null;
+  isPrivateTransfer?: boolean;
   travelDate?: string;
   adults?: number;
   children?: number;

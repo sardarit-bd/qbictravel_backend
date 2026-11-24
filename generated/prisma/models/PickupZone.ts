@@ -27,11 +27,13 @@ export type AggregatePickupZone = {
 }
 
 export type PickupZoneAvgAggregateOutputType = {
+  privateTransferCharge: runtime.Decimal | null
   surchargeAmount: runtime.Decimal | null
   sortOrder: number | null
 }
 
 export type PickupZoneSumAggregateOutputType = {
+  privateTransferCharge: runtime.Decimal | null
   surchargeAmount: runtime.Decimal | null
   sortOrder: number | null
 }
@@ -42,6 +44,12 @@ export type PickupZoneMinAggregateOutputType = {
   operatorName: string | null
   zoneName: string | null
   description: string | null
+  morningPickupTime: string | null
+  afternoonPickupTime: string | null
+  hasPrivateTransfer: boolean | null
+  privateTransferCharge: runtime.Decimal | null
+  morningPierArrival: string | null
+  afternoonPierArrival: string | null
   surchargeAmount: runtime.Decimal | null
   surchargeUnit: $Enums.SurchargeUnit | null
   currency: string | null
@@ -57,6 +65,12 @@ export type PickupZoneMaxAggregateOutputType = {
   operatorName: string | null
   zoneName: string | null
   description: string | null
+  morningPickupTime: string | null
+  afternoonPickupTime: string | null
+  hasPrivateTransfer: boolean | null
+  privateTransferCharge: runtime.Decimal | null
+  morningPierArrival: string | null
+  afternoonPierArrival: string | null
   surchargeAmount: runtime.Decimal | null
   surchargeUnit: $Enums.SurchargeUnit | null
   currency: string | null
@@ -72,6 +86,12 @@ export type PickupZoneCountAggregateOutputType = {
   operatorName: number
   zoneName: number
   description: number
+  morningPickupTime: number
+  afternoonPickupTime: number
+  hasPrivateTransfer: number
+  privateTransferCharge: number
+  morningPierArrival: number
+  afternoonPierArrival: number
   surchargeAmount: number
   surchargeUnit: number
   currency: number
@@ -84,11 +104,13 @@ export type PickupZoneCountAggregateOutputType = {
 
 
 export type PickupZoneAvgAggregateInputType = {
+  privateTransferCharge?: true
   surchargeAmount?: true
   sortOrder?: true
 }
 
 export type PickupZoneSumAggregateInputType = {
+  privateTransferCharge?: true
   surchargeAmount?: true
   sortOrder?: true
 }
@@ -99,6 +121,12 @@ export type PickupZoneMinAggregateInputType = {
   operatorName?: true
   zoneName?: true
   description?: true
+  morningPickupTime?: true
+  afternoonPickupTime?: true
+  hasPrivateTransfer?: true
+  privateTransferCharge?: true
+  morningPierArrival?: true
+  afternoonPierArrival?: true
   surchargeAmount?: true
   surchargeUnit?: true
   currency?: true
@@ -114,6 +142,12 @@ export type PickupZoneMaxAggregateInputType = {
   operatorName?: true
   zoneName?: true
   description?: true
+  morningPickupTime?: true
+  afternoonPickupTime?: true
+  hasPrivateTransfer?: true
+  privateTransferCharge?: true
+  morningPierArrival?: true
+  afternoonPierArrival?: true
   surchargeAmount?: true
   surchargeUnit?: true
   currency?: true
@@ -129,6 +163,12 @@ export type PickupZoneCountAggregateInputType = {
   operatorName?: true
   zoneName?: true
   description?: true
+  morningPickupTime?: true
+  afternoonPickupTime?: true
+  hasPrivateTransfer?: true
+  privateTransferCharge?: true
+  morningPierArrival?: true
+  afternoonPierArrival?: true
   surchargeAmount?: true
   surchargeUnit?: true
   currency?: true
@@ -231,6 +271,12 @@ export type PickupZoneGroupByOutputType = {
   operatorName: string | null
   zoneName: string
   description: string | null
+  morningPickupTime: string | null
+  afternoonPickupTime: string | null
+  hasPrivateTransfer: boolean
+  privateTransferCharge: runtime.Decimal | null
+  morningPierArrival: string | null
+  afternoonPierArrival: string | null
   surchargeAmount: runtime.Decimal
   surchargeUnit: $Enums.SurchargeUnit
   currency: string
@@ -269,6 +315,12 @@ export type PickupZoneWhereInput = {
   operatorName?: Prisma.StringNullableFilter<"PickupZone"> | string | null
   zoneName?: Prisma.StringFilter<"PickupZone"> | string
   description?: Prisma.StringNullableFilter<"PickupZone"> | string | null
+  morningPickupTime?: Prisma.StringNullableFilter<"PickupZone"> | string | null
+  afternoonPickupTime?: Prisma.StringNullableFilter<"PickupZone"> | string | null
+  hasPrivateTransfer?: Prisma.BoolFilter<"PickupZone"> | boolean
+  privateTransferCharge?: Prisma.DecimalNullableFilter<"PickupZone"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: Prisma.StringNullableFilter<"PickupZone"> | string | null
+  afternoonPierArrival?: Prisma.StringNullableFilter<"PickupZone"> | string | null
   surchargeAmount?: Prisma.DecimalFilter<"PickupZone"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: Prisma.EnumSurchargeUnitFilter<"PickupZone"> | $Enums.SurchargeUnit
   currency?: Prisma.StringFilter<"PickupZone"> | string
@@ -286,6 +338,12 @@ export type PickupZoneOrderByWithRelationInput = {
   operatorName?: Prisma.SortOrderInput | Prisma.SortOrder
   zoneName?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  morningPickupTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  afternoonPickupTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  hasPrivateTransfer?: Prisma.SortOrder
+  privateTransferCharge?: Prisma.SortOrderInput | Prisma.SortOrder
+  morningPierArrival?: Prisma.SortOrderInput | Prisma.SortOrder
+  afternoonPierArrival?: Prisma.SortOrderInput | Prisma.SortOrder
   surchargeAmount?: Prisma.SortOrder
   surchargeUnit?: Prisma.SortOrder
   currency?: Prisma.SortOrder
@@ -306,6 +364,12 @@ export type PickupZoneWhereUniqueInput = Prisma.AtLeast<{
   operatorName?: Prisma.StringNullableFilter<"PickupZone"> | string | null
   zoneName?: Prisma.StringFilter<"PickupZone"> | string
   description?: Prisma.StringNullableFilter<"PickupZone"> | string | null
+  morningPickupTime?: Prisma.StringNullableFilter<"PickupZone"> | string | null
+  afternoonPickupTime?: Prisma.StringNullableFilter<"PickupZone"> | string | null
+  hasPrivateTransfer?: Prisma.BoolFilter<"PickupZone"> | boolean
+  privateTransferCharge?: Prisma.DecimalNullableFilter<"PickupZone"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: Prisma.StringNullableFilter<"PickupZone"> | string | null
+  afternoonPierArrival?: Prisma.StringNullableFilter<"PickupZone"> | string | null
   surchargeAmount?: Prisma.DecimalFilter<"PickupZone"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: Prisma.EnumSurchargeUnitFilter<"PickupZone"> | $Enums.SurchargeUnit
   currency?: Prisma.StringFilter<"PickupZone"> | string
@@ -323,6 +387,12 @@ export type PickupZoneOrderByWithAggregationInput = {
   operatorName?: Prisma.SortOrderInput | Prisma.SortOrder
   zoneName?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  morningPickupTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  afternoonPickupTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  hasPrivateTransfer?: Prisma.SortOrder
+  privateTransferCharge?: Prisma.SortOrderInput | Prisma.SortOrder
+  morningPierArrival?: Prisma.SortOrderInput | Prisma.SortOrder
+  afternoonPierArrival?: Prisma.SortOrderInput | Prisma.SortOrder
   surchargeAmount?: Prisma.SortOrder
   surchargeUnit?: Prisma.SortOrder
   currency?: Prisma.SortOrder
@@ -346,6 +416,12 @@ export type PickupZoneScalarWhereWithAggregatesInput = {
   operatorName?: Prisma.StringNullableWithAggregatesFilter<"PickupZone"> | string | null
   zoneName?: Prisma.StringWithAggregatesFilter<"PickupZone"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"PickupZone"> | string | null
+  morningPickupTime?: Prisma.StringNullableWithAggregatesFilter<"PickupZone"> | string | null
+  afternoonPickupTime?: Prisma.StringNullableWithAggregatesFilter<"PickupZone"> | string | null
+  hasPrivateTransfer?: Prisma.BoolWithAggregatesFilter<"PickupZone"> | boolean
+  privateTransferCharge?: Prisma.DecimalNullableWithAggregatesFilter<"PickupZone"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: Prisma.StringNullableWithAggregatesFilter<"PickupZone"> | string | null
+  afternoonPierArrival?: Prisma.StringNullableWithAggregatesFilter<"PickupZone"> | string | null
   surchargeAmount?: Prisma.DecimalWithAggregatesFilter<"PickupZone"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: Prisma.EnumSurchargeUnitWithAggregatesFilter<"PickupZone"> | $Enums.SurchargeUnit
   currency?: Prisma.StringWithAggregatesFilter<"PickupZone"> | string
@@ -360,6 +436,12 @@ export type PickupZoneCreateInput = {
   operatorName?: string | null
   zoneName: string
   description?: string | null
+  morningPickupTime?: string | null
+  afternoonPickupTime?: string | null
+  hasPrivateTransfer?: boolean
+  privateTransferCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: string | null
+  afternoonPierArrival?: string | null
   surchargeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: $Enums.SurchargeUnit
   currency?: string
@@ -377,6 +459,12 @@ export type PickupZoneUncheckedCreateInput = {
   operatorName?: string | null
   zoneName: string
   description?: string | null
+  morningPickupTime?: string | null
+  afternoonPickupTime?: string | null
+  hasPrivateTransfer?: boolean
+  privateTransferCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: string | null
+  afternoonPierArrival?: string | null
   surchargeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: $Enums.SurchargeUnit
   currency?: string
@@ -392,6 +480,12 @@ export type PickupZoneUpdateInput = {
   operatorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   zoneName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  morningPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasPrivateTransfer?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  privateTransferCharge?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   surchargeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: Prisma.EnumSurchargeUnitFieldUpdateOperationsInput | $Enums.SurchargeUnit
   currency?: Prisma.StringFieldUpdateOperationsInput | string
@@ -409,6 +503,12 @@ export type PickupZoneUncheckedUpdateInput = {
   operatorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   zoneName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  morningPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasPrivateTransfer?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  privateTransferCharge?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   surchargeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: Prisma.EnumSurchargeUnitFieldUpdateOperationsInput | $Enums.SurchargeUnit
   currency?: Prisma.StringFieldUpdateOperationsInput | string
@@ -425,6 +525,12 @@ export type PickupZoneCreateManyInput = {
   operatorName?: string | null
   zoneName: string
   description?: string | null
+  morningPickupTime?: string | null
+  afternoonPickupTime?: string | null
+  hasPrivateTransfer?: boolean
+  privateTransferCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: string | null
+  afternoonPierArrival?: string | null
   surchargeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: $Enums.SurchargeUnit
   currency?: string
@@ -439,6 +545,12 @@ export type PickupZoneUpdateManyMutationInput = {
   operatorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   zoneName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  morningPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasPrivateTransfer?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  privateTransferCharge?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   surchargeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: Prisma.EnumSurchargeUnitFieldUpdateOperationsInput | $Enums.SurchargeUnit
   currency?: Prisma.StringFieldUpdateOperationsInput | string
@@ -454,6 +566,12 @@ export type PickupZoneUncheckedUpdateManyInput = {
   operatorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   zoneName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  morningPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasPrivateTransfer?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  privateTransferCharge?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   surchargeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: Prisma.EnumSurchargeUnitFieldUpdateOperationsInput | $Enums.SurchargeUnit
   currency?: Prisma.StringFieldUpdateOperationsInput | string
@@ -484,6 +602,12 @@ export type PickupZoneCountOrderByAggregateInput = {
   operatorName?: Prisma.SortOrder
   zoneName?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  morningPickupTime?: Prisma.SortOrder
+  afternoonPickupTime?: Prisma.SortOrder
+  hasPrivateTransfer?: Prisma.SortOrder
+  privateTransferCharge?: Prisma.SortOrder
+  morningPierArrival?: Prisma.SortOrder
+  afternoonPierArrival?: Prisma.SortOrder
   surchargeAmount?: Prisma.SortOrder
   surchargeUnit?: Prisma.SortOrder
   currency?: Prisma.SortOrder
@@ -494,6 +618,7 @@ export type PickupZoneCountOrderByAggregateInput = {
 }
 
 export type PickupZoneAvgOrderByAggregateInput = {
+  privateTransferCharge?: Prisma.SortOrder
   surchargeAmount?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
 }
@@ -504,6 +629,12 @@ export type PickupZoneMaxOrderByAggregateInput = {
   operatorName?: Prisma.SortOrder
   zoneName?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  morningPickupTime?: Prisma.SortOrder
+  afternoonPickupTime?: Prisma.SortOrder
+  hasPrivateTransfer?: Prisma.SortOrder
+  privateTransferCharge?: Prisma.SortOrder
+  morningPierArrival?: Prisma.SortOrder
+  afternoonPierArrival?: Prisma.SortOrder
   surchargeAmount?: Prisma.SortOrder
   surchargeUnit?: Prisma.SortOrder
   currency?: Prisma.SortOrder
@@ -519,6 +650,12 @@ export type PickupZoneMinOrderByAggregateInput = {
   operatorName?: Prisma.SortOrder
   zoneName?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  morningPickupTime?: Prisma.SortOrder
+  afternoonPickupTime?: Prisma.SortOrder
+  hasPrivateTransfer?: Prisma.SortOrder
+  privateTransferCharge?: Prisma.SortOrder
+  morningPierArrival?: Prisma.SortOrder
+  afternoonPierArrival?: Prisma.SortOrder
   surchargeAmount?: Prisma.SortOrder
   surchargeUnit?: Prisma.SortOrder
   currency?: Prisma.SortOrder
@@ -529,6 +666,7 @@ export type PickupZoneMinOrderByAggregateInput = {
 }
 
 export type PickupZoneSumOrderByAggregateInput = {
+  privateTransferCharge?: Prisma.SortOrder
   surchargeAmount?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
 }
@@ -600,6 +738,12 @@ export type PickupZoneCreateWithoutBookingsInput = {
   operatorName?: string | null
   zoneName: string
   description?: string | null
+  morningPickupTime?: string | null
+  afternoonPickupTime?: string | null
+  hasPrivateTransfer?: boolean
+  privateTransferCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: string | null
+  afternoonPierArrival?: string | null
   surchargeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: $Enums.SurchargeUnit
   currency?: string
@@ -616,6 +760,12 @@ export type PickupZoneUncheckedCreateWithoutBookingsInput = {
   operatorName?: string | null
   zoneName: string
   description?: string | null
+  morningPickupTime?: string | null
+  afternoonPickupTime?: string | null
+  hasPrivateTransfer?: boolean
+  privateTransferCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: string | null
+  afternoonPierArrival?: string | null
   surchargeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: $Enums.SurchargeUnit
   currency?: string
@@ -646,6 +796,12 @@ export type PickupZoneUpdateWithoutBookingsInput = {
   operatorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   zoneName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  morningPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasPrivateTransfer?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  privateTransferCharge?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   surchargeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: Prisma.EnumSurchargeUnitFieldUpdateOperationsInput | $Enums.SurchargeUnit
   currency?: Prisma.StringFieldUpdateOperationsInput | string
@@ -662,6 +818,12 @@ export type PickupZoneUncheckedUpdateWithoutBookingsInput = {
   operatorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   zoneName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  morningPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasPrivateTransfer?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  privateTransferCharge?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   surchargeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: Prisma.EnumSurchargeUnitFieldUpdateOperationsInput | $Enums.SurchargeUnit
   currency?: Prisma.StringFieldUpdateOperationsInput | string
@@ -676,6 +838,12 @@ export type PickupZoneCreateWithoutServiceInput = {
   operatorName?: string | null
   zoneName: string
   description?: string | null
+  morningPickupTime?: string | null
+  afternoonPickupTime?: string | null
+  hasPrivateTransfer?: boolean
+  privateTransferCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: string | null
+  afternoonPierArrival?: string | null
   surchargeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: $Enums.SurchargeUnit
   currency?: string
@@ -691,6 +859,12 @@ export type PickupZoneUncheckedCreateWithoutServiceInput = {
   operatorName?: string | null
   zoneName: string
   description?: string | null
+  morningPickupTime?: string | null
+  afternoonPickupTime?: string | null
+  hasPrivateTransfer?: boolean
+  privateTransferCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: string | null
+  afternoonPierArrival?: string | null
   surchargeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: $Enums.SurchargeUnit
   currency?: string
@@ -736,6 +910,12 @@ export type PickupZoneScalarWhereInput = {
   operatorName?: Prisma.StringNullableFilter<"PickupZone"> | string | null
   zoneName?: Prisma.StringFilter<"PickupZone"> | string
   description?: Prisma.StringNullableFilter<"PickupZone"> | string | null
+  morningPickupTime?: Prisma.StringNullableFilter<"PickupZone"> | string | null
+  afternoonPickupTime?: Prisma.StringNullableFilter<"PickupZone"> | string | null
+  hasPrivateTransfer?: Prisma.BoolFilter<"PickupZone"> | boolean
+  privateTransferCharge?: Prisma.DecimalNullableFilter<"PickupZone"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: Prisma.StringNullableFilter<"PickupZone"> | string | null
+  afternoonPierArrival?: Prisma.StringNullableFilter<"PickupZone"> | string | null
   surchargeAmount?: Prisma.DecimalFilter<"PickupZone"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: Prisma.EnumSurchargeUnitFilter<"PickupZone"> | $Enums.SurchargeUnit
   currency?: Prisma.StringFilter<"PickupZone"> | string
@@ -750,6 +930,12 @@ export type PickupZoneCreateManyServiceInput = {
   operatorName?: string | null
   zoneName: string
   description?: string | null
+  morningPickupTime?: string | null
+  afternoonPickupTime?: string | null
+  hasPrivateTransfer?: boolean
+  privateTransferCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: string | null
+  afternoonPierArrival?: string | null
   surchargeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: $Enums.SurchargeUnit
   currency?: string
@@ -764,6 +950,12 @@ export type PickupZoneUpdateWithoutServiceInput = {
   operatorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   zoneName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  morningPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasPrivateTransfer?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  privateTransferCharge?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   surchargeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: Prisma.EnumSurchargeUnitFieldUpdateOperationsInput | $Enums.SurchargeUnit
   currency?: Prisma.StringFieldUpdateOperationsInput | string
@@ -779,6 +971,12 @@ export type PickupZoneUncheckedUpdateWithoutServiceInput = {
   operatorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   zoneName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  morningPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasPrivateTransfer?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  privateTransferCharge?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   surchargeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: Prisma.EnumSurchargeUnitFieldUpdateOperationsInput | $Enums.SurchargeUnit
   currency?: Prisma.StringFieldUpdateOperationsInput | string
@@ -794,6 +992,12 @@ export type PickupZoneUncheckedUpdateManyWithoutServiceInput = {
   operatorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   zoneName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  morningPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasPrivateTransfer?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  privateTransferCharge?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   surchargeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   surchargeUnit?: Prisma.EnumSurchargeUnitFieldUpdateOperationsInput | $Enums.SurchargeUnit
   currency?: Prisma.StringFieldUpdateOperationsInput | string
@@ -840,6 +1044,12 @@ export type PickupZoneSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   operatorName?: boolean
   zoneName?: boolean
   description?: boolean
+  morningPickupTime?: boolean
+  afternoonPickupTime?: boolean
+  hasPrivateTransfer?: boolean
+  privateTransferCharge?: boolean
+  morningPierArrival?: boolean
+  afternoonPierArrival?: boolean
   surchargeAmount?: boolean
   surchargeUnit?: boolean
   currency?: boolean
@@ -858,6 +1068,12 @@ export type PickupZoneSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   operatorName?: boolean
   zoneName?: boolean
   description?: boolean
+  morningPickupTime?: boolean
+  afternoonPickupTime?: boolean
+  hasPrivateTransfer?: boolean
+  privateTransferCharge?: boolean
+  morningPierArrival?: boolean
+  afternoonPierArrival?: boolean
   surchargeAmount?: boolean
   surchargeUnit?: boolean
   currency?: boolean
@@ -874,6 +1090,12 @@ export type PickupZoneSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   operatorName?: boolean
   zoneName?: boolean
   description?: boolean
+  morningPickupTime?: boolean
+  afternoonPickupTime?: boolean
+  hasPrivateTransfer?: boolean
+  privateTransferCharge?: boolean
+  morningPierArrival?: boolean
+  afternoonPierArrival?: boolean
   surchargeAmount?: boolean
   surchargeUnit?: boolean
   currency?: boolean
@@ -890,6 +1112,12 @@ export type PickupZoneSelectScalar = {
   operatorName?: boolean
   zoneName?: boolean
   description?: boolean
+  morningPickupTime?: boolean
+  afternoonPickupTime?: boolean
+  hasPrivateTransfer?: boolean
+  privateTransferCharge?: boolean
+  morningPierArrival?: boolean
+  afternoonPierArrival?: boolean
   surchargeAmount?: boolean
   surchargeUnit?: boolean
   currency?: boolean
@@ -899,7 +1127,7 @@ export type PickupZoneSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PickupZoneOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "serviceId" | "operatorName" | "zoneName" | "description" | "surchargeAmount" | "surchargeUnit" | "currency" | "isActive" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["pickupZone"]>
+export type PickupZoneOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "serviceId" | "operatorName" | "zoneName" | "description" | "morningPickupTime" | "afternoonPickupTime" | "hasPrivateTransfer" | "privateTransferCharge" | "morningPierArrival" | "afternoonPierArrival" | "surchargeAmount" | "surchargeUnit" | "currency" | "isActive" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["pickupZone"]>
 export type PickupZoneInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   service?: boolean | Prisma.PickupZone$serviceArgs<ExtArgs>
   bookings?: boolean | Prisma.PickupZone$bookingsArgs<ExtArgs>
@@ -924,6 +1152,12 @@ export type $PickupZonePayload<ExtArgs extends runtime.Types.Extensions.Internal
     operatorName: string | null
     zoneName: string
     description: string | null
+    morningPickupTime: string | null
+    afternoonPickupTime: string | null
+    hasPrivateTransfer: boolean
+    privateTransferCharge: runtime.Decimal | null
+    morningPierArrival: string | null
+    afternoonPierArrival: string | null
     surchargeAmount: runtime.Decimal
     surchargeUnit: $Enums.SurchargeUnit
     currency: string
@@ -1361,6 +1595,12 @@ export interface PickupZoneFieldRefs {
   readonly operatorName: Prisma.FieldRef<"PickupZone", 'String'>
   readonly zoneName: Prisma.FieldRef<"PickupZone", 'String'>
   readonly description: Prisma.FieldRef<"PickupZone", 'String'>
+  readonly morningPickupTime: Prisma.FieldRef<"PickupZone", 'String'>
+  readonly afternoonPickupTime: Prisma.FieldRef<"PickupZone", 'String'>
+  readonly hasPrivateTransfer: Prisma.FieldRef<"PickupZone", 'Boolean'>
+  readonly privateTransferCharge: Prisma.FieldRef<"PickupZone", 'Decimal'>
+  readonly morningPierArrival: Prisma.FieldRef<"PickupZone", 'String'>
+  readonly afternoonPierArrival: Prisma.FieldRef<"PickupZone", 'String'>
   readonly surchargeAmount: Prisma.FieldRef<"PickupZone", 'Decimal'>
   readonly surchargeUnit: Prisma.FieldRef<"PickupZone", 'SurchargeUnit'>
   readonly currency: Prisma.FieldRef<"PickupZone", 'String'>

@@ -10,6 +10,7 @@ export const createBookingSchema = yup.object({
   pickupZoneId: yup.string().uuid("Invalid pickup zone ID").optional(),
   departureTime: yup.string().trim().max(50).optional(),
   pickupLocation: yup.string().trim().max(500).optional(),
+  isPrivateTransfer: yup.boolean().optional(),
   proposedPrice: yup.number().min(0, "Proposed price must be at least 0").optional(),
   travelDate: yup.string().trim().optional(),
   adults: yup.number().integer("Adults must be an integer").min(1, "At least 1 adult is required").max(50, "Maximum 50 adults per booking").optional(),
@@ -197,6 +198,7 @@ export const createGuestBookingSchema = yup.object({
   pickupZoneId: yup.string().uuid("Invalid pickup zone ID").optional(),
   departureTime: yup.string().trim().max(50).optional(),
   pickupLocation: yup.string().trim().max(500).optional(),
+  isPrivateTransfer: yup.boolean().optional(),
   travelDate: yup.string().trim().optional(),
   adults: yup
     .number()

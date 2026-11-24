@@ -119,6 +119,12 @@ const mapPickupZoneRecord = (record: any) => ({
   operatorName: record.operatorName,
   zoneName: record.zoneName,
   description: record.description,
+  morningPickupTime: record.morningPickupTime,
+  afternoonPickupTime: record.afternoonPickupTime,
+  hasPrivateTransfer: Boolean(record.hasPrivateTransfer),
+  privateTransferCharge: record.privateTransferCharge ? record.privateTransferCharge.toNumber() : null,
+  morningPierArrival: record.morningPierArrival,
+  afternoonPierArrival: record.afternoonPierArrival,
   surchargeAmount: record.surchargeAmount ? record.surchargeAmount.toNumber() : 0,
   surchargeUnit: record.surchargeUnit,
   currency: record.currency,
@@ -459,11 +465,241 @@ export const bulkUpdateServiceStatus = async (
 };
 
 export const createServiceRecord = async (data: CreateServiceInput): Promise<ServiceRecord> => {
-  return db.service.create({ data }) as Promise<ServiceRecord>;
+  const { pricing, availability, packages, timeSlots, pickupZones, ...serviceData } = data;
+
+  return db.$transaction(async (tx) => {
+    const created = await tx.service.create({
+      data: serviceData,
+    });
+
+    if (pricing) {
+      await tx.servicePricing.create({
+        data: {
+          serviceId: created.id,
+          currency: pricing.currency || "THB",
+          basePrice: pricing.basePrice ?? 0,
+          discountedPrice: pricing.discountedPrice ?? null,
+          taxRate: pricing.taxRate ?? 0,
+          validFrom: pricing.validFrom ? new Date(pricing.validFrom) : null,
+          validTo: pricing.validTo ? new Date(pricing.validTo) : null,
+        },
+      });
+    }
+
+    if (availability && availability.length > 0) {
+      for (const av of availability) {
+        await tx.serviceAvailability.create({
+          data: {
+            serviceId: created.id,
+            date: new Date(av.date),
+            isAvailable: av.isAvailable,
+            capacity: av.capacity ?? null,
+            externalReferenceId: av.externalReferenceId ?? null,
+          },
+        });
+      }
+    }
+
+    if (packages && packages.length > 0) {
+      for (let i = 0; i < packages.length; i++) {
+        const pkg = packages[i];
+        await tx.servicePackage.create({
+          data: {
+            serviceId: created.id,
+            name: pkg.name,
+            description: pkg.description ?? null,
+            durationMinutes: pkg.durationMinutes,
+            boatSize: pkg.boatSize ?? null,
+            minPax: pkg.minPax ?? 1,
+            maxCapacity: pkg.maxCapacity,
+            sellingPrice: pkg.sellingPrice,
+            netPrice: pkg.netPrice != null ? pkg.netPrice : null,
+            currency: pkg.currency || "THB",
+            isActive: pkg.isActive ?? true,
+            sortOrder: pkg.sortOrder ?? i,
+          },
+        });
+      }
+    }
+
+    if (timeSlots && timeSlots.length > 0) {
+      for (let i = 0; i < timeSlots.length; i++) {
+        const slot = timeSlots[i];
+        await tx.serviceTimeSlot.create({
+          data: {
+            serviceId: created.id,
+            name: slot.name,
+            departureTime: slot.departureTime,
+            capacity: slot.capacity ?? null,
+            isActive: slot.isActive ?? true,
+            sortOrder: slot.sortOrder ?? i,
+          },
+        });
+      }
+    }
+
+    if (pickupZones && pickupZones.length > 0) {
+      for (let i = 0; i < pickupZones.length; i++) {
+        const zone = pickupZones[i];
+        await tx.pickupZone.create({
+          data: {
+            serviceId: created.id,
+            operatorName: zone.operatorName ?? created.providerName ?? null,
+            zoneName: zone.zoneName,
+            description: zone.description ?? null,
+            morningPickupTime: zone.morningPickupTime ?? null,
+            afternoonPickupTime: zone.afternoonPickupTime ?? null,
+            hasPrivateTransfer: zone.hasPrivateTransfer ?? false,
+            privateTransferCharge: zone.privateTransferCharge != null ? zone.privateTransferCharge : null,
+            morningPierArrival: zone.morningPierArrival ?? "08:30 AM",
+            afternoonPierArrival: zone.afternoonPierArrival ?? "12:30 PM",
+            surchargeAmount: zone.surchargeAmount ?? 0,
+            surchargeUnit: zone.surchargeUnit || "PER_BOOKING",
+            currency: zone.currency || "THB",
+            isActive: zone.isActive ?? true,
+            sortOrder: zone.sortOrder ?? i,
+          },
+        });
+      }
+    }
+
+    return created;
+  }) as Promise<ServiceRecord>;
 };
 
 export const updateServiceRecord = async (id: string, data: UpdateServiceInput): Promise<ServiceRecord> => {
-  return db.service.update({ where: { id }, data }) as Promise<ServiceRecord>;
+  const { pricing, availability, packages, timeSlots, pickupZones, ...serviceData } = data;
+
+  return db.$transaction(async (tx) => {
+    const updated = await tx.service.update({
+      where: { id },
+      data: serviceData,
+    });
+
+    if (pricing) {
+      const existingPricing = await tx.servicePricing.findFirst({ where: { serviceId: id } });
+      if (existingPricing) {
+        await tx.servicePricing.update({
+          where: { id: existingPricing.id },
+          data: {
+            currency: pricing.currency,
+            basePrice: pricing.basePrice,
+            discountedPrice: pricing.discountedPrice,
+            taxRate: pricing.taxRate,
+            validFrom: pricing.validFrom ? new Date(pricing.validFrom) : undefined,
+            validTo: pricing.validTo ? new Date(pricing.validTo) : undefined,
+          },
+        });
+      } else {
+        await tx.servicePricing.create({
+          data: {
+            serviceId: id,
+            currency: pricing.currency || "THB",
+            basePrice: pricing.basePrice ?? 0,
+            discountedPrice: pricing.discountedPrice ?? null,
+            taxRate: pricing.taxRate ?? 0,
+            validFrom: pricing.validFrom ? new Date(pricing.validFrom) : null,
+            validTo: pricing.validTo ? new Date(pricing.validTo) : null,
+          },
+        });
+      }
+    }
+
+    if (availability && availability.length > 0) {
+      for (const av of availability) {
+        await tx.serviceAvailability.upsert({
+          where: {
+            serviceId_date: {
+              serviceId: id,
+              date: new Date(av.date),
+            },
+          },
+          update: {
+            isAvailable: av.isAvailable,
+            capacity: av.capacity,
+            externalReferenceId: av.externalReferenceId,
+            lastVerifiedAt: new Date(),
+          },
+          create: {
+            serviceId: id,
+            date: new Date(av.date),
+            isAvailable: av.isAvailable,
+            capacity: av.capacity,
+            externalReferenceId: av.externalReferenceId,
+            lastVerifiedAt: new Date(),
+          },
+        });
+      }
+    }
+
+    if (packages !== undefined) {
+      await tx.servicePackage.deleteMany({ where: { serviceId: id } });
+      for (let i = 0; i < packages.length; i++) {
+        const pkg = packages[i];
+        await tx.servicePackage.create({
+          data: {
+            serviceId: id,
+            name: pkg.name,
+            description: pkg.description ?? null,
+            durationMinutes: pkg.durationMinutes,
+            boatSize: pkg.boatSize ?? null,
+            minPax: pkg.minPax ?? 1,
+            maxCapacity: pkg.maxCapacity,
+            sellingPrice: pkg.sellingPrice,
+            netPrice: pkg.netPrice != null ? pkg.netPrice : null,
+            currency: pkg.currency || "THB",
+            isActive: pkg.isActive ?? true,
+            sortOrder: pkg.sortOrder ?? i,
+          },
+        });
+      }
+    }
+
+    if (timeSlots !== undefined) {
+      await tx.serviceTimeSlot.deleteMany({ where: { serviceId: id } });
+      for (let i = 0; i < timeSlots.length; i++) {
+        const slot = timeSlots[i];
+        await tx.serviceTimeSlot.create({
+          data: {
+            serviceId: id,
+            name: slot.name,
+            departureTime: slot.departureTime,
+            capacity: slot.capacity ?? null,
+            isActive: slot.isActive ?? true,
+            sortOrder: slot.sortOrder ?? i,
+          },
+        });
+      }
+    }
+
+    if (pickupZones !== undefined) {
+      await tx.pickupZone.deleteMany({ where: { serviceId: id } });
+      for (let i = 0; i < pickupZones.length; i++) {
+        const zone = pickupZones[i];
+        await tx.pickupZone.create({
+          data: {
+            serviceId: id,
+            operatorName: zone.operatorName ?? updated.providerName ?? null,
+            zoneName: zone.zoneName,
+            description: zone.description ?? null,
+            morningPickupTime: zone.morningPickupTime ?? null,
+            afternoonPickupTime: zone.afternoonPickupTime ?? null,
+            hasPrivateTransfer: zone.hasPrivateTransfer ?? false,
+            privateTransferCharge: zone.privateTransferCharge != null ? zone.privateTransferCharge : null,
+            morningPierArrival: zone.morningPierArrival ?? "08:30 AM",
+            afternoonPierArrival: zone.afternoonPierArrival ?? "12:30 PM",
+            surchargeAmount: zone.surchargeAmount ?? 0,
+            surchargeUnit: zone.surchargeUnit || "PER_BOOKING",
+            currency: zone.currency || "THB",
+            isActive: zone.isActive ?? true,
+            sortOrder: zone.sortOrder ?? i,
+          },
+        });
+      }
+    }
+
+    return updated;
+  }) as Promise<ServiceRecord>;
 };
 
 export const updateServiceStatusRecord = async (id: string, data: UpdateServiceStatusInput): Promise<ServiceRecord> => {
@@ -722,6 +958,12 @@ export const createPickupZoneRecord = async (data: any) => {
       operatorName: data.operatorName || null,
       zoneName: data.zoneName,
       description: data.description || null,
+      morningPickupTime: data.morningPickupTime || null,
+      afternoonPickupTime: data.afternoonPickupTime || null,
+      hasPrivateTransfer: data.hasPrivateTransfer ?? false,
+      privateTransferCharge: data.privateTransferCharge != null ? data.privateTransferCharge : null,
+      morningPierArrival: data.morningPierArrival || "08:30 AM",
+      afternoonPierArrival: data.afternoonPierArrival || "12:30 PM",
       surchargeAmount: data.surchargeAmount ?? 0,
       surchargeUnit: data.surchargeUnit || "PER_BOOKING",
       currency: data.currency || "THB",
