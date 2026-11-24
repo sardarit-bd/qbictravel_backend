@@ -88,3 +88,80 @@ export const deleteService = async (id: string) => {
   // 3. Delegate atomic deletion
   return serviceRepository.deleteServiceRecord(id);
 };
+
+// ========================================================
+// SERVICE PACKAGES
+// ========================================================
+
+export const getServicePackages = async (serviceId: string, isAdmin = false) => {
+  await getServiceDetails(serviceId, isAdmin);
+  return serviceRepository.findPackagesByServiceId(serviceId, isAdmin);
+};
+
+export const createServicePackage = async (serviceId: string, data: any) => {
+  await getServiceDetails(serviceId, true);
+  return serviceRepository.createPackageRecord(serviceId, data);
+};
+
+export const updateServicePackage = async (serviceId: string, packageId: string, data: any) => {
+  await getServiceDetails(serviceId, true);
+  return serviceRepository.updatePackageRecord(packageId, data);
+};
+
+export const deleteServicePackage = async (serviceId: string, packageId: string) => {
+  await getServiceDetails(serviceId, true);
+  return serviceRepository.deletePackageRecord(packageId);
+};
+
+// ========================================================
+// SERVICE TIME SLOTS
+// ========================================================
+
+export const getServiceTimeSlots = async (serviceId: string, isAdmin = false) => {
+  await getServiceDetails(serviceId, isAdmin);
+  return serviceRepository.findTimeSlotsByServiceId(serviceId, isAdmin);
+};
+
+export const createServiceTimeSlot = async (serviceId: string, data: any) => {
+  await getServiceDetails(serviceId, true);
+  return serviceRepository.createTimeSlotRecord(serviceId, data);
+};
+
+export const updateServiceTimeSlot = async (serviceId: string, slotId: string, data: any) => {
+  await getServiceDetails(serviceId, true);
+  return serviceRepository.updateTimeSlotRecord(slotId, data);
+};
+
+export const deleteServiceTimeSlot = async (serviceId: string, slotId: string) => {
+  await getServiceDetails(serviceId, true);
+  return serviceRepository.deleteTimeSlotRecord(slotId);
+};
+
+// ========================================================
+// PICKUP ZONES
+// ========================================================
+
+export const getPickupZones = async (serviceId?: string, isAdmin = false) => {
+  if (serviceId) {
+    await getServiceDetails(serviceId, isAdmin);
+  }
+  return serviceRepository.findPickupZones(serviceId, isAdmin);
+};
+
+export const createPickupZone = async (data: any) => {
+  if (data.serviceId) {
+    await getServiceDetails(data.serviceId, true);
+  }
+  return serviceRepository.createPickupZoneRecord(data);
+};
+
+export const updatePickupZone = async (zoneId: string, data: any) => {
+  if (data.serviceId) {
+    await getServiceDetails(data.serviceId, true);
+  }
+  return serviceRepository.updatePickupZoneRecord(zoneId, data);
+};
+
+export const deletePickupZone = async (zoneId: string) => {
+  return serviceRepository.deletePickupZoneRecord(zoneId);
+};

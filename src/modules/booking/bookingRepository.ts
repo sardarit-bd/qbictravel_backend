@@ -1,6 +1,30 @@
 import { prisma } from "../../lib/prisma.js";
 import type { CreateBookingInput } from "./bookingTypes.js";
 
+const mapBookingRecord = (booking: any) => {
+  if (!booking) return booking;
+  return {
+    ...booking,
+    basePrice: Number(booking.basePrice),
+    proposedPrice: booking.proposedPrice != null ? Number(booking.proposedPrice) : null,
+    finalPrice: Number(booking.finalPrice),
+    packagePriceSnapshot: booking.packagePriceSnapshot != null ? Number(booking.packagePriceSnapshot) : null,
+    netPriceSnapshot: booking.netPriceSnapshot != null ? Number(booking.netPriceSnapshot) : null,
+    pickupSurcharge: Number(booking.pickupSurcharge ?? 0),
+    taxAmount: Number(booking.taxAmount ?? 0),
+    priceApproval: booking.priceApproval
+      ? {
+          ...booking.priceApproval,
+          requestedPrice: Number(booking.priceApproval.requestedPrice),
+          approvedPrice:
+            booking.priceApproval.approvedPrice != null
+              ? Number(booking.priceApproval.approvedPrice)
+              : null,
+        }
+      : null,
+  };
+};
+
 export const createBooking = async (
   input: CreateBookingInput & { 
     currency: string;
@@ -14,6 +38,15 @@ export const createBooking = async (
     historyAction?: string;
     actorRole?: string;
     isGuest?: boolean;
+    packageId?: string | null;
+    timeSlotId?: string | null;
+    pickupZoneId?: string | null;
+    departureTime?: string | null;
+    pickupLocation?: string | null;
+    packagePriceSnapshot?: number | null;
+    netPriceSnapshot?: number | null;
+    pickupSurcharge?: number;
+    taxAmount?: number;
   },
   txClient?: any
 ) => {
@@ -27,6 +60,15 @@ export const createBooking = async (
         source: input.source || (input.agentId ? "AGENT" : "CUSTOMER"),
         serviceId: input.serviceId,
         availabilityId: input.availabilityId || null,
+        packageId: input.packageId || null,
+        timeSlotId: input.timeSlotId || null,
+        pickupZoneId: input.pickupZoneId || null,
+        departureTime: input.departureTime || null,
+        pickupLocation: input.pickupLocation || null,
+        packagePriceSnapshot: input.packagePriceSnapshot != null ? input.packagePriceSnapshot : null,
+        netPriceSnapshot: input.netPriceSnapshot != null ? input.netPriceSnapshot : null,
+        pickupSurcharge: input.pickupSurcharge ?? 0,
+        taxAmount: input.taxAmount ?? 0,
         currency: input.currency,
         basePrice: input.basePrice, // Pass number directly
         proposedPrice: input.proposedPrice !== undefined ? Number(input.proposedPrice) : null,
@@ -56,11 +98,18 @@ export const createBooking = async (
           currency: input.currency,
           requiresApproval: input.requiresApproval,
           notes: input.notes || null,
+          packageId: input.packageId || null,
+          timeSlotId: input.timeSlotId || null,
+          pickupZoneId: input.pickupZoneId || null,
+          departureTime: input.departureTime || null,
+          pickupLocation: input.pickupLocation || null,
+          pickupSurcharge: input.pickupSurcharge ?? 0,
+          taxAmount: input.taxAmount ?? 0,
         },
       },
     });
 
-    return created;
+    return mapBookingRecord(created);
   };
 
   if (txClient) {

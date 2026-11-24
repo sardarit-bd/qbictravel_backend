@@ -19,6 +19,15 @@ model Booking {
   source               BookingSource                @default(DIRECT)
   serviceId            String
   availabilityId       String?
+  packageId            String?
+  timeSlotId           String?
+  pickupZoneId         String?
+  departureTime        String?
+  pickupLocation       String?
+  packagePriceSnapshot Decimal?                     @db.Decimal(10, 2)
+  netPriceSnapshot     Decimal?                     @db.Decimal(10, 2)
+  pickupSurcharge      Decimal                      @default(0.00) @db.Decimal(10, 2)
+  taxAmount            Decimal                      @default(0.00) @db.Decimal(10, 2)
   currency             String
   basePrice            Decimal                      @db.Decimal(10, 2)
   proposedPrice        Decimal?                     @db.Decimal(10, 2)
@@ -37,6 +46,9 @@ model Booking {
   createdBy            User?                        @relation("CreatedBookings", fields: [createdById], references: [id])
   assignedStaff        User?                        @relation("StaffAssignments", fields: [assignedStaffId], references: [id])
   availability         ServiceAvailability?         @relation(fields: [availabilityId], references: [id])
+  package              ServicePackage?              @relation(fields: [packageId], references: [id], onDelete: SetNull)
+  timeSlot             ServiceTimeSlot?             @relation(fields: [timeSlotId], references: [id], onDelete: SetNull)
+  pickupZone           PickupZone?                  @relation(fields: [pickupZoneId], references: [id], onDelete: SetNull)
   customer             User                         @relation("CustomerBookings", fields: [customerId], references: [id])
   service              Service                      @relation(fields: [serviceId], references: [id])
   history              BookingHistory[]
@@ -58,6 +70,9 @@ model Booking {
   @@index([createdById])
   @@index([source])
   @@index([isGuest])
+  @@index([packageId])
+  @@index([timeSlotId])
+  @@index([pickupZoneId])
 }
 
 model PriceApproval {

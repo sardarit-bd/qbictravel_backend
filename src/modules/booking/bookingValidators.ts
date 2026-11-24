@@ -5,6 +5,11 @@ export const createBookingSchema = yup.object({
   agentId: yup.string().uuid("Invalid agent ID").optional(),
   serviceId: yup.string().uuid("Invalid service ID").required("Service ID is required"),
   availabilityId: yup.string().uuid("Invalid availability ID").optional(),
+  packageId: yup.string().uuid("Invalid package ID").optional(),
+  timeSlotId: yup.string().uuid("Invalid time slot ID").optional(),
+  pickupZoneId: yup.string().uuid("Invalid pickup zone ID").optional(),
+  departureTime: yup.string().trim().max(50).optional(),
+  pickupLocation: yup.string().trim().max(500).optional(),
   proposedPrice: yup.number().min(0, "Proposed price must be at least 0").optional(),
   travelDate: yup.string().trim().optional(),
   adults: yup.number().integer("Adults must be an integer").min(1, "At least 1 adult is required").max(50, "Maximum 50 adults per booking").optional(),
@@ -34,6 +39,11 @@ export const createStaffBookingSchema = yup
       .uuid("Invalid service ID")
       .required("Service ID is required"),
     availabilityId: yup.string().uuid("Invalid availability ID").optional(),
+    packageId: yup.string().uuid("Invalid package ID").optional(),
+    timeSlotId: yup.string().uuid("Invalid time slot ID").optional(),
+    pickupZoneId: yup.string().uuid("Invalid pickup zone ID").optional(),
+    departureTime: yup.string().trim().max(50).optional(),
+    pickupLocation: yup.string().trim().max(500).optional(),
     travelDate: yup.string().trim().optional(),
     adults: yup
       .number()
@@ -182,6 +192,11 @@ export const createGuestBookingSchema = yup.object({
     .uuid("Invalid service ID")
     .required("Service ID is required"),
   availabilityId: yup.string().uuid("Invalid availability ID").optional(),
+  packageId: yup.string().uuid("Invalid package ID").optional(),
+  timeSlotId: yup.string().uuid("Invalid time slot ID").optional(),
+  pickupZoneId: yup.string().uuid("Invalid pickup zone ID").optional(),
+  departureTime: yup.string().trim().max(50).optional(),
+  pickupLocation: yup.string().trim().max(500).optional(),
   travelDate: yup.string().trim().optional(),
   adults: yup
     .number()

@@ -95,6 +95,39 @@ export const findPublishedServices = async (
   };
 };
 
+const mapPackageRecord = (record: any, isAdmin = false) => ({
+  id: record.id,
+  serviceId: record.serviceId,
+  name: record.name,
+  description: record.description,
+  durationMinutes: record.durationMinutes,
+  boatSize: record.boatSize,
+  minPax: record.minPax,
+  maxCapacity: record.maxCapacity,
+  sellingPrice: record.sellingPrice ? record.sellingPrice.toNumber() : 0,
+  ...(isAdmin && record.netPrice != null ? { netPrice: record.netPrice.toNumber() } : {}),
+  currency: record.currency,
+  isActive: record.isActive,
+  sortOrder: record.sortOrder,
+  createdAt: record.createdAt,
+  updatedAt: record.updatedAt,
+});
+
+const mapPickupZoneRecord = (record: any) => ({
+  id: record.id,
+  serviceId: record.serviceId,
+  operatorName: record.operatorName,
+  zoneName: record.zoneName,
+  description: record.description,
+  surchargeAmount: record.surchargeAmount ? record.surchargeAmount.toNumber() : 0,
+  surchargeUnit: record.surchargeUnit,
+  currency: record.currency,
+  isActive: record.isActive,
+  sortOrder: record.sortOrder,
+  createdAt: record.createdAt,
+  updatedAt: record.updatedAt,
+});
+
 export const findServiceById = async (id: string, includeUnpublished = false): Promise<ServiceDetail | null> => {
   const where: any = { id };
   if (!includeUnpublished) {
@@ -106,16 +139,35 @@ export const findServiceById = async (id: string, includeUnpublished = false): P
     include: {
       availability: { orderBy: { date: "asc" } },
       pricing: { orderBy: { validFrom: "asc" } },
+      packages: { orderBy: { sortOrder: "asc" } },
+      timeSlots: { orderBy: { sortOrder: "asc" } },
+      pickupZones: { orderBy: { sortOrder: "asc" } },
       media: { orderBy: { createdAt: "desc" } },
     },
   });
 
   if (!result) return null;
 
+  // Filter inactive relations for public view
+  const packages = includeUnpublished
+    ? result.packages.map((p: any) => mapPackageRecord(p, true))
+    : result.packages.filter((p: any) => p.isActive).map((p: any) => mapPackageRecord(p, false));
+
+  const timeSlots = includeUnpublished
+    ? result.timeSlots
+    : result.timeSlots.filter((t: any) => t.isActive);
+
+  const pickupZones = includeUnpublished
+    ? result.pickupZones.map(mapPickupZoneRecord)
+    : result.pickupZones.filter((z: any) => z.isActive).map(mapPickupZoneRecord);
+
   // Map the nested pricing array to convert Decimal to number
   return {
     ...result,
     pricing: result.pricing.map(mapPricingRecord),
+    packages,
+    timeSlots,
+    pickupZones,
   } as ServiceDetail;
 };
 
@@ -550,5 +602,146 @@ export const deleteServiceRecord = async (serviceId: string): Promise<{ id: stri
     });
 
     return deleted;
+  });
+};
+
+// ========================================================
+// SERVICE PACKAGES
+// ========================================================
+
+export const findPackagesByServiceId = async (serviceId: string, isAdmin = false) => {
+  const where: any = { serviceId };
+  if (!isAdmin) {
+    where.isActive = true;
+  }
+  const records = await db.servicePackage.findMany({
+    where,
+    orderBy: { sortOrder: "asc" },
+  });
+  return records.map((r: any) => mapPackageRecord(r, isAdmin));
+};
+
+export const createPackageRecord = async (serviceId: string, data: any) => {
+  const created = await db.servicePackage.create({
+    data: {
+      serviceId,
+      name: data.name,
+      description: data.description || null,
+      durationMinutes: data.durationMinutes,
+      boatSize: data.boatSize || null,
+      minPax: data.minPax ?? 1,
+      maxCapacity: data.maxCapacity,
+      sellingPrice: data.sellingPrice,
+      netPrice: data.netPrice != null ? data.netPrice : null,
+      currency: data.currency || "THB",
+      isActive: data.isActive ?? true,
+      sortOrder: data.sortOrder ?? 0,
+    },
+  });
+  return mapPackageRecord(created, true);
+};
+
+export const updatePackageRecord = async (packageId: string, data: any) => {
+  const updated = await db.servicePackage.update({
+    where: { id: packageId },
+    data,
+  });
+  return mapPackageRecord(updated, true);
+};
+
+export const deletePackageRecord = async (packageId: string) => {
+  return db.servicePackage.delete({
+    where: { id: packageId },
+  });
+};
+
+// ========================================================
+// SERVICE TIME SLOTS
+// ========================================================
+
+export const findTimeSlotsByServiceId = async (serviceId: string, isAdmin = false) => {
+  const where: any = { serviceId };
+  if (!isAdmin) {
+    where.isActive = true;
+  }
+  return db.serviceTimeSlot.findMany({
+    where,
+    orderBy: { sortOrder: "asc" },
+  });
+};
+
+export const createTimeSlotRecord = async (serviceId: string, data: any) => {
+  return db.serviceTimeSlot.create({
+    data: {
+      serviceId,
+      name: data.name,
+      departureTime: data.departureTime,
+      capacity: data.capacity != null ? data.capacity : null,
+      isActive: data.isActive ?? true,
+      sortOrder: data.sortOrder ?? 0,
+    },
+  });
+};
+
+export const updateTimeSlotRecord = async (slotId: string, data: any) => {
+  return db.serviceTimeSlot.update({
+    where: { id: slotId },
+    data,
+  });
+};
+
+export const deleteTimeSlotRecord = async (slotId: string) => {
+  return db.serviceTimeSlot.delete({
+    where: { id: slotId },
+  });
+};
+
+// ========================================================
+// PICKUP ZONES
+// ========================================================
+
+export const findPickupZones = async (serviceId?: string, isAdmin = false) => {
+  const where: any = {};
+  if (serviceId) {
+    where.OR = [{ serviceId }, { serviceId: null }];
+  }
+  if (!isAdmin) {
+    where.isActive = true;
+  }
+  const records = await db.pickupZone.findMany({
+    where,
+    orderBy: { sortOrder: "asc" },
+  });
+  return records.map(mapPickupZoneRecord);
+};
+
+export const createPickupZoneRecord = async (data: any) => {
+  const created = await db.pickupZone.create({
+    data: {
+      serviceId: data.serviceId || null,
+      operatorName: data.operatorName || null,
+      zoneName: data.zoneName,
+      description: data.description || null,
+      surchargeAmount: data.surchargeAmount ?? 0,
+      surchargeUnit: data.surchargeUnit || "PER_BOOKING",
+      currency: data.currency || "THB",
+      isActive: data.isActive ?? true,
+      sortOrder: data.sortOrder ?? 0,
+    },
+  });
+  return mapPickupZoneRecord(created);
+};
+
+export const updatePickupZoneRecord = async (zoneId: string, data: any) => {
+  const updated = await db.pickupZone.update({
+    where: { id: zoneId },
+    data,
+  });
+  return mapPickupZoneRecord(updated);
+};
+
+export const deletePickupZoneRecord = async (zoneId: string) => {
+  return db.pickupZone.delete({
+    where: { id: zoneId },
   });
 };

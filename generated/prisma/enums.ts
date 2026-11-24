@@ -312,6 +312,23 @@ export const ServiceStatus = {
 export type ServiceStatus = (typeof ServiceStatus)[keyof typeof ServiceStatus]
 
 
+export const PricingModelType = {
+  PER_PERSON: 'PER_PERSON',
+  PER_PACKAGE: 'PER_PACKAGE'
+} as const
+
+export type PricingModelType = (typeof PricingModelType)[keyof typeof PricingModelType]
+
+
+export const SurchargeUnit = {
+  PER_BOOKING: 'PER_BOOKING',
+  PER_VEHICLE: 'PER_VEHICLE',
+  PER_PERSON: 'PER_PERSON'
+} as const
+
+export type SurchargeUnit = (typeof SurchargeUnit)[keyof typeof SurchargeUnit]
+
+
 export const UserRole = {
   customer: 'customer',
   agent: 'agent',
