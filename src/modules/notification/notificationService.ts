@@ -1,3 +1,4 @@
+import env from "../../config/env.js";
 import logger from "../../shared/logger/logger.js";
 import { sendEmail, type MailAttachment } from "../../shared/utils/mailer.js";
 import * as notificationRepository from "./notificationRepository.js";
@@ -489,6 +490,88 @@ export const notifyOperationalUpdate = async (bookingId: string): Promise<void> 
   await notifyBookingParties(bookingId, "OPERATIONAL_UPDATE", "An update on your booking", (c) =>
     `Hello ${c.recipientName},\n\nYour ${c.serviceName} booking is now ${humanize(c.fulfillmentStatus)}.`,
   );
+};
+
+export const notifyBookingAmended = async (
+  bookingId: string,
+  changes: Record<string, any>,
+  actor: { id: string; role: string }
+): Promise<void> => {
+  try {
+    const booking = await notificationRepository.findBookingRecipients(bookingId);
+    if (!booking) return;
+
+    const ref = booking.id.slice(0, 8).toUpperCase();
+    const serviceName = booking.service.name;
+    const actorRoleLabel = actor.role === "admin" ? "Admin" : "Staff";
+
+    // Build human-readable change lines
+    const changeLines: string[] = [];
+    if (changes.travelDate) {
+      const fromStr = changes.travelDate.from ? new Date(changes.travelDate.from).toLocaleDateString("en-US") : "N/A";
+      const toStr = changes.travelDate.to ? new Date(changes.travelDate.to).toLocaleDateString("en-US") : "N/A";
+      changeLines.push(`- Travel Date: ${fromStr} -> ${toStr}`);
+    }
+    if (changes.guests) {
+      const { from, to } = changes.guests;
+      changeLines.push(
+        `- Guests: ${from.adults}A, ${from.children}C, ${from.infants}I -> ${to.adults}A, ${to.children}C, ${to.infants}I`
+      );
+    }
+    if (changes.pickupLocation) {
+      changeLines.push(`- Pickup Location: ${changes.pickupLocation.from || "None"} -> ${changes.pickupLocation.to || "None"}`);
+    }
+    if (changes.customer) {
+      if (changes.customer.name && changes.customer.name.from !== changes.customer.name.to) {
+        changeLines.push(`- Lead Traveler Name: ${changes.customer.name.from} -> ${changes.customer.name.to}`);
+      }
+      if (changes.customer.phone && changes.customer.phone.from !== changes.customer.phone.to) {
+        changeLines.push(`- Contact Phone: ${changes.customer.phone.from || "None"} -> ${changes.customer.phone.to || "None"}`);
+      }
+      if (changes.customer.email && changes.customer.email.from !== changes.customer.email.to) {
+        changeLines.push(`- Contact Email: ${changes.customer.email.from} -> ${changes.customer.email.to}`);
+      }
+    }
+    if (changes.notes) {
+      changeLines.push(`- Special Requests / Notes: Updated`);
+    }
+
+    const changesText = changeLines.length > 0 ? changeLines.join("\n") : "- Booking details updated";
+    const dashboardUrl = `${env.frontendUrl}/dashboard/bookings/${booking.id}`;
+
+    // 1. Persistent in-app notification to customer (if registered customer)
+    if (!booking.isGuest && booking.customerId && booking.customer && booking.customer.status === "active") {
+      await dispatchNotification({
+        recipientUserId: booking.customer.id,
+        type: "booking.updated",
+        title: `Booking Updated: ${ref}`,
+        message: `Your booking for ${serviceName} has been updated by ${actorRoleLabel}.`,
+        entityType: "booking",
+        entityId: booking.id,
+        actionUrl: `/dashboard/bookings/${booking.id}`,
+        idempotencyKey: `notif_${booking.customer.id}_${booking.id}_amended_${Date.now()}`,
+        metadata: { changes, actorRole: actor.role },
+      });
+    }
+
+    // 2. Email notification to customer/guest
+    await notifyBookingParties(
+      bookingId,
+      "BOOKING_STATUS_CHANGE",
+      `Booking Update: ${serviceName} (${ref})`,
+      (c) =>
+        `Hello ${c.recipientName},\n\n` +
+        `Your booking for ${c.serviceName} (Ref: ${ref}) has been updated by ${actorRoleLabel}.\n\n` +
+        `Summary of Updates:\n` +
+        `${changesText}\n\n` +
+        `You can view your updated reservation and itinerary details anytime at:\n` +
+        `${dashboardUrl}\n\n` +
+        `If you have any questions, our support team is available at support@phukettours.com.\n\n` +
+        `Warm regards,\nThe PhuketTours Team`
+    );
+  } catch (err) {
+    logger.error({ err, bookingId }, "Failed to send booking amended notifications");
+  }
 };
 
 export const notifyGuestBookingAccess = async (

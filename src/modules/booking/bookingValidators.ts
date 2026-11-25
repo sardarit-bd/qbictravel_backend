@@ -156,6 +156,7 @@ export const listStaffCustomersQuerySchema = yup.object({
 export const listStaffCreatedBookingsQuerySchema = yup.object({
   page: yup.number().integer().min(1).optional(),
   limit: yup.number().integer().min(1).max(100).optional(),
+  scope: yup.string().oneOf(["my", "all"]).optional(),
   status: yup.string().trim().optional(),
   paymentStatus: yup.string().oneOf(["ALL", "UNPAID", "PARTIALLY_PAID", "PAID"]).optional(),
   fulfillmentStatus: yup.string().oneOf(["ALL", "NOT_STARTED", "IN_PROGRESS", "FULFILLED"]).optional(),

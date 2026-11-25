@@ -1321,9 +1321,11 @@ export const listStaffCreatedBookings = async (
   query: Record<string, unknown>
 ) => {
   const { page, limit, skip } = parsePagination(query);
+  const scope = query.scope === "all" ? "all" : "my";
   const result = await bookingRepository.listStaffCreatedBookings(staffId, {
     skip,
     take: limit,
+    scope,
     status: typeof query.status === "string" ? query.status : undefined,
     paymentStatus: typeof query.paymentStatus === "string" ? query.paymentStatus : undefined,
     fulfillmentStatus: typeof query.fulfillmentStatus === "string" ? query.fulfillmentStatus : undefined,
@@ -1714,6 +1716,12 @@ export const amendStaffBooking = async (
     emitBookingEvent("booking.status_changed", bookingId, { action: "AMENDED" }).catch((err) =>
       logger.error({ bookingId, err }, "Failed to emit amendment event")
     );
+
+    // Send customer in-app notification & change summary email
+    void notificationService.notifyBookingAmended(bookingId, changes, {
+      id: actorId,
+      role: actorRole,
+    });
 
     return mapBookingToResponse(updated);
   } catch (err: any) {

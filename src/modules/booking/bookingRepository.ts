@@ -420,15 +420,24 @@ export const listStaffCreatedBookings = async (
   params: {
     skip: number;
     take: number;
+    scope?: "my" | "all";
     status?: string;
     paymentStatus?: string;
     fulfillmentStatus?: string;
     search?: string;
   }
 ) => {
-  const where: any = {
-    createdById: staffId,
-  };
+  const where: any = {};
+
+  if (params.scope === "all") {
+    // Authorized view of all bookings
+  } else {
+    // "my" bookings: created by or assigned to the logged-in staff member
+    where.OR = [
+      { createdById: staffId },
+      { assignedStaffId: staffId },
+    ];
+  }
 
   if (params.status && params.status !== "ALL") {
     where.status = params.status;
@@ -444,13 +453,24 @@ export const listStaffCreatedBookings = async (
 
   if (params.search && params.search.trim()) {
     const q = params.search.trim();
-    where.OR = [
+    const searchConditions = [
       { id: { contains: q, mode: "insensitive" } },
       { customer: { name: { contains: q, mode: "insensitive" } } },
       { customer: { email: { contains: q, mode: "insensitive" } } },
       { service: { name: { contains: q, mode: "insensitive" } } },
       { notes: { contains: q, mode: "insensitive" } },
     ];
+
+    if (where.OR) {
+      // In "my" mode, combine the ownership condition with the search condition
+      where.AND = [
+        { OR: where.OR },
+        { OR: searchConditions },
+      ];
+      delete where.OR;
+    } else {
+      where.OR = searchConditions;
+    }
   }
 
   const [items, total] = await Promise.all([
@@ -1080,7 +1100,7 @@ export const amendBookingRecord = async (params: {
       }
     }
 
-    // 3. Check payment status changes if final price changed
+    // 3. Preserve financial integrity: do not downgrade verified paid bookings
     let updatedPaymentStatus = previousBooking.paymentStatus;
     const paidSumResult = await tx.payment.aggregate({
       where: { bookingId, status: "VERIFIED" },
@@ -1088,7 +1108,9 @@ export const amendBookingRecord = async (params: {
     });
     const totalPaid = Number(paidSumResult._sum.amount ?? 0);
 
-    if (totalPaid > 0) {
+    if (previousBooking.paymentStatus === "PAID") {
+      updatedPaymentStatus = "PAID";
+    } else if (totalPaid > 0) {
       if (totalPaid >= newFinalPrice) {
         updatedPaymentStatus = "PAID";
       } else {

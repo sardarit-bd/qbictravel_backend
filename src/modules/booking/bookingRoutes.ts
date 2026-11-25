@@ -567,6 +567,7 @@ router.get(
   "/staff/created-bookings",
   authMiddleware,
   requireRole("staff", "admin"),
+  requirePermission("bookings.view"),
   validate(listStaffCreatedBookingsQuerySchema, "query"),
   bookingController.listStaffCreatedBookings
 );
