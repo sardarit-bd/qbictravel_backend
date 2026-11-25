@@ -274,6 +274,21 @@ export const assignBooking = async (
   return updated;
 };
 
+export const THAILAND_TIMEZONE = "Asia/Bangkok";
+
+/**
+ * Format a Date object or ISO string to the local Thailand business date (YYYY-MM-DD)
+ */
+export function formatToThailandDateString(dateInput?: Date | string | null): string {
+  if (!dateInput) return "";
+  if (typeof dateInput === "string" && /^\d{4}-\d{2}-\d{2}$/.test(dateInput.trim())) {
+    return dateInput.trim();
+  }
+  const d = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
+  if (!d || isNaN(d.getTime())) return "";
+  return new Intl.DateTimeFormat("en-CA", { timeZone: THAILAND_TIMEZONE }).format(d);
+}
+
 /**
  * Get Operations Schedule and Manifest
  * Groups confirmed & operational bookings by Travel Date, Tour Service, and Departure Time.
@@ -283,18 +298,19 @@ export const getOperationsSchedule = async (
   actorId: string,
   query: Record<string, unknown>
 ): Promise<OperationsScheduleResponse> => {
-  // Default window: Today until 7 days ahead
+  // Default window: Today until 7 days ahead in Thailand timezone
   const now = new Date();
-  const todayStr = now.toISOString().split("T")[0];
+  const todayStr = formatToThailandDateString(now) || now.toISOString().split("T")[0];
 
   const defaultEnd = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const defaultEndStr = defaultEnd.toISOString().split("T")[0];
+  const defaultEndStr = formatToThailandDateString(defaultEnd) || defaultEnd.toISOString().split("T")[0];
 
   const startDateStr = (query.startDate as string) || todayStr;
   const endDateStr = (query.endDate as string) || defaultEndStr;
 
-  const startParsed = new Date(`${startDateStr}T00:00:00.000Z`);
-  const endParsed = new Date(`${endDateStr}T23:59:59.999Z`);
+  // Use a 24-hour buffer on the UTC boundary query to ensure no bookings near local midnight are cut off
+  const startParsed = new Date(new Date(`${startDateStr}T00:00:00.000Z`).getTime() - 24 * 60 * 60 * 1000);
+  const endParsed = new Date(new Date(`${endDateStr}T23:59:59.999Z`).getTime() + 24 * 60 * 60 * 1000);
 
   if (isNaN(startParsed.getTime()) || isNaN(endParsed.getTime())) {
     throw new AppError("Invalid date format. Expected YYYY-MM-DD", 400);
@@ -319,14 +335,14 @@ export const getOperationsSchedule = async (
   for (const b of bookings) {
     const parsed = parseNotesMetadata(b.notes);
 
-    // Resolve effective travel date
+    // Resolve effective travel date using the Thailand business calendar
     let travelDate = "";
     if (b.availability?.date) {
-      travelDate = new Date(b.availability.date).toISOString().split("T")[0];
+      travelDate = formatToThailandDateString(b.availability.date);
     } else if (parsed.travelDate) {
       travelDate = parsed.travelDate;
     } else {
-      travelDate = new Date(b.createdAt).toISOString().split("T")[0];
+      travelDate = formatToThailandDateString(b.createdAt);
     }
 
     // Check if within window
