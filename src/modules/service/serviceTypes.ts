@@ -325,8 +325,19 @@ export interface PricingUpdateInput {
   validTo?: string;
 }
 
-export type ServiceSortField = "name" | "createdAt" | "updatedAt" | "status" | "relevance";
+export type ServiceSortField = "name" | "createdAt" | "updatedAt" | "status" | "relevance" | "price" | "rating";
 export type SortOrder = "asc" | "desc";
+
+export interface DestinationFacet {
+  id: string;
+  label: string;
+  count: number;
+}
+
+export interface ServicePriceRange {
+  min: number;
+  max: number;
+}
 
 export interface GetServicesQuery {
   page?: number;
@@ -335,8 +346,19 @@ export interface GetServicesQuery {
   status?: ServiceStatus;
   search?: string;
   q?: string;
-  sortBy?: ServiceSortField;
+  category?: string;
+  destination?: string | string[];
+  destinations?: string | string[];
+  minPrice?: number;
+  maxPrice?: number;
+  sortBy?: ServiceSortField | "most-popular" | "price-asc" | "price-desc" | "highest-rated" | "duration";
   sortOrder?: SortOrder;
+}
+
+export interface PublishedServicesResult extends PaginatedResult<ServiceRecord> {
+  totalPublishedCount: number;
+  destinations?: DestinationFacet[];
+  priceRange?: ServicePriceRange;
 }
 
 export interface BulkUpdateServiceStatusInput {

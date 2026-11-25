@@ -35,39 +35,154 @@ const mapPricingRecord = (record: any): ServicePricingRecord => ({
 
 export const findPublishedServices = async (
   query: GetServicesQuery
-): Promise<PaginatedResult<ServiceRecord>> => {
+): Promise<any> => {
   const page = query.page || 1;
-  const limit = query.limit || 10;
+  const limit = query.limit || 12;
   const skip = (page - 1) * limit;
 
-  const where: any = { status: "PUBLISHED" };
+  // Base published condition
+  const basePublishedWhere: any = { status: "PUBLISHED" };
   if (query.type) {
-    where.type = query.type;
+    basePublishedWhere.type = query.type;
   }
 
-  // Search: match on name, description, or metadata (destination, tourType, etc.)
+  // Cloned where clause for active filters
+  const where: any = { ...basePublishedWhere };
+
+  // Search: match on name, description, or metadata (destination, tourType, providerName)
   if (query.search && query.search.trim()) {
     const term = query.search.trim();
     where.OR = [
       { name: { contains: term, mode: "insensitive" } },
       { description: { contains: term, mode: "insensitive" } },
+      { providerName: { contains: term, mode: "insensitive" } },
       { metadata: { path: ["destination"], string_contains: term } },
+      { metadata: { path: ["destinationCategory"], string_contains: term } },
       { metadata: { path: ["tourType"], string_contains: term } },
     ];
   }
 
-  const [items, total] = await Promise.all([
+  // Destination filtering: accepts single string or array of destinations / destinationCategories
+  const rawDests = query.destinations || query.destination;
+  if (rawDests) {
+    const destArray = Array.isArray(rawDests) ? rawDests : [rawDests];
+    const cleanedDests = destArray.map((d) => String(d).trim()).filter(Boolean);
+    if (cleanedDests.length > 0) {
+      where.AND = [
+        ...(where.AND || []),
+        {
+          OR: cleanedDests.flatMap((dest) => [
+            { metadata: { path: ["destinationCategory"], string_contains: dest } },
+            { metadata: { path: ["destination"], string_contains: dest } },
+          ]),
+        },
+      ];
+    }
+  }
+
+  // Price filtering
+  if (query.minPrice !== undefined || query.maxPrice !== undefined) {
+    const min = query.minPrice !== undefined ? Number(query.minPrice) : 0;
+    const max = query.maxPrice !== undefined ? Number(query.maxPrice) : Number.MAX_SAFE_INTEGER;
+    where.AND = [
+      ...(where.AND || []),
+      {
+        pricing: {
+          some: {
+            basePrice: {
+              gte: min,
+              lte: max,
+            },
+          },
+        },
+      },
+    ];
+  }
+
+  // Sort order determination
+  let orderBy: any = { createdAt: "desc" };
+  if (query.sortBy) {
+    switch (query.sortBy) {
+      case "price-asc":
+        orderBy = { pricing: { _count: "asc" } }; // or custom sort in memory if needed
+        break;
+      case "price-desc":
+        orderBy = { pricing: { _count: "desc" } };
+        break;
+      case "name":
+        orderBy = { name: query.sortOrder === "desc" ? "desc" : "asc" };
+        break;
+      case "createdAt":
+        orderBy = { createdAt: query.sortOrder === "asc" ? "asc" : "desc" };
+        break;
+      case "most-popular":
+      default:
+        orderBy = { createdAt: "desc" };
+        break;
+    }
+  }
+
+  // Concurrently fetch items, filtered count, total overall published count, and all published services for facets
+  const [items, totalFiltered, totalPublishedCount, allPublishedForFacets] = await Promise.all([
     db.service.findMany({
       where,
       skip,
       take: limit,
-      orderBy: { createdAt: "desc" },
+      orderBy,
       include: {
         pricing: { orderBy: { validFrom: "desc" } },
       },
     }),
     db.service.count({ where }),
+    db.service.count({ where: basePublishedWhere }),
+    db.service.findMany({
+      where: basePublishedWhere,
+      select: {
+        metadata: true,
+        pricing: { select: { basePrice: true, currency: true } },
+      },
+    }),
   ]);
+
+  // Compute dynamic destination facets and price range across all published tours
+  const destCounts: Record<string, { count: number; label: string }> = {};
+  let overallMinPrice = 0;
+  let overallMaxPrice = 500;
+  const prices: number[] = [];
+
+  for (const s of allPublishedForFacets) {
+    const meta = (s.metadata || {}) as Record<string, any>;
+    const destCategory = meta.destinationCategory || meta.destination;
+    const destLabel = meta.destination || meta.destinationCategory;
+    if (destCategory && destLabel) {
+      const key = String(destCategory).toLowerCase().replace(/\s+/g, "-");
+      if (!destCounts[key]) {
+        destCounts[key] = { count: 0, label: String(destLabel) };
+      }
+      destCounts[key].count += 1;
+    }
+
+    if (s.pricing && s.pricing.length > 0) {
+      for (const p of s.pricing) {
+        if (p.basePrice) {
+          prices.push(Number(p.basePrice));
+        }
+      }
+    }
+  }
+
+  if (prices.length > 0) {
+    overallMinPrice = Math.min(...prices);
+    overallMaxPrice = Math.max(...prices);
+  }
+
+  const destinationFacets = Object.entries(destCounts)
+    .sort((a, b) => b[1].count - a[1].count)
+    .map(([id, info]) => ({
+      id,
+      label: info.label,
+      count: info.count,
+    }));
 
   // Populate pricingSummary from the included pricing array.
   const records: ServiceRecord[] = items.map((item: any) => ({
@@ -84,13 +199,34 @@ export const findPublishedServices = async (
     pricingSummary: computePricingSummary(item.pricing),
   }));
 
+  // In-memory sorting for price-asc and price-desc if requested
+  if (query.sortBy === "price-asc") {
+    records.sort((a, b) => {
+      const pA = a.pricingSummary?.basePrice ?? Number.MAX_SAFE_INTEGER;
+      const pB = b.pricingSummary?.basePrice ?? Number.MAX_SAFE_INTEGER;
+      return pA - pB;
+    });
+  } else if (query.sortBy === "price-desc") {
+    records.sort((a, b) => {
+      const pA = a.pricingSummary?.basePrice ?? 0;
+      const pB = b.pricingSummary?.basePrice ?? 0;
+      return pB - pA;
+    });
+  }
+
   return {
     items: records,
+    totalPublishedCount,
+    destinations: destinationFacets,
+    priceRange: {
+      min: overallMinPrice,
+      max: overallMaxPrice,
+    },
     pagination: {
       page,
       limit,
-      total,
-      totalPages: Math.ceil(total / limit),
+      total: totalFiltered,
+      totalPages: Math.ceil(totalFiltered / limit),
     },
   };
 };

@@ -134,7 +134,10 @@ export const evaluateBookingPricing = async (
     } else {
       const stdCharge = Number(zone.surchargeAmount ?? 0);
       if (zone.surchargeUnit === "PER_PERSON") {
-        pickupSurcharge = stdCharge * totalPassengers;
+        // Enforce minimum 2 persons rule for surcharge zones with min 2 pax requirement
+        const isMin2PaxZone = /layan|paklok|yamu|ao por|naithon|airport|naiyang|maikhao/i.test(zone.zoneName || "");
+        const chargedPax = isMin2PaxZone ? Math.max(2, totalPassengers) : totalPassengers;
+        pickupSurcharge = stdCharge * chargedPax;
       } else {
         // PER_BOOKING, PER_VEHICLE, etc.
         pickupSurcharge = stdCharge;
@@ -145,6 +148,11 @@ export const evaluateBookingPricing = async (
   let resolvedPickupLocation = input.pickupLocation?.trim() || null;
 
   // 3. Package-based (PER_PACKAGE) vs Per-person (PER_PERSON) calculation
+  const isElephantService =
+    service.pricingType === "PER_PERSON" ||
+    (service as any).metadata?.editorType === "SIREY_ELEPHANTS" ||
+    /elephant/i.test(service.name || "");
+
   if (input.packageId || service.pricingType === "PER_PACKAGE") {
     if (!input.packageId) {
       throw new AppError("A package selection is required for package-priced tours", 400);
@@ -175,6 +183,30 @@ export const evaluateBookingPricing = async (
     const netPrice = pkg.netPrice != null ? Number(pkg.netPrice) : null;
     const currency = pkg.currency || "THB";
 
+    // If this is a PER_PERSON package tour (such as Sirey Elephants Program 1 or Program 2)
+    const hasGuestCounts =
+      input.adults !== undefined || input.children !== undefined || input.infants !== undefined;
+
+    let computedBasePrice = packagePrice;
+
+    if (service.pricingType === "PER_PERSON" && hasGuestCounts) {
+      const metadata = (service as any).metadata as Record<string, any> | null;
+      const programs = Array.isArray(metadata?.programs) ? metadata!.programs : [];
+      const progMeta = programs.find((p: any) => p.id === pkg.id || p.name === pkg.name);
+
+      const adultRate = Number(pkg.sellingPrice);
+      let childRate = progMeta && typeof progMeta.childPrice === "number" ? Number(progMeta.childPrice) : adultRate;
+      if (!progMeta && /program 2|bathe/i.test(pkg.name)) {
+        childRate = 2500;
+      } else if (!progMeta && /program 1|feed/i.test(pkg.name)) {
+        childRate = 900;
+      }
+      const infantRate = 0;
+
+      computedBasePrice =
+        Math.round((adults * adultRate + children * childRate + infants * infantRate) * 100) / 100;
+    }
+
     // Tax calculation (if service pricing specifies taxRate, e.g. 7% VAT)
     let taxRate = 0;
     const now = new Date();
@@ -185,7 +217,7 @@ export const evaluateBookingPricing = async (
       taxRate = Number(activePricing.taxRate ?? 0);
     }
 
-    const subtotal = Math.round((packagePrice + pickupSurcharge) * 100) / 100;
+    const subtotal = Math.round((computedBasePrice + pickupSurcharge) * 100) / 100;
     const taxAmount = taxRate > 0 ? Math.round(((subtotal * taxRate) / 100) * 100) / 100 : 0;
     const finalPrice = Math.round((subtotal + taxAmount) * 100) / 100;
 

@@ -13,11 +13,21 @@ import type {
 
 export const getServices = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const rawDestinations = req.query.destinations || req.query.destination;
+    const destinations = typeof rawDestinations === "string" && rawDestinations.includes(",")
+      ? rawDestinations.split(",").map((s) => s.trim())
+      : rawDestinations;
+
     const query: GetServicesQuery = {
       page: req.query.page ? Number(req.query.page) : undefined,
       limit: req.query.limit ? Number(req.query.limit) : undefined,
       type: req.query.type as any,
       search: (req.query.search || req.query.q) as string | undefined,
+      destinations: destinations as any,
+      minPrice: req.query.minPrice !== undefined ? Number(req.query.minPrice) : undefined,
+      maxPrice: req.query.maxPrice !== undefined ? Number(req.query.maxPrice) : undefined,
+      sortBy: req.query.sortBy as any,
+      sortOrder: req.query.sortOrder as any,
     };
     const result = await serviceService.getPublishedServices(query);
     sendResponse(res, 200, true, "Services retrieved successfully", result);
