@@ -983,7 +983,15 @@ export const generateAgentPaymentLink = async (
     throw new AppError("Cannot create a payment link for a cancelled booking", 409);
   }
 
-  if (booking.paymentStatus === "PAID") {
+  // Calculate previously paid amount and remaining balance
+  const totalAmount = Number(booking.finalPrice);
+  const previouslyPaid = ((booking as any).payments || [])
+    .filter((p: any) => p.status === "VERIFIED")
+    .reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+
+  const remainingBalance = Math.max(0, totalAmount - previouslyPaid);
+
+  if (remainingBalance <= 0 || booking.paymentStatus === "PAID") {
     throw new AppError("This booking is already paid in full", 409);
   }
 
@@ -1012,6 +1020,19 @@ export const generateAgentPaymentLink = async (
     rawToken,
     expiresAt: paymentLink.expiresAt,
     status: paymentLink.status,
+    totalAmount,
+    previouslyPaid,
+    remainingBalance,
+  } as {
+    paymentLinkId: string;
+    bookingId: string;
+    paymentUrl: string;
+    rawToken: string;
+    expiresAt: Date;
+    status: any;
+    totalAmount?: number;
+    previouslyPaid?: number;
+    remainingBalance?: number;
   };
 };
 
@@ -1051,16 +1072,24 @@ export const generateStaffPaymentLink = async (
     throw new AppError("Cannot create a payment link for a cancelled booking", 409);
   }
 
-  if (booking.paymentStatus === "PAID") {
+  if (!booking.finalPrice || Number(booking.finalPrice) <= 0 || !booking.currency) {
+    throw new AppError("Booking has invalid pricing or currency", 400);
+  }
+
+  // Calculate previously paid amount and remaining balance
+  const totalAmount = Number(booking.finalPrice);
+  const previouslyPaid = ((booking as any).payments || [])
+    .filter((p: any) => p.status === "VERIFIED")
+    .reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+
+  const remainingBalance = Math.max(0, totalAmount - previouslyPaid);
+
+  if (remainingBalance <= 0 || booking.paymentStatus === "PAID") {
     throw new AppError("This booking is already paid in full", 409);
   }
 
   if (!PAYABLE_BOOKING_STATUSES.includes(booking.status)) {
     throw new AppError(`Booking status ${booking.status} is not eligible for payment`, 409);
-  }
-
-  if (!booking.finalPrice || Number(booking.finalPrice) <= 0 || !booking.currency) {
-    throw new AppError("Booking has invalid pricing or currency", 400);
   }
 
   // Generate a cryptographically secure token
@@ -1088,6 +1117,19 @@ export const generateStaffPaymentLink = async (
     rawToken,
     expiresAt: paymentLink.expiresAt,
     status: paymentLink.status,
+    totalAmount,
+    previouslyPaid,
+    remainingBalance,
+  } as {
+    paymentLinkId: string;
+    bookingId: string;
+    paymentUrl: string;
+    rawToken: string;
+    expiresAt: Date;
+    status: any;
+    totalAmount?: number;
+    previouslyPaid?: number;
+    remainingBalance?: number;
   };
 };
 
@@ -1472,7 +1514,12 @@ export const createCustomerOmiseCharge = async (
     );
   }
 
-  const remainingBalance = Number(booking.finalPrice);
+  const totalAmount = Number(booking.finalPrice);
+  const previouslyPaid = ((booking as any).payments || [])
+    .filter((p: any) => p.status === "VERIFIED")
+    .reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+
+  const remainingBalance = Math.max(0, totalAmount - previouslyPaid);
   if (remainingBalance <= 0) {
     throw new AppError("No remaining balance to pay for this booking", 409);
   }

@@ -261,6 +261,15 @@ const adminReservationSelect = {
   proposedPrice: true,
   finalPrice: true,
   requiresApproval: true,
+  packageId: true,
+  timeSlotId: true,
+  pickupZoneId: true,
+  departureTime: true,
+  pickupLocation: true,
+  packagePriceSnapshot: true,
+  netPriceSnapshot: true,
+  pickupSurcharge: true,
+  taxAmount: true,
   notes: true,
   internalNotes: true,
   createdAt: true,
@@ -985,6 +994,15 @@ export const amendBookingRecord = async (params: {
   newBasePrice: number;
   newFinalPrice: number;
   formattedNotes?: string;
+  packageId?: string | null;
+  timeSlotId?: string | null;
+  pickupZoneId?: string | null;
+  departureTime?: string | null;
+  pickupLocation?: string | null;
+  pickupSurcharge?: number;
+  taxAmount?: number;
+  packagePriceSnapshot?: number | null;
+  netPriceSnapshot?: number | null;
   discountData?: {
     discountType: "PERCENTAGE" | "FIXED_AMOUNT";
     discountValue: number;
@@ -1100,7 +1118,7 @@ export const amendBookingRecord = async (params: {
       }
     }
 
-    // 3. Preserve financial integrity: do not downgrade verified paid bookings
+    // 3. Preserve financial integrity: determine payment status accurately based on total verified paid vs new final price
     let updatedPaymentStatus = previousBooking.paymentStatus;
     const paidSumResult = await tx.payment.aggregate({
       where: { bookingId, status: "VERIFIED" },
@@ -1108,14 +1126,12 @@ export const amendBookingRecord = async (params: {
     });
     const totalPaid = Number(paidSumResult._sum.amount ?? 0);
 
-    if (previousBooking.paymentStatus === "PAID") {
+    if (totalPaid >= newFinalPrice - 0.001 && newFinalPrice > 0) {
       updatedPaymentStatus = "PAID";
     } else if (totalPaid > 0) {
-      if (totalPaid >= newFinalPrice) {
-        updatedPaymentStatus = "PAID";
-      } else {
-        updatedPaymentStatus = "PARTIALLY_PAID";
-      }
+      updatedPaymentStatus = "PARTIALLY_PAID";
+    } else {
+      updatedPaymentStatus = "UNPAID";
     }
 
     // 4. Update Booking
@@ -1126,6 +1142,15 @@ export const amendBookingRecord = async (params: {
         finalPrice: newFinalPrice,
         paymentStatus: updatedPaymentStatus,
         availabilityId: finalAvailabilityId,
+        ...(params.packageId !== undefined ? { packageId: params.packageId } : {}),
+        ...(params.timeSlotId !== undefined ? { timeSlotId: params.timeSlotId } : {}),
+        ...(params.pickupZoneId !== undefined ? { pickupZoneId: params.pickupZoneId } : {}),
+        ...(params.departureTime !== undefined ? { departureTime: params.departureTime } : {}),
+        ...(params.pickupLocation !== undefined ? { pickupLocation: params.pickupLocation } : {}),
+        ...(params.pickupSurcharge !== undefined ? { pickupSurcharge: params.pickupSurcharge } : {}),
+        ...(params.taxAmount !== undefined ? { taxAmount: params.taxAmount } : {}),
+        ...(params.packagePriceSnapshot !== undefined ? { packagePriceSnapshot: params.packagePriceSnapshot } : {}),
+        ...(params.netPriceSnapshot !== undefined ? { netPriceSnapshot: params.netPriceSnapshot } : {}),
         ...(formattedNotes !== undefined ? { notes: formattedNotes } : {}),
       },
       include: {
@@ -1135,6 +1160,17 @@ export const amendBookingRecord = async (params: {
         assignedStaff: { select: { id: true, name: true, email: true } },
         createdBy: { select: { id: true, name: true, role: true } },
         discountRequests: { orderBy: { createdAt: "desc" }, take: 1 },
+        payments: {
+          select: {
+            id: true,
+            amount: true,
+            currency: true,
+            status: true,
+            method: true,
+            reference: true,
+            createdAt: true,
+          },
+        },
       },
     });
 

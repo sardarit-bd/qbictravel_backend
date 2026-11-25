@@ -1480,6 +1480,10 @@ export const amendStaffBooking = async (
     customerEmail?: string;
     customerPhone?: string | null;
     travelDate?: string;
+    packageId?: string;
+    timeSlotId?: string;
+    pickupZoneId?: string;
+    isPrivateTransfer?: boolean;
     adults?: number;
     children?: number;
     infants?: number;
@@ -1500,8 +1504,18 @@ export const amendStaffBooking = async (
     where: { id: bookingId },
     include: {
       customer: { select: { id: true, name: true, email: true, phone: true } },
-      service: { include: { pricing: true } },
+      service: {
+        include: {
+          pricing: true,
+          packages: true,
+          timeSlots: true,
+          pickupZones: true,
+        },
+      },
       availability: { select: { id: true, date: true } },
+      package: true,
+      timeSlot: true,
+      pickupZone: true,
       payments: { where: { status: "VERIFIED" } },
     },
   });
@@ -1520,7 +1534,7 @@ export const amendStaffBooking = async (
   let oldChildren = 0;
   let oldInfants = 0;
   let oldTravelDate: string | null = null;
-  let oldPickup: string | null = null;
+  let oldPickup: string | null = existing.pickupLocation || null;
 
   const notesSegments = rawNotes.split(" | ");
   for (const seg of notesSegments) {
@@ -1559,42 +1573,75 @@ export const amendStaffBooking = async (
   const newTotalGuests = Math.max(1, effectiveAdults + effectiveChildren + effectiveInfants);
   const guestDelta = newTotalGuests - oldTotalGuests;
 
-  // Re-calculate base price from active pricing tiers
-  const now = new Date();
-  const activePricings = existing.service.pricing.filter(
-    (p: any) => (!p.validFrom || p.validFrom <= now) && (!p.validTo || p.validTo >= now)
-  );
+  // Check if this tour utilizes package pricing / slots / pickup zones
+  const isPackageBasedOrConfigured =
+    Boolean(input.packageId) ||
+    Boolean(existing.packageId) ||
+    existing.service.pricingType === "PER_PACKAGE" ||
+    (existing.service.packages && existing.service.packages.length > 0) ||
+    Boolean(input.pickupZoneId) ||
+    Boolean(existing.pickupZoneId);
 
-  const activePricing = activePricings[0] || existing.service.pricing[0];
-  if (!activePricing) {
-    throw new AppError("Tour service has no pricing rules configured", 400);
+  let newBasePrice = 0;
+  let evalPackageDetails: any = null;
+
+  if (isPackageBasedOrConfigured) {
+    const targetPackageId = input.packageId !== undefined ? input.packageId : (existing.packageId || undefined);
+    const targetTimeSlotId = input.timeSlotId !== undefined ? input.timeSlotId : (existing.timeSlotId || undefined);
+    const targetPickupZoneId = input.pickupZoneId !== undefined ? input.pickupZoneId : (existing.pickupZoneId || undefined);
+
+    const evalPricing = await evaluateBookingPricing(existing.serviceId, {
+      packageId: targetPackageId,
+      timeSlotId: targetTimeSlotId,
+      pickupZoneId: targetPickupZoneId,
+      departureTime: input.departureTime || existing.departureTime || undefined,
+      pickupLocation: effectivePickup || undefined,
+      isPrivateTransfer: input.isPrivateTransfer,
+      adults: effectiveAdults,
+      children: effectiveChildren,
+      infants: effectiveInfants,
+    });
+
+    newBasePrice = evalPricing.basePrice;
+    evalPackageDetails = evalPricing;
+  } else {
+    // Default standard per-person pricing calculation
+    const now = new Date();
+    const activePricings = (existing.service.pricing || []).filter(
+      (p: any) => (!p.validFrom || p.validFrom <= now) && (!p.validTo || p.validTo >= now)
+    );
+
+    const activePricing = activePricings[0] || (existing.service.pricing && existing.service.pricing[0]);
+    if (!activePricing) {
+      throw new AppError("Tour service has no pricing rules configured", 400);
+    }
+
+    const rawBasePrice = Number(activePricing.basePrice);
+    const unitAdultPrice =
+      activePricing.discountedPrice != null && Number(activePricing.discountedPrice) > 0
+        ? Number(activePricing.discountedPrice)
+        : rawBasePrice;
+
+    const metadata = (existing.service as any).metadata as Record<string, any> | null;
+    const tiers: Array<{ tierName?: string; price?: number }> = Array.isArray(metadata?.pricingTiers)
+      ? metadata!.pricingTiers
+      : [];
+    const childTier = tiers.find((t) => /child/i.test(String(t?.tierName || "")));
+    const infantTier = tiers.find((t) => /infant/i.test(String(t?.tierName || "")));
+
+    const unitChildPrice =
+      childTier && typeof childTier.price === "number" && childTier.price >= 0
+        ? Number(childTier.price)
+        : Math.round(unitAdultPrice * 0.7 * 100) / 100;
+
+    const unitInfantPrice =
+      infantTier && typeof infantTier.price === "number" && infantTier.price >= 0
+        ? Number(infantTier.price)
+        : 0;
+
+    newBasePrice =
+      Math.round((effectiveAdults * unitAdultPrice + effectiveChildren * unitChildPrice + effectiveInfants * unitInfantPrice) * 100) / 100;
   }
-
-  const rawBasePrice = Number(activePricing.basePrice);
-  const unitAdultPrice =
-    activePricing.discountedPrice != null && Number(activePricing.discountedPrice) > 0
-      ? Number(activePricing.discountedPrice)
-      : rawBasePrice;
-
-  const metadata = (existing.service as any).metadata as Record<string, any> | null;
-  const tiers: Array<{ tierName?: string; price?: number }> = Array.isArray(metadata?.pricingTiers)
-    ? metadata!.pricingTiers
-    : [];
-  const childTier = tiers.find((t) => /child/i.test(String(t?.tierName || "")));
-  const infantTier = tiers.find((t) => /infant/i.test(String(t?.tierName || "")));
-
-  const unitChildPrice =
-    childTier && typeof childTier.price === "number" && childTier.price >= 0
-      ? Number(childTier.price)
-      : Math.round(unitAdultPrice * 0.7 * 100) / 100;
-
-  const unitInfantPrice =
-    infantTier && typeof infantTier.price === "number" && infantTier.price >= 0
-      ? Number(infantTier.price)
-      : 0;
-
-  const newBasePrice =
-    Math.round((effectiveAdults * unitAdultPrice + effectiveChildren * unitChildPrice + effectiveInfants * unitInfantPrice) * 100) / 100;
 
   let discountData: any = undefined;
   let newFinalPrice = newBasePrice;
@@ -1642,8 +1689,9 @@ export const amendStaffBooking = async (
   if (effectivePickup && effectivePickup.trim()) {
     noteParts.push(`Pickup: ${effectivePickup.trim()}`);
   }
-  if (input.departureTime && input.departureTime.trim()) {
-    noteParts.push(`Departure: ${input.departureTime.trim()}`);
+  const resolvedDepartureTime = evalPackageDetails?.departureTime || input.departureTime || existing.departureTime;
+  if (resolvedDepartureTime && resolvedDepartureTime.trim()) {
+    noteParts.push(`Departure: ${resolvedDepartureTime.trim()}`);
   }
   if (input.notes && input.notes.trim()) {
     noteParts.push(input.notes.trim());
@@ -1680,6 +1728,15 @@ export const amendStaffBooking = async (
   if (effectivePickup !== oldPickup) {
     changes.pickupLocation = { from: oldPickup, to: effectivePickup };
   }
+  if (evalPackageDetails?.packageId && evalPackageDetails.packageId !== existing.packageId) {
+    changes.package = { from: existing.packageId, to: evalPackageDetails.packageId };
+  }
+  if (evalPackageDetails?.timeSlotId && evalPackageDetails.timeSlotId !== existing.timeSlotId) {
+    changes.timeSlot = { from: existing.timeSlotId, to: evalPackageDetails.timeSlotId };
+  }
+  if (evalPackageDetails?.pickupZoneId && evalPackageDetails.pickupZoneId !== existing.pickupZoneId) {
+    changes.pickupZone = { from: existing.pickupZoneId, to: evalPackageDetails.pickupZoneId };
+  }
   if (discountData) {
     changes.discount = discountData;
   }
@@ -1709,6 +1766,15 @@ export const amendStaffBooking = async (
       newBasePrice,
       newFinalPrice,
       formattedNotes,
+      packageId: evalPackageDetails?.packageId !== undefined ? evalPackageDetails.packageId : undefined,
+      timeSlotId: evalPackageDetails?.timeSlotId !== undefined ? evalPackageDetails.timeSlotId : undefined,
+      pickupZoneId: evalPackageDetails?.pickupZoneId !== undefined ? evalPackageDetails.pickupZoneId : undefined,
+      departureTime: resolvedDepartureTime || undefined,
+      pickupLocation: effectivePickup || undefined,
+      pickupSurcharge: evalPackageDetails?.pickupSurcharge !== undefined ? evalPackageDetails.pickupSurcharge : undefined,
+      taxAmount: evalPackageDetails?.taxAmount !== undefined ? evalPackageDetails.taxAmount : undefined,
+      packagePriceSnapshot: evalPackageDetails?.packagePriceSnapshot !== undefined ? evalPackageDetails.packagePriceSnapshot : undefined,
+      netPriceSnapshot: evalPackageDetails?.netPriceSnapshot !== undefined ? evalPackageDetails.netPriceSnapshot : undefined,
       discountData,
       changes,
     });
