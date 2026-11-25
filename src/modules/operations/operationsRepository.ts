@@ -80,6 +80,20 @@ export const adminOperationalSelect = {
   basePrice: true,
   proposedPrice: true,
   finalPrice: true,
+  payments: {
+    select: {
+      id: true,
+      amount: true,
+      currency: true,
+      method: true,
+      status: true,
+      reference: true,
+      stripeSessionId: true,
+      receivedAt: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: "desc" as const },
+  },
 } as const;
 
 // Backward compatibility alias for staff projection

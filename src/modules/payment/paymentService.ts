@@ -1059,15 +1059,6 @@ export const generateStaffPaymentLink = async (
     throw new AppError("You are not authorized to generate a payment link for this booking", 403);
   }
 
-  if (
-    booking.requiresApproval ||
-    (booking.status as any) === "AWAITING_APPROVAL" ||
-    booking.status === "PENDING" ||
-    ((booking as any).discountRequests && (booking as any).discountRequests.some((dr: any) => dr.status === "PENDING" || !dr.status))
-  ) {
-    throw new AppError("Cannot create a payment link while booking is awaiting admin approval", 409);
-  }
-
   if (booking.status === "CANCELLED" || booking.status === "FAILED") {
     throw new AppError("Cannot create a payment link for a cancelled booking", 409);
   }
