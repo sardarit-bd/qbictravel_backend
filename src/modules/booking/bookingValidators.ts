@@ -17,6 +17,7 @@ export const createBookingSchema = yup.object({
   children: yup.number().integer("Children must be an integer").min(0, "Children cannot be negative").max(50, "Maximum 50 children per booking").optional(),
   infants: yup.number().integer("Infants must be an integer").min(0, "Infants cannot be negative").max(50, "Maximum 50 infants per booking").optional(),
   notes: yup.string().trim().max(1000, "Notes must be at most 1000 characters").optional(),
+  referralCode: yup.string().trim().max(50, "Referral code too long").optional(),
 });
 
 export const createStaffBookingSchema = yup
