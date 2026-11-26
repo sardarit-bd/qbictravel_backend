@@ -48,6 +48,7 @@ export const createStaffBookingSchema = yup
     pickupZoneId: yup.string().uuid("Invalid pickup zone ID").optional(),
     departureTime: yup.string().trim().max(50).optional(),
     pickupLocation: yup.string().trim().max(500).optional(),
+    isPrivateTransfer: yup.boolean().optional(),
     travelDate: yup.string().trim().optional(),
     adults: yup
       .number()
