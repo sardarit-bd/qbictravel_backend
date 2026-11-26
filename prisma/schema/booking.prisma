@@ -20,6 +20,7 @@ model Booking {
   serviceId            String
   availabilityId       String?
   packageId            String?
+  packageQuantity      Int                          @default(1)
   timeSlotId           String?
   pickupZoneId         String?
   departureTime        String?

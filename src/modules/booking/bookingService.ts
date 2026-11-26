@@ -59,6 +59,7 @@ export interface PricingEvaluationResult {
   departureTime: string | null;
   pickupLocation: string | null;
   packageId: string | null;
+  packageQuantity: number;
   timeSlotId: string | null;
   pickupZoneId: string | null;
 }
@@ -67,6 +68,7 @@ export const evaluateBookingPricing = async (
   serviceId: string,
   input: {
     packageId?: string | null;
+    packageQuantity?: number;
     timeSlotId?: string | null;
     pickupZoneId?: string | null;
     departureTime?: string | null;
@@ -165,10 +167,16 @@ export const evaluateBookingPricing = async (
       throw new AppError("Selected package is currently inactive", 400);
     }
 
+    const packageQuantity = Math.max(
+      1,
+      Math.min(20, Math.floor(Number(input.packageQuantity ?? 1)) || 1)
+    );
+    const effectiveMaxCapacity = pkg.maxCapacity * packageQuantity;
+
     // Capacity validation
-    if (totalPassengers > pkg.maxCapacity) {
+    if (totalPassengers > effectiveMaxCapacity) {
       throw new AppError(
-        `Selected package accommodates a maximum of ${pkg.maxCapacity} passengers (${totalPassengers} requested)`,
+        `Selected package accommodates a maximum of ${effectiveMaxCapacity} passengers (${totalPassengers} requested)`,
         400
       );
     }
@@ -187,7 +195,9 @@ export const evaluateBookingPricing = async (
     const hasGuestCounts =
       input.adults !== undefined || input.children !== undefined || input.infants !== undefined;
 
-    let computedBasePrice = packagePrice;
+    let computedBasePrice = Math.round(packagePrice * packageQuantity * 100) / 100;
+    const computedNetPrice =
+      netPrice != null ? Math.round(netPrice * packageQuantity * 100) / 100 : null;
 
     if (service.pricingType === "PER_PERSON" && hasGuestCounts) {
       const metadata = (service as any).metadata as Record<string, any> | null;
@@ -226,12 +236,13 @@ export const evaluateBookingPricing = async (
       basePrice: subtotal,
       finalPrice,
       packagePriceSnapshot: packagePrice,
-      netPriceSnapshot: netPrice,
+      netPriceSnapshot: service.pricingType === "PER_PERSON" ? netPrice : computedNetPrice,
       pickupSurcharge,
       taxAmount,
       departureTime: resolvedDepartureTime,
       pickupLocation: resolvedPickupLocation,
       packageId: pkg.id,
+      packageQuantity: service.pricingType === "PER_PERSON" ? 1 : packageQuantity,
       timeSlotId: resolvedTimeSlotId,
       pickupZoneId: resolvedPickupZoneId,
     };
@@ -306,6 +317,7 @@ export const evaluateBookingPricing = async (
     departureTime: resolvedDepartureTime,
     pickupLocation: resolvedPickupLocation,
     packageId: null,
+    packageQuantity: 1,
     timeSlotId: resolvedTimeSlotId,
     pickupZoneId: resolvedPickupZoneId,
   };
@@ -333,6 +345,7 @@ export const createBooking = async (
   // Authoritatively evaluate pricing (handles PER_PACKAGE & PER_PERSON)
   const evalPricing = await evaluateBookingPricing(input.serviceId, {
     packageId: input.packageId,
+    packageQuantity: input.packageQuantity,
     timeSlotId: input.timeSlotId,
     pickupZoneId: input.pickupZoneId,
     departureTime: input.departureTime,
@@ -452,6 +465,7 @@ export const createBooking = async (
     ...input,
     availabilityId: resolvedAvailabilityId,
     packageId: evalPricing.packageId,
+    packageQuantity: evalPricing.packageQuantity,
     timeSlotId: evalPricing.timeSlotId,
     pickupZoneId: evalPricing.pickupZoneId,
     departureTime: evalPricing.departureTime,
@@ -515,6 +529,7 @@ export const createStaffBooking = async (
   // Authoritatively evaluate pricing
   const evalPricing = await evaluateBookingPricing(input.serviceId, {
     packageId: input.packageId,
+    packageQuantity: input.packageQuantity,
     timeSlotId: input.timeSlotId,
     pickupZoneId: input.pickupZoneId,
     departureTime: input.departureTime,
@@ -694,6 +709,7 @@ export const createStaffBooking = async (
         serviceId: input.serviceId,
         availabilityId: resolvedAvailabilityId,
         packageId: evalPricing.packageId,
+        packageQuantity: evalPricing.packageQuantity,
         timeSlotId: evalPricing.timeSlotId,
         pickupZoneId: evalPricing.pickupZoneId,
         departureTime: evalPricing.departureTime,
@@ -797,6 +813,7 @@ export const createGuestBooking = async (
   // Authoritatively evaluate pricing
   const evalPricing = await evaluateBookingPricing(input.serviceId, {
     packageId: input.packageId,
+    packageQuantity: input.packageQuantity,
     timeSlotId: input.timeSlotId,
     pickupZoneId: input.pickupZoneId,
     departureTime: input.departureTime,
@@ -941,6 +958,7 @@ export const createGuestBooking = async (
         serviceId: input.serviceId,
         availabilityId: resolvedAvailabilityId,
         packageId: evalPricing.packageId,
+        packageQuantity: evalPricing.packageQuantity,
         timeSlotId: evalPricing.timeSlotId,
         pickupZoneId: evalPricing.pickupZoneId,
         departureTime: evalPricing.departureTime,
@@ -1481,6 +1499,7 @@ export const amendStaffBooking = async (
     customerPhone?: string | null;
     travelDate?: string;
     packageId?: string;
+    packageQuantity?: number;
     timeSlotId?: string;
     pickupZoneId?: string;
     isPrivateTransfer?: boolean;
@@ -1587,11 +1606,16 @@ export const amendStaffBooking = async (
 
   if (isPackageBasedOrConfigured) {
     const targetPackageId = input.packageId !== undefined ? input.packageId : (existing.packageId || undefined);
+    const targetPackageQuantity =
+      input.packageQuantity !== undefined
+        ? input.packageQuantity
+        : ((existing as any).packageQuantity ?? 1);
     const targetTimeSlotId = input.timeSlotId !== undefined ? input.timeSlotId : (existing.timeSlotId || undefined);
     const targetPickupZoneId = input.pickupZoneId !== undefined ? input.pickupZoneId : (existing.pickupZoneId || undefined);
 
     const evalPricing = await evaluateBookingPricing(existing.serviceId, {
       packageId: targetPackageId,
+      packageQuantity: targetPackageQuantity,
       timeSlotId: targetTimeSlotId,
       pickupZoneId: targetPickupZoneId,
       departureTime: input.departureTime || existing.departureTime || undefined,
@@ -1767,6 +1791,7 @@ export const amendStaffBooking = async (
       newFinalPrice,
       formattedNotes,
       packageId: evalPackageDetails?.packageId !== undefined ? evalPackageDetails.packageId : undefined,
+      packageQuantity: evalPackageDetails?.packageQuantity !== undefined ? evalPackageDetails.packageQuantity : undefined,
       timeSlotId: evalPackageDetails?.timeSlotId !== undefined ? evalPackageDetails.timeSlotId : undefined,
       pickupZoneId: evalPackageDetails?.pickupZoneId !== undefined ? evalPackageDetails.pickupZoneId : undefined,
       departureTime: resolvedDepartureTime || undefined,

@@ -354,6 +354,7 @@ export const BookingScalarFieldEnum = {
   serviceId: 'serviceId',
   availabilityId: 'availabilityId',
   packageId: 'packageId',
+  packageQuantity: 'packageQuantity',
   timeSlotId: 'timeSlotId',
   pickupZoneId: 'pickupZoneId',
   departureTime: 'departureTime',
