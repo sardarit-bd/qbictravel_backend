@@ -39,6 +39,7 @@ export const createBooking = async (
     actorRole?: string;
     isGuest?: boolean;
     packageId?: string | null;
+    packageQuantity?: number;
     timeSlotId?: string | null;
     pickupZoneId?: string | null;
     departureTime?: string | null;
@@ -61,6 +62,7 @@ export const createBooking = async (
         serviceId: input.serviceId,
         availabilityId: input.availabilityId || null,
         packageId: input.packageId || null,
+        packageQuantity: input.packageQuantity ?? 1,
         timeSlotId: input.timeSlotId || null,
         pickupZoneId: input.pickupZoneId || null,
         departureTime: input.departureTime || null,
@@ -99,6 +101,7 @@ export const createBooking = async (
           requiresApproval: input.requiresApproval,
           notes: input.notes || null,
           packageId: input.packageId || null,
+        packageQuantity: input.packageQuantity ?? 1,
           timeSlotId: input.timeSlotId || null,
           pickupZoneId: input.pickupZoneId || null,
           departureTime: input.departureTime || null,
@@ -262,6 +265,7 @@ const adminReservationSelect = {
   finalPrice: true,
   requiresApproval: true,
   packageId: true,
+  packageQuantity: true,
   timeSlotId: true,
   pickupZoneId: true,
   departureTime: true,
@@ -995,6 +999,7 @@ export const amendBookingRecord = async (params: {
   newFinalPrice: number;
   formattedNotes?: string;
   packageId?: string | null;
+  packageQuantity?: number;
   timeSlotId?: string | null;
   pickupZoneId?: string | null;
   departureTime?: string | null;
@@ -1143,6 +1148,7 @@ export const amendBookingRecord = async (params: {
         paymentStatus: updatedPaymentStatus,
         availabilityId: finalAvailabilityId,
         ...(params.packageId !== undefined ? { packageId: params.packageId } : {}),
+        ...(params.packageQuantity !== undefined ? { packageQuantity: params.packageQuantity } : {}),
         ...(params.timeSlotId !== undefined ? { timeSlotId: params.timeSlotId } : {}),
         ...(params.pickupZoneId !== undefined ? { pickupZoneId: params.pickupZoneId } : {}),
         ...(params.departureTime !== undefined ? { departureTime: params.departureTime } : {}),

@@ -27,6 +27,7 @@ export type AggregateBooking = {
 }
 
 export type BookingAvgAggregateOutputType = {
+  packageQuantity: number | null
   packagePriceSnapshot: runtime.Decimal | null
   netPriceSnapshot: runtime.Decimal | null
   pickupSurcharge: runtime.Decimal | null
@@ -37,6 +38,7 @@ export type BookingAvgAggregateOutputType = {
 }
 
 export type BookingSumAggregateOutputType = {
+  packageQuantity: number | null
   packagePriceSnapshot: runtime.Decimal | null
   netPriceSnapshot: runtime.Decimal | null
   pickupSurcharge: runtime.Decimal | null
@@ -55,6 +57,7 @@ export type BookingMinAggregateOutputType = {
   serviceId: string | null
   availabilityId: string | null
   packageId: string | null
+  packageQuantity: number | null
   timeSlotId: string | null
   pickupZoneId: string | null
   departureTime: string | null
@@ -88,6 +91,7 @@ export type BookingMaxAggregateOutputType = {
   serviceId: string | null
   availabilityId: string | null
   packageId: string | null
+  packageQuantity: number | null
   timeSlotId: string | null
   pickupZoneId: string | null
   departureTime: string | null
@@ -121,6 +125,7 @@ export type BookingCountAggregateOutputType = {
   serviceId: number
   availabilityId: number
   packageId: number
+  packageQuantity: number
   timeSlotId: number
   pickupZoneId: number
   departureTime: number
@@ -148,6 +153,7 @@ export type BookingCountAggregateOutputType = {
 
 
 export type BookingAvgAggregateInputType = {
+  packageQuantity?: true
   packagePriceSnapshot?: true
   netPriceSnapshot?: true
   pickupSurcharge?: true
@@ -158,6 +164,7 @@ export type BookingAvgAggregateInputType = {
 }
 
 export type BookingSumAggregateInputType = {
+  packageQuantity?: true
   packagePriceSnapshot?: true
   netPriceSnapshot?: true
   pickupSurcharge?: true
@@ -176,6 +183,7 @@ export type BookingMinAggregateInputType = {
   serviceId?: true
   availabilityId?: true
   packageId?: true
+  packageQuantity?: true
   timeSlotId?: true
   pickupZoneId?: true
   departureTime?: true
@@ -209,6 +217,7 @@ export type BookingMaxAggregateInputType = {
   serviceId?: true
   availabilityId?: true
   packageId?: true
+  packageQuantity?: true
   timeSlotId?: true
   pickupZoneId?: true
   departureTime?: true
@@ -242,6 +251,7 @@ export type BookingCountAggregateInputType = {
   serviceId?: true
   availabilityId?: true
   packageId?: true
+  packageQuantity?: true
   timeSlotId?: true
   pickupZoneId?: true
   departureTime?: true
@@ -362,6 +372,7 @@ export type BookingGroupByOutputType = {
   serviceId: string
   availabilityId: string | null
   packageId: string | null
+  packageQuantity: number
   timeSlotId: string | null
   pickupZoneId: string | null
   departureTime: string | null
@@ -418,6 +429,7 @@ export type BookingWhereInput = {
   serviceId?: Prisma.StringFilter<"Booking"> | string
   availabilityId?: Prisma.StringNullableFilter<"Booking"> | string | null
   packageId?: Prisma.StringNullableFilter<"Booking"> | string | null
+  packageQuantity?: Prisma.IntFilter<"Booking"> | number
   timeSlotId?: Prisma.StringNullableFilter<"Booking"> | string | null
   pickupZoneId?: Prisma.StringNullableFilter<"Booking"> | string | null
   departureTime?: Prisma.StringNullableFilter<"Booking"> | string | null
@@ -474,6 +486,7 @@ export type BookingOrderByWithRelationInput = {
   serviceId?: Prisma.SortOrder
   availabilityId?: Prisma.SortOrderInput | Prisma.SortOrder
   packageId?: Prisma.SortOrderInput | Prisma.SortOrder
+  packageQuantity?: Prisma.SortOrder
   timeSlotId?: Prisma.SortOrderInput | Prisma.SortOrder
   pickupZoneId?: Prisma.SortOrderInput | Prisma.SortOrder
   departureTime?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -533,6 +546,7 @@ export type BookingWhereUniqueInput = Prisma.AtLeast<{
   serviceId?: Prisma.StringFilter<"Booking"> | string
   availabilityId?: Prisma.StringNullableFilter<"Booking"> | string | null
   packageId?: Prisma.StringNullableFilter<"Booking"> | string | null
+  packageQuantity?: Prisma.IntFilter<"Booking"> | number
   timeSlotId?: Prisma.StringNullableFilter<"Booking"> | string | null
   pickupZoneId?: Prisma.StringNullableFilter<"Booking"> | string | null
   departureTime?: Prisma.StringNullableFilter<"Booking"> | string | null
@@ -589,6 +603,7 @@ export type BookingOrderByWithAggregationInput = {
   serviceId?: Prisma.SortOrder
   availabilityId?: Prisma.SortOrderInput | Prisma.SortOrder
   packageId?: Prisma.SortOrderInput | Prisma.SortOrder
+  packageQuantity?: Prisma.SortOrder
   timeSlotId?: Prisma.SortOrderInput | Prisma.SortOrder
   pickupZoneId?: Prisma.SortOrderInput | Prisma.SortOrder
   departureTime?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -630,6 +645,7 @@ export type BookingScalarWhereWithAggregatesInput = {
   serviceId?: Prisma.StringWithAggregatesFilter<"Booking"> | string
   availabilityId?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
   packageId?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
+  packageQuantity?: Prisma.IntWithAggregatesFilter<"Booking"> | number
   timeSlotId?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
   pickupZoneId?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
   departureTime?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
@@ -657,6 +673,7 @@ export type BookingScalarWhereWithAggregatesInput = {
 export type BookingCreateInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -710,6 +727,7 @@ export type BookingUncheckedCreateInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -751,6 +769,7 @@ export type BookingUncheckedCreateInput = {
 export type BookingUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -804,6 +823,7 @@ export type BookingUncheckedUpdateInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -851,6 +871,7 @@ export type BookingCreateManyInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -878,6 +899,7 @@ export type BookingCreateManyInput = {
 export type BookingUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -908,6 +930,7 @@ export type BookingUncheckedUpdateManyInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -946,6 +969,7 @@ export type BookingCountOrderByAggregateInput = {
   serviceId?: Prisma.SortOrder
   availabilityId?: Prisma.SortOrder
   packageId?: Prisma.SortOrder
+  packageQuantity?: Prisma.SortOrder
   timeSlotId?: Prisma.SortOrder
   pickupZoneId?: Prisma.SortOrder
   departureTime?: Prisma.SortOrder
@@ -971,6 +995,7 @@ export type BookingCountOrderByAggregateInput = {
 }
 
 export type BookingAvgOrderByAggregateInput = {
+  packageQuantity?: Prisma.SortOrder
   packagePriceSnapshot?: Prisma.SortOrder
   netPriceSnapshot?: Prisma.SortOrder
   pickupSurcharge?: Prisma.SortOrder
@@ -989,6 +1014,7 @@ export type BookingMaxOrderByAggregateInput = {
   serviceId?: Prisma.SortOrder
   availabilityId?: Prisma.SortOrder
   packageId?: Prisma.SortOrder
+  packageQuantity?: Prisma.SortOrder
   timeSlotId?: Prisma.SortOrder
   pickupZoneId?: Prisma.SortOrder
   departureTime?: Prisma.SortOrder
@@ -1022,6 +1048,7 @@ export type BookingMinOrderByAggregateInput = {
   serviceId?: Prisma.SortOrder
   availabilityId?: Prisma.SortOrder
   packageId?: Prisma.SortOrder
+  packageQuantity?: Prisma.SortOrder
   timeSlotId?: Prisma.SortOrder
   pickupZoneId?: Prisma.SortOrder
   departureTime?: Prisma.SortOrder
@@ -1047,6 +1074,7 @@ export type BookingMinOrderByAggregateInput = {
 }
 
 export type BookingSumOrderByAggregateInput = {
+  packageQuantity?: Prisma.SortOrder
   packagePriceSnapshot?: Prisma.SortOrder
   netPriceSnapshot?: Prisma.SortOrder
   pickupSurcharge?: Prisma.SortOrder
@@ -1666,6 +1694,7 @@ export type BookingUncheckedUpdateManyWithoutCustomerNestedInput = {
 export type BookingCreateWithoutAffiliateAttributionInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1718,6 +1747,7 @@ export type BookingUncheckedCreateWithoutAffiliateAttributionInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -1774,6 +1804,7 @@ export type BookingUpdateToOneWithWhereWithoutAffiliateAttributionInput = {
 export type BookingUpdateWithoutAffiliateAttributionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1826,6 +1857,7 @@ export type BookingUncheckedUpdateWithoutAffiliateAttributionInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1866,6 +1898,7 @@ export type BookingUncheckedUpdateWithoutAffiliateAttributionInput = {
 export type BookingCreateWithoutAffiliateCommissionsInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1918,6 +1951,7 @@ export type BookingUncheckedCreateWithoutAffiliateCommissionsInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -1974,6 +2008,7 @@ export type BookingUpdateToOneWithWhereWithoutAffiliateCommissionsInput = {
 export type BookingUpdateWithoutAffiliateCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2026,6 +2061,7 @@ export type BookingUncheckedUpdateWithoutAffiliateCommissionsInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2066,6 +2102,7 @@ export type BookingUncheckedUpdateWithoutAffiliateCommissionsInput = {
 export type BookingCreateWithoutPriceApprovalInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2118,6 +2155,7 @@ export type BookingUncheckedCreateWithoutPriceApprovalInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -2174,6 +2212,7 @@ export type BookingUpdateToOneWithWhereWithoutPriceApprovalInput = {
 export type BookingUpdateWithoutPriceApprovalInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2226,6 +2265,7 @@ export type BookingUncheckedUpdateWithoutPriceApprovalInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2266,6 +2306,7 @@ export type BookingUncheckedUpdateWithoutPriceApprovalInput = {
 export type BookingCreateWithoutHistoryInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2318,6 +2359,7 @@ export type BookingUncheckedCreateWithoutHistoryInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -2374,6 +2416,7 @@ export type BookingUpdateToOneWithWhereWithoutHistoryInput = {
 export type BookingUpdateWithoutHistoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2426,6 +2469,7 @@ export type BookingUncheckedUpdateWithoutHistoryInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2466,6 +2510,7 @@ export type BookingUncheckedUpdateWithoutHistoryInput = {
 export type BookingCreateWithoutDiscountRequestsInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2518,6 +2563,7 @@ export type BookingUncheckedCreateWithoutDiscountRequestsInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -2574,6 +2620,7 @@ export type BookingUpdateToOneWithWhereWithoutDiscountRequestsInput = {
 export type BookingUpdateWithoutDiscountRequestsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2626,6 +2673,7 @@ export type BookingUncheckedUpdateWithoutDiscountRequestsInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2666,6 +2714,7 @@ export type BookingUncheckedUpdateWithoutDiscountRequestsInput = {
 export type BookingCreateWithoutDiscountAuditEventsInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2718,6 +2767,7 @@ export type BookingUncheckedCreateWithoutDiscountAuditEventsInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -2774,6 +2824,7 @@ export type BookingUpdateToOneWithWhereWithoutDiscountAuditEventsInput = {
 export type BookingUpdateWithoutDiscountAuditEventsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2826,6 +2877,7 @@ export type BookingUncheckedUpdateWithoutDiscountAuditEventsInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2866,6 +2918,7 @@ export type BookingUncheckedUpdateWithoutDiscountAuditEventsInput = {
 export type BookingCreateWithoutGuestSnapshotInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2918,6 +2971,7 @@ export type BookingUncheckedCreateWithoutGuestSnapshotInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -2974,6 +3028,7 @@ export type BookingUpdateToOneWithWhereWithoutGuestSnapshotInput = {
 export type BookingUpdateWithoutGuestSnapshotInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3026,6 +3081,7 @@ export type BookingUncheckedUpdateWithoutGuestSnapshotInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3066,6 +3122,7 @@ export type BookingUncheckedUpdateWithoutGuestSnapshotInput = {
 export type BookingCreateWithoutGuestTokensInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3118,6 +3175,7 @@ export type BookingUncheckedCreateWithoutGuestTokensInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -3174,6 +3232,7 @@ export type BookingUpdateToOneWithWhereWithoutGuestTokensInput = {
 export type BookingUpdateWithoutGuestTokensInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3226,6 +3285,7 @@ export type BookingUncheckedUpdateWithoutGuestTokensInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3266,6 +3326,7 @@ export type BookingUncheckedUpdateWithoutGuestTokensInput = {
 export type BookingCreateWithoutClaimAuditsInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3318,6 +3379,7 @@ export type BookingUncheckedCreateWithoutClaimAuditsInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -3374,6 +3436,7 @@ export type BookingUpdateToOneWithWhereWithoutClaimAuditsInput = {
 export type BookingUpdateWithoutClaimAuditsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3426,6 +3489,7 @@ export type BookingUncheckedUpdateWithoutClaimAuditsInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3466,6 +3530,7 @@ export type BookingUncheckedUpdateWithoutClaimAuditsInput = {
 export type BookingCreateWithoutInvoicesInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3518,6 +3583,7 @@ export type BookingUncheckedCreateWithoutInvoicesInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -3574,6 +3640,7 @@ export type BookingUpdateToOneWithWhereWithoutInvoicesInput = {
 export type BookingUpdateWithoutInvoicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3626,6 +3693,7 @@ export type BookingUncheckedUpdateWithoutInvoicesInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3666,6 +3734,7 @@ export type BookingUncheckedUpdateWithoutInvoicesInput = {
 export type BookingCreateWithoutCommissionInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3718,6 +3787,7 @@ export type BookingUncheckedCreateWithoutCommissionInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -3774,6 +3844,7 @@ export type BookingUpdateToOneWithWhereWithoutCommissionInput = {
 export type BookingUpdateWithoutCommissionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3826,6 +3897,7 @@ export type BookingUncheckedUpdateWithoutCommissionInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3866,6 +3938,7 @@ export type BookingUncheckedUpdateWithoutCommissionInput = {
 export type BookingCreateWithoutPaymentsInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3918,6 +3991,7 @@ export type BookingUncheckedCreateWithoutPaymentsInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -3974,6 +4048,7 @@ export type BookingUpdateToOneWithWhereWithoutPaymentsInput = {
 export type BookingUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -4026,6 +4101,7 @@ export type BookingUncheckedUpdateWithoutPaymentsInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4066,6 +4142,7 @@ export type BookingUncheckedUpdateWithoutPaymentsInput = {
 export type BookingCreateWithoutStripeWebhookEventsInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -4118,6 +4195,7 @@ export type BookingUncheckedCreateWithoutStripeWebhookEventsInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -4174,6 +4252,7 @@ export type BookingUpdateToOneWithWhereWithoutStripeWebhookEventsInput = {
 export type BookingUpdateWithoutStripeWebhookEventsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -4226,6 +4305,7 @@ export type BookingUncheckedUpdateWithoutStripeWebhookEventsInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4266,6 +4346,7 @@ export type BookingUncheckedUpdateWithoutStripeWebhookEventsInput = {
 export type BookingCreateWithoutPaymentLinksInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -4318,6 +4399,7 @@ export type BookingUncheckedCreateWithoutPaymentLinksInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -4374,6 +4456,7 @@ export type BookingUpdateToOneWithWhereWithoutPaymentLinksInput = {
 export type BookingUpdateWithoutPaymentLinksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -4426,6 +4509,7 @@ export type BookingUncheckedUpdateWithoutPaymentLinksInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4466,6 +4550,7 @@ export type BookingUncheckedUpdateWithoutPaymentLinksInput = {
 export type BookingCreateWithoutServiceInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -4517,6 +4602,7 @@ export type BookingUncheckedCreateWithoutServiceInput = {
   source?: $Enums.BookingSource
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -4593,6 +4679,7 @@ export type BookingScalarWhereInput = {
   serviceId?: Prisma.StringFilter<"Booking"> | string
   availabilityId?: Prisma.StringNullableFilter<"Booking"> | string | null
   packageId?: Prisma.StringNullableFilter<"Booking"> | string | null
+  packageQuantity?: Prisma.IntFilter<"Booking"> | number
   timeSlotId?: Prisma.StringNullableFilter<"Booking"> | string | null
   pickupZoneId?: Prisma.StringNullableFilter<"Booking"> | string | null
   departureTime?: Prisma.StringNullableFilter<"Booking"> | string | null
@@ -4620,6 +4707,7 @@ export type BookingScalarWhereInput = {
 export type BookingCreateWithoutAvailabilityInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -4671,6 +4759,7 @@ export type BookingUncheckedCreateWithoutAvailabilityInput = {
   source?: $Enums.BookingSource
   serviceId: string
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -4738,6 +4827,7 @@ export type BookingUpdateManyWithWhereWithoutAvailabilityInput = {
 export type BookingCreateWithoutPackageInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -4789,6 +4879,7 @@ export type BookingUncheckedCreateWithoutPackageInput = {
   source?: $Enums.BookingSource
   serviceId: string
   availabilityId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -4856,6 +4947,7 @@ export type BookingUpdateManyWithWhereWithoutPackageInput = {
 export type BookingCreateWithoutTimeSlotInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -4908,6 +5000,7 @@ export type BookingUncheckedCreateWithoutTimeSlotInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   pickupZoneId?: string | null
   departureTime?: string | null
   pickupLocation?: string | null
@@ -4974,6 +5067,7 @@ export type BookingUpdateManyWithWhereWithoutTimeSlotInput = {
 export type BookingCreateWithoutPickupZoneInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -5026,6 +5120,7 @@ export type BookingUncheckedCreateWithoutPickupZoneInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   departureTime?: string | null
   pickupLocation?: string | null
@@ -5092,6 +5187,7 @@ export type BookingUpdateManyWithWhereWithoutPickupZoneInput = {
 export type BookingCreateWithoutAgentInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -5143,6 +5239,7 @@ export type BookingUncheckedCreateWithoutAgentInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -5194,6 +5291,7 @@ export type BookingCreateManyAgentInputEnvelope = {
 export type BookingCreateWithoutCreatedByInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -5245,6 +5343,7 @@ export type BookingUncheckedCreateWithoutCreatedByInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -5296,6 +5395,7 @@ export type BookingCreateManyCreatedByInputEnvelope = {
 export type BookingCreateWithoutAssignedStaffInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -5348,6 +5448,7 @@ export type BookingUncheckedCreateWithoutAssignedStaffInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -5398,6 +5499,7 @@ export type BookingCreateManyAssignedStaffInputEnvelope = {
 export type BookingCreateWithoutCustomerInput = {
   id?: string
   source?: $Enums.BookingSource
+  packageQuantity?: number
   departureTime?: string | null
   pickupLocation?: string | null
   packagePriceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -5449,6 +5551,7 @@ export type BookingUncheckedCreateWithoutCustomerInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -5569,6 +5672,7 @@ export type BookingCreateManyServiceInput = {
   source?: $Enums.BookingSource
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -5596,6 +5700,7 @@ export type BookingCreateManyServiceInput = {
 export type BookingUpdateWithoutServiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -5647,6 +5752,7 @@ export type BookingUncheckedUpdateWithoutServiceInput = {
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5693,6 +5799,7 @@ export type BookingUncheckedUpdateManyWithoutServiceInput = {
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5725,6 +5832,7 @@ export type BookingCreateManyAvailabilityInput = {
   source?: $Enums.BookingSource
   serviceId: string
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -5752,6 +5860,7 @@ export type BookingCreateManyAvailabilityInput = {
 export type BookingUpdateWithoutAvailabilityInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -5803,6 +5912,7 @@ export type BookingUncheckedUpdateWithoutAvailabilityInput = {
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5849,6 +5959,7 @@ export type BookingUncheckedUpdateManyWithoutAvailabilityInput = {
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5881,6 +5992,7 @@ export type BookingCreateManyPackageInput = {
   source?: $Enums.BookingSource
   serviceId: string
   availabilityId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -5908,6 +6020,7 @@ export type BookingCreateManyPackageInput = {
 export type BookingUpdateWithoutPackageInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -5959,6 +6072,7 @@ export type BookingUncheckedUpdateWithoutPackageInput = {
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6005,6 +6119,7 @@ export type BookingUncheckedUpdateManyWithoutPackageInput = {
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6038,6 +6153,7 @@ export type BookingCreateManyTimeSlotInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   pickupZoneId?: string | null
   departureTime?: string | null
   pickupLocation?: string | null
@@ -6064,6 +6180,7 @@ export type BookingCreateManyTimeSlotInput = {
 export type BookingUpdateWithoutTimeSlotInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -6116,6 +6233,7 @@ export type BookingUncheckedUpdateWithoutTimeSlotInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6162,6 +6280,7 @@ export type BookingUncheckedUpdateManyWithoutTimeSlotInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6194,6 +6313,7 @@ export type BookingCreateManyPickupZoneInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   departureTime?: string | null
   pickupLocation?: string | null
@@ -6220,6 +6340,7 @@ export type BookingCreateManyPickupZoneInput = {
 export type BookingUpdateWithoutPickupZoneInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -6272,6 +6393,7 @@ export type BookingUncheckedUpdateWithoutPickupZoneInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6318,6 +6440,7 @@ export type BookingUncheckedUpdateManyWithoutPickupZoneInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6349,6 +6472,7 @@ export type BookingCreateManyAgentInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -6381,6 +6505,7 @@ export type BookingCreateManyCreatedByInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -6414,6 +6539,7 @@ export type BookingCreateManyAssignedStaffInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -6445,6 +6571,7 @@ export type BookingCreateManyCustomerInput = {
   serviceId: string
   availabilityId?: string | null
   packageId?: string | null
+  packageQuantity?: number
   timeSlotId?: string | null
   pickupZoneId?: string | null
   departureTime?: string | null
@@ -6472,6 +6599,7 @@ export type BookingCreateManyCustomerInput = {
 export type BookingUpdateWithoutAgentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -6523,6 +6651,7 @@ export type BookingUncheckedUpdateWithoutAgentInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6569,6 +6698,7 @@ export type BookingUncheckedUpdateManyWithoutAgentInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6596,6 +6726,7 @@ export type BookingUncheckedUpdateManyWithoutAgentInput = {
 export type BookingUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -6647,6 +6778,7 @@ export type BookingUncheckedUpdateWithoutCreatedByInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6693,6 +6825,7 @@ export type BookingUncheckedUpdateManyWithoutCreatedByInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6720,6 +6853,7 @@ export type BookingUncheckedUpdateManyWithoutCreatedByInput = {
 export type BookingUpdateWithoutAssignedStaffInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -6772,6 +6906,7 @@ export type BookingUncheckedUpdateWithoutAssignedStaffInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6818,6 +6953,7 @@ export type BookingUncheckedUpdateManyWithoutAssignedStaffInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6844,6 +6980,7 @@ export type BookingUncheckedUpdateManyWithoutAssignedStaffInput = {
 export type BookingUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumBookingSourceFieldUpdateOperationsInput | $Enums.BookingSource
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packagePriceSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -6895,6 +7032,7 @@ export type BookingUncheckedUpdateWithoutCustomerInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6941,6 +7079,7 @@ export type BookingUncheckedUpdateManyWithoutCustomerInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   availabilityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   timeSlotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pickupZoneId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   departureTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -7086,6 +7225,7 @@ export type BookingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   serviceId?: boolean
   availabilityId?: boolean
   packageId?: boolean
+  packageQuantity?: boolean
   timeSlotId?: boolean
   pickupZoneId?: boolean
   departureTime?: boolean
@@ -7143,6 +7283,7 @@ export type BookingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   serviceId?: boolean
   availabilityId?: boolean
   packageId?: boolean
+  packageQuantity?: boolean
   timeSlotId?: boolean
   pickupZoneId?: boolean
   departureTime?: boolean
@@ -7185,6 +7326,7 @@ export type BookingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   serviceId?: boolean
   availabilityId?: boolean
   packageId?: boolean
+  packageQuantity?: boolean
   timeSlotId?: boolean
   pickupZoneId?: boolean
   departureTime?: boolean
@@ -7227,6 +7369,7 @@ export type BookingSelectScalar = {
   serviceId?: boolean
   availabilityId?: boolean
   packageId?: boolean
+  packageQuantity?: boolean
   timeSlotId?: boolean
   pickupZoneId?: boolean
   departureTime?: boolean
@@ -7251,7 +7394,7 @@ export type BookingSelectScalar = {
   isGuest?: boolean
 }
 
-export type BookingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "agentId" | "createdById" | "source" | "serviceId" | "availabilityId" | "packageId" | "timeSlotId" | "pickupZoneId" | "departureTime" | "pickupLocation" | "packagePriceSnapshot" | "netPriceSnapshot" | "pickupSurcharge" | "taxAmount" | "currency" | "basePrice" | "proposedPrice" | "finalPrice" | "status" | "requiresApproval" | "createdAt" | "updatedAt" | "paymentStatus" | "fulfillmentStatus" | "notes" | "internalNotes" | "assignedStaffId" | "isGuest", ExtArgs["result"]["booking"]>
+export type BookingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "agentId" | "createdById" | "source" | "serviceId" | "availabilityId" | "packageId" | "packageQuantity" | "timeSlotId" | "pickupZoneId" | "departureTime" | "pickupLocation" | "packagePriceSnapshot" | "netPriceSnapshot" | "pickupSurcharge" | "taxAmount" | "currency" | "basePrice" | "proposedPrice" | "finalPrice" | "status" | "requiresApproval" | "createdAt" | "updatedAt" | "paymentStatus" | "fulfillmentStatus" | "notes" | "internalNotes" | "assignedStaffId" | "isGuest", ExtArgs["result"]["booking"]>
 export type BookingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   agent?: boolean | Prisma.Booking$agentArgs<ExtArgs>
   createdBy?: boolean | Prisma.Booking$createdByArgs<ExtArgs>
@@ -7337,6 +7480,7 @@ export type $BookingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     serviceId: string
     availabilityId: string | null
     packageId: string | null
+    packageQuantity: number
     timeSlotId: string | null
     pickupZoneId: string | null
     departureTime: string | null
@@ -7813,6 +7957,7 @@ export interface BookingFieldRefs {
   readonly serviceId: Prisma.FieldRef<"Booking", 'String'>
   readonly availabilityId: Prisma.FieldRef<"Booking", 'String'>
   readonly packageId: Prisma.FieldRef<"Booking", 'String'>
+  readonly packageQuantity: Prisma.FieldRef<"Booking", 'Int'>
   readonly timeSlotId: Prisma.FieldRef<"Booking", 'String'>
   readonly pickupZoneId: Prisma.FieldRef<"Booking", 'String'>
   readonly departureTime: Prisma.FieldRef<"Booking", 'String'>

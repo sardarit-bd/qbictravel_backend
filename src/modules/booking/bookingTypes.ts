@@ -6,6 +6,7 @@ export interface CreateBookingInput {
   serviceId: string;
   availabilityId?: string | null;
   packageId?: string | null;
+  packageQuantity?: number;
   timeSlotId?: string | null;
   pickupZoneId?: string | null;
   departureTime?: string | null;
@@ -29,6 +30,7 @@ export interface CreateStaffBookingInput {
   serviceId: string;
   availabilityId?: string | null;
   packageId?: string | null;
+  packageQuantity?: number;
   timeSlotId?: string | null;
   pickupZoneId?: string | null;
   departureTime?: string | null;
@@ -55,6 +57,7 @@ export interface CreateGuestBookingInput {
   serviceId: string;
   availabilityId?: string | null;
   packageId?: string | null;
+  packageQuantity?: number;
   timeSlotId?: string | null;
   pickupZoneId?: string | null;
   departureTime?: string | null;
@@ -118,6 +121,7 @@ export interface BookingResponse {
   serviceId: string;
   availabilityId: string | null;
   packageId?: string | null;
+  packageQuantity?: number;
   timeSlotId?: string | null;
   pickupZoneId?: string | null;
   departureTime?: string | null;
