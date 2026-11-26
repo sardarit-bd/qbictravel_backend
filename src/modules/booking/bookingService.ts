@@ -1755,6 +1755,15 @@ export const amendStaffBooking = async (
   if (evalPackageDetails?.packageId && evalPackageDetails.packageId !== existing.packageId) {
     changes.package = { from: existing.packageId, to: evalPackageDetails.packageId };
   }
+  if (
+    evalPackageDetails?.packageQuantity !== undefined &&
+    evalPackageDetails.packageQuantity !== ((existing as any).packageQuantity ?? 1)
+  ) {
+    changes.packageQuantity = {
+      from: (existing as any).packageQuantity ?? 1,
+      to: evalPackageDetails.packageQuantity,
+    };
+  }
   if (evalPackageDetails?.timeSlotId && evalPackageDetails.timeSlotId !== existing.timeSlotId) {
     changes.timeSlot = { from: existing.timeSlotId, to: evalPackageDetails.timeSlotId };
   }

@@ -3,7 +3,7 @@ import * as authController from "./authController.js";
 import validate from "../../shared/middleware/validate.js";
 import authMiddleware from "../../shared/middleware/authMiddleware.js";
 import { authRateLimiter, refreshRateLimiter } from "../../shared/middleware/rateLimiter.js";
-import { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, } from "./authValidators.js";
+import { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, verifyEmailSchema, } from "./authValidators.js";
 const router = Router();
 /**
  * @openapi
@@ -32,6 +32,7 @@ const router = Router();
  *         $ref: '#/components/responses/Conflict'
  */
 router.post("/register", validate(registerSchema), authController.register);
+router.post("/verify-email", validate(verifyEmailSchema), authController.verifyEmail);
 /**
  * @openapi
  * /api/v1/auth/login:
