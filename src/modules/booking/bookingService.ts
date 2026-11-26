@@ -29,6 +29,12 @@ const mapBookingToResponse = (booking: any): BookingResponse => {
     proposedPrice:
       booking.proposedPrice != null ? Number(booking.proposedPrice) : null,
     finalPrice: Number(booking.finalPrice),
+    packagePriceSnapshot:
+      booking.packagePriceSnapshot != null ? Number(booking.packagePriceSnapshot) : null,
+    netPriceSnapshot:
+      booking.netPriceSnapshot != null ? Number(booking.netPriceSnapshot) : null,
+    pickupSurcharge: Number(booking.pickupSurcharge ?? 0),
+    taxAmount: Number(booking.taxAmount ?? 0),
     priceApproval: booking.priceApproval
       ? {
           ...booking.priceApproval,
@@ -39,6 +45,269 @@ const mapBookingToResponse = (booking: any): BookingResponse => {
               : null,
         }
       : null,
+  };
+};
+
+export interface PricingEvaluationResult {
+  currency: string;
+  basePrice: number;
+  finalPrice: number;
+  packagePriceSnapshot: number | null;
+  netPriceSnapshot: number | null;
+  pickupSurcharge: number;
+  taxAmount: number;
+  departureTime: string | null;
+  pickupLocation: string | null;
+  packageId: string | null;
+  timeSlotId: string | null;
+  pickupZoneId: string | null;
+}
+
+export const evaluateBookingPricing = async (
+  serviceId: string,
+  input: {
+    packageId?: string | null;
+    timeSlotId?: string | null;
+    pickupZoneId?: string | null;
+    departureTime?: string | null;
+    pickupLocation?: string | null;
+    isPrivateTransfer?: boolean;
+    adults?: number;
+    children?: number;
+    infants?: number;
+  }
+): Promise<PricingEvaluationResult> => {
+  const service = await prisma.service.findUnique({
+    where: { id: serviceId },
+    include: {
+      pricing: true,
+      packages: true,
+      timeSlots: true,
+      pickupZones: true,
+    },
+  });
+
+  if (!service) {
+    throw new AppError("Service not found", 404);
+  }
+
+  const adults = Math.max(1, Number(input.adults ?? 1));
+  const children = Math.max(0, Number(input.children ?? 0));
+  const infants = Math.max(0, Number(input.infants ?? 0));
+  const totalPassengers = adults + children + infants;
+
+  // 1. Validate & resolve TimeSlot if provided
+  let resolvedDepartureTime = input.departureTime?.trim() || null;
+  let resolvedTimeSlotId: string | null = null;
+  if (input.timeSlotId) {
+    const slot = service.timeSlots.find((s) => s.id === input.timeSlotId);
+    if (!slot) {
+      throw new AppError("Selected departure session does not belong to this service", 400);
+    }
+    if (!slot.isActive) {
+      throw new AppError("Selected departure session is inactive", 400);
+    }
+    resolvedTimeSlotId = slot.id;
+    if (!resolvedDepartureTime) {
+      resolvedDepartureTime = slot.departureTime;
+    }
+  }
+
+  // 2. Validate & resolve PickupZone if provided
+  let pickupSurcharge = 0;
+  let resolvedPickupZoneId: string | null = null;
+  if (input.pickupZoneId) {
+    const zone = service.pickupZones.find((z) => z.id === input.pickupZoneId);
+    if (!zone) {
+      throw new AppError("Selected pickup zone does not belong to this service", 400);
+    }
+    if (!zone.isActive) {
+      throw new AppError("Selected pickup zone is inactive", 400);
+    }
+    resolvedPickupZoneId = zone.id;
+
+    if (input.isPrivateTransfer) {
+      if (!zone.hasPrivateTransfer) {
+        throw new AppError("Private transfer is not available for this pickup zone", 400);
+      }
+      pickupSurcharge = Number(zone.privateTransferCharge ?? 1600);
+    } else {
+      const stdCharge = Number(zone.surchargeAmount ?? 0);
+      if (zone.surchargeUnit === "PER_PERSON") {
+        // Enforce minimum 2 persons rule for surcharge zones with min 2 pax requirement
+        const isMin2PaxZone = /layan|paklok|yamu|ao por|naithon|airport|naiyang|maikhao/i.test(zone.zoneName || "");
+        const chargedPax = isMin2PaxZone ? Math.max(2, totalPassengers) : totalPassengers;
+        pickupSurcharge = stdCharge * chargedPax;
+      } else {
+        // PER_BOOKING, PER_VEHICLE, etc.
+        pickupSurcharge = stdCharge;
+      }
+    }
+  }
+
+  let resolvedPickupLocation = input.pickupLocation?.trim() || null;
+
+  // 3. Package-based (PER_PACKAGE) vs Per-person (PER_PERSON) calculation
+  const isElephantService =
+    service.pricingType === "PER_PERSON" ||
+    (service as any).metadata?.editorType === "SIREY_ELEPHANTS" ||
+    /elephant/i.test(service.name || "");
+
+  if (input.packageId || service.pricingType === "PER_PACKAGE") {
+    if (!input.packageId) {
+      throw new AppError("A package selection is required for package-priced tours", 400);
+    }
+    const pkg = service.packages.find((p) => p.id === input.packageId);
+    if (!pkg) {
+      throw new AppError("Selected package does not belong to this service", 400);
+    }
+    if (!pkg.isActive) {
+      throw new AppError("Selected package is currently inactive", 400);
+    }
+
+    // Capacity validation
+    if (totalPassengers > pkg.maxCapacity) {
+      throw new AppError(
+        `Selected package accommodates a maximum of ${pkg.maxCapacity} passengers (${totalPassengers} requested)`,
+        400
+      );
+    }
+    if (totalPassengers < pkg.minPax) {
+      throw new AppError(
+        `Selected package requires at least ${pkg.minPax} passenger (${totalPassengers} requested)`,
+        400
+      );
+    }
+
+    const packagePrice = Number(pkg.sellingPrice);
+    const netPrice = pkg.netPrice != null ? Number(pkg.netPrice) : null;
+    const currency = pkg.currency || "THB";
+
+    // If this is a PER_PERSON package tour (such as Sirey Elephants Program 1 or Program 2)
+    const hasGuestCounts =
+      input.adults !== undefined || input.children !== undefined || input.infants !== undefined;
+
+    let computedBasePrice = packagePrice;
+
+    if (service.pricingType === "PER_PERSON" && hasGuestCounts) {
+      const metadata = (service as any).metadata as Record<string, any> | null;
+      const programs = Array.isArray(metadata?.programs) ? metadata!.programs : [];
+      const progMeta = programs.find((p: any) => p.id === pkg.id || p.name === pkg.name);
+
+      const adultRate = Number(pkg.sellingPrice);
+      let childRate = progMeta && typeof progMeta.childPrice === "number" ? Number(progMeta.childPrice) : adultRate;
+      if (!progMeta && /program 2|bathe/i.test(pkg.name)) {
+        childRate = 2500;
+      } else if (!progMeta && /program 1|feed/i.test(pkg.name)) {
+        childRate = 900;
+      }
+      const infantRate = 0;
+
+      computedBasePrice =
+        Math.round((adults * adultRate + children * childRate + infants * infantRate) * 100) / 100;
+    }
+
+    // Tax calculation (if service pricing specifies taxRate, e.g. 7% VAT)
+    let taxRate = 0;
+    const now = new Date();
+    const activePricing = service.pricing.find(
+      (p) => (!p.validFrom || p.validFrom <= now) && (!p.validTo || p.validTo >= now)
+    );
+    if (activePricing) {
+      taxRate = Number(activePricing.taxRate ?? 0);
+    }
+
+    const subtotal = Math.round((computedBasePrice + pickupSurcharge) * 100) / 100;
+    const taxAmount = taxRate > 0 ? Math.round(((subtotal * taxRate) / 100) * 100) / 100 : 0;
+    const finalPrice = Math.round((subtotal + taxAmount) * 100) / 100;
+
+    return {
+      currency,
+      basePrice: subtotal,
+      finalPrice,
+      packagePriceSnapshot: packagePrice,
+      netPriceSnapshot: netPrice,
+      pickupSurcharge,
+      taxAmount,
+      departureTime: resolvedDepartureTime,
+      pickupLocation: resolvedPickupLocation,
+      packageId: pkg.id,
+      timeSlotId: resolvedTimeSlotId,
+      pickupZoneId: resolvedPickupZoneId,
+    };
+  }
+
+  // 4. Default Legacy: Per-Person Pricing
+  const now = new Date();
+  const activePricings = service.pricing.filter(
+    (p) => (!p.validFrom || p.validFrom <= now) && (!p.validTo || p.validTo >= now)
+  );
+
+  if (activePricings.length === 0) {
+    throw new AppError("Service has no active pricing", 400);
+  }
+
+  if (activePricings.length > 1) {
+    throw new AppError("Service has multiple active pricing tiers. Please contact support.", 409);
+  }
+
+  const activePricing = activePricings[0]!;
+  const rawBasePrice = Number(activePricing.basePrice);
+  const currency = activePricing.currency;
+
+  const hasGuestCounts =
+    input.adults !== undefined || input.children !== undefined || input.infants !== undefined;
+
+  let basePrice = rawBasePrice;
+
+  if (hasGuestCounts) {
+    const unitAdultPrice =
+      activePricing.discountedPrice != null && Number(activePricing.discountedPrice) > 0
+        ? Number(activePricing.discountedPrice)
+        : rawBasePrice;
+
+    const metadata = (service as any).metadata as Record<string, any> | null;
+    const tiers: Array<{ tierName?: string; price?: number }> = Array.isArray(metadata?.pricingTiers)
+      ? metadata!.pricingTiers
+      : [];
+
+    const childTier = tiers.find((t) => /child/i.test(String(t?.tierName || "")));
+    const infantTier = tiers.find((t) => /infant/i.test(String(t?.tierName || "")));
+
+    const unitChildPrice =
+      childTier && typeof childTier.price === "number" && childTier.price >= 0
+        ? Number(childTier.price)
+        : Math.round(unitAdultPrice * 0.7 * 100) / 100;
+
+    const unitInfantPrice =
+      infantTier && typeof infantTier.price === "number" && infantTier.price >= 0
+        ? Number(infantTier.price)
+        : 0;
+
+    basePrice =
+      Math.round(
+        (adults * unitAdultPrice + children * unitChildPrice + infants * unitInfantPrice) * 100
+      ) / 100;
+  }
+
+  const subtotal = Math.round((basePrice + pickupSurcharge) * 100) / 100;
+  const taxRate = Number(activePricing.taxRate ?? 0);
+  const taxAmount = taxRate > 0 ? Math.round(((subtotal * taxRate) / 100) * 100) / 100 : 0;
+  const finalPrice = Math.round((subtotal + taxAmount) * 100) / 100;
+
+  return {
+    currency,
+    basePrice: subtotal,
+    finalPrice,
+    packagePriceSnapshot: null,
+    netPriceSnapshot: null,
+    pickupSurcharge,
+    taxAmount,
+    departureTime: resolvedDepartureTime,
+    pickupLocation: resolvedPickupLocation,
+    packageId: null,
+    timeSlotId: resolvedTimeSlotId,
+    pickupZoneId: resolvedPickupZoneId,
   };
 };
 
@@ -61,90 +330,23 @@ export const createBooking = async (
     }
   }
 
-  const service = await prisma.service.findUnique({
-    where: { id: input.serviceId },
-    include: { pricing: true },
+  // Authoritatively evaluate pricing (handles PER_PACKAGE & PER_PERSON)
+  const evalPricing = await evaluateBookingPricing(input.serviceId, {
+    packageId: input.packageId,
+    timeSlotId: input.timeSlotId,
+    pickupZoneId: input.pickupZoneId,
+    departureTime: input.departureTime,
+    pickupLocation: input.pickupLocation,
+    isPrivateTransfer: input.isPrivateTransfer,
+    adults: input.adults,
+    children: input.children,
+    infants: input.infants,
   });
 
-  if (!service) {
-    throw new AppError("Service not found", 404);
-  }
+  const basePrice = evalPricing.basePrice;
+  const currency = evalPricing.currency;
 
-  const now = new Date();
-  const activePricings = service.pricing.filter(
-    (p) =>
-      (!p.validFrom || p.validFrom <= now) && (!p.validTo || p.validTo >= now),
-  );
-
-  if (activePricings.length === 0) {
-    throw new AppError("Service has no active pricing", 400);
-  }
-
-  if (activePricings.length > 1) {
-    throw new AppError(
-      "Service has multiple active pricing tiers. Please contact support.",
-      409,
-    );
-  }
-
-  const activePricing = activePricings[0]!;
-  const rawBasePrice = Number(activePricing.basePrice);
-  const currency = activePricing.currency;
-
-  const hasGuestCounts =
-    input.adults !== undefined ||
-    input.children !== undefined ||
-    input.infants !== undefined;
-
-  let basePrice = rawBasePrice;
-
-  if (hasGuestCounts) {
-    const adults = Math.max(1, Number(input.adults ?? 1));
-    const children = Math.max(0, Number(input.children ?? 0));
-    const infants = Math.max(0, Number(input.infants ?? 0));
-
-    const unitAdultPrice =
-      activePricing.discountedPrice != null &&
-      Number(activePricing.discountedPrice) > 0
-        ? Number(activePricing.discountedPrice)
-        : rawBasePrice;
-
-    const metadata = (service as any).metadata as Record<string, any> | null;
-    const tiers: Array<{ tierName?: string; price?: number }> = Array.isArray(
-      metadata?.pricingTiers,
-    )
-      ? metadata!.pricingTiers
-      : [];
-
-    const childTier = tiers.find((t) =>
-      /child/i.test(String(t?.tierName || "")),
-    );
-    const infantTier = tiers.find((t) =>
-      /infant/i.test(String(t?.tierName || "")),
-    );
-
-    const unitChildPrice =
-      childTier && typeof childTier.price === "number" && childTier.price >= 0
-        ? Number(childTier.price)
-        : Math.round(unitAdultPrice * 0.7 * 100) / 100;
-
-    const unitInfantPrice =
-      infantTier &&
-      typeof infantTier.price === "number" &&
-      infantTier.price >= 0
-        ? Number(infantTier.price)
-        : 0;
-
-    basePrice =
-      Math.round(
-        (adults * unitAdultPrice +
-          children * unitChildPrice +
-          infants * unitInfantPrice) *
-          100,
-      ) / 100;
-  }
-
-  let finalPrice = basePrice;
+  let finalPrice = evalPricing.finalPrice;
   let proposedPrice = input.proposedPrice
     ? Number(input.proposedPrice)
     : undefined;
@@ -184,9 +386,20 @@ export const createBooking = async (
   }
 
   // Build structured notes if travelDate or guest counts are provided
+  const hasGuestCounts =
+    input.adults !== undefined ||
+    input.children !== undefined ||
+    input.infants !== undefined;
+
   const noteParts: string[] = [];
   if (input.travelDate && input.travelDate.trim()) {
     noteParts.push(`Travel Date: ${input.travelDate.trim()}`);
+  }
+  if (evalPricing.departureTime) {
+    noteParts.push(`Departure: ${evalPricing.departureTime}`);
+  }
+  if (evalPricing.pickupLocation) {
+    noteParts.push(`Pickup: ${evalPricing.pickupLocation}`);
   }
   if (hasGuestCounts) {
     const adults = Math.max(1, Number(input.adults ?? 1));
@@ -238,6 +451,15 @@ export const createBooking = async (
   const booking = await bookingRepository.createBooking({
     ...input,
     availabilityId: resolvedAvailabilityId,
+    packageId: evalPricing.packageId,
+    timeSlotId: evalPricing.timeSlotId,
+    pickupZoneId: evalPricing.pickupZoneId,
+    departureTime: evalPricing.departureTime,
+    pickupLocation: evalPricing.pickupLocation,
+    packagePriceSnapshot: evalPricing.packagePriceSnapshot,
+    netPriceSnapshot: evalPricing.netPriceSnapshot,
+    pickupSurcharge: evalPricing.pickupSurcharge,
+    taxAmount: evalPricing.taxAmount,
     ...(formattedNotes !== undefined ? { notes: formattedNotes } : {}),
     agentId: isAgent ? actorId : null,
     createdById: actorId,
@@ -290,79 +512,26 @@ export const createStaffBooking = async (
     throw new AppError("Cannot book unpublished tour", 400);
   }
 
-  const now = new Date();
-  const activePricings = service.pricing.filter(
-    (p) =>
-      (!p.validFrom || p.validFrom <= now) && (!p.validTo || p.validTo >= now)
-  );
+  // Authoritatively evaluate pricing
+  const evalPricing = await evaluateBookingPricing(input.serviceId, {
+    packageId: input.packageId,
+    timeSlotId: input.timeSlotId,
+    pickupZoneId: input.pickupZoneId,
+    departureTime: input.departureTime,
+    pickupLocation: input.pickupLocation,
+    isPrivateTransfer: input.isPrivateTransfer,
+    adults: input.adults,
+    children: input.children,
+    infants: input.infants,
+  });
 
-  if (activePricings.length === 0) {
-    throw new AppError("Service has no active pricing", 400);
-  }
-
-  if (activePricings.length > 1) {
-    throw new AppError(
-      "Service has multiple active pricing tiers. Please contact support.",
-      409
-    );
-  }
-
-  const activePricing = activePricings[0]!;
-  const rawBasePrice = Number(activePricing.basePrice);
-  const currency = activePricing.currency;
+  const basePrice = evalPricing.basePrice;
+  const currency = evalPricing.currency;
 
   const hasGuestCounts =
     input.adults !== undefined ||
     input.children !== undefined ||
     input.infants !== undefined;
-
-  let basePrice = rawBasePrice;
-
-  if (hasGuestCounts) {
-    const adults = Math.max(1, Number(input.adults ?? 1));
-    const children = Math.max(0, Number(input.children ?? 0));
-    const infants = Math.max(0, Number(input.infants ?? 0));
-
-    const unitAdultPrice =
-      activePricing.discountedPrice != null &&
-      Number(activePricing.discountedPrice) > 0
-        ? Number(activePricing.discountedPrice)
-        : rawBasePrice;
-
-    const metadata = (service as any).metadata as Record<string, any> | null;
-    const tiers: Array<{ tierName?: string; price?: number }> = Array.isArray(
-      metadata?.pricingTiers
-    )
-      ? metadata!.pricingTiers
-      : [];
-
-    const childTier = tiers.find((t) =>
-      /child/i.test(String(t?.tierName || ""))
-    );
-    const infantTier = tiers.find((t) =>
-      /infant/i.test(String(t?.tierName || ""))
-    );
-
-    const unitChildPrice =
-      childTier && typeof childTier.price === "number" && childTier.price >= 0
-        ? Number(childTier.price)
-        : Math.round(unitAdultPrice * 0.7 * 100) / 100;
-
-    const unitInfantPrice =
-      infantTier &&
-      typeof infantTier.price === "number" &&
-      infantTier.price >= 0
-        ? Number(infantTier.price)
-        : 0;
-
-    basePrice =
-      Math.round(
-        (adults * unitAdultPrice +
-          children * unitChildPrice +
-          infants * unitInfantPrice) *
-          100
-      ) / 100;
-  }
 
   const hasDiscount = Boolean(input.discount && input.discount.discountValue > 0);
   let discountAmount = 0;
@@ -401,7 +570,7 @@ export const createStaffBooking = async (
   }
 
   // Staff can create bookings directly without waiting for Admin approval
-  const finalPrice = hasDiscount ? proposedFinalPrice : basePrice;
+  const finalPrice = hasDiscount ? proposedFinalPrice : evalPricing.finalPrice;
   const requiresApproval = false;
   const status = "CONFIRMED";
 
@@ -424,6 +593,12 @@ export const createStaffBooking = async (
   if (input.travelDate && input.travelDate.trim()) {
     noteParts.push(`Travel Date: ${input.travelDate.trim()}`);
   }
+  if (evalPricing.departureTime) {
+    noteParts.push(`Departure: ${evalPricing.departureTime}`);
+  }
+  if (evalPricing.pickupLocation) {
+    noteParts.push(`Pickup: ${evalPricing.pickupLocation}`);
+  }
   if (hasGuestCounts) {
     const adults = Math.max(1, Number(input.adults ?? 1));
     const children = Math.max(0, Number(input.children ?? 0));
@@ -445,7 +620,7 @@ export const createStaffBooking = async (
   // 5. Execute Customer, Availability Capacity, and Booking in a single atomic transaction
   const booking = await prisma.$transaction(async (tx) => {
     // 5a. Resolve or create customer inside transaction
-    const customer = await resolveOrCreateCustomer(
+    const resolvedCustomer = await resolveOrCreateCustomer(
       {
         customerId: input.customerId,
         customer: input.customer,
@@ -511,13 +686,22 @@ export const createStaffBooking = async (
     // 5c. Persist Booking & Audit History
     const created = await bookingRepository.createBooking(
       {
-        customerId: customer.id,
+        customerId: resolvedCustomer.id,
         agentId: null,
         createdById: staffId,
         assignedStaffId: staffId,
         source: "DIRECT",
         serviceId: input.serviceId,
         availabilityId: resolvedAvailabilityId,
+        packageId: evalPricing.packageId,
+        timeSlotId: evalPricing.timeSlotId,
+        pickupZoneId: evalPricing.pickupZoneId,
+        departureTime: evalPricing.departureTime,
+        pickupLocation: evalPricing.pickupLocation,
+        packagePriceSnapshot: evalPricing.packagePriceSnapshot,
+        netPriceSnapshot: evalPricing.netPriceSnapshot,
+        pickupSurcharge: evalPricing.pickupSurcharge,
+        taxAmount: evalPricing.taxAmount,
         currency,
         basePrice,
         finalPrice,
@@ -610,83 +794,29 @@ export const createGuestBooking = async (
     throw new AppError("Cannot book unpublished tour", 400);
   }
 
-  const now = new Date();
-  const activePricings = service.pricing.filter(
-    (p) =>
-      (!p.validFrom || p.validFrom <= now) && (!p.validTo || p.validTo >= now)
-  );
+  // Authoritatively evaluate pricing
+  const evalPricing = await evaluateBookingPricing(input.serviceId, {
+    packageId: input.packageId,
+    timeSlotId: input.timeSlotId,
+    pickupZoneId: input.pickupZoneId,
+    departureTime: input.departureTime,
+    pickupLocation: input.pickupLocation,
+    isPrivateTransfer: input.isPrivateTransfer,
+    adults: input.adults,
+    children: input.children,
+    infants: input.infants,
+  });
 
-  if (activePricings.length === 0) {
-    throw new AppError("Service has no active pricing", 400);
-  }
-
-  if (activePricings.length > 1) {
-    throw new AppError(
-      "Service has multiple active pricing tiers. Please contact support.",
-      409
-    );
-  }
-
-  const activePricing = activePricings[0]!;
-  const rawBasePrice = Number(activePricing.basePrice);
-  const currency = activePricing.currency;
+  const basePrice = evalPricing.basePrice;
+  const currency = evalPricing.currency;
+  const finalPrice = evalPricing.finalPrice;
+  const status = "PENDING";
+  const requiresApproval = false;
 
   const hasGuestCounts =
     input.adults !== undefined ||
     input.children !== undefined ||
     input.infants !== undefined;
-
-  let basePrice = rawBasePrice;
-
-  if (hasGuestCounts) {
-    const adults = Math.max(1, Number(input.adults ?? 1));
-    const children = Math.max(0, Number(input.children ?? 0));
-    const infants = Math.max(0, Number(input.infants ?? 0));
-
-    const unitAdultPrice =
-      activePricing.discountedPrice != null &&
-      Number(activePricing.discountedPrice) > 0
-        ? Number(activePricing.discountedPrice)
-        : rawBasePrice;
-
-    const metadata = (service as any).metadata as Record<string, any> | null;
-    const tiers: Array<{ tierName?: string; price?: number }> = Array.isArray(
-      metadata?.pricingTiers
-    )
-      ? metadata!.pricingTiers
-      : [];
-
-    const childTier = tiers.find((t) =>
-      /child/i.test(String(t?.tierName || ""))
-    );
-    const infantTier = tiers.find((t) =>
-      /infant/i.test(String(t?.tierName || ""))
-    );
-
-    const unitChildPrice =
-      childTier && typeof childTier.price === "number" && childTier.price >= 0
-        ? Number(childTier.price)
-        : Math.round(unitAdultPrice * 0.7 * 100) / 100;
-
-    const unitInfantPrice =
-      infantTier &&
-      typeof infantTier.price === "number" &&
-      infantTier.price >= 0
-        ? Number(infantTier.price)
-        : 0;
-
-    basePrice =
-      Math.round(
-        (adults * unitAdultPrice +
-          children * unitChildPrice +
-          infants * unitInfantPrice) *
-          100
-      ) / 100;
-  }
-
-  const finalPrice = basePrice;
-  const status = "PENDING";
-  const requiresApproval = false;
 
   // 2. Parse travel date
   let travelDateObj: Date | undefined;
@@ -706,6 +836,12 @@ export const createGuestBooking = async (
   const noteParts: string[] = [];
   if (input.travelDate && input.travelDate.trim()) {
     noteParts.push(`Travel Date: ${input.travelDate.trim()}`);
+  }
+  if (evalPricing.departureTime) {
+    noteParts.push(`Departure: ${evalPricing.departureTime}`);
+  }
+  if (evalPricing.pickupLocation) {
+    noteParts.push(`Pickup: ${evalPricing.pickupLocation}`);
   }
   if (hasGuestCounts) {
     const adults = Math.max(1, Number(input.adults ?? 1));
@@ -804,6 +940,15 @@ export const createGuestBooking = async (
         source: "DIRECT",
         serviceId: input.serviceId,
         availabilityId: resolvedAvailabilityId,
+        packageId: evalPricing.packageId,
+        timeSlotId: evalPricing.timeSlotId,
+        pickupZoneId: evalPricing.pickupZoneId,
+        departureTime: evalPricing.departureTime,
+        pickupLocation: evalPricing.pickupLocation,
+        packagePriceSnapshot: evalPricing.packagePriceSnapshot,
+        netPriceSnapshot: evalPricing.netPriceSnapshot,
+        pickupSurcharge: evalPricing.pickupSurcharge,
+        taxAmount: evalPricing.taxAmount,
         currency,
         basePrice,
         finalPrice,
@@ -1176,9 +1321,11 @@ export const listStaffCreatedBookings = async (
   query: Record<string, unknown>
 ) => {
   const { page, limit, skip } = parsePagination(query);
+  const scope = query.scope === "all" ? "all" : "my";
   const result = await bookingRepository.listStaffCreatedBookings(staffId, {
     skip,
     take: limit,
+    scope,
     status: typeof query.status === "string" ? query.status : undefined,
     paymentStatus: typeof query.paymentStatus === "string" ? query.paymentStatus : undefined,
     fulfillmentStatus: typeof query.fulfillmentStatus === "string" ? query.fulfillmentStatus : undefined,
@@ -1333,6 +1480,10 @@ export const amendStaffBooking = async (
     customerEmail?: string;
     customerPhone?: string | null;
     travelDate?: string;
+    packageId?: string;
+    timeSlotId?: string;
+    pickupZoneId?: string;
+    isPrivateTransfer?: boolean;
     adults?: number;
     children?: number;
     infants?: number;
@@ -1353,8 +1504,18 @@ export const amendStaffBooking = async (
     where: { id: bookingId },
     include: {
       customer: { select: { id: true, name: true, email: true, phone: true } },
-      service: { include: { pricing: true } },
+      service: {
+        include: {
+          pricing: true,
+          packages: true,
+          timeSlots: true,
+          pickupZones: true,
+        },
+      },
       availability: { select: { id: true, date: true } },
+      package: true,
+      timeSlot: true,
+      pickupZone: true,
       payments: { where: { status: "VERIFIED" } },
     },
   });
@@ -1373,7 +1534,7 @@ export const amendStaffBooking = async (
   let oldChildren = 0;
   let oldInfants = 0;
   let oldTravelDate: string | null = null;
-  let oldPickup: string | null = null;
+  let oldPickup: string | null = existing.pickupLocation || null;
 
   const notesSegments = rawNotes.split(" | ");
   for (const seg of notesSegments) {
@@ -1412,42 +1573,75 @@ export const amendStaffBooking = async (
   const newTotalGuests = Math.max(1, effectiveAdults + effectiveChildren + effectiveInfants);
   const guestDelta = newTotalGuests - oldTotalGuests;
 
-  // Re-calculate base price from active pricing tiers
-  const now = new Date();
-  const activePricings = existing.service.pricing.filter(
-    (p: any) => (!p.validFrom || p.validFrom <= now) && (!p.validTo || p.validTo >= now)
-  );
+  // Check if this tour utilizes package pricing / slots / pickup zones
+  const isPackageBasedOrConfigured =
+    Boolean(input.packageId) ||
+    Boolean(existing.packageId) ||
+    existing.service.pricingType === "PER_PACKAGE" ||
+    (existing.service.packages && existing.service.packages.length > 0) ||
+    Boolean(input.pickupZoneId) ||
+    Boolean(existing.pickupZoneId);
 
-  const activePricing = activePricings[0] || existing.service.pricing[0];
-  if (!activePricing) {
-    throw new AppError("Tour service has no pricing rules configured", 400);
+  let newBasePrice = 0;
+  let evalPackageDetails: any = null;
+
+  if (isPackageBasedOrConfigured) {
+    const targetPackageId = input.packageId !== undefined ? input.packageId : (existing.packageId || undefined);
+    const targetTimeSlotId = input.timeSlotId !== undefined ? input.timeSlotId : (existing.timeSlotId || undefined);
+    const targetPickupZoneId = input.pickupZoneId !== undefined ? input.pickupZoneId : (existing.pickupZoneId || undefined);
+
+    const evalPricing = await evaluateBookingPricing(existing.serviceId, {
+      packageId: targetPackageId,
+      timeSlotId: targetTimeSlotId,
+      pickupZoneId: targetPickupZoneId,
+      departureTime: input.departureTime || existing.departureTime || undefined,
+      pickupLocation: effectivePickup || undefined,
+      isPrivateTransfer: input.isPrivateTransfer,
+      adults: effectiveAdults,
+      children: effectiveChildren,
+      infants: effectiveInfants,
+    });
+
+    newBasePrice = evalPricing.basePrice;
+    evalPackageDetails = evalPricing;
+  } else {
+    // Default standard per-person pricing calculation
+    const now = new Date();
+    const activePricings = (existing.service.pricing || []).filter(
+      (p: any) => (!p.validFrom || p.validFrom <= now) && (!p.validTo || p.validTo >= now)
+    );
+
+    const activePricing = activePricings[0] || (existing.service.pricing && existing.service.pricing[0]);
+    if (!activePricing) {
+      throw new AppError("Tour service has no pricing rules configured", 400);
+    }
+
+    const rawBasePrice = Number(activePricing.basePrice);
+    const unitAdultPrice =
+      activePricing.discountedPrice != null && Number(activePricing.discountedPrice) > 0
+        ? Number(activePricing.discountedPrice)
+        : rawBasePrice;
+
+    const metadata = (existing.service as any).metadata as Record<string, any> | null;
+    const tiers: Array<{ tierName?: string; price?: number }> = Array.isArray(metadata?.pricingTiers)
+      ? metadata!.pricingTiers
+      : [];
+    const childTier = tiers.find((t) => /child/i.test(String(t?.tierName || "")));
+    const infantTier = tiers.find((t) => /infant/i.test(String(t?.tierName || "")));
+
+    const unitChildPrice =
+      childTier && typeof childTier.price === "number" && childTier.price >= 0
+        ? Number(childTier.price)
+        : Math.round(unitAdultPrice * 0.7 * 100) / 100;
+
+    const unitInfantPrice =
+      infantTier && typeof infantTier.price === "number" && infantTier.price >= 0
+        ? Number(infantTier.price)
+        : 0;
+
+    newBasePrice =
+      Math.round((effectiveAdults * unitAdultPrice + effectiveChildren * unitChildPrice + effectiveInfants * unitInfantPrice) * 100) / 100;
   }
-
-  const rawBasePrice = Number(activePricing.basePrice);
-  const unitAdultPrice =
-    activePricing.discountedPrice != null && Number(activePricing.discountedPrice) > 0
-      ? Number(activePricing.discountedPrice)
-      : rawBasePrice;
-
-  const metadata = (existing.service as any).metadata as Record<string, any> | null;
-  const tiers: Array<{ tierName?: string; price?: number }> = Array.isArray(metadata?.pricingTiers)
-    ? metadata!.pricingTiers
-    : [];
-  const childTier = tiers.find((t) => /child/i.test(String(t?.tierName || "")));
-  const infantTier = tiers.find((t) => /infant/i.test(String(t?.tierName || "")));
-
-  const unitChildPrice =
-    childTier && typeof childTier.price === "number" && childTier.price >= 0
-      ? Number(childTier.price)
-      : Math.round(unitAdultPrice * 0.7 * 100) / 100;
-
-  const unitInfantPrice =
-    infantTier && typeof infantTier.price === "number" && infantTier.price >= 0
-      ? Number(infantTier.price)
-      : 0;
-
-  const newBasePrice =
-    Math.round((effectiveAdults * unitAdultPrice + effectiveChildren * unitChildPrice + effectiveInfants * unitInfantPrice) * 100) / 100;
 
   let discountData: any = undefined;
   let newFinalPrice = newBasePrice;
@@ -1495,8 +1689,9 @@ export const amendStaffBooking = async (
   if (effectivePickup && effectivePickup.trim()) {
     noteParts.push(`Pickup: ${effectivePickup.trim()}`);
   }
-  if (input.departureTime && input.departureTime.trim()) {
-    noteParts.push(`Departure: ${input.departureTime.trim()}`);
+  const resolvedDepartureTime = evalPackageDetails?.departureTime || input.departureTime || existing.departureTime;
+  if (resolvedDepartureTime && resolvedDepartureTime.trim()) {
+    noteParts.push(`Departure: ${resolvedDepartureTime.trim()}`);
   }
   if (input.notes && input.notes.trim()) {
     noteParts.push(input.notes.trim());
@@ -1533,6 +1728,15 @@ export const amendStaffBooking = async (
   if (effectivePickup !== oldPickup) {
     changes.pickupLocation = { from: oldPickup, to: effectivePickup };
   }
+  if (evalPackageDetails?.packageId && evalPackageDetails.packageId !== existing.packageId) {
+    changes.package = { from: existing.packageId, to: evalPackageDetails.packageId };
+  }
+  if (evalPackageDetails?.timeSlotId && evalPackageDetails.timeSlotId !== existing.timeSlotId) {
+    changes.timeSlot = { from: existing.timeSlotId, to: evalPackageDetails.timeSlotId };
+  }
+  if (evalPackageDetails?.pickupZoneId && evalPackageDetails.pickupZoneId !== existing.pickupZoneId) {
+    changes.pickupZone = { from: existing.pickupZoneId, to: evalPackageDetails.pickupZoneId };
+  }
   if (discountData) {
     changes.discount = discountData;
   }
@@ -1562,6 +1766,15 @@ export const amendStaffBooking = async (
       newBasePrice,
       newFinalPrice,
       formattedNotes,
+      packageId: evalPackageDetails?.packageId !== undefined ? evalPackageDetails.packageId : undefined,
+      timeSlotId: evalPackageDetails?.timeSlotId !== undefined ? evalPackageDetails.timeSlotId : undefined,
+      pickupZoneId: evalPackageDetails?.pickupZoneId !== undefined ? evalPackageDetails.pickupZoneId : undefined,
+      departureTime: resolvedDepartureTime || undefined,
+      pickupLocation: effectivePickup || undefined,
+      pickupSurcharge: evalPackageDetails?.pickupSurcharge !== undefined ? evalPackageDetails.pickupSurcharge : undefined,
+      taxAmount: evalPackageDetails?.taxAmount !== undefined ? evalPackageDetails.taxAmount : undefined,
+      packagePriceSnapshot: evalPackageDetails?.packagePriceSnapshot !== undefined ? evalPackageDetails.packagePriceSnapshot : undefined,
+      netPriceSnapshot: evalPackageDetails?.netPriceSnapshot !== undefined ? evalPackageDetails.netPriceSnapshot : undefined,
       discountData,
       changes,
     });
@@ -1569,6 +1782,12 @@ export const amendStaffBooking = async (
     emitBookingEvent("booking.status_changed", bookingId, { action: "AMENDED" }).catch((err) =>
       logger.error({ bookingId, err }, "Failed to emit amendment event")
     );
+
+    // Send customer in-app notification & change summary email
+    void notificationService.notifyBookingAmended(bookingId, changes, {
+      id: actorId,
+      role: actorRole,
+    });
 
     return mapBookingToResponse(updated);
   } catch (err: any) {

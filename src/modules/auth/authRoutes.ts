@@ -10,6 +10,7 @@ import {
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  verifyEmailSchema,
 } from "./authValidators.js";
 
 const router = Router();
@@ -41,6 +42,11 @@ const router = Router();
  *         $ref: '#/components/responses/Conflict'
  */
 router.post("/register", validate(registerSchema), authController.register);
+router.post(
+  "/verify-email",
+  validate(verifyEmailSchema),
+  authController.verifyEmail
+);
 
 /**
  * @openapi

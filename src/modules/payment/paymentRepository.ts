@@ -102,6 +102,14 @@ export const findBookingForPayment = async (bookingId: string) => {
           name: true,
         },
       },
+      payments: {
+        where: { status: "VERIFIED" },
+        select: {
+          id: true,
+          amount: true,
+          status: true,
+        },
+      },
     },
   });
 };
@@ -1148,13 +1156,25 @@ export const createOrGetOmisePayment = async (params: {
 }) => {
   return prisma.$transaction(
     async (tx) => {
-      // 1. Check for any verified payment for this booking
-      const verified = await tx.payment.findFirst({
+      // 1. Check if total verified payments already cover the booking's finalPrice
+      const verifiedPayments = await tx.payment.findMany({
         where: { bookingId: params.bookingId, status: "VERIFIED" },
         include: paymentInclude,
       });
-      if (verified) {
-        return { payment: verified, isAlreadyVerified: true, isExistingActive: false };
+
+      const totalVerified = verifiedPayments.reduce(
+        (sum: number, p: any) => sum + Number(p.amount),
+        0,
+      );
+
+      const booking = await tx.booking.findUnique({
+        where: { id: params.bookingId },
+        select: { finalPrice: true },
+      });
+
+      const finalPrice = Number(booking?.finalPrice ?? 0);
+      if (totalVerified >= finalPrice - 0.001 && finalPrice > 0) {
+        return { payment: verifiedPayments[0], isAlreadyVerified: true, isExistingActive: false };
       }
 
       // 2. Check for active OMISE payment attempt
@@ -1311,13 +1331,22 @@ export const verifyOmisePaymentAtomically = async (params: {
       include: paymentInclude,
     });
 
+    // Calculate total verified paid including this new payment
+    const previouslyPaid = (booking.payments || []).reduce(
+      (sum: number, p: any) => sum + Number(p.amount),
+      0,
+    );
+    const newTotalPaid = previouslyPaid + params.amount;
+    const finalPrice = Number(booking.finalPrice);
+    const updatedPaymentStatus = newTotalPaid >= finalPrice - 0.001 ? "PAID" : "PARTIALLY_PAID";
+
     // Auto-confirm booking if eligible
     const shouldAutoConfirm = booking.status === "PENDING" && !booking.requiresApproval;
 
     await tx.booking.update({
       where: { id: params.bookingId },
       data: {
-        paymentStatus: "PAID",
+        paymentStatus: updatedPaymentStatus,
         ...(shouldAutoConfirm ? { status: "CONFIRMED" } : {}),
       },
     });

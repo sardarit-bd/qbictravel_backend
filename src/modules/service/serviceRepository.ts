@@ -35,39 +35,154 @@ const mapPricingRecord = (record: any): ServicePricingRecord => ({
 
 export const findPublishedServices = async (
   query: GetServicesQuery
-): Promise<PaginatedResult<ServiceRecord>> => {
+): Promise<any> => {
   const page = query.page || 1;
-  const limit = query.limit || 10;
+  const limit = query.limit || 12;
   const skip = (page - 1) * limit;
 
-  const where: any = { status: "PUBLISHED" };
+  // Base published condition
+  const basePublishedWhere: any = { status: "PUBLISHED" };
   if (query.type) {
-    where.type = query.type;
+    basePublishedWhere.type = query.type;
   }
 
-  // Search: match on name, description, or metadata (destination, tourType, etc.)
+  // Cloned where clause for active filters
+  const where: any = { ...basePublishedWhere };
+
+  // Search: match on name, description, or metadata (destination, tourType, providerName)
   if (query.search && query.search.trim()) {
     const term = query.search.trim();
     where.OR = [
       { name: { contains: term, mode: "insensitive" } },
       { description: { contains: term, mode: "insensitive" } },
+      { providerName: { contains: term, mode: "insensitive" } },
       { metadata: { path: ["destination"], string_contains: term } },
+      { metadata: { path: ["destinationCategory"], string_contains: term } },
       { metadata: { path: ["tourType"], string_contains: term } },
     ];
   }
 
-  const [items, total] = await Promise.all([
+  // Destination filtering: accepts single string or array of destinations / destinationCategories
+  const rawDests = query.destinations || query.destination;
+  if (rawDests) {
+    const destArray = Array.isArray(rawDests) ? rawDests : [rawDests];
+    const cleanedDests = destArray.map((d) => String(d).trim()).filter(Boolean);
+    if (cleanedDests.length > 0) {
+      where.AND = [
+        ...(where.AND || []),
+        {
+          OR: cleanedDests.flatMap((dest) => [
+            { metadata: { path: ["destinationCategory"], string_contains: dest } },
+            { metadata: { path: ["destination"], string_contains: dest } },
+          ]),
+        },
+      ];
+    }
+  }
+
+  // Price filtering
+  if (query.minPrice !== undefined || query.maxPrice !== undefined) {
+    const min = query.minPrice !== undefined ? Number(query.minPrice) : 0;
+    const max = query.maxPrice !== undefined ? Number(query.maxPrice) : Number.MAX_SAFE_INTEGER;
+    where.AND = [
+      ...(where.AND || []),
+      {
+        pricing: {
+          some: {
+            basePrice: {
+              gte: min,
+              lte: max,
+            },
+          },
+        },
+      },
+    ];
+  }
+
+  // Sort order determination
+  let orderBy: any = { createdAt: "desc" };
+  if (query.sortBy) {
+    switch (query.sortBy) {
+      case "price-asc":
+        orderBy = { pricing: { _count: "asc" } }; // or custom sort in memory if needed
+        break;
+      case "price-desc":
+        orderBy = { pricing: { _count: "desc" } };
+        break;
+      case "name":
+        orderBy = { name: query.sortOrder === "desc" ? "desc" : "asc" };
+        break;
+      case "createdAt":
+        orderBy = { createdAt: query.sortOrder === "asc" ? "asc" : "desc" };
+        break;
+      case "most-popular":
+      default:
+        orderBy = { createdAt: "desc" };
+        break;
+    }
+  }
+
+  // Concurrently fetch items, filtered count, total overall published count, and all published services for facets
+  const [items, totalFiltered, totalPublishedCount, allPublishedForFacets] = await Promise.all([
     db.service.findMany({
       where,
       skip,
       take: limit,
-      orderBy: { createdAt: "desc" },
+      orderBy,
       include: {
         pricing: { orderBy: { validFrom: "desc" } },
       },
     }),
     db.service.count({ where }),
+    db.service.count({ where: basePublishedWhere }),
+    db.service.findMany({
+      where: basePublishedWhere,
+      select: {
+        metadata: true,
+        pricing: { select: { basePrice: true, currency: true } },
+      },
+    }),
   ]);
+
+  // Compute dynamic destination facets and price range across all published tours
+  const destCounts: Record<string, { count: number; label: string }> = {};
+  let overallMinPrice = 0;
+  let overallMaxPrice = 500;
+  const prices: number[] = [];
+
+  for (const s of allPublishedForFacets) {
+    const meta = (s.metadata || {}) as Record<string, any>;
+    const destCategory = meta.destinationCategory || meta.destination;
+    const destLabel = meta.destination || meta.destinationCategory;
+    if (destCategory && destLabel) {
+      const key = String(destCategory).toLowerCase().replace(/\s+/g, "-");
+      if (!destCounts[key]) {
+        destCounts[key] = { count: 0, label: String(destLabel) };
+      }
+      destCounts[key].count += 1;
+    }
+
+    if (s.pricing && s.pricing.length > 0) {
+      for (const p of s.pricing) {
+        if (p.basePrice) {
+          prices.push(Number(p.basePrice));
+        }
+      }
+    }
+  }
+
+  if (prices.length > 0) {
+    overallMinPrice = Math.min(...prices);
+    overallMaxPrice = Math.max(...prices);
+  }
+
+  const destinationFacets = Object.entries(destCounts)
+    .sort((a, b) => b[1].count - a[1].count)
+    .map(([id, info]) => ({
+      id,
+      label: info.label,
+      count: info.count,
+    }));
 
   // Populate pricingSummary from the included pricing array.
   const records: ServiceRecord[] = items.map((item: any) => ({
@@ -84,16 +199,76 @@ export const findPublishedServices = async (
     pricingSummary: computePricingSummary(item.pricing),
   }));
 
+  // In-memory sorting for price-asc and price-desc if requested
+  if (query.sortBy === "price-asc") {
+    records.sort((a, b) => {
+      const pA = a.pricingSummary?.basePrice ?? Number.MAX_SAFE_INTEGER;
+      const pB = b.pricingSummary?.basePrice ?? Number.MAX_SAFE_INTEGER;
+      return pA - pB;
+    });
+  } else if (query.sortBy === "price-desc") {
+    records.sort((a, b) => {
+      const pA = a.pricingSummary?.basePrice ?? 0;
+      const pB = b.pricingSummary?.basePrice ?? 0;
+      return pB - pA;
+    });
+  }
+
   return {
     items: records,
+    totalPublishedCount,
+    destinations: destinationFacets,
+    priceRange: {
+      min: overallMinPrice,
+      max: overallMaxPrice,
+    },
     pagination: {
       page,
       limit,
-      total,
-      totalPages: Math.ceil(total / limit),
+      total: totalFiltered,
+      totalPages: Math.ceil(totalFiltered / limit),
     },
   };
 };
+
+const mapPackageRecord = (record: any, isAdmin = false) => ({
+  id: record.id,
+  serviceId: record.serviceId,
+  name: record.name,
+  description: record.description,
+  durationMinutes: record.durationMinutes,
+  boatSize: record.boatSize,
+  minPax: record.minPax,
+  maxCapacity: record.maxCapacity,
+  sellingPrice: record.sellingPrice ? record.sellingPrice.toNumber() : 0,
+  ...(isAdmin && record.netPrice != null ? { netPrice: record.netPrice.toNumber() } : {}),
+  currency: record.currency,
+  isActive: record.isActive,
+  sortOrder: record.sortOrder,
+  createdAt: record.createdAt,
+  updatedAt: record.updatedAt,
+});
+
+const mapPickupZoneRecord = (record: any) => ({
+  id: record.id,
+  serviceId: record.serviceId,
+  operatorName: record.operatorName,
+  zoneName: record.zoneName,
+  description: record.description,
+  morningPickupTime: record.morningPickupTime,
+  afternoonPickupTime: record.afternoonPickupTime,
+  hasPrivateTransfer: Boolean(record.hasPrivateTransfer),
+  privateTransferCharge: record.privateTransferCharge ? record.privateTransferCharge.toNumber() : null,
+  morningPierArrival: record.morningPierArrival,
+  afternoonPierArrival: record.afternoonPierArrival,
+  surchargeAmount: record.surchargeAmount ? record.surchargeAmount.toNumber() : 0,
+  surchargeUnit: record.surchargeUnit,
+  currency: record.currency,
+  isActive: record.isActive,
+  sortOrder: record.sortOrder,
+  createdAt: record.createdAt,
+  updatedAt: record.updatedAt,
+});
 
 export const findServiceById = async (id: string, includeUnpublished = false): Promise<ServiceDetail | null> => {
   const where: any = { id };
@@ -106,16 +281,35 @@ export const findServiceById = async (id: string, includeUnpublished = false): P
     include: {
       availability: { orderBy: { date: "asc" } },
       pricing: { orderBy: { validFrom: "asc" } },
+      packages: { orderBy: { sortOrder: "asc" } },
+      timeSlots: { orderBy: { sortOrder: "asc" } },
+      pickupZones: { orderBy: { sortOrder: "asc" } },
       media: { orderBy: { createdAt: "desc" } },
     },
   });
 
   if (!result) return null;
 
+  // Filter inactive relations for public view
+  const packages = includeUnpublished
+    ? result.packages.map((p: any) => mapPackageRecord(p, true))
+    : result.packages.filter((p: any) => p.isActive).map((p: any) => mapPackageRecord(p, false));
+
+  const timeSlots = includeUnpublished
+    ? result.timeSlots
+    : result.timeSlots.filter((t: any) => t.isActive);
+
+  const pickupZones = includeUnpublished
+    ? result.pickupZones.map(mapPickupZoneRecord)
+    : result.pickupZones.filter((z: any) => z.isActive).map(mapPickupZoneRecord);
+
   // Map the nested pricing array to convert Decimal to number
   return {
     ...result,
     pricing: result.pricing.map(mapPricingRecord),
+    packages,
+    timeSlots,
+    pickupZones,
   } as ServiceDetail;
 };
 
@@ -407,11 +601,241 @@ export const bulkUpdateServiceStatus = async (
 };
 
 export const createServiceRecord = async (data: CreateServiceInput): Promise<ServiceRecord> => {
-  return db.service.create({ data }) as Promise<ServiceRecord>;
+  const { pricing, availability, packages, timeSlots, pickupZones, ...serviceData } = data;
+
+  return db.$transaction(async (tx) => {
+    const created = await tx.service.create({
+      data: serviceData,
+    });
+
+    if (pricing) {
+      await tx.servicePricing.create({
+        data: {
+          serviceId: created.id,
+          currency: pricing.currency || "THB",
+          basePrice: pricing.basePrice ?? 0,
+          discountedPrice: pricing.discountedPrice ?? null,
+          taxRate: pricing.taxRate ?? 0,
+          validFrom: pricing.validFrom ? new Date(pricing.validFrom) : null,
+          validTo: pricing.validTo ? new Date(pricing.validTo) : null,
+        },
+      });
+    }
+
+    if (availability && availability.length > 0) {
+      for (const av of availability) {
+        await tx.serviceAvailability.create({
+          data: {
+            serviceId: created.id,
+            date: new Date(av.date),
+            isAvailable: av.isAvailable,
+            capacity: av.capacity ?? null,
+            externalReferenceId: av.externalReferenceId ?? null,
+          },
+        });
+      }
+    }
+
+    if (packages && packages.length > 0) {
+      for (let i = 0; i < packages.length; i++) {
+        const pkg = packages[i];
+        await tx.servicePackage.create({
+          data: {
+            serviceId: created.id,
+            name: pkg.name,
+            description: pkg.description ?? null,
+            durationMinutes: pkg.durationMinutes,
+            boatSize: pkg.boatSize ?? null,
+            minPax: pkg.minPax ?? 1,
+            maxCapacity: pkg.maxCapacity,
+            sellingPrice: pkg.sellingPrice,
+            netPrice: pkg.netPrice != null ? pkg.netPrice : null,
+            currency: pkg.currency || "THB",
+            isActive: pkg.isActive ?? true,
+            sortOrder: pkg.sortOrder ?? i,
+          },
+        });
+      }
+    }
+
+    if (timeSlots && timeSlots.length > 0) {
+      for (let i = 0; i < timeSlots.length; i++) {
+        const slot = timeSlots[i];
+        await tx.serviceTimeSlot.create({
+          data: {
+            serviceId: created.id,
+            name: slot.name,
+            departureTime: slot.departureTime,
+            capacity: slot.capacity ?? null,
+            isActive: slot.isActive ?? true,
+            sortOrder: slot.sortOrder ?? i,
+          },
+        });
+      }
+    }
+
+    if (pickupZones && pickupZones.length > 0) {
+      for (let i = 0; i < pickupZones.length; i++) {
+        const zone = pickupZones[i];
+        await tx.pickupZone.create({
+          data: {
+            serviceId: created.id,
+            operatorName: zone.operatorName ?? created.providerName ?? null,
+            zoneName: zone.zoneName,
+            description: zone.description ?? null,
+            morningPickupTime: zone.morningPickupTime ?? null,
+            afternoonPickupTime: zone.afternoonPickupTime ?? null,
+            hasPrivateTransfer: zone.hasPrivateTransfer ?? false,
+            privateTransferCharge: zone.privateTransferCharge != null ? zone.privateTransferCharge : null,
+            morningPierArrival: zone.morningPierArrival ?? "08:30 AM",
+            afternoonPierArrival: zone.afternoonPierArrival ?? "12:30 PM",
+            surchargeAmount: zone.surchargeAmount ?? 0,
+            surchargeUnit: zone.surchargeUnit || "PER_BOOKING",
+            currency: zone.currency || "THB",
+            isActive: zone.isActive ?? true,
+            sortOrder: zone.sortOrder ?? i,
+          },
+        });
+      }
+    }
+
+    return created;
+  }) as Promise<ServiceRecord>;
 };
 
 export const updateServiceRecord = async (id: string, data: UpdateServiceInput): Promise<ServiceRecord> => {
-  return db.service.update({ where: { id }, data }) as Promise<ServiceRecord>;
+  const { pricing, availability, packages, timeSlots, pickupZones, ...serviceData } = data;
+
+  return db.$transaction(async (tx) => {
+    const updated = await tx.service.update({
+      where: { id },
+      data: serviceData,
+    });
+
+    if (pricing) {
+      const existingPricing = await tx.servicePricing.findFirst({ where: { serviceId: id } });
+      if (existingPricing) {
+        await tx.servicePricing.update({
+          where: { id: existingPricing.id },
+          data: {
+            currency: pricing.currency,
+            basePrice: pricing.basePrice,
+            discountedPrice: pricing.discountedPrice,
+            taxRate: pricing.taxRate,
+            validFrom: pricing.validFrom ? new Date(pricing.validFrom) : undefined,
+            validTo: pricing.validTo ? new Date(pricing.validTo) : undefined,
+          },
+        });
+      } else {
+        await tx.servicePricing.create({
+          data: {
+            serviceId: id,
+            currency: pricing.currency || "THB",
+            basePrice: pricing.basePrice ?? 0,
+            discountedPrice: pricing.discountedPrice ?? null,
+            taxRate: pricing.taxRate ?? 0,
+            validFrom: pricing.validFrom ? new Date(pricing.validFrom) : null,
+            validTo: pricing.validTo ? new Date(pricing.validTo) : null,
+          },
+        });
+      }
+    }
+
+    if (availability && availability.length > 0) {
+      for (const av of availability) {
+        await tx.serviceAvailability.upsert({
+          where: {
+            serviceId_date: {
+              serviceId: id,
+              date: new Date(av.date),
+            },
+          },
+          update: {
+            isAvailable: av.isAvailable,
+            capacity: av.capacity,
+            externalReferenceId: av.externalReferenceId,
+            lastVerifiedAt: new Date(),
+          },
+          create: {
+            serviceId: id,
+            date: new Date(av.date),
+            isAvailable: av.isAvailable,
+            capacity: av.capacity,
+            externalReferenceId: av.externalReferenceId,
+            lastVerifiedAt: new Date(),
+          },
+        });
+      }
+    }
+
+    if (packages !== undefined) {
+      await tx.servicePackage.deleteMany({ where: { serviceId: id } });
+      for (let i = 0; i < packages.length; i++) {
+        const pkg = packages[i];
+        await tx.servicePackage.create({
+          data: {
+            serviceId: id,
+            name: pkg.name,
+            description: pkg.description ?? null,
+            durationMinutes: pkg.durationMinutes,
+            boatSize: pkg.boatSize ?? null,
+            minPax: pkg.minPax ?? 1,
+            maxCapacity: pkg.maxCapacity,
+            sellingPrice: pkg.sellingPrice,
+            netPrice: pkg.netPrice != null ? pkg.netPrice : null,
+            currency: pkg.currency || "THB",
+            isActive: pkg.isActive ?? true,
+            sortOrder: pkg.sortOrder ?? i,
+          },
+        });
+      }
+    }
+
+    if (timeSlots !== undefined) {
+      await tx.serviceTimeSlot.deleteMany({ where: { serviceId: id } });
+      for (let i = 0; i < timeSlots.length; i++) {
+        const slot = timeSlots[i];
+        await tx.serviceTimeSlot.create({
+          data: {
+            serviceId: id,
+            name: slot.name,
+            departureTime: slot.departureTime,
+            capacity: slot.capacity ?? null,
+            isActive: slot.isActive ?? true,
+            sortOrder: slot.sortOrder ?? i,
+          },
+        });
+      }
+    }
+
+    if (pickupZones !== undefined) {
+      await tx.pickupZone.deleteMany({ where: { serviceId: id } });
+      for (let i = 0; i < pickupZones.length; i++) {
+        const zone = pickupZones[i];
+        await tx.pickupZone.create({
+          data: {
+            serviceId: id,
+            operatorName: zone.operatorName ?? updated.providerName ?? null,
+            zoneName: zone.zoneName,
+            description: zone.description ?? null,
+            morningPickupTime: zone.morningPickupTime ?? null,
+            afternoonPickupTime: zone.afternoonPickupTime ?? null,
+            hasPrivateTransfer: zone.hasPrivateTransfer ?? false,
+            privateTransferCharge: zone.privateTransferCharge != null ? zone.privateTransferCharge : null,
+            morningPierArrival: zone.morningPierArrival ?? "08:30 AM",
+            afternoonPierArrival: zone.afternoonPierArrival ?? "12:30 PM",
+            surchargeAmount: zone.surchargeAmount ?? 0,
+            surchargeUnit: zone.surchargeUnit || "PER_BOOKING",
+            currency: zone.currency || "THB",
+            isActive: zone.isActive ?? true,
+            sortOrder: zone.sortOrder ?? i,
+          },
+        });
+      }
+    }
+
+    return updated;
+  }) as Promise<ServiceRecord>;
 };
 
 export const updateServiceStatusRecord = async (id: string, data: UpdateServiceStatusInput): Promise<ServiceRecord> => {
@@ -550,5 +974,152 @@ export const deleteServiceRecord = async (serviceId: string): Promise<{ id: stri
     });
 
     return deleted;
+  });
+};
+
+// ========================================================
+// SERVICE PACKAGES
+// ========================================================
+
+export const findPackagesByServiceId = async (serviceId: string, isAdmin = false) => {
+  const where: any = { serviceId };
+  if (!isAdmin) {
+    where.isActive = true;
+  }
+  const records = await db.servicePackage.findMany({
+    where,
+    orderBy: { sortOrder: "asc" },
+  });
+  return records.map((r: any) => mapPackageRecord(r, isAdmin));
+};
+
+export const createPackageRecord = async (serviceId: string, data: any) => {
+  const created = await db.servicePackage.create({
+    data: {
+      serviceId,
+      name: data.name,
+      description: data.description || null,
+      durationMinutes: data.durationMinutes,
+      boatSize: data.boatSize || null,
+      minPax: data.minPax ?? 1,
+      maxCapacity: data.maxCapacity,
+      sellingPrice: data.sellingPrice,
+      netPrice: data.netPrice != null ? data.netPrice : null,
+      currency: data.currency || "THB",
+      isActive: data.isActive ?? true,
+      sortOrder: data.sortOrder ?? 0,
+    },
+  });
+  return mapPackageRecord(created, true);
+};
+
+export const updatePackageRecord = async (packageId: string, data: any) => {
+  const updated = await db.servicePackage.update({
+    where: { id: packageId },
+    data,
+  });
+  return mapPackageRecord(updated, true);
+};
+
+export const deletePackageRecord = async (packageId: string) => {
+  return db.servicePackage.delete({
+    where: { id: packageId },
+  });
+};
+
+// ========================================================
+// SERVICE TIME SLOTS
+// ========================================================
+
+export const findTimeSlotsByServiceId = async (serviceId: string, isAdmin = false) => {
+  const where: any = { serviceId };
+  if (!isAdmin) {
+    where.isActive = true;
+  }
+  return db.serviceTimeSlot.findMany({
+    where,
+    orderBy: { sortOrder: "asc" },
+  });
+};
+
+export const createTimeSlotRecord = async (serviceId: string, data: any) => {
+  return db.serviceTimeSlot.create({
+    data: {
+      serviceId,
+      name: data.name,
+      departureTime: data.departureTime,
+      capacity: data.capacity != null ? data.capacity : null,
+      isActive: data.isActive ?? true,
+      sortOrder: data.sortOrder ?? 0,
+    },
+  });
+};
+
+export const updateTimeSlotRecord = async (slotId: string, data: any) => {
+  return db.serviceTimeSlot.update({
+    where: { id: slotId },
+    data,
+  });
+};
+
+export const deleteTimeSlotRecord = async (slotId: string) => {
+  return db.serviceTimeSlot.delete({
+    where: { id: slotId },
+  });
+};
+
+// ========================================================
+// PICKUP ZONES
+// ========================================================
+
+export const findPickupZones = async (serviceId?: string, isAdmin = false) => {
+  const where: any = {};
+  if (serviceId) {
+    where.OR = [{ serviceId }, { serviceId: null }];
+  }
+  if (!isAdmin) {
+    where.isActive = true;
+  }
+  const records = await db.pickupZone.findMany({
+    where,
+    orderBy: { sortOrder: "asc" },
+  });
+  return records.map(mapPickupZoneRecord);
+};
+
+export const createPickupZoneRecord = async (data: any) => {
+  const created = await db.pickupZone.create({
+    data: {
+      serviceId: data.serviceId || null,
+      operatorName: data.operatorName || null,
+      zoneName: data.zoneName,
+      description: data.description || null,
+      morningPickupTime: data.morningPickupTime || null,
+      afternoonPickupTime: data.afternoonPickupTime || null,
+      hasPrivateTransfer: data.hasPrivateTransfer ?? false,
+      privateTransferCharge: data.privateTransferCharge != null ? data.privateTransferCharge : null,
+      morningPierArrival: data.morningPierArrival || "08:30 AM",
+      afternoonPierArrival: data.afternoonPierArrival || "12:30 PM",
+      surchargeAmount: data.surchargeAmount ?? 0,
+      surchargeUnit: data.surchargeUnit || "PER_BOOKING",
+      currency: data.currency || "THB",
+      isActive: data.isActive ?? true,
+      sortOrder: data.sortOrder ?? 0,
+    },
+  });
+  return mapPickupZoneRecord(created);
+};
+
+export const updatePickupZoneRecord = async (zoneId: string, data: any) => {
+  const updated = await db.pickupZone.update({
+    where: { id: zoneId },
+    data,
+  });
+  return mapPickupZoneRecord(updated);
+};
+
+export const deletePickupZoneRecord = async (zoneId: string) => {
+  return db.pickupZone.delete({
+    where: { id: zoneId },
   });
 };

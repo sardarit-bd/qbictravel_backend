@@ -142,6 +142,85 @@ describe("Booking Amendment & Activity History Service Tests", () => {
       );
     });
 
+    it("successfully amends a package-based booking (e.g. AquaThrill / Jet Ski / Sirey Elephants) with packageId and zone", async () => {
+      const mockPackageBooking = {
+        ...mockExistingBooking,
+        packageId: "pkg-speedboat-1",
+        pickupZoneId: "zone-patong",
+        service: {
+          ...mockExistingBooking.service,
+          pricingType: "PER_PACKAGE",
+          packages: [
+            {
+              id: "pkg-speedboat-1",
+              name: "Catamaran 35ft Private Charter",
+              sellingPrice: 15000,
+              netPrice: 12000,
+              currency: "THB",
+              minPax: 1,
+              maxCapacity: 15,
+              isActive: true,
+            },
+          ],
+          timeSlots: [
+            {
+              id: "slot-morning",
+              name: "Morning Tour",
+              departureTime: "08:30 AM",
+              isActive: true,
+            },
+          ],
+          pickupZones: [
+            {
+              id: "zone-patong",
+              zoneName: "Patong Beach",
+              surchargeAmount: 0,
+              hasPrivateTransfer: true,
+              privateTransferCharge: 1600,
+              isActive: true,
+            },
+          ],
+        },
+      };
+
+      vi.mocked(prisma.booking.findUnique).mockResolvedValue(mockPackageBooking as any);
+      vi.mocked(prisma.service.findUnique).mockResolvedValue(mockPackageBooking.service as any);
+      vi.mocked(bookingRepository.amendBookingRecord).mockResolvedValue({
+        id: bookingId,
+        status: "CONFIRMED",
+        basePrice: 15000,
+        finalPrice: 15000,
+      } as any);
+
+      const result = await bookingService.amendStaffBooking(
+        bookingId,
+        {
+          packageId: "pkg-speedboat-1",
+          timeSlotId: "slot-morning",
+          pickupZoneId: "zone-patong",
+          adults: 6,
+          pickupLocation: "Hilton Phuket Resort",
+        },
+        staffId,
+        "admin"
+      );
+
+      expect(result.id).toBe(bookingId);
+      expect(bookingRepository.amendBookingRecord).toHaveBeenCalledWith(
+        expect.objectContaining({
+          bookingId,
+          actorId: staffId,
+          actorRole: "admin",
+          packageId: "pkg-speedboat-1",
+          timeSlotId: "slot-morning",
+          pickupZoneId: "zone-patong",
+          adults: 6,
+          newBasePrice: 15000,
+          newFinalPrice: 15000,
+        })
+      );
+    });
+
     it("rejects amendment on cancelled bookings", async () => {
       vi.mocked(prisma.booking.findUnique).mockResolvedValue({
         ...mockExistingBooking,

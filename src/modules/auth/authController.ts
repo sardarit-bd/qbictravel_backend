@@ -1,3 +1,4 @@
+import * as emailVerificationService from "./emailVerificationService.js";
 import { Request, Response, NextFunction } from "express";
 import env from "../../config/env.js";
 import sendResponse from "../../shared/utils/response.js";
@@ -38,6 +39,27 @@ export const getLegacyCookieOptions = () => ({
   domain: env.cookieDomain,
   maxAge: LEGACY_COOKIE_MAX_AGE_MS,
 });
+
+export const verifyEmail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { token } = req.body;
+    const clientContext = {
+      ipAddress: req.ip || req.socket.remoteAddress,
+      userAgent: req.get("user-agent"),
+    };
+    const result = await emailVerificationService.verifyEmailAndClaimBookings(
+      token,
+      clientContext
+    );
+    sendResponse(res, 200, true, "Email verified successfully", result);
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const register = async (
   req: Request,

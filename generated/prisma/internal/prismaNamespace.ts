@@ -440,6 +440,9 @@ export const ModelName = {
   Service: 'Service',
   ServiceAvailability: 'ServiceAvailability',
   ServicePricing: 'ServicePricing',
+  ServicePackage: 'ServicePackage',
+  ServiceTimeSlot: 'ServiceTimeSlot',
+  PickupZone: 'PickupZone',
   SystemSetting: 'SystemSetting',
   SettingAuditLog: 'SettingAuditLog',
   User: 'User'
@@ -458,7 +461,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "affiliate" | "affiliateLink" | "affiliateClick" | "affiliateBookingAttribution" | "affiliateCommission" | "affiliatePayout" | "affiliateSettings" | "affiliateAuditEvent" | "agentProfile" | "passwordResetToken" | "revokedToken" | "session" | "refreshToken" | "emailVerificationToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "staffDiscountRequest" | "staffDiscountAuditEvent" | "guestBookingSnapshot" | "guestBookingToken" | "bookingClaimAudit" | "invoice" | "commissionRule" | "commissionRuleAuditLog" | "commission" | "commissionAdjustment" | "media" | "mediaUploadAuth" | "notificationSetting" | "notification" | "notificationPreference" | "payment" | "stripeWebhookEvent" | "outboxMessage" | "paymentRefund" | "paymentLink" | "permission" | "staffPermission" | "service" | "serviceAvailability" | "servicePricing" | "systemSetting" | "settingAuditLog" | "user"
+    modelProps: "affiliate" | "affiliateLink" | "affiliateClick" | "affiliateBookingAttribution" | "affiliateCommission" | "affiliatePayout" | "affiliateSettings" | "affiliateAuditEvent" | "agentProfile" | "passwordResetToken" | "revokedToken" | "session" | "refreshToken" | "emailVerificationToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "staffDiscountRequest" | "staffDiscountAuditEvent" | "guestBookingSnapshot" | "guestBookingToken" | "bookingClaimAudit" | "invoice" | "commissionRule" | "commissionRuleAuditLog" | "commission" | "commissionAdjustment" | "media" | "mediaUploadAuth" | "notificationSetting" | "notification" | "notificationPreference" | "payment" | "stripeWebhookEvent" | "outboxMessage" | "paymentRefund" | "paymentLink" | "permission" | "staffPermission" | "service" | "serviceAvailability" | "servicePricing" | "servicePackage" | "serviceTimeSlot" | "pickupZone" | "systemSetting" | "settingAuditLog" | "user"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3644,6 +3647,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ServicePackage: {
+      payload: Prisma.$ServicePackagePayload<ExtArgs>
+      fields: Prisma.ServicePackageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ServicePackageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePackagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ServicePackageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePackagePayload>
+        }
+        findFirst: {
+          args: Prisma.ServicePackageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePackagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ServicePackageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePackagePayload>
+        }
+        findMany: {
+          args: Prisma.ServicePackageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePackagePayload>[]
+        }
+        create: {
+          args: Prisma.ServicePackageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePackagePayload>
+        }
+        createMany: {
+          args: Prisma.ServicePackageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ServicePackageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePackagePayload>[]
+        }
+        delete: {
+          args: Prisma.ServicePackageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePackagePayload>
+        }
+        update: {
+          args: Prisma.ServicePackageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePackagePayload>
+        }
+        deleteMany: {
+          args: Prisma.ServicePackageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ServicePackageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ServicePackageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePackagePayload>[]
+        }
+        upsert: {
+          args: Prisma.ServicePackageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePackagePayload>
+        }
+        aggregate: {
+          args: Prisma.ServicePackageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateServicePackage>
+        }
+        groupBy: {
+          args: Prisma.ServicePackageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServicePackageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ServicePackageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServicePackageCountAggregateOutputType> | number
+        }
+      }
+    }
+    ServiceTimeSlot: {
+      payload: Prisma.$ServiceTimeSlotPayload<ExtArgs>
+      fields: Prisma.ServiceTimeSlotFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ServiceTimeSlotFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceTimeSlotPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ServiceTimeSlotFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceTimeSlotPayload>
+        }
+        findFirst: {
+          args: Prisma.ServiceTimeSlotFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceTimeSlotPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ServiceTimeSlotFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceTimeSlotPayload>
+        }
+        findMany: {
+          args: Prisma.ServiceTimeSlotFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceTimeSlotPayload>[]
+        }
+        create: {
+          args: Prisma.ServiceTimeSlotCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceTimeSlotPayload>
+        }
+        createMany: {
+          args: Prisma.ServiceTimeSlotCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ServiceTimeSlotCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceTimeSlotPayload>[]
+        }
+        delete: {
+          args: Prisma.ServiceTimeSlotDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceTimeSlotPayload>
+        }
+        update: {
+          args: Prisma.ServiceTimeSlotUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceTimeSlotPayload>
+        }
+        deleteMany: {
+          args: Prisma.ServiceTimeSlotDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ServiceTimeSlotUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ServiceTimeSlotUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceTimeSlotPayload>[]
+        }
+        upsert: {
+          args: Prisma.ServiceTimeSlotUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceTimeSlotPayload>
+        }
+        aggregate: {
+          args: Prisma.ServiceTimeSlotAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateServiceTimeSlot>
+        }
+        groupBy: {
+          args: Prisma.ServiceTimeSlotGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceTimeSlotGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ServiceTimeSlotCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceTimeSlotCountAggregateOutputType> | number
+        }
+      }
+    }
+    PickupZone: {
+      payload: Prisma.$PickupZonePayload<ExtArgs>
+      fields: Prisma.PickupZoneFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PickupZoneFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PickupZonePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PickupZoneFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PickupZonePayload>
+        }
+        findFirst: {
+          args: Prisma.PickupZoneFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PickupZonePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PickupZoneFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PickupZonePayload>
+        }
+        findMany: {
+          args: Prisma.PickupZoneFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PickupZonePayload>[]
+        }
+        create: {
+          args: Prisma.PickupZoneCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PickupZonePayload>
+        }
+        createMany: {
+          args: Prisma.PickupZoneCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PickupZoneCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PickupZonePayload>[]
+        }
+        delete: {
+          args: Prisma.PickupZoneDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PickupZonePayload>
+        }
+        update: {
+          args: Prisma.PickupZoneUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PickupZonePayload>
+        }
+        deleteMany: {
+          args: Prisma.PickupZoneDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PickupZoneUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PickupZoneUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PickupZonePayload>[]
+        }
+        upsert: {
+          args: Prisma.PickupZoneUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PickupZonePayload>
+        }
+        aggregate: {
+          args: Prisma.PickupZoneAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePickupZone>
+        }
+        groupBy: {
+          args: Prisma.PickupZoneGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PickupZoneGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PickupZoneCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PickupZoneCountAggregateOutputType> | number
+        }
+      }
+    }
     SystemSetting: {
       payload: Prisma.$SystemSettingPayload<ExtArgs>
       fields: Prisma.SystemSettingFieldRefs
@@ -4140,6 +4365,15 @@ export const BookingScalarFieldEnum = {
   source: 'source',
   serviceId: 'serviceId',
   availabilityId: 'availabilityId',
+  packageId: 'packageId',
+  timeSlotId: 'timeSlotId',
+  pickupZoneId: 'pickupZoneId',
+  departureTime: 'departureTime',
+  pickupLocation: 'pickupLocation',
+  packagePriceSnapshot: 'packagePriceSnapshot',
+  netPriceSnapshot: 'netPriceSnapshot',
+  pickupSurcharge: 'pickupSurcharge',
+  taxAmount: 'taxAmount',
   currency: 'currency',
   basePrice: 'basePrice',
   proposedPrice: 'proposedPrice',
@@ -4568,6 +4802,7 @@ export const ServiceScalarFieldEnum = {
   description: 'description',
   type: 'type',
   status: 'status',
+  pricingType: 'pricingType',
   providerName: 'providerName',
   providerId: 'providerId',
   metadata: 'metadata',
@@ -4604,6 +4839,66 @@ export const ServicePricingScalarFieldEnum = {
 } as const
 
 export type ServicePricingScalarFieldEnum = (typeof ServicePricingScalarFieldEnum)[keyof typeof ServicePricingScalarFieldEnum]
+
+
+export const ServicePackageScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
+  name: 'name',
+  description: 'description',
+  durationMinutes: 'durationMinutes',
+  boatSize: 'boatSize',
+  minPax: 'minPax',
+  maxCapacity: 'maxCapacity',
+  sellingPrice: 'sellingPrice',
+  netPrice: 'netPrice',
+  currency: 'currency',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServicePackageScalarFieldEnum = (typeof ServicePackageScalarFieldEnum)[keyof typeof ServicePackageScalarFieldEnum]
+
+
+export const ServiceTimeSlotScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
+  name: 'name',
+  departureTime: 'departureTime',
+  capacity: 'capacity',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceTimeSlotScalarFieldEnum = (typeof ServiceTimeSlotScalarFieldEnum)[keyof typeof ServiceTimeSlotScalarFieldEnum]
+
+
+export const PickupZoneScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
+  operatorName: 'operatorName',
+  zoneName: 'zoneName',
+  description: 'description',
+  morningPickupTime: 'morningPickupTime',
+  afternoonPickupTime: 'afternoonPickupTime',
+  hasPrivateTransfer: 'hasPrivateTransfer',
+  privateTransferCharge: 'privateTransferCharge',
+  morningPierArrival: 'morningPierArrival',
+  afternoonPierArrival: 'afternoonPierArrival',
+  surchargeAmount: 'surchargeAmount',
+  surchargeUnit: 'surchargeUnit',
+  currency: 'currency',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PickupZoneScalarFieldEnum = (typeof PickupZoneScalarFieldEnum)[keyof typeof PickupZoneScalarFieldEnum]
 
 
 export const SystemSettingScalarFieldEnum = {
@@ -5224,6 +5519,34 @@ export type ListEnumServiceStatusFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'PricingModelType'
+ */
+export type EnumPricingModelTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PricingModelType'>
+    
+
+
+/**
+ * Reference to a field of type 'PricingModelType[]'
+ */
+export type ListEnumPricingModelTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PricingModelType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SurchargeUnit'
+ */
+export type EnumSurchargeUnitFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SurchargeUnit'>
+    
+
+
+/**
+ * Reference to a field of type 'SurchargeUnit[]'
+ */
+export type ListEnumSurchargeUnitFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SurchargeUnit[]'>
+    
+
+
+/**
  * Reference to a field of type 'UserRole'
  */
 export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
@@ -5458,6 +5781,9 @@ export type GlobalOmitConfig = {
   service?: Prisma.ServiceOmit
   serviceAvailability?: Prisma.ServiceAvailabilityOmit
   servicePricing?: Prisma.ServicePricingOmit
+  servicePackage?: Prisma.ServicePackageOmit
+  serviceTimeSlot?: Prisma.ServiceTimeSlotOmit
+  pickupZone?: Prisma.PickupZoneOmit
   systemSetting?: Prisma.SystemSettingOmit
   settingAuditLog?: Prisma.SettingAuditLogOmit
   user?: Prisma.UserOmit

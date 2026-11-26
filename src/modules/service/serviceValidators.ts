@@ -88,23 +88,132 @@ import type { ServiceType, ServiceStatus } from "./serviceTypes.js";
 
 const serviceTypeSchema = yup.string().oneOf(["HOTEL", "PACKAGE", "TOUR"] as ServiceType[]).required("Type is required");
 const serviceStatusSchema = yup.string().oneOf(["DRAFT", "PUBLISHED", "UNPUBLISHED"] as ServiceStatus[]).required("Status is required");
+const pricingModelTypeSchema = yup.string().oneOf(["PER_PERSON", "PER_PACKAGE"]).optional();
+const surchargeUnitSchema = yup.string().oneOf(["PER_BOOKING", "PER_VEHICLE", "PER_PERSON"]).optional();
 
 export const createServiceSchema = yup.object({
   name: yup.string().trim().min(3, "Name must be at least 3 characters").required("Name is required"),
   description: yup.string().trim().optional(),
   type: serviceTypeSchema,
+  status: serviceStatusSchema.optional(),
+  pricingType: pricingModelTypeSchema,
   providerName: yup.string().trim().optional(),
   providerId: yup.string().trim().optional(),
   metadata: yup.mixed().optional(),
+  pricing: yup.mixed().optional(),
+  availability: yup.array().optional(),
+  packages: yup.array().optional(),
+  timeSlots: yup.array().optional(),
+  pickupZones: yup.array().optional(),
 });
 
 export const updateServiceSchema = yup.object({
   name: yup.string().trim().min(3, "Name must be at least 3 characters").optional(),
   description: yup.string().trim().optional(),
   type: serviceTypeSchema.optional(),
+  status: serviceStatusSchema.optional(),
+  pricingType: pricingModelTypeSchema,
   providerName: yup.string().trim().optional(),
   providerId: yup.string().trim().optional(),
   metadata: yup.mixed().optional(),
+  pricing: yup.mixed().optional(),
+  availability: yup.array().optional(),
+  packages: yup.array().optional(),
+  timeSlots: yup.array().optional(),
+  pickupZones: yup.array().optional(),
+});
+
+export const packageIdParamSchema = yup.object({
+  serviceId: yup.string().trim().uuid("Invalid service ID format").required("Service ID is required"),
+  packageId: yup.string().trim().uuid("Invalid package ID format").required("Package ID is required"),
+});
+
+export const timeSlotIdParamSchema = yup.object({
+  serviceId: yup.string().trim().uuid("Invalid service ID format").required("Service ID is required"),
+  slotId: yup.string().trim().uuid("Invalid slot ID format").required("Slot ID is required"),
+});
+
+export const pickupZoneIdParamSchema = yup.object({
+  serviceId: yup.string().trim().uuid("Invalid service ID format").optional(),
+  zoneId: yup.string().trim().uuid("Invalid zone ID format").required("Zone ID is required"),
+});
+
+export const createServicePackageSchema = yup.object({
+  name: yup.string().trim().min(2, "Package name must be at least 2 characters").required("Package name is required"),
+  description: yup.string().trim().optional(),
+  durationMinutes: yup.number().integer().min(1, "Duration must be at least 1 minute").required("Duration in minutes is required"),
+  boatSize: yup.string().trim().optional(),
+  minPax: yup.number().integer().min(1, "Minimum passenger count must be at least 1").default(1),
+  maxCapacity: yup.number().integer().min(1, "Maximum passenger capacity must be at least 1").required("Maximum capacity is required"),
+  sellingPrice: yup.number().min(0, "Selling price cannot be negative").required("Selling price is required"),
+  netPrice: yup.number().min(0, "Net price cannot be negative").optional(),
+  currency: yup.string().trim().uppercase().length(3, "Currency must be a 3-letter code").default("THB"),
+  isActive: yup.boolean().default(true),
+  sortOrder: yup.number().integer().default(0),
+});
+
+export const updateServicePackageSchema = yup.object({
+  name: yup.string().trim().min(2).optional(),
+  description: yup.string().trim().optional(),
+  durationMinutes: yup.number().integer().min(1).optional(),
+  boatSize: yup.string().trim().optional(),
+  minPax: yup.number().integer().min(1).optional(),
+  maxCapacity: yup.number().integer().min(1).optional(),
+  sellingPrice: yup.number().min(0).optional(),
+  netPrice: yup.number().min(0).optional(),
+  currency: yup.string().trim().uppercase().length(3).optional(),
+  isActive: yup.boolean().optional(),
+  sortOrder: yup.number().integer().optional(),
+});
+
+export const createServiceTimeSlotSchema = yup.object({
+  name: yup.string().trim().min(2, "Session name must be at least 2 characters").required("Session name is required"),
+  departureTime: yup.string().trim().required("Departure time is required"),
+  capacity: yup.number().integer().min(1).optional(),
+  isActive: yup.boolean().default(true),
+  sortOrder: yup.number().integer().default(0),
+});
+
+export const updateServiceTimeSlotSchema = yup.object({
+  name: yup.string().trim().min(2).optional(),
+  departureTime: yup.string().trim().optional(),
+  capacity: yup.number().integer().min(1).optional(),
+  isActive: yup.boolean().optional(),
+  sortOrder: yup.number().integer().optional(),
+});
+
+export const createPickupZoneSchema = yup.object({
+  zoneName: yup.string().trim().min(2, "Zone name must be at least 2 characters").required("Zone name is required"),
+  description: yup.string().trim().optional(),
+  morningPickupTime: yup.string().trim().optional(),
+  afternoonPickupTime: yup.string().trim().optional(),
+  hasPrivateTransfer: yup.boolean().default(false),
+  privateTransferCharge: yup.number().min(0, "Private transfer charge cannot be negative").optional(),
+  morningPierArrival: yup.string().trim().default("08:30 AM"),
+  afternoonPierArrival: yup.string().trim().default("12:30 PM"),
+  surchargeAmount: yup.number().min(0, "Surcharge amount cannot be negative").default(0),
+  surchargeUnit: surchargeUnitSchema.default("PER_BOOKING"),
+  currency: yup.string().trim().uppercase().length(3).default("THB"),
+  operatorName: yup.string().trim().optional(),
+  isActive: yup.boolean().default(true),
+  sortOrder: yup.number().integer().default(0),
+});
+
+export const updatePickupZoneSchema = yup.object({
+  zoneName: yup.string().trim().min(2).optional(),
+  description: yup.string().trim().optional(),
+  morningPickupTime: yup.string().trim().optional(),
+  afternoonPickupTime: yup.string().trim().optional(),
+  hasPrivateTransfer: yup.boolean().optional(),
+  privateTransferCharge: yup.number().min(0).optional(),
+  morningPierArrival: yup.string().trim().optional(),
+  afternoonPierArrival: yup.string().trim().optional(),
+  surchargeAmount: yup.number().min(0).optional(),
+  surchargeUnit: surchargeUnitSchema,
+  currency: yup.string().trim().uppercase().length(3).optional(),
+  operatorName: yup.string().trim().optional(),
+  isActive: yup.boolean().optional(),
+  sortOrder: yup.number().integer().optional(),
 });
 
 export const updateServiceStatusSchema = yup.object({

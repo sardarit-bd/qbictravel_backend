@@ -38,6 +38,13 @@ export interface RuntimePaymentCredentials {
   publishableKey: string;
   secretKey: string;
   merchantId: string;
+  omise?: {
+    enabled: boolean;
+    environment: "sandbox" | "live";
+    publicKey: string;
+    secretKey: string;
+    webhookSecret: string;
+  };
   stripe?: {
     enabled: boolean;
     environment: "sandbox" | "live";
@@ -263,6 +270,16 @@ export const getRuntimePaymentConfig = async (): Promise<RuntimePaymentCredentia
       secretKey = (await getDecryptedSecretSetting("payment.secret_key")) || "";
     }
 
+    // Omise
+    let omiseSecret = "";
+    if (map.get("payment.omise.secret_key")?.isSecret) {
+      omiseSecret = (await getDecryptedSecretSetting("payment.omise.secret_key")) || "";
+    }
+    let omiseWebhookSecret = "";
+    if (map.get("payment.omise.webhook_secret")?.isSecret) {
+      omiseWebhookSecret = (await getDecryptedSecretSetting("payment.omise.webhook_secret")) || "";
+    }
+
     // Stripe
     let stripeSecret = "";
     if (map.get("payment.stripe.secret_key")?.isSecret) {
@@ -286,6 +303,13 @@ export const getRuntimePaymentConfig = async (): Promise<RuntimePaymentCredentia
       publishableKey,
       secretKey,
       merchantId,
+      omise: {
+        enabled: map.get("payment.omise.enabled")?.value !== "false",
+        environment: (map.get("payment.omise.environment")?.value as "sandbox" | "live") || environment,
+        publicKey: map.get("payment.omise.public_key")?.value || process.env.OMISE_PUBLIC_KEY || "",
+        secretKey: omiseSecret || process.env.OMISE_SECRET_KEY || "",
+        webhookSecret: omiseWebhookSecret || process.env.OMISE_WEBHOOK_SECRET || "",
+      },
       stripe: {
         enabled: map.get("payment.stripe.enabled")?.value !== "false",
         environment: (map.get("payment.stripe.environment")?.value as "sandbox" | "live") || environment,
@@ -348,4 +372,16 @@ export const getRuntimeWebhookConfig = async (): Promise<RuntimeWebhookConfig> =
       enabled: false,
     };
   }
+};
+
+/**
+ * Helper to determine whether the Omise payment gateway is enabled by Admin.
+ * Returns true if not explicitly disabled.
+ */
+export const isOmiseGatewayEnabled = async (): Promise<boolean> => {
+  const config = await getRuntimePaymentConfig();
+  if (config.omise && config.omise.enabled === false) {
+    return false;
+  }
+  return true;
 };

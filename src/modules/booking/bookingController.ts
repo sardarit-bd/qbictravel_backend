@@ -1,3 +1,4 @@
+import AppError from "../../shared/utils/AppError.js";
 import type { Request, Response, NextFunction } from "express";
 import sendResponse from "../../shared/utils/response.js";
 import * as bookingService from "./bookingService.js";
@@ -48,24 +49,58 @@ export const createStaffBooking = async (req: Request, res: Response, next: Next
 
 export const createGuestBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    // Guest checkout is EXCLUSIVE to customers arriving through a valid affiliate referral.
+    // Verify whether an active attribution cookie or valid referral code exists before booking.
+    const attributionPayload = getAttributionFromRequest(req);
+    const fallbackCode = typeof req.body?.referralCode === "string" ? req.body.referralCode.trim() : null;
+
+    if (!attributionPayload && !fallbackCode) {
+      throw new AppError(
+        "Guest checkout is only available for affiliate-referred customers. Please sign in to book your tour.",
+        403
+      );
+    }
+
+    // Validate that the referral code/attribution points to a currently APPROVED affiliate program & affiliate
+    let isValidAffiliate = false;
+    if (attributionPayload && attributionPayload.exp > Date.now()) {
+      const aff = await prisma.affiliate.findUnique({
+        where: { id: attributionPayload.affiliateId },
+        select: { status: true },
+      });
+      if (aff && aff.status === "APPROVED") {
+        isValidAffiliate = true;
+      }
+    }
+
+    if (!isValidAffiliate && fallbackCode) {
+      const codeRes = await affiliateService.validateCode(fallbackCode);
+      if (codeRes && codeRes.valid) {
+        isValidAffiliate = true;
+      }
+    }
+
+    if (!isValidAffiliate) {
+      throw new AppError(
+        "Invalid or expired affiliate referral. Please sign in to complete your booking.",
+        403
+      );
+    }
+
     const result = await bookingService.createGuestBooking(req.body);
 
     // Attach server-validated last-click affiliate attribution for guest booking
-    const attributionPayload = getAttributionFromRequest(req);
-    const fallbackCode = typeof req.body?.referralCode === "string" ? req.body.referralCode : null;
-    if (attributionPayload || fallbackCode) {
-      try {
-        await prisma.$transaction(async (tx) => {
-          await affiliateService.attachAttributionToBooking(tx, {
-            bookingId: result.booking.id,
-            customerId: result.booking.customerId,
-            attributionPayload,
-            fallbackCode,
-          });
+    try {
+      await prisma.$transaction(async (tx) => {
+        await affiliateService.attachAttributionToBooking(tx, {
+          bookingId: result.booking.id,
+          customerId: result.booking.customerId,
+          attributionPayload,
+          fallbackCode,
         });
-      } catch {
-        // Non-blocking: never fail booking creation due to attribution
-      }
+      });
+    } catch {
+      // Non-blocking: never fail booking creation due to attribution
     }
 
     sendResponse(res, 201, true, "Guest booking created successfully", result);

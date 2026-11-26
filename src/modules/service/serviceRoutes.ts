@@ -14,6 +14,15 @@ import {
   getAdminServicesQuerySchema,
   bulkUpdateServiceStatusSchema,
   serviceIdParamSchema,
+  packageIdParamSchema,
+  timeSlotIdParamSchema,
+  pickupZoneIdParamSchema,
+  createServicePackageSchema,
+  updateServicePackageSchema,
+  createServiceTimeSlotSchema,
+  updateServiceTimeSlotSchema,
+  createPickupZoneSchema,
+  updatePickupZoneSchema,
 } from "./serviceValidators.js";
 
 const router = Router();
@@ -113,6 +122,46 @@ router.get("/services/:serviceId/availability", serviceController.getServiceAvai
  *         description: Service not found or not published
  */
 router.get("/services/:serviceId/pricing", serviceController.getServicePricing);
+
+/**
+ * @openapi
+ * /api/v1/services/{serviceId}/packages:
+ *   get:
+ *     tags:
+ *       - Services (Public)
+ *     summary: Retrieve active bookable packages/variants for a tour
+ */
+router.get("/services/:serviceId/packages", serviceController.getServicePackages);
+
+/**
+ * @openapi
+ * /api/v1/services/{serviceId}/time-slots:
+ *   get:
+ *     tags:
+ *       - Services (Public)
+ *     summary: Retrieve available departure sessions/time slots for a tour
+ */
+router.get("/services/:serviceId/time-slots", serviceController.getServiceTimeSlots);
+
+/**
+ * @openapi
+ * /api/v1/services/{serviceId}/pickup-zones:
+ *   get:
+ *     tags:
+ *       - Services (Public)
+ *     summary: Retrieve active pickup zones and surcharges for a tour
+ */
+router.get("/services/:serviceId/pickup-zones", serviceController.getPickupZones);
+
+/**
+ * @openapi
+ * /api/v1/pickup-zones:
+ *   get:
+ *     tags:
+ *       - Services (Public)
+ *     summary: Retrieve global pickup zones
+ */
+router.get("/pickup-zones", serviceController.getPickupZones);
 
 // ==========================================
 // Admin Routes (/api/v1/admin/services)
@@ -415,6 +464,120 @@ router.delete(
   requireRole("admin"),
   validate(serviceIdParamSchema, "params"),
   serviceController.deleteAdminService
+);
+
+// ==========================================
+// Admin Packages CRUD
+// ==========================================
+
+router.get(
+  "/admin/services/:serviceId/packages",
+  authMiddleware,
+  requirePermission("tours.view"),
+  validate(serviceIdParamSchema, "params"),
+  serviceController.getServicePackages
+);
+
+router.post(
+  "/admin/services/:serviceId/packages",
+  authMiddleware,
+  requirePermission("tours.edit"),
+  validate(serviceIdParamSchema, "params"),
+  validate(createServicePackageSchema),
+  serviceController.createAdminServicePackage
+);
+
+router.patch(
+  "/admin/services/:serviceId/packages/:packageId",
+  authMiddleware,
+  requirePermission("tours.edit"),
+  validate(packageIdParamSchema, "params"),
+  validate(updateServicePackageSchema),
+  serviceController.updateAdminServicePackage
+);
+
+router.delete(
+  "/admin/services/:serviceId/packages/:packageId",
+  authMiddleware,
+  requirePermission("tours.edit"),
+  validate(packageIdParamSchema, "params"),
+  serviceController.deleteAdminServicePackage
+);
+
+// ==========================================
+// Admin Time Slots CRUD
+// ==========================================
+
+router.get(
+  "/admin/services/:serviceId/time-slots",
+  authMiddleware,
+  requirePermission("tours.view"),
+  validate(serviceIdParamSchema, "params"),
+  serviceController.getServiceTimeSlots
+);
+
+router.post(
+  "/admin/services/:serviceId/time-slots",
+  authMiddleware,
+  requirePermission("tours.edit"),
+  validate(serviceIdParamSchema, "params"),
+  validate(createServiceTimeSlotSchema),
+  serviceController.createAdminServiceTimeSlot
+);
+
+router.patch(
+  "/admin/services/:serviceId/time-slots/:slotId",
+  authMiddleware,
+  requirePermission("tours.edit"),
+  validate(timeSlotIdParamSchema, "params"),
+  validate(updateServiceTimeSlotSchema),
+  serviceController.updateAdminServiceTimeSlot
+);
+
+router.delete(
+  "/admin/services/:serviceId/time-slots/:slotId",
+  authMiddleware,
+  requirePermission("tours.edit"),
+  validate(timeSlotIdParamSchema, "params"),
+  serviceController.deleteAdminServiceTimeSlot
+);
+
+// ==========================================
+// Admin Pickup Zones CRUD
+// ==========================================
+
+router.get(
+  "/admin/services/:serviceId/pickup-zones",
+  authMiddleware,
+  requirePermission("tours.view"),
+  validate(serviceIdParamSchema, "params"),
+  serviceController.getPickupZones
+);
+
+router.post(
+  "/admin/services/:serviceId/pickup-zones",
+  authMiddleware,
+  requirePermission("tours.edit"),
+  validate(serviceIdParamSchema, "params"),
+  validate(createPickupZoneSchema),
+  serviceController.createAdminPickupZone
+);
+
+router.patch(
+  "/admin/pickup-zones/:zoneId",
+  authMiddleware,
+  requirePermission("tours.edit"),
+  validate(pickupZoneIdParamSchema, "params"),
+  validate(updatePickupZoneSchema),
+  serviceController.updateAdminPickupZone
+);
+
+router.delete(
+  "/admin/pickup-zones/:zoneId",
+  authMiddleware,
+  requirePermission("tours.edit"),
+  validate(pickupZoneIdParamSchema, "params"),
+  serviceController.deleteAdminPickupZone
 );
 
 export default router;

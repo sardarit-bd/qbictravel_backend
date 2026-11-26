@@ -65,9 +65,9 @@ describe("Settings Routes & Removed Audit Logs Tests", () => {
       .put("/api/v1/admin/settings/payment")
       .set("x-mock-role", "admin")
       .send({
-        activeProvider: "stripe",
-        stripe: {
-          publishableKey: "pk_test_sample",
+        activeProvider: "omise",
+        omise: {
+          publicKey: "pkey_test_sample",
         },
       });
 

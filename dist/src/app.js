@@ -24,9 +24,11 @@ import permissionRoutes, { myPermissionsRouter } from "./modules/permission/perm
 import agentRoutes from "./modules/agent/agentRoutes.js";
 import settingRoutes from "./modules/setting/settingRoutes.js";
 import customerRoutes from "./modules/customer/customerRoutes.js";
+import invoiceRoutes from "./modules/invoice/invoiceRoutes.js";
 import discountRoutes from "./modules/discount/discountRoutes.js";
+import eventRoutes from "./modules/event/eventRoutes.js";
 import { publicAffiliateRouter, affiliatePortalRouter, adminAffiliateRouter, } from "./modules/affiliate/affiliateRoutes.js";
-import { handleStripeWebhook, handlePayPalWebhook } from "./modules/payment/paymentController.js";
+import { handleStripeWebhook, handlePayPalWebhook, handleOmiseWebhook } from "./modules/payment/paymentController.js";
 import { csrfProtectionMiddleware } from "./shared/middleware/csrfMiddleware.js";
 const swaggerCustomCss = `
   body {
@@ -111,6 +113,8 @@ app.use(rateLimit({
 app.post("/api/v1/webhooks/stripe", express.raw({ type: "application/json", limit: "2mb" }), handleStripeWebhook);
 // 3b. Dedicated PayPal Webhook parser
 app.post("/api/v1/webhooks/paypal", express.json({ limit: "2mb" }), handlePayPalWebhook);
+// 3c. Dedicated Omise Webhook raw body parser
+app.post("/api/v1/webhooks/omise", express.raw({ type: "application/json", limit: "2mb" }), handleOmiseWebhook);
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 app.use(helmet());
@@ -142,7 +146,9 @@ app.use("/api/v1", notificationRoutes);
 app.use("/api/v1", commissionRoutes);
 app.use("/api/v1", reportRoutes);
 app.use("/api/v1", customerRoutes);
+app.use("/api/v1", invoiceRoutes);
 app.use("/api/v1", discountRoutes);
+app.use("/api/v1", eventRoutes);
 app.use("/api/v1/affiliates", publicAffiliateRouter);
 app.use("/api/v1/affiliate", affiliatePortalRouter);
 app.use("/api/v1/admin/affiliates", adminAffiliateRouter);

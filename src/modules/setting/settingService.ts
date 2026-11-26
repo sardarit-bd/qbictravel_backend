@@ -20,6 +20,7 @@ import type {
   UpdateSmtpSettingsInput,
   StripePaymentConfigSummary,
   PayPalPaymentConfigSummary,
+  OmisePaymentConfigSummary,
   PaymentCredentialSource,
 } from "./settingTypes.js";
 
@@ -205,17 +206,62 @@ export const getSettingsOverview = async (): Promise<SystemSettingsOverview> => 
     source: paypalClientSecret.source,
   };
 
-  const activeProvider = (map.get("payment.active_provider")?.value as "stripe" | "paypal") || "stripe";
+  // Omise credentials
+  const dbOmiseSecretRecord = map.get("payment.omise.secret_key");
+  const dbOmiseSecret = dbOmiseSecretRecord?.encryptedValue
+    ? await repo.getDecryptedSecretSetting("payment.omise.secret_key")
+    : null;
+  const dbOmiseWebhookRecord = map.get("payment.omise.webhook_secret");
+  const dbOmiseWebhookSecret = dbOmiseWebhookRecord?.encryptedValue
+    ? await repo.getDecryptedSecretSetting("payment.omise.webhook_secret")
+    : null;
+
+  const omiseSecret = resolveCredential(dbOmiseSecret, process.env.OMISE_SECRET_KEY);
+  const omiseWebhookSecret = resolveCredential(
+    dbOmiseWebhookSecret,
+    process.env.OMISE_WEBHOOK_SECRET
+  );
+  const omisePublicKey = resolveCredential(
+    map.get("payment.omise.public_key")?.value,
+    process.env.OMISE_PUBLIC_KEY
+  );
+
+  const omiseConfigured = hasCredentialValue(omiseSecret.value);
+  const omiseEnabled =
+    omiseConfigured && map.get("payment.omise.enabled")?.value !== "false";
+  const omiseEnvironment =
+    (map.get("payment.omise.environment")?.value as "sandbox" | "live") ||
+    (map.get("payment.environment")?.value as "sandbox" | "live") ||
+    (omiseSecret.value.startsWith("skey_test_") || omisePublicKey.value.startsWith("pkey_test_")
+      ? "sandbox"
+      : omiseSecret.value.startsWith("skey_") || omisePublicKey.value.startsWith("pkey_")
+      ? "live"
+      : "sandbox");
+
+  const omiseSummary: OmisePaymentConfigSummary = {
+    enabled: omiseEnabled,
+    environment: omiseEnvironment,
+    publicKey: omisePublicKey.value,
+    hasSecretKey: omiseConfigured,
+    maskedSecretKey: maskSecret(omiseSecret.value),
+    hasWebhookSecret: hasCredentialValue(omiseWebhookSecret.value),
+    maskedWebhookSecret: maskSecret(omiseWebhookSecret.value),
+    configured: omiseConfigured,
+    source: omiseSecret.source,
+  };
+
+  const activeProvider = (map.get("payment.active_provider")?.value as "omise" | "stripe" | "paypal") || "omise";
 
   const payment = {
     activeProvider,
-    providerName: map.get("payment.provider_name")?.value || "Direct Bank & Cash",
+    providerName: map.get("payment.provider_name")?.value || "Omise Card Payment",
     enabled: map.get("payment.enabled")?.value !== "false",
     environment: (map.get("payment.environment")?.value as "sandbox" | "live") || "sandbox",
-    publishableKey: stripePublishableKey.value,
-    hasSecretKey: stripeConfigured || hasLegacySecretKey,
-    maskedSecretKey: maskSecret(effectiveStripeSecret || legacySecret),
+    publishableKey: omisePublicKey.value || stripePublishableKey.value,
+    hasSecretKey: omiseConfigured || stripeConfigured || hasLegacySecretKey,
+    maskedSecretKey: maskSecret(omiseSecret.value || effectiveStripeSecret || legacySecret),
     merchantId: map.get("payment.merchant_id")?.value || "",
+    omise: omiseSummary,
     stripe: stripeSummary,
     paypal: paypalSummary,
     isCustomized: isPaymentCustomized,
@@ -406,6 +452,7 @@ export const updatePaymentSettings = async (
 ) => {
   const isGoingLive =
     input.environment === "live" ||
+    input.omise?.environment === "live" ||
     input.stripe?.environment === "live" ||
     input.paypal?.environment === "live";
 
@@ -442,6 +489,25 @@ export const updatePaymentSettings = async (
   }
   if (input.secretKey && input.secretKey.trim()) {
     updates.push(repo.setSecretSetting("PAYMENT", "payment.secret_key", input.secretKey.trim(), actor.id, "Payment Secret Key"));
+  }
+
+  // Omise specific settings
+  if (input.omise) {
+    if (input.omise.enabled !== undefined) {
+      updates.push(repo.setPlaintextSetting("PAYMENT", "payment.omise.enabled", String(input.omise.enabled), actor.id));
+    }
+    if (input.omise.environment !== undefined) {
+      updates.push(repo.setPlaintextSetting("PAYMENT", "payment.omise.environment", input.omise.environment, actor.id));
+    }
+    if (input.omise.publicKey !== undefined && input.omise.publicKey.trim()) {
+      updates.push(repo.setPlaintextSetting("PAYMENT", "payment.omise.public_key", input.omise.publicKey.trim(), actor.id));
+    }
+    if (input.omise.secretKey && input.omise.secretKey.trim()) {
+      updates.push(repo.setSecretSetting("PAYMENT", "payment.omise.secret_key", input.omise.secretKey.trim(), actor.id, "Omise Secret Key"));
+    }
+    if (input.omise.webhookSecret && input.omise.webhookSecret.trim()) {
+      updates.push(repo.setSecretSetting("PAYMENT", "payment.omise.webhook_secret", input.omise.webhookSecret.trim(), actor.id, "Omise Webhook Secret"));
+    }
   }
 
   // Stripe specific settings
@@ -500,7 +566,12 @@ export const updatePaymentSettings = async (
       providerName: input.providerName,
       environment: input.environment,
       enabled: input.enabled,
-      hasSecretKeyReplaced: Boolean(input.secretKey?.trim() || input.stripe?.secretKey?.trim()),
+      hasSecretKeyReplaced: Boolean(
+        input.secretKey?.trim() ||
+        input.omise?.secretKey?.trim() ||
+        input.stripe?.secretKey?.trim()
+      ),
+      hasOmiseSecretReplaced: Boolean(input.omise?.secretKey?.trim()),
       hasPaypalSecretReplaced: Boolean(input.paypal?.clientSecret?.trim()),
     },
   });

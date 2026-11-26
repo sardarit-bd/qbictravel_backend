@@ -233,6 +233,21 @@ export type ServiceAvailability = Prisma.ServiceAvailabilityModel
  */
 export type ServicePricing = Prisma.ServicePricingModel
 /**
+ * Model ServicePackage
+ * 
+ */
+export type ServicePackage = Prisma.ServicePackageModel
+/**
+ * Model ServiceTimeSlot
+ * 
+ */
+export type ServiceTimeSlot = Prisma.ServiceTimeSlotModel
+/**
+ * Model PickupZone
+ * 
+ */
+export type PickupZone = Prisma.PickupZoneModel
+/**
  * Model SystemSetting
  * 
  */

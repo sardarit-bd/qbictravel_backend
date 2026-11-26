@@ -23,6 +23,7 @@ import { generateSecureToken, hashToken } from "./tokenUtils.js";
 import logger from "../../shared/logger/logger.js";
 import env from "../../config/env.js";
 import { emitPaymentEvent, emitBookingEvent } from "../event/eventEmitter.js";
+import { isOmiseGatewayEnabled } from "../setting/settingRuntimeConfig.js";
 
 const toCents = (value: unknown): number => Math.round(Number(value) * 100);
 
@@ -982,7 +983,15 @@ export const generateAgentPaymentLink = async (
     throw new AppError("Cannot create a payment link for a cancelled booking", 409);
   }
 
-  if (booking.paymentStatus === "PAID") {
+  // Calculate previously paid amount and remaining balance
+  const totalAmount = Number(booking.finalPrice);
+  const previouslyPaid = ((booking as any).payments || [])
+    .filter((p: any) => p.status === "VERIFIED")
+    .reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+
+  const remainingBalance = Math.max(0, totalAmount - previouslyPaid);
+
+  if (remainingBalance <= 0 || booking.paymentStatus === "PAID") {
     throw new AppError("This booking is already paid in full", 409);
   }
 
@@ -1011,6 +1020,19 @@ export const generateAgentPaymentLink = async (
     rawToken,
     expiresAt: paymentLink.expiresAt,
     status: paymentLink.status,
+    totalAmount,
+    previouslyPaid,
+    remainingBalance,
+  } as {
+    paymentLinkId: string;
+    bookingId: string;
+    paymentUrl: string;
+    rawToken: string;
+    expiresAt: Date;
+    status: any;
+    totalAmount?: number;
+    previouslyPaid?: number;
+    remainingBalance?: number;
   };
 };
 
@@ -1037,29 +1059,28 @@ export const generateStaffPaymentLink = async (
     throw new AppError("You are not authorized to generate a payment link for this booking", 403);
   }
 
-  if (
-    booking.requiresApproval ||
-    (booking.status as any) === "AWAITING_APPROVAL" ||
-    booking.status === "PENDING" ||
-    ((booking as any).discountRequests && (booking as any).discountRequests.some((dr: any) => dr.status === "PENDING" || !dr.status))
-  ) {
-    throw new AppError("Cannot create a payment link while booking is awaiting admin approval", 409);
-  }
-
   if (booking.status === "CANCELLED" || booking.status === "FAILED") {
     throw new AppError("Cannot create a payment link for a cancelled booking", 409);
   }
 
-  if (booking.paymentStatus === "PAID") {
+  if (!booking.finalPrice || Number(booking.finalPrice) <= 0 || !booking.currency) {
+    throw new AppError("Booking has invalid pricing or currency", 400);
+  }
+
+  // Calculate previously paid amount and remaining balance
+  const totalAmount = Number(booking.finalPrice);
+  const previouslyPaid = ((booking as any).payments || [])
+    .filter((p: any) => p.status === "VERIFIED")
+    .reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+
+  const remainingBalance = Math.max(0, totalAmount - previouslyPaid);
+
+  if (remainingBalance <= 0 || booking.paymentStatus === "PAID") {
     throw new AppError("This booking is already paid in full", 409);
   }
 
   if (!PAYABLE_BOOKING_STATUSES.includes(booking.status)) {
     throw new AppError(`Booking status ${booking.status} is not eligible for payment`, 409);
-  }
-
-  if (!booking.finalPrice || Number(booking.finalPrice) <= 0 || !booking.currency) {
-    throw new AppError("Booking has invalid pricing or currency", 400);
   }
 
   // Generate a cryptographically secure token
@@ -1087,6 +1108,19 @@ export const generateStaffPaymentLink = async (
     rawToken,
     expiresAt: paymentLink.expiresAt,
     status: paymentLink.status,
+    totalAmount,
+    previouslyPaid,
+    remainingBalance,
+  } as {
+    paymentLinkId: string;
+    bookingId: string;
+    paymentUrl: string;
+    rawToken: string;
+    expiresAt: Date;
+    status: any;
+    totalAmount?: number;
+    previouslyPaid?: number;
+    remainingBalance?: number;
   };
 };
 
@@ -1429,6 +1463,11 @@ export const createCustomerOmiseCharge = async (
   customerId: string,
   input: CreateOmiseChargeInput,
 ): Promise<OmiseChargeResult> => {
+  const isEnabled = await isOmiseGatewayEnabled();
+  if (!isEnabled) {
+    throw new AppError("Omise card payments are currently disabled by administrator", 400);
+  }
+
   if (!activeOmiseClient.isConfigured()) {
     throw new AppError("Omise payment gateway is not configured on this server", 503);
   }
@@ -1466,7 +1505,12 @@ export const createCustomerOmiseCharge = async (
     );
   }
 
-  const remainingBalance = Number(booking.finalPrice);
+  const totalAmount = Number(booking.finalPrice);
+  const previouslyPaid = ((booking as any).payments || [])
+    .filter((p: any) => p.status === "VERIFIED")
+    .reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+
+  const remainingBalance = Math.max(0, totalAmount - previouslyPaid);
   if (remainingBalance <= 0) {
     throw new AppError("No remaining balance to pay for this booking", 409);
   }
@@ -1589,6 +1633,11 @@ export const createPublicOmiseCharge = async (
   rawToken: string,
   input: { token: string; returnUrl?: string },
 ): Promise<OmiseChargeResult> => {
+  const isEnabled = await isOmiseGatewayEnabled();
+  if (!isEnabled) {
+    throw new AppError("Omise card payments are currently disabled by administrator", 400);
+  }
+
   if (!activeOmiseClient.isConfigured()) {
     throw new AppError("Omise payment gateway is not configured", 503);
   }

@@ -14,11 +14,21 @@ export const applyAffiliateSchema = yup.object({
   payoutDetails: yup.object().nullable().optional(),
 });
 
+export const affiliateBankDetailsSchema = yup.object({
+  bankName: yup.string().trim().min(2, "Bank name must be at least 2 characters").max(100).required("Bank name is required"),
+  accountHolderName: yup.string().trim().min(2, "Account holder name must be at least 2 characters").max(100).required("Account holder name is required"),
+  accountNumber: yup.string().trim().min(5, "Account number must be at least 5 characters").max(40).required("Account number is required"),
+  branchName: yup.string().trim().max(100).nullable().optional(),
+  swiftBic: yup.string().trim().max(30).nullable().optional(),
+  routingNumber: yup.string().trim().max(30).nullable().optional(),
+});
+
 export const updateAffiliateProfileSchema = yup.object({
   websiteUrl: yup.string().trim().max(500).nullable().optional(),
   promotionChannels: yup.string().trim().max(1000).nullable().optional(),
   payoutMethod: yup.string().trim().max(100).nullable().optional(),
   payoutDetails: yup.object().nullable().optional(),
+  bankDetails: affiliateBankDetailsSchema.nullable().optional(),
 });
 
 export const createAffiliateLinkSchema = yup.object({
@@ -43,7 +53,7 @@ export const requestPayoutSchema = yup.object({
     .typeError("Amount must be a number")
     .positive("Amount must be greater than 0")
     .required("Amount is required"),
-  payoutMethod: yup.string().trim().min(2).max(100).required("Payout method is required"),
+  payoutMethod: yup.string().trim().min(2).max(100).optional(),
   payoutDetails: yup.object().nullable().optional(),
 });
 
@@ -70,7 +80,8 @@ export const updateAffiliateSettingsSchema = yup.object({
 });
 
 export const markPayoutPaidSchema = yup.object({
-  payoutMethod: yup.string().trim().min(2).max(100).required("Payment method is required"),
-  transactionReference: yup.string().trim().min(2).max(200).required("Transaction reference is required"),
+  payoutMethod: yup.string().trim().min(2).max(100).optional(),
+  transactionReference: yup.string().trim().min(2, "Transaction reference is required").max(200).required("Transaction reference is required"),
   paidAt: yup.string().optional(),
+  notes: yup.string().trim().max(1000).nullable().optional(),
 });

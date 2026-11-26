@@ -1,6 +1,30 @@
 import { prisma } from "../../lib/prisma.js";
 import type { CreateBookingInput } from "./bookingTypes.js";
 
+const mapBookingRecord = (booking: any) => {
+  if (!booking) return booking;
+  return {
+    ...booking,
+    basePrice: Number(booking.basePrice),
+    proposedPrice: booking.proposedPrice != null ? Number(booking.proposedPrice) : null,
+    finalPrice: Number(booking.finalPrice),
+    packagePriceSnapshot: booking.packagePriceSnapshot != null ? Number(booking.packagePriceSnapshot) : null,
+    netPriceSnapshot: booking.netPriceSnapshot != null ? Number(booking.netPriceSnapshot) : null,
+    pickupSurcharge: Number(booking.pickupSurcharge ?? 0),
+    taxAmount: Number(booking.taxAmount ?? 0),
+    priceApproval: booking.priceApproval
+      ? {
+          ...booking.priceApproval,
+          requestedPrice: Number(booking.priceApproval.requestedPrice),
+          approvedPrice:
+            booking.priceApproval.approvedPrice != null
+              ? Number(booking.priceApproval.approvedPrice)
+              : null,
+        }
+      : null,
+  };
+};
+
 export const createBooking = async (
   input: CreateBookingInput & { 
     currency: string;
@@ -14,6 +38,15 @@ export const createBooking = async (
     historyAction?: string;
     actorRole?: string;
     isGuest?: boolean;
+    packageId?: string | null;
+    timeSlotId?: string | null;
+    pickupZoneId?: string | null;
+    departureTime?: string | null;
+    pickupLocation?: string | null;
+    packagePriceSnapshot?: number | null;
+    netPriceSnapshot?: number | null;
+    pickupSurcharge?: number;
+    taxAmount?: number;
   },
   txClient?: any
 ) => {
@@ -27,6 +60,15 @@ export const createBooking = async (
         source: input.source || (input.agentId ? "AGENT" : "CUSTOMER"),
         serviceId: input.serviceId,
         availabilityId: input.availabilityId || null,
+        packageId: input.packageId || null,
+        timeSlotId: input.timeSlotId || null,
+        pickupZoneId: input.pickupZoneId || null,
+        departureTime: input.departureTime || null,
+        pickupLocation: input.pickupLocation || null,
+        packagePriceSnapshot: input.packagePriceSnapshot != null ? input.packagePriceSnapshot : null,
+        netPriceSnapshot: input.netPriceSnapshot != null ? input.netPriceSnapshot : null,
+        pickupSurcharge: input.pickupSurcharge ?? 0,
+        taxAmount: input.taxAmount ?? 0,
         currency: input.currency,
         basePrice: input.basePrice, // Pass number directly
         proposedPrice: input.proposedPrice !== undefined ? Number(input.proposedPrice) : null,
@@ -56,11 +98,18 @@ export const createBooking = async (
           currency: input.currency,
           requiresApproval: input.requiresApproval,
           notes: input.notes || null,
+          packageId: input.packageId || null,
+          timeSlotId: input.timeSlotId || null,
+          pickupZoneId: input.pickupZoneId || null,
+          departureTime: input.departureTime || null,
+          pickupLocation: input.pickupLocation || null,
+          pickupSurcharge: input.pickupSurcharge ?? 0,
+          taxAmount: input.taxAmount ?? 0,
         },
       },
     });
 
-    return created;
+    return mapBookingRecord(created);
   };
 
   if (txClient) {
@@ -212,6 +261,15 @@ const adminReservationSelect = {
   proposedPrice: true,
   finalPrice: true,
   requiresApproval: true,
+  packageId: true,
+  timeSlotId: true,
+  pickupZoneId: true,
+  departureTime: true,
+  pickupLocation: true,
+  packagePriceSnapshot: true,
+  netPriceSnapshot: true,
+  pickupSurcharge: true,
+  taxAmount: true,
   notes: true,
   internalNotes: true,
   createdAt: true,
@@ -371,15 +429,24 @@ export const listStaffCreatedBookings = async (
   params: {
     skip: number;
     take: number;
+    scope?: "my" | "all";
     status?: string;
     paymentStatus?: string;
     fulfillmentStatus?: string;
     search?: string;
   }
 ) => {
-  const where: any = {
-    createdById: staffId,
-  };
+  const where: any = {};
+
+  if (params.scope === "all") {
+    // Authorized view of all bookings
+  } else {
+    // "my" bookings: created by or assigned to the logged-in staff member
+    where.OR = [
+      { createdById: staffId },
+      { assignedStaffId: staffId },
+    ];
+  }
 
   if (params.status && params.status !== "ALL") {
     where.status = params.status;
@@ -395,13 +462,24 @@ export const listStaffCreatedBookings = async (
 
   if (params.search && params.search.trim()) {
     const q = params.search.trim();
-    where.OR = [
+    const searchConditions = [
       { id: { contains: q, mode: "insensitive" } },
       { customer: { name: { contains: q, mode: "insensitive" } } },
       { customer: { email: { contains: q, mode: "insensitive" } } },
       { service: { name: { contains: q, mode: "insensitive" } } },
       { notes: { contains: q, mode: "insensitive" } },
     ];
+
+    if (where.OR) {
+      // In "my" mode, combine the ownership condition with the search condition
+      where.AND = [
+        { OR: where.OR },
+        { OR: searchConditions },
+      ];
+      delete where.OR;
+    } else {
+      where.OR = searchConditions;
+    }
   }
 
   const [items, total] = await Promise.all([
@@ -916,6 +994,15 @@ export const amendBookingRecord = async (params: {
   newBasePrice: number;
   newFinalPrice: number;
   formattedNotes?: string;
+  packageId?: string | null;
+  timeSlotId?: string | null;
+  pickupZoneId?: string | null;
+  departureTime?: string | null;
+  pickupLocation?: string | null;
+  pickupSurcharge?: number;
+  taxAmount?: number;
+  packagePriceSnapshot?: number | null;
+  netPriceSnapshot?: number | null;
   discountData?: {
     discountType: "PERCENTAGE" | "FIXED_AMOUNT";
     discountValue: number;
@@ -1031,7 +1118,7 @@ export const amendBookingRecord = async (params: {
       }
     }
 
-    // 3. Check payment status changes if final price changed
+    // 3. Preserve financial integrity: determine payment status accurately based on total verified paid vs new final price
     let updatedPaymentStatus = previousBooking.paymentStatus;
     const paidSumResult = await tx.payment.aggregate({
       where: { bookingId, status: "VERIFIED" },
@@ -1039,12 +1126,12 @@ export const amendBookingRecord = async (params: {
     });
     const totalPaid = Number(paidSumResult._sum.amount ?? 0);
 
-    if (totalPaid > 0) {
-      if (totalPaid >= newFinalPrice) {
-        updatedPaymentStatus = "PAID";
-      } else {
-        updatedPaymentStatus = "PARTIALLY_PAID";
-      }
+    if (totalPaid >= newFinalPrice - 0.001 && newFinalPrice > 0) {
+      updatedPaymentStatus = "PAID";
+    } else if (totalPaid > 0) {
+      updatedPaymentStatus = "PARTIALLY_PAID";
+    } else {
+      updatedPaymentStatus = "UNPAID";
     }
 
     // 4. Update Booking
@@ -1055,6 +1142,15 @@ export const amendBookingRecord = async (params: {
         finalPrice: newFinalPrice,
         paymentStatus: updatedPaymentStatus,
         availabilityId: finalAvailabilityId,
+        ...(params.packageId !== undefined ? { packageId: params.packageId } : {}),
+        ...(params.timeSlotId !== undefined ? { timeSlotId: params.timeSlotId } : {}),
+        ...(params.pickupZoneId !== undefined ? { pickupZoneId: params.pickupZoneId } : {}),
+        ...(params.departureTime !== undefined ? { departureTime: params.departureTime } : {}),
+        ...(params.pickupLocation !== undefined ? { pickupLocation: params.pickupLocation } : {}),
+        ...(params.pickupSurcharge !== undefined ? { pickupSurcharge: params.pickupSurcharge } : {}),
+        ...(params.taxAmount !== undefined ? { taxAmount: params.taxAmount } : {}),
+        ...(params.packagePriceSnapshot !== undefined ? { packagePriceSnapshot: params.packagePriceSnapshot } : {}),
+        ...(params.netPriceSnapshot !== undefined ? { netPriceSnapshot: params.netPriceSnapshot } : {}),
         ...(formattedNotes !== undefined ? { notes: formattedNotes } : {}),
       },
       include: {
@@ -1064,6 +1160,17 @@ export const amendBookingRecord = async (params: {
         assignedStaff: { select: { id: true, name: true, email: true } },
         createdBy: { select: { id: true, name: true, role: true } },
         discountRequests: { orderBy: { createdAt: "desc" }, take: 1 },
+        payments: {
+          select: {
+            id: true,
+            amount: true,
+            currency: true,
+            status: true,
+            method: true,
+            reference: true,
+            createdAt: true,
+          },
+        },
       },
     });
 

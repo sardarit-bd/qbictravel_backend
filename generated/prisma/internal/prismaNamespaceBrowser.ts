@@ -94,6 +94,9 @@ export const ModelName = {
   Service: 'Service',
   ServiceAvailability: 'ServiceAvailability',
   ServicePricing: 'ServicePricing',
+  ServicePackage: 'ServicePackage',
+  ServiceTimeSlot: 'ServiceTimeSlot',
+  PickupZone: 'PickupZone',
   SystemSetting: 'SystemSetting',
   SettingAuditLog: 'SettingAuditLog',
   User: 'User'
@@ -350,6 +353,15 @@ export const BookingScalarFieldEnum = {
   source: 'source',
   serviceId: 'serviceId',
   availabilityId: 'availabilityId',
+  packageId: 'packageId',
+  timeSlotId: 'timeSlotId',
+  pickupZoneId: 'pickupZoneId',
+  departureTime: 'departureTime',
+  pickupLocation: 'pickupLocation',
+  packagePriceSnapshot: 'packagePriceSnapshot',
+  netPriceSnapshot: 'netPriceSnapshot',
+  pickupSurcharge: 'pickupSurcharge',
+  taxAmount: 'taxAmount',
   currency: 'currency',
   basePrice: 'basePrice',
   proposedPrice: 'proposedPrice',
@@ -778,6 +790,7 @@ export const ServiceScalarFieldEnum = {
   description: 'description',
   type: 'type',
   status: 'status',
+  pricingType: 'pricingType',
   providerName: 'providerName',
   providerId: 'providerId',
   metadata: 'metadata',
@@ -814,6 +827,66 @@ export const ServicePricingScalarFieldEnum = {
 } as const
 
 export type ServicePricingScalarFieldEnum = (typeof ServicePricingScalarFieldEnum)[keyof typeof ServicePricingScalarFieldEnum]
+
+
+export const ServicePackageScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
+  name: 'name',
+  description: 'description',
+  durationMinutes: 'durationMinutes',
+  boatSize: 'boatSize',
+  minPax: 'minPax',
+  maxCapacity: 'maxCapacity',
+  sellingPrice: 'sellingPrice',
+  netPrice: 'netPrice',
+  currency: 'currency',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServicePackageScalarFieldEnum = (typeof ServicePackageScalarFieldEnum)[keyof typeof ServicePackageScalarFieldEnum]
+
+
+export const ServiceTimeSlotScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
+  name: 'name',
+  departureTime: 'departureTime',
+  capacity: 'capacity',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceTimeSlotScalarFieldEnum = (typeof ServiceTimeSlotScalarFieldEnum)[keyof typeof ServiceTimeSlotScalarFieldEnum]
+
+
+export const PickupZoneScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
+  operatorName: 'operatorName',
+  zoneName: 'zoneName',
+  description: 'description',
+  morningPickupTime: 'morningPickupTime',
+  afternoonPickupTime: 'afternoonPickupTime',
+  hasPrivateTransfer: 'hasPrivateTransfer',
+  privateTransferCharge: 'privateTransferCharge',
+  morningPierArrival: 'morningPierArrival',
+  afternoonPierArrival: 'afternoonPierArrival',
+  surchargeAmount: 'surchargeAmount',
+  surchargeUnit: 'surchargeUnit',
+  currency: 'currency',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PickupZoneScalarFieldEnum = (typeof PickupZoneScalarFieldEnum)[keyof typeof PickupZoneScalarFieldEnum]
 
 
 export const SystemSettingScalarFieldEnum = {

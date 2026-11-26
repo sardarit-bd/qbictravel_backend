@@ -80,6 +80,20 @@ export const adminOperationalSelect = {
   basePrice: true,
   proposedPrice: true,
   finalPrice: true,
+  payments: {
+    select: {
+      id: true,
+      amount: true,
+      currency: true,
+      method: true,
+      status: true,
+      reference: true,
+      stripeSessionId: true,
+      receivedAt: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: "desc" as const },
+  },
 } as const;
 
 // Backward compatibility alias for staff projection
@@ -290,22 +304,11 @@ export const queryScheduleBookings = async (params: {
   });
 
   // Staff booking visibility policy:
-  // Staff can only view bookings where they are assigned (assignedStaffId === actorId)
-  // OR where they created the booking (createdById === actorId).
-  // If actorRole is not admin, a valid non-empty actorId is strictly required.
-  if (params.actorRole !== "admin") {
-    if (!params.actorId || typeof params.actorId !== "string" || !params.actorId.trim()) {
-      // Safe guard: Staff request without a valid authenticated actorId must match nothing
-      andConditions.push({ id: "__UNAUTHORIZED_STAFF_MISSING_ACTOR_ID__" });
-    } else {
-      andConditions.push({
-        OR: [
-          { assignedStaffId: params.actorId.trim() },
-          { createdById: params.actorId.trim() },
-        ],
-      });
-    }
-  }
+  // Staff users with operational access (bookings.view) can view operationally relevant bookings
+  // on the tour schedule, including bookings assigned to them, bookings created by them,
+  // and all operational bookings (CONFIRMED, IN_PROGRESS, COMPLETED, PENDING) for scheduled tour fulfillment.
+  // Sensitive financial figures remain protected under the Staff projection (adminOperationalSelect vs staffOperationalSelect).
+  // If an optional assignedStaffId or actor filter is requested specifically, it can be passed.
 
   if (params.search) {
     const term = params.search.trim();

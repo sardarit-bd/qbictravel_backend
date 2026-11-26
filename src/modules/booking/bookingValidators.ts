@@ -5,12 +5,19 @@ export const createBookingSchema = yup.object({
   agentId: yup.string().uuid("Invalid agent ID").optional(),
   serviceId: yup.string().uuid("Invalid service ID").required("Service ID is required"),
   availabilityId: yup.string().uuid("Invalid availability ID").optional(),
+  packageId: yup.string().uuid("Invalid package ID").optional(),
+  timeSlotId: yup.string().uuid("Invalid time slot ID").optional(),
+  pickupZoneId: yup.string().uuid("Invalid pickup zone ID").optional(),
+  departureTime: yup.string().trim().max(50).optional(),
+  pickupLocation: yup.string().trim().max(500).optional(),
+  isPrivateTransfer: yup.boolean().optional(),
   proposedPrice: yup.number().min(0, "Proposed price must be at least 0").optional(),
   travelDate: yup.string().trim().optional(),
   adults: yup.number().integer("Adults must be an integer").min(1, "At least 1 adult is required").max(50, "Maximum 50 adults per booking").optional(),
   children: yup.number().integer("Children must be an integer").min(0, "Children cannot be negative").max(50, "Maximum 50 children per booking").optional(),
   infants: yup.number().integer("Infants must be an integer").min(0, "Infants cannot be negative").max(50, "Maximum 50 infants per booking").optional(),
   notes: yup.string().trim().max(1000, "Notes must be at most 1000 characters").optional(),
+  referralCode: yup.string().trim().max(50, "Referral code too long").optional(),
 });
 
 export const createStaffBookingSchema = yup
@@ -34,6 +41,11 @@ export const createStaffBookingSchema = yup
       .uuid("Invalid service ID")
       .required("Service ID is required"),
     availabilityId: yup.string().uuid("Invalid availability ID").optional(),
+    packageId: yup.string().uuid("Invalid package ID").optional(),
+    timeSlotId: yup.string().uuid("Invalid time slot ID").optional(),
+    pickupZoneId: yup.string().uuid("Invalid pickup zone ID").optional(),
+    departureTime: yup.string().trim().max(50).optional(),
+    pickupLocation: yup.string().trim().max(500).optional(),
     travelDate: yup.string().trim().optional(),
     adults: yup
       .number()
@@ -145,6 +157,7 @@ export const listStaffCustomersQuerySchema = yup.object({
 export const listStaffCreatedBookingsQuerySchema = yup.object({
   page: yup.number().integer().min(1).optional(),
   limit: yup.number().integer().min(1).max(100).optional(),
+  scope: yup.string().oneOf(["my", "all"]).optional(),
   status: yup.string().trim().optional(),
   paymentStatus: yup.string().oneOf(["ALL", "UNPAID", "PARTIALLY_PAID", "PAID"]).optional(),
   fulfillmentStatus: yup.string().oneOf(["ALL", "NOT_STARTED", "IN_PROGRESS", "FULFILLED"]).optional(),
@@ -182,6 +195,12 @@ export const createGuestBookingSchema = yup.object({
     .uuid("Invalid service ID")
     .required("Service ID is required"),
   availabilityId: yup.string().uuid("Invalid availability ID").optional(),
+  packageId: yup.string().uuid("Invalid package ID").optional(),
+  timeSlotId: yup.string().uuid("Invalid time slot ID").optional(),
+  pickupZoneId: yup.string().uuid("Invalid pickup zone ID").optional(),
+  departureTime: yup.string().trim().max(50).optional(),
+  pickupLocation: yup.string().trim().max(500).optional(),
+  isPrivateTransfer: yup.boolean().optional(),
   travelDate: yup.string().trim().optional(),
   adults: yup
     .number()
@@ -225,6 +244,10 @@ export const amendStaffBookingSchema = yup.object({
   customerEmail: yup.string().trim().email("Invalid email address").optional(),
   customerPhone: yup.string().trim().max(30, "Phone must be 30 characters or less").nullable().optional(),
   travelDate: yup.string().trim().optional(),
+  packageId: yup.string().uuid("Invalid package ID").optional(),
+  timeSlotId: yup.string().uuid("Invalid time slot ID").optional(),
+  pickupZoneId: yup.string().uuid("Invalid pickup zone ID").optional(),
+  isPrivateTransfer: yup.boolean().optional(),
   adults: yup.number().integer("Adults must be an integer").min(1, "At least 1 adult is required").max(50).optional(),
   children: yup.number().integer("Children must be an integer").min(0).max(50).optional(),
   infants: yup.number().integer("Infants must be an integer").min(0).max(50).optional(),

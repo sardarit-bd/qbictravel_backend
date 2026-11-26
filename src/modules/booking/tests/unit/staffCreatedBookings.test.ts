@@ -46,6 +46,7 @@ describe("Staff Created Bookings Unit Tests", () => {
       expect(bookingRepository.listStaffCreatedBookings).toHaveBeenCalledWith("staff-uuid-1", {
         skip: 0,
         take: 20,
+        scope: "my",
         status: undefined,
         paymentStatus: undefined,
         fulfillmentStatus: undefined,
@@ -78,6 +79,7 @@ describe("Staff Created Bookings Unit Tests", () => {
       expect(bookingRepository.listStaffCreatedBookings).toHaveBeenCalledWith("staff-uuid-1", {
         skip: 10,
         take: 10,
+        scope: "my",
         status: "AWAITING_APPROVAL",
         paymentStatus: "UNPAID",
         fulfillmentStatus: undefined,

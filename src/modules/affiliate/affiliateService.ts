@@ -65,6 +65,14 @@ async function computeBalancesForAffiliate(db: DbClient, affiliateId: string) {
   });
 }
 
+export function maskAccountNumber(acc: string | null | undefined): string {
+  if (!acc) return "";
+  const cleaned = acc.trim();
+  if (cleaned.length <= 4) return cleaned;
+  const last4 = cleaned.slice(-4);
+  return `•••• •••• •••• ${last4}`;
+}
+
 export const affiliateService = {
   // ─── PUBLIC TRACKING ────────────────────────────────────────────────────────
 
@@ -326,8 +334,25 @@ export const affiliateService = {
       settings.globalCommissionRate.toString(),
       affiliate.commissionRateOverride?.toString() ?? null
     );
+
+    const rawDetails = affiliate.payoutDetails as Record<string, any> | null;
+    let maskedDetails = rawDetails;
+    if (rawDetails && typeof rawDetails === "object") {
+      maskedDetails = {
+        ...rawDetails,
+        bankDetails: rawDetails.bankDetails
+          ? {
+              ...rawDetails.bankDetails,
+              accountNumberMasked: maskAccountNumber(rawDetails.bankDetails.accountNumber),
+              accountNumber: rawDetails.bankDetails.accountNumber, // Allow affiliate themselves to view/edit
+            }
+          : undefined,
+      };
+    }
+
     return {
       ...affiliate,
+      payoutDetails: maskedDetails,
       effectiveCommissionRate,
       minimumPayoutAmount: Number(settings.minimumPayoutAmount),
       attributionWindowDays: settings.attributionWindowDays,
@@ -341,10 +366,50 @@ export const affiliateService = {
       promotionChannels?: string | null;
       payoutMethod?: string | null;
       payoutDetails?: Record<string, unknown> | null;
+      bankDetails?: {
+        bankName: string;
+        accountHolderName: string;
+        accountNumber: string;
+        branchName?: string | null;
+        swiftBic?: string | null;
+        routingNumber?: string | null;
+      } | null;
     }
   ) {
     const affiliate = await prisma.affiliate.findUnique({ where: { userId } });
     if (!affiliate) throw new AppError("Affiliate profile not found", 404);
+
+    let mergedPayoutDetails: Record<string, unknown> =
+      (affiliate.payoutDetails as Record<string, unknown>) || {};
+
+    if (input.payoutDetails !== undefined && input.payoutDetails !== null) {
+      mergedPayoutDetails = { ...mergedPayoutDetails, ...input.payoutDetails };
+    }
+
+    if (input.bankDetails !== undefined) {
+      if (input.bankDetails === null) {
+        delete mergedPayoutDetails.bankDetails;
+      } else {
+        mergedPayoutDetails = {
+          ...mergedPayoutDetails,
+          bankDetails: {
+            bankName: input.bankDetails.bankName.trim(),
+            accountHolderName: input.bankDetails.accountHolderName.trim(),
+            accountNumber: input.bankDetails.accountNumber.trim(),
+            branchName: input.bankDetails.branchName?.trim() || null,
+            swiftBic: input.bankDetails.swiftBic?.trim() || null,
+            routingNumber: input.bankDetails.routingNumber?.trim() || null,
+          },
+        };
+      }
+    }
+
+    const payoutMethod =
+      input.payoutMethod !== undefined
+        ? input.payoutMethod
+        : input.bankDetails
+        ? "Bank Transfer"
+        : affiliate.payoutMethod;
 
     return prisma.affiliate.update({
       where: { id: affiliate.id },
@@ -352,10 +417,8 @@ export const affiliateService = {
         websiteUrl: input.websiteUrl !== undefined ? input.websiteUrl : affiliate.websiteUrl,
         promotionChannels:
           input.promotionChannels !== undefined ? input.promotionChannels : affiliate.promotionChannels,
-        payoutMethod: input.payoutMethod !== undefined ? input.payoutMethod : affiliate.payoutMethod,
-        payoutDetails: (
-          input.payoutDetails !== undefined ? input.payoutDetails : affiliate.payoutDetails ?? undefined
-        ) as Prisma.InputJsonValue | undefined,
+        payoutMethod,
+        payoutDetails: mergedPayoutDetails as Prisma.InputJsonValue,
       },
     });
   },
@@ -606,14 +669,32 @@ export const affiliateService = {
 
   /**
    * Concurrency-safe payout request: locks the Affiliate row FOR UPDATE inside a transaction,
-   * validates minimum threshold & available balance, and reserves the funds.
+   * validates bank details presence, minimum threshold & available balance, and reserves the funds.
    */
   async requestPayout(
     userId: string,
-    input: { amount: number; payoutMethod: string; payoutDetails?: Record<string, unknown> | null }
+    input: { amount: number; payoutMethod?: string; payoutDetails?: Record<string, unknown> | null }
   ) {
     const affiliate = await this.requireApprovedAffiliate(userId);
     const settings = await getOrCreateAffiliateSettings();
+
+    // Verify affiliate has configured bank details
+    const existingPayoutDetails = (affiliate.payoutDetails as Record<string, any>) || {};
+    const effectiveBankDetails =
+      input.payoutDetails?.bankDetails ||
+      (input.payoutDetails?.bankName ? input.payoutDetails : existingPayoutDetails.bankDetails);
+
+    if (
+      !effectiveBankDetails ||
+      !effectiveBankDetails.bankName?.trim() ||
+      !effectiveBankDetails.accountHolderName?.trim() ||
+      !effectiveBankDetails.accountNumber?.trim()
+    ) {
+      throw new AppError(
+        "Please provide and save your bank details (Bank Name, Account Holder Name, Account Number) before requesting a payout.",
+        400
+      );
+    }
 
     const requestedCents = toCents(input.amount);
     const minCents = toCents(settings.minimumPayoutAmount.toString());
@@ -636,16 +717,29 @@ export const affiliateService = {
         );
       }
 
+      const snapshot: Record<string, any> = {
+        ...(existingPayoutDetails || {}),
+        ...(input.payoutDetails || {}),
+        bankDetails: {
+          bankName: effectiveBankDetails.bankName.trim(),
+          accountHolderName: effectiveBankDetails.accountHolderName.trim(),
+          accountNumber: effectiveBankDetails.accountNumber.trim(),
+          branchName: effectiveBankDetails.branchName?.trim() || null,
+          swiftBic: effectiveBankDetails.swiftBic?.trim() || null,
+          routingNumber: effectiveBankDetails.routingNumber?.trim() || null,
+        },
+      };
+
+      const finalPayoutMethod = input.payoutMethod?.trim() || affiliate.payoutMethod || "Bank Transfer";
+
       const created = await tx.affiliatePayout.create({
         data: {
           affiliateId: affiliate.id,
           amount: input.amount,
           currency: "THB",
           status: "PENDING",
-          payoutMethod: input.payoutMethod,
-          payoutDetailsSnapshot: (
-            input.payoutDetails ?? affiliate.payoutDetails ?? undefined
-          ) as Prisma.InputJsonValue | undefined,
+          payoutMethod: finalPayoutMethod,
+          payoutDetailsSnapshot: snapshot as Prisma.InputJsonValue,
         },
       });
 
@@ -657,7 +751,7 @@ export const affiliateService = {
           action: "PAYOUT_REQUESTED",
           actorId: userId,
           actorRole: "affiliate",
-          metadata: { amount: input.amount, payoutMethod: input.payoutMethod },
+          metadata: { amount: input.amount, payoutMethod: finalPayoutMethod },
         },
       });
 
@@ -1162,7 +1256,7 @@ export const affiliateService = {
   async markPayoutPaid(
     payoutId: string,
     adminId: string,
-    input: { payoutMethod: string; transactionReference: string; paidAt?: string }
+    input: { payoutMethod?: string; transactionReference: string; paidAt?: string; notes?: string }
   ) {
     const updated = await prisma.$transaction(async (tx) => {
       await tx.$queryRaw`SELECT id FROM "AffiliatePayout" WHERE id = ${payoutId} FOR UPDATE`;
@@ -1177,14 +1271,19 @@ export const affiliateService = {
       if (payout.status === "REJECTED") {
         throw new AppError("Cannot mark a rejected payout as paid", 400);
       }
+      if (payout.status !== "APPROVED") {
+        throw new AppError("Payout must be approved before being marked as paid", 400);
+      }
 
       const paidAt = input.paidAt ? new Date(input.paidAt) : new Date();
+      const payoutMethod = input.payoutMethod?.trim() || payout.payoutMethod || "Bank Transfer";
+
       const p = await tx.affiliatePayout.update({
         where: { id: payoutId },
         data: {
           status: "PAID",
-          payoutMethod: input.payoutMethod,
-          transactionReference: input.transactionReference,
+          payoutMethod,
+          transactionReference: input.transactionReference.trim(),
           paidAt,
           processedById: adminId,
         },
@@ -1199,15 +1298,16 @@ export const affiliateService = {
           actorId: adminId,
           actorRole: "admin",
           metadata: {
-            payoutMethod: input.payoutMethod,
-            transactionReference: input.transactionReference,
+            payoutMethod,
+            transactionReference: input.transactionReference.trim(),
             paidAt: paidAt.toISOString(),
             amount: Number(p.amount),
+            notes: input.notes?.trim() || undefined,
           },
         },
       });
 
-      return { payout: p, user: payout.affiliate.user };
+      return { payout: p, user: payout.affiliate.user, payoutMethod };
     });
 
     void affiliateNotification.notifyPayoutPaid({
@@ -1216,8 +1316,8 @@ export const affiliateService = {
       amount: Number(updated.payout.amount),
       currency: updated.payout.currency,
       payoutId: updated.payout.id,
-      method: input.payoutMethod,
-      reference: input.transactionReference,
+      method: updated.payoutMethod,
+      reference: input.transactionReference.trim(),
     });
 
     return updated.payout;

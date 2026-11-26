@@ -3,6 +3,8 @@ import type { PaginationMeta, PaginatedResult } from "../../types/common.js";
 
 export type ServiceType = "HOTEL" | "PACKAGE" | "TOUR";
 export type ServiceStatus = "DRAFT" | "PUBLISHED" | "UNPUBLISHED";
+export type PricingModelType = "PER_PERSON" | "PER_PACKAGE";
+export type SurchargeUnit = "PER_BOOKING" | "PER_VEHICLE" | "PER_PERSON";
 
 export interface ServicePricingSummary {
   currency: string;
@@ -26,6 +28,7 @@ export interface ServiceRecord {
   description: string | null;
   type: ServiceType;
   status: ServiceStatus;
+  pricingType?: PricingModelType;
   providerName: string | null;
   providerId: string | null;
   metadata: Prisma.JsonValue;
@@ -58,9 +61,63 @@ export interface ServicePricingRecord {
   validTo: Date | null;
 }
 
+export interface ServicePackageRecord {
+  id: string;
+  serviceId: string;
+  name: string;
+  description: string | null;
+  durationMinutes: number;
+  boatSize: string | null;
+  minPax: number;
+  maxCapacity: number;
+  sellingPrice: number;
+  netPrice?: number | null; // Omitted or masked in customer responses
+  currency: string;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ServiceTimeSlotRecord {
+  id: string;
+  serviceId: string;
+  name: string;
+  departureTime: string;
+  capacity: number | null;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface PickupZoneRecord {
+  id: string;
+  serviceId: string | null;
+  operatorName: string | null;
+  zoneName: string;
+  description: string | null;
+  morningPickupTime?: string | null;
+  afternoonPickupTime?: string | null;
+  hasPrivateTransfer: boolean;
+  privateTransferCharge?: number | null;
+  morningPierArrival?: string | null;
+  afternoonPierArrival?: string | null;
+  surchargeAmount: number;
+  surchargeUnit: SurchargeUnit;
+  currency: string;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface ServiceDetail extends ServiceRecord {
   availability: ServiceAvailabilityRecord[];
   pricing: ServicePricingRecord[];
+  packages?: ServicePackageRecord[];
+  timeSlots?: ServiceTimeSlotRecord[];
+  pickupZones?: PickupZoneRecord[];
   media?: any[];
 }
 
@@ -68,18 +125,184 @@ export interface CreateServiceInput {
   name: string;
   description?: string;
   type: ServiceType;
+  status?: ServiceStatus;
+  pricingType?: PricingModelType;
   providerName?: string;
   providerId?: string;
   metadata?: Prisma.InputJsonValue;
+  pricing?: PricingUpdateInput;
+  availability?: AvailabilityUpdateInput[];
+  packages?: Array<{
+    id?: string;
+    name: string;
+    description?: string;
+    durationMinutes: number;
+    boatSize?: string;
+    minPax?: number;
+    maxCapacity: number;
+    sellingPrice: number;
+    netPrice?: number;
+    currency?: string;
+    isActive?: boolean;
+    sortOrder?: number;
+  }>;
+  timeSlots?: Array<{
+    id?: string;
+    name: string;
+    departureTime: string;
+    capacity?: number;
+    isActive?: boolean;
+    sortOrder?: number;
+  }>;
+  pickupZones?: Array<{
+    id?: string;
+    operatorName?: string;
+    zoneName: string;
+    description?: string;
+    morningPickupTime?: string;
+    afternoonPickupTime?: string;
+    hasPrivateTransfer?: boolean;
+    privateTransferCharge?: number;
+    morningPierArrival?: string;
+    afternoonPierArrival?: string;
+    surchargeAmount?: number;
+    surchargeUnit?: SurchargeUnit;
+    currency?: string;
+    isActive?: boolean;
+    sortOrder?: number;
+  }>;
 }
 
 export interface UpdateServiceInput {
   name?: string;
   description?: string;
   type?: ServiceType;
+  status?: ServiceStatus;
+  pricingType?: PricingModelType;
   providerName?: string;
   providerId?: string;
   metadata?: Prisma.InputJsonValue;
+  pricing?: PricingUpdateInput;
+  availability?: AvailabilityUpdateInput[];
+  packages?: Array<{
+    id?: string;
+    name: string;
+    description?: string;
+    durationMinutes: number;
+    boatSize?: string;
+    minPax?: number;
+    maxCapacity: number;
+    sellingPrice: number;
+    netPrice?: number;
+    currency?: string;
+    isActive?: boolean;
+    sortOrder?: number;
+  }>;
+  timeSlots?: Array<{
+    id?: string;
+    name: string;
+    departureTime: string;
+    capacity?: number;
+    isActive?: boolean;
+    sortOrder?: number;
+  }>;
+  pickupZones?: Array<{
+    id?: string;
+    operatorName?: string;
+    zoneName: string;
+    description?: string;
+    morningPickupTime?: string;
+    afternoonPickupTime?: string;
+    hasPrivateTransfer?: boolean;
+    privateTransferCharge?: number;
+    morningPierArrival?: string;
+    afternoonPierArrival?: string;
+    surchargeAmount?: number;
+    surchargeUnit?: SurchargeUnit;
+    currency?: string;
+    isActive?: boolean;
+    sortOrder?: number;
+  }>;
+}
+
+export interface CreateServicePackageInput {
+  name: string;
+  description?: string;
+  durationMinutes: number;
+  boatSize?: string;
+  minPax?: number;
+  maxCapacity: number;
+  sellingPrice: number;
+  netPrice?: number;
+  currency?: string;
+  isActive?: boolean;
+  sortOrder?: number;
+}
+
+export interface UpdateServicePackageInput {
+  name?: string;
+  description?: string;
+  durationMinutes?: number;
+  boatSize?: string;
+  minPax?: number;
+  maxCapacity?: number;
+  sellingPrice?: number;
+  netPrice?: number;
+  currency?: string;
+  isActive?: boolean;
+  sortOrder?: number;
+}
+
+export interface CreateServiceTimeSlotInput {
+  name: string;
+  departureTime: string;
+  capacity?: number;
+  isActive?: boolean;
+  sortOrder?: number;
+}
+
+export interface UpdateServiceTimeSlotInput {
+  name?: string;
+  departureTime?: string;
+  capacity?: number;
+  isActive?: boolean;
+  sortOrder?: number;
+}
+
+export interface CreatePickupZoneInput {
+  serviceId?: string;
+  operatorName?: string;
+  zoneName: string;
+  description?: string;
+  morningPickupTime?: string;
+  afternoonPickupTime?: string;
+  hasPrivateTransfer?: boolean;
+  privateTransferCharge?: number;
+  morningPierArrival?: string;
+  afternoonPierArrival?: string;
+  surchargeAmount?: number;
+  surchargeUnit?: SurchargeUnit;
+  currency?: string;
+  isActive?: boolean;
+  sortOrder?: number;
+}
+
+export interface UpdatePickupZoneInput {
+  serviceId?: string;
+  operatorName?: string;
+  zoneName?: string;
+  description?: string;
+  morningPickupTime?: string;
+  afternoonPickupTime?: string;
+  hasPrivateTransfer?: boolean;
+  privateTransferCharge?: number;
+  morningPierArrival?: string;
+  afternoonPierArrival?: string;
+  surchargeAmount?: number;
+  surchargeUnit?: SurchargeUnit;
+  currency?: string;
+  isActive?: boolean;
+  sortOrder?: number;
 }
 
 export interface UpdateServiceStatusInput {
@@ -102,8 +325,19 @@ export interface PricingUpdateInput {
   validTo?: string;
 }
 
-export type ServiceSortField = "name" | "createdAt" | "updatedAt" | "status" | "relevance";
+export type ServiceSortField = "name" | "createdAt" | "updatedAt" | "status" | "relevance" | "price" | "rating";
 export type SortOrder = "asc" | "desc";
+
+export interface DestinationFacet {
+  id: string;
+  label: string;
+  count: number;
+}
+
+export interface ServicePriceRange {
+  min: number;
+  max: number;
+}
 
 export interface GetServicesQuery {
   page?: number;
@@ -112,8 +346,19 @@ export interface GetServicesQuery {
   status?: ServiceStatus;
   search?: string;
   q?: string;
-  sortBy?: ServiceSortField;
+  category?: string;
+  destination?: string | string[];
+  destinations?: string | string[];
+  minPrice?: number;
+  maxPrice?: number;
+  sortBy?: ServiceSortField | "most-popular" | "price-asc" | "price-desc" | "highest-rated" | "duration";
   sortOrder?: SortOrder;
+}
+
+export interface PublishedServicesResult extends PaginatedResult<ServiceRecord> {
+  totalPublishedCount: number;
+  destinations?: DestinationFacet[];
+  priceRange?: ServicePriceRange;
 }
 
 export interface BulkUpdateServiceStatusInput {

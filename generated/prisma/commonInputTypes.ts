@@ -899,6 +899,13 @@ export type EnumServiceStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumServiceStatusFilter<$PrismaModel> | $Enums.ServiceStatus
 }
 
+export type EnumPricingModelTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.PricingModelType | Prisma.EnumPricingModelTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PricingModelType[] | Prisma.ListEnumPricingModelTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PricingModelType[] | Prisma.ListEnumPricingModelTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPricingModelTypeFilter<$PrismaModel> | $Enums.PricingModelType
+}
+
 export type EnumServiceTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ServiceType | Prisma.EnumServiceTypeFieldRefInput<$PrismaModel>
   in?: $Enums.ServiceType[] | Prisma.ListEnumServiceTypeFieldRefInput<$PrismaModel>
@@ -917,6 +924,33 @@ export type EnumServiceStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumServiceStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumServiceStatusFilter<$PrismaModel>
+}
+
+export type EnumPricingModelTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PricingModelType | Prisma.EnumPricingModelTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PricingModelType[] | Prisma.ListEnumPricingModelTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PricingModelType[] | Prisma.ListEnumPricingModelTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPricingModelTypeWithAggregatesFilter<$PrismaModel> | $Enums.PricingModelType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPricingModelTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPricingModelTypeFilter<$PrismaModel>
+}
+
+export type EnumSurchargeUnitFilter<$PrismaModel = never> = {
+  equals?: $Enums.SurchargeUnit | Prisma.EnumSurchargeUnitFieldRefInput<$PrismaModel>
+  in?: $Enums.SurchargeUnit[] | Prisma.ListEnumSurchargeUnitFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SurchargeUnit[] | Prisma.ListEnumSurchargeUnitFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSurchargeUnitFilter<$PrismaModel> | $Enums.SurchargeUnit
+}
+
+export type EnumSurchargeUnitWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SurchargeUnit | Prisma.EnumSurchargeUnitFieldRefInput<$PrismaModel>
+  in?: $Enums.SurchargeUnit[] | Prisma.ListEnumSurchargeUnitFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SurchargeUnit[] | Prisma.ListEnumSurchargeUnitFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSurchargeUnitWithAggregatesFilter<$PrismaModel> | $Enums.SurchargeUnit
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSurchargeUnitFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSurchargeUnitFilter<$PrismaModel>
 }
 
 export type EnumUserRoleFilter<$PrismaModel = never> = {
@@ -1797,6 +1831,13 @@ export type NestedEnumServiceStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumServiceStatusFilter<$PrismaModel> | $Enums.ServiceStatus
 }
 
+export type NestedEnumPricingModelTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.PricingModelType | Prisma.EnumPricingModelTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PricingModelType[] | Prisma.ListEnumPricingModelTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PricingModelType[] | Prisma.ListEnumPricingModelTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPricingModelTypeFilter<$PrismaModel> | $Enums.PricingModelType
+}
+
 export type NestedEnumServiceTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ServiceType | Prisma.EnumServiceTypeFieldRefInput<$PrismaModel>
   in?: $Enums.ServiceType[] | Prisma.ListEnumServiceTypeFieldRefInput<$PrismaModel>
@@ -1815,6 +1856,33 @@ export type NestedEnumServiceStatusWithAggregatesFilter<$PrismaModel = never> = 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumServiceStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumServiceStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumPricingModelTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PricingModelType | Prisma.EnumPricingModelTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PricingModelType[] | Prisma.ListEnumPricingModelTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PricingModelType[] | Prisma.ListEnumPricingModelTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPricingModelTypeWithAggregatesFilter<$PrismaModel> | $Enums.PricingModelType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPricingModelTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPricingModelTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumSurchargeUnitFilter<$PrismaModel = never> = {
+  equals?: $Enums.SurchargeUnit | Prisma.EnumSurchargeUnitFieldRefInput<$PrismaModel>
+  in?: $Enums.SurchargeUnit[] | Prisma.ListEnumSurchargeUnitFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SurchargeUnit[] | Prisma.ListEnumSurchargeUnitFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSurchargeUnitFilter<$PrismaModel> | $Enums.SurchargeUnit
+}
+
+export type NestedEnumSurchargeUnitWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SurchargeUnit | Prisma.EnumSurchargeUnitFieldRefInput<$PrismaModel>
+  in?: $Enums.SurchargeUnit[] | Prisma.ListEnumSurchargeUnitFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SurchargeUnit[] | Prisma.ListEnumSurchargeUnitFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSurchargeUnitWithAggregatesFilter<$PrismaModel> | $Enums.SurchargeUnit
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSurchargeUnitFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSurchargeUnitFilter<$PrismaModel>
 }
 
 export type NestedEnumUserRoleFilter<$PrismaModel = never> = {

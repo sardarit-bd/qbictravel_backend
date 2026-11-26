@@ -4,6 +4,7 @@ model Service {
   description  String?
   type         ServiceType
   status       ServiceStatus         @default(DRAFT)
+  pricingType  PricingModelType      @default(PER_PERSON)
   providerName String?
   providerId   String?
   metadata     Json?
@@ -13,9 +14,13 @@ model Service {
   media        Media[]
   availability ServiceAvailability[]
   pricing      ServicePricing[]
+  packages     ServicePackage[]
+  timeSlots    ServiceTimeSlot[]
+  pickupZones  PickupZone[]
 
   @@index([status])
   @@index([type])
+  @@index([pricingType])
   @@index([updatedAt(sort: Desc)])
   @@index([createdAt(sort: Desc)])
 }
@@ -47,6 +52,73 @@ model ServicePricing {
   service         Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 }
 
+model ServicePackage {
+  id              String       @id @default(uuid())
+  serviceId       String
+  name            String
+  description     String?
+  durationMinutes Int
+  boatSize        String?
+  minPax          Int          @default(1)
+  maxCapacity     Int          @default(2)
+  sellingPrice    Decimal      @db.Decimal(10, 2)
+  netPrice        Decimal?     @db.Decimal(10, 2)
+  currency        String       @default("THB")
+  isActive        Boolean      @default(true)
+  sortOrder       Int          @default(0)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  service         Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  bookings        Booking[]
+
+  @@index([serviceId])
+  @@index([isActive])
+}
+
+model ServiceTimeSlot {
+  id            String    @id @default(uuid())
+  serviceId     String
+  name          String
+  departureTime String
+  capacity      Int?
+  isActive      Boolean   @default(true)
+  sortOrder     Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  service       Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  bookings      Booking[]
+
+  @@index([serviceId])
+  @@index([isActive])
+}
+
+model PickupZone {
+  id                    String        @id @default(uuid())
+  serviceId             String?
+  operatorName          String?
+  zoneName              String
+  description           String?
+  morningPickupTime     String?
+  afternoonPickupTime   String?
+  hasPrivateTransfer    Boolean       @default(false)
+  privateTransferCharge Decimal?      @db.Decimal(10, 2)
+  morningPierArrival    String?       @default("08:30 AM")
+  afternoonPierArrival  String?       @default("12:30 PM")
+  surchargeAmount       Decimal       @default(0.00) @db.Decimal(10, 2)
+  surchargeUnit         SurchargeUnit @default(PER_BOOKING)
+  currency              String        @default("THB")
+  isActive              Boolean       @default(true)
+  sortOrder             Int           @default(0)
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  service               Service?      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  bookings              Booking[]
+
+  @@index([serviceId])
+  @@index([operatorName])
+  @@index([isActive])
+}
+
 enum ServiceType {
   HOTEL
   PACKAGE
@@ -57,4 +129,15 @@ enum ServiceStatus {
   DRAFT
   PUBLISHED
   UNPUBLISHED
+}
+
+enum PricingModelType {
+  PER_PERSON
+  PER_PACKAGE
+}
+
+enum SurchargeUnit {
+  PER_BOOKING
+  PER_VEHICLE
+  PER_PERSON
 }
