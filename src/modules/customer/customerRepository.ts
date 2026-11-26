@@ -35,6 +35,15 @@ const customerBookingSelect = {
   currency: true,
   basePrice: true,
   finalPrice: true,
+  packageId: true,
+  packageQuantity: true,
+  packagePriceSnapshot: true,
+  timeSlotId: true,
+  departureTime: true,
+  pickupZoneId: true,
+  pickupLocation: true,
+  pickupSurcharge: true,
+  taxAmount: true,
   notes: true,
   createdAt: true,
   updatedAt: true,
@@ -42,7 +51,41 @@ const customerBookingSelect = {
     select: {
       id: true,
       name: true,
+      description: true,
       type: true,
+      media: {
+        select: {
+          secureUrl: true,
+        },
+        take: 1,
+        orderBy: { createdAt: "asc" },
+      },
+    },
+  },
+  package: {
+    select: {
+      id: true,
+      name: true,
+      durationMinutes: true,
+      boatSize: true,
+      maxCapacity: true,
+      sellingPrice: true,
+      currency: true,
+    },
+  },
+  timeSlot: {
+    select: {
+      id: true,
+      name: true,
+      departureTime: true,
+    },
+  },
+  pickupZone: {
+    select: {
+      id: true,
+      zoneName: true,
+      morningPickupTime: true,
+      afternoonPickupTime: true,
     },
   },
   availability: {
@@ -71,11 +114,36 @@ const formatBookingItem = (b: any) => {
       ? { id: `notes-date-${b.id}`, date: new Date(fallbackDate) }
       : null;
 
+  const finalPrice = toNumber(b.finalPrice) ?? 0;
+  const verifiedPaid = Array.isArray(b.payments)
+    ? b.payments
+        .filter((p: any) => p.status === "VERIFIED" || p.status === "PAID")
+        .reduce((sum: number, p: any) => sum + (toNumber(p.amount) ?? 0), 0)
+    : 0;
+  const paidAmount =
+    b.paymentStatus === "PAID" ? Math.max(finalPrice, verifiedPaid) : verifiedPaid;
+  const outstandingBalance =
+    b.paymentStatus === "PAID"
+      ? 0
+      : Math.max(0, Math.round((finalPrice - paidAmount) * 100) / 100);
+
   return {
     ...b,
     availability,
     basePrice: toNumber(b.basePrice) ?? 0,
-    finalPrice: toNumber(b.finalPrice) ?? 0,
+    finalPrice,
+    paidAmount,
+    outstandingBalance,
+    packageQuantity: b.packageQuantity ?? 1,
+    packagePriceSnapshot: toNumber(b.packagePriceSnapshot),
+    pickupSurcharge: toNumber(b.pickupSurcharge) ?? 0,
+    taxAmount: toNumber(b.taxAmount) ?? 0,
+    package: b.package
+      ? {
+          ...b.package,
+          sellingPrice: toNumber(b.package.sellingPrice) ?? 0,
+        }
+      : null,
   };
 };
 
@@ -106,7 +174,13 @@ export const listCustomerBookings = async (
   const [items, total] = await Promise.all([
     prisma.booking.findMany({
       where,
-      select: customerBookingSelect,
+      select: {
+        ...customerBookingSelect,
+        payments: {
+          where: { status: "VERIFIED" },
+          select: { amount: true, status: true },
+        },
+      },
       orderBy: { createdAt: "desc" },
       skip,
       take: limit,
