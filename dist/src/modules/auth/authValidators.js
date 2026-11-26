@@ -85,3 +85,6 @@ export const resetPasswordSchema = yup.object({
     token: yup.string().required("Token is required"),
     password: passwordField,
 });
+export const verifyEmailSchema = yup.object({
+    token: yup.string().required("Verification token is required"),
+});
