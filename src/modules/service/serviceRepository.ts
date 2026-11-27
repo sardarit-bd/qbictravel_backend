@@ -600,12 +600,44 @@ export const bulkUpdateServiceStatus = async (
   });
 };
 
+const toSafeNumber = (val: unknown, fallback: number): number => {
+  if (val === "" || val === null || val === undefined) return fallback;
+  const n = Number(val);
+  return Number.isFinite(n) ? n : fallback;
+};
+
+const toSafeNullableNumber = (val: unknown): number | null => {
+  if (val === "" || val === null || val === undefined) return null;
+  const n = Number(val);
+  return Number.isFinite(n) ? n : null;
+};
+
+const toSafeInt = (val: unknown, fallback: number): number => {
+  return Math.round(toSafeNumber(val, fallback));
+};
+
+const toSafeNullableInt = (val: unknown): number | null => {
+  const n = toSafeNullableNumber(val);
+  return n !== null ? Math.round(n) : null;
+};
+
 export const createServiceRecord = async (data: CreateServiceInput): Promise<ServiceRecord> => {
-  const { pricing, availability, packages, timeSlots, pickupZones, ...serviceData } = data;
+  const { pricing, availability, packages, timeSlots, pickupZones } = data;
+
+  const cleanServiceData = {
+    name: data.name,
+    description: data.description ?? null,
+    type: data.type,
+    ...(data.status !== undefined ? { status: data.status } : {}),
+    ...(data.pricingType !== undefined ? { pricingType: data.pricingType } : {}),
+    providerName: data.providerName || null,
+    providerId: data.providerId || null,
+    ...(data.metadata !== undefined ? { metadata: data.metadata } : {}),
+  };
 
   return db.$transaction(async (tx) => {
     const created = await tx.service.create({
-      data: serviceData,
+      data: cleanServiceData,
     });
 
     if (pricing) {
@@ -613,9 +645,9 @@ export const createServiceRecord = async (data: CreateServiceInput): Promise<Ser
         data: {
           serviceId: created.id,
           currency: pricing.currency || "THB",
-          basePrice: pricing.basePrice ?? 0,
-          discountedPrice: pricing.discountedPrice ?? null,
-          taxRate: pricing.taxRate ?? 0,
+          basePrice: toSafeNumber(pricing.basePrice, 0),
+          discountedPrice: toSafeNullableNumber(pricing.discountedPrice),
+          taxRate: toSafeNumber(pricing.taxRate, 0),
           validFrom: pricing.validFrom ? new Date(pricing.validFrom) : null,
           validTo: pricing.validTo ? new Date(pricing.validTo) : null,
         },
@@ -624,12 +656,25 @@ export const createServiceRecord = async (data: CreateServiceInput): Promise<Ser
 
     if (availability && availability.length > 0) {
       for (const av of availability) {
-        await tx.serviceAvailability.create({
-          data: {
+        const parsedDate = new Date(av.date);
+        if (Number.isNaN(parsedDate.getTime())) continue;
+        await tx.serviceAvailability.upsert({
+          where: {
+            serviceId_date: {
+              serviceId: created.id,
+              date: parsedDate,
+            },
+          },
+          update: {
+            isAvailable: av.isAvailable !== false,
+            capacity: toSafeNullableInt(av.capacity),
+            externalReferenceId: av.externalReferenceId ?? null,
+          },
+          create: {
             serviceId: created.id,
-            date: new Date(av.date),
-            isAvailable: av.isAvailable,
-            capacity: av.capacity ?? null,
+            date: parsedDate,
+            isAvailable: av.isAvailable !== false,
+            capacity: toSafeNullableInt(av.capacity),
             externalReferenceId: av.externalReferenceId ?? null,
           },
         });
@@ -644,15 +689,15 @@ export const createServiceRecord = async (data: CreateServiceInput): Promise<Ser
             serviceId: created.id,
             name: pkg.name,
             description: pkg.description ?? null,
-            durationMinutes: pkg.durationMinutes,
+            durationMinutes: Math.max(1, toSafeInt(pkg.durationMinutes, 60)),
             boatSize: pkg.boatSize ?? null,
-            minPax: pkg.minPax ?? 1,
-            maxCapacity: pkg.maxCapacity,
-            sellingPrice: pkg.sellingPrice,
-            netPrice: pkg.netPrice != null ? pkg.netPrice : null,
+            minPax: Math.max(1, toSafeInt(pkg.minPax, 1)),
+            maxCapacity: Math.max(1, toSafeInt(pkg.maxCapacity, 2)),
+            sellingPrice: toSafeNumber(pkg.sellingPrice, 0),
+            netPrice: toSafeNullableNumber(pkg.netPrice),
             currency: pkg.currency || "THB",
             isActive: pkg.isActive ?? true,
-            sortOrder: pkg.sortOrder ?? i,
+            sortOrder: toSafeInt(pkg.sortOrder, i),
           },
         });
       }
@@ -666,9 +711,9 @@ export const createServiceRecord = async (data: CreateServiceInput): Promise<Ser
             serviceId: created.id,
             name: slot.name,
             departureTime: slot.departureTime,
-            capacity: slot.capacity ?? null,
+            capacity: toSafeNullableInt(slot.capacity),
             isActive: slot.isActive ?? true,
-            sortOrder: slot.sortOrder ?? i,
+            sortOrder: toSafeInt(slot.sortOrder, i),
           },
         });
       }
@@ -685,15 +730,15 @@ export const createServiceRecord = async (data: CreateServiceInput): Promise<Ser
             description: zone.description ?? null,
             morningPickupTime: zone.morningPickupTime ?? null,
             afternoonPickupTime: zone.afternoonPickupTime ?? null,
-            hasPrivateTransfer: zone.hasPrivateTransfer ?? false,
-            privateTransferCharge: zone.privateTransferCharge != null ? zone.privateTransferCharge : null,
+            hasPrivateTransfer: Boolean(zone.hasPrivateTransfer),
+            privateTransferCharge: toSafeNullableNumber(zone.privateTransferCharge),
             morningPierArrival: zone.morningPierArrival ?? "08:30 AM",
             afternoonPierArrival: zone.afternoonPierArrival ?? "12:30 PM",
-            surchargeAmount: zone.surchargeAmount ?? 0,
+            surchargeAmount: toSafeNumber(zone.surchargeAmount, 0),
             surchargeUnit: zone.surchargeUnit || "PER_BOOKING",
             currency: zone.currency || "THB",
             isActive: zone.isActive ?? true,
-            sortOrder: zone.sortOrder ?? i,
+            sortOrder: toSafeInt(zone.sortOrder, i),
           },
         });
       }
