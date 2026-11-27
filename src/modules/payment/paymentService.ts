@@ -27,7 +27,7 @@ import { isOmiseGatewayEnabled } from "../setting/settingRuntimeConfig.js";
 
 const toCents = (value: unknown): number => Math.round(Number(value) * 100);
 
-const PAYABLE_BOOKING_STATUSES: string[] = ["PENDING", "CONFIRMED"];
+const PAYABLE_BOOKING_STATUSES: string[] = ["PENDING", "CONFIRMED", "IN_PROGRESS"];
 
 const hasCode = (error: unknown, code: string): boolean =>
   typeof error === "object" && error !== null && (error as { code?: string }).code === code;
@@ -1038,7 +1038,8 @@ export const generateAgentPaymentLink = async (
 
 /**
  * Generates or retrieves an active secure customer payment link for a staff-managed booking.
- * Enforces staff authorization: creator staff, assigned operational staff, or admin.
+ * Enforces authorization: Admin or authorized Staff (who passed route-level bookings.create permission),
+ * plus creator/assigned operational staff. Rejects non-staff roles (customer/agent).
  */
 export const generateStaffPaymentLink = async (
   staffUser: { id: string; role: string },
@@ -1050,12 +1051,14 @@ export const generateStaffPaymentLink = async (
     throw new AppError("Booking not found", 404);
   }
 
-  // Authorization check: Staff must be creator, assigned staff, or admin
+  // Authorization check: Admin, authorized Staff, creator, or assigned staff
+  const normalizedRole = String(staffUser.role || "").toLowerCase();
+  const isAdmin = normalizedRole === "admin";
+  const isStaff = normalizedRole === "staff";
   const isCreator = (booking as any).createdById === staffUser.id;
   const isAssigned = (booking as any).assignedStaffId === staffUser.id;
-  const isAdmin = staffUser.role === "admin";
 
-  if (!isCreator && !isAssigned && !isAdmin) {
+  if (!isAdmin && !isStaff && !isCreator && !isAssigned) {
     throw new AppError("You are not authorized to generate a payment link for this booking", 403);
   }
 
