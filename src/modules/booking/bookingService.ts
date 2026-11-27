@@ -55,6 +55,7 @@ export interface PricingEvaluationResult {
   packagePriceSnapshot: number | null;
   netPriceSnapshot: number | null;
   pickupSurcharge: number;
+  payableOnDayTransferCharge: number;
   taxAmount: number;
   departureTime: string | null;
   pickupLocation: string | null;
@@ -77,6 +78,8 @@ export const evaluateBookingPricing = async (
     adults?: number;
     children?: number;
     infants?: number;
+    riders?: number;
+    passengers?: number;
   }
 ): Promise<PricingEvaluationResult> => {
   const service = await prisma.service.findUnique({
@@ -117,7 +120,16 @@ export const evaluateBookingPricing = async (
 
   // 2. Validate & resolve PickupZone if provided
   let pickupSurcharge = 0;
+  let payableOnDayTransferCharge = 0;
   let resolvedPickupZoneId: string | null = null;
+  const serviceMeta = ((service as any).metadata || {}) as Record<string, any>;
+  const zoneConfigs: Array<{
+    zoneId?: string;
+    zoneName?: string;
+    minPax?: number;
+    payableOnDay?: boolean;
+  }> = Array.isArray(serviceMeta.zoneConfigs) ? serviceMeta.zoneConfigs : [];
+
   if (input.pickupZoneId) {
     const zone = service.pickupZones.find((z) => z.id === input.pickupZoneId);
     if (!zone) {
@@ -128,22 +140,44 @@ export const evaluateBookingPricing = async (
     }
     resolvedPickupZoneId = zone.id;
 
+    const zoneConfig = zoneConfigs.find(
+      (zc) =>
+        (zc.zoneId && zc.zoneId === zone.id) ||
+        (zc.zoneName && zc.zoneName.toLowerCase().trim() === (zone.zoneName || "").toLowerCase().trim())
+    );
+
+    let rawZoneSurcharge = 0;
     if (input.isPrivateTransfer) {
       if (!zone.hasPrivateTransfer) {
         throw new AppError("Private transfer is not available for this pickup zone", 400);
       }
-      pickupSurcharge = Number(zone.privateTransferCharge ?? 1600);
+      rawZoneSurcharge = Number(zone.privateTransferCharge ?? 1600);
     } else {
       const stdCharge = Number(zone.surchargeAmount ?? 0);
       if (zone.surchargeUnit === "PER_PERSON") {
-        // Enforce minimum 2 persons rule for surcharge zones with min 2 pax requirement
-        const isMin2PaxZone = /layan|paklok|yamu|ao por|naithon|airport|naiyang|maikhao/i.test(zone.zoneName || "");
-        const chargedPax = isMin2PaxZone ? Math.max(2, totalPassengers) : totalPassengers;
-        pickupSurcharge = stdCharge * chargedPax;
+        // Respect Admin-configured minPax first, falling back to existing AquaThrill zone rule
+        const configuredMinPax =
+          typeof zoneConfig?.minPax === "number" && zoneConfig.minPax > 0
+            ? Math.floor(zoneConfig.minPax)
+            : null;
+        const isMin2PaxZone =
+          configuredMinPax !== null
+            ? false
+            : /layan|paklok|yamu|ao por|naithon|airport|naiyang|maikhao/i.test(zone.zoneName || "");
+        const minPax = configuredMinPax ?? (isMin2PaxZone ? 2 : 1);
+        const chargedPax = Math.max(minPax, totalPassengers);
+        rawZoneSurcharge = stdCharge * chargedPax;
       } else {
         // PER_BOOKING, PER_VEHICLE, etc.
-        pickupSurcharge = stdCharge;
+        rawZoneSurcharge = stdCharge;
       }
+    }
+
+    if (zoneConfig?.payableOnDay) {
+      payableOnDayTransferCharge = Math.round(rawZoneSurcharge * 100) / 100;
+      pickupSurcharge = 0;
+    } else {
+      pickupSurcharge = Math.round(rawZoneSurcharge * 100) / 100;
     }
   }
 
@@ -167,10 +201,42 @@ export const evaluateBookingPricing = async (
       throw new AppError("Selected package is currently inactive", 400);
     }
 
-    const packageQuantity = Math.max(
-      1,
-      Math.min(20, Math.floor(Number(input.packageQuantity ?? 1)) || 1)
+    const packagePricingConfigs: Array<{
+      packageId?: string;
+      name?: string;
+      pricingMode?: "PER_VEHICLE" | "PER_RIDER" | "PER_PASSENGER" | "ADULT_CHILD" | "RIDER_PASSENGER_CHILD";
+      minVehicles?: number;
+      maxVehicles?: number;
+      vehiclePrice?: number;
+      riderPrice?: number;
+      passengerPrice?: number;
+      childPrice?: number;
+      childAgeRange?: string;
+    }> = Array.isArray(serviceMeta.packagePricingConfigs) ? serviceMeta.packagePricingConfigs : [];
+
+    const pkgConfig = packagePricingConfigs.find(
+      (pc) =>
+        (pc.packageId && pc.packageId === pkg.id) ||
+        (pc.name && pc.name.toLowerCase().trim() === (pkg.name || "").toLowerCase().trim())
     );
+
+    const minVehicles =
+      typeof pkgConfig?.minVehicles === "number" && pkgConfig.minVehicles >= 1
+        ? Math.floor(pkgConfig.minVehicles)
+        : 1;
+    const maxVehicles =
+      typeof pkgConfig?.maxVehicles === "number" && pkgConfig.maxVehicles >= minVehicles
+        ? Math.min(20, Math.floor(pkgConfig.maxVehicles))
+        : 20;
+
+    const rawPackageQuantity = Math.floor(Number(input.packageQuantity ?? 1)) || 1;
+    if (input.packageQuantity !== undefined && (rawPackageQuantity < minVehicles || rawPackageQuantity > maxVehicles)) {
+      throw new AppError(
+        `Selected package requires between ${minVehicles} and ${maxVehicles} vehicles (${rawPackageQuantity} requested)`,
+        400
+      );
+    }
+    const packageQuantity = Math.max(minVehicles, Math.min(maxVehicles, rawPackageQuantity));
     const effectiveMaxCapacity = pkg.maxCapacity * packageQuantity;
 
     // Capacity validation
@@ -215,6 +281,41 @@ export const evaluateBookingPricing = async (
 
       computedBasePrice =
         Math.round((adults * adultRate + children * childRate + infants * infantRate) * 100) / 100;
+    } else if (pkgConfig?.pricingMode && pkgConfig.pricingMode !== "PER_VEHICLE") {
+      // Admin-configured flexible pricing modes for vehicle packages (ATV / Buggy / etc.)
+      const mode = pkgConfig.pricingMode;
+      const riderRate =
+        typeof pkgConfig.riderPrice === "number" && pkgConfig.riderPrice >= 0
+          ? pkgConfig.riderPrice
+          : packagePrice;
+      const passengerRate =
+        typeof pkgConfig.passengerPrice === "number" && pkgConfig.passengerPrice >= 0
+          ? pkgConfig.passengerPrice
+          : riderRate;
+      const childRate =
+        typeof pkgConfig.childPrice === "number" && pkgConfig.childPrice >= 0
+          ? pkgConfig.childPrice
+          : passengerRate;
+
+      if (mode === "PER_RIDER") {
+        const effectiveRiders = input.riders !== undefined ? Math.max(1, Number(input.riders)) : adults;
+        computedBasePrice = Math.round(effectiveRiders * riderRate * 100) / 100;
+      } else if (mode === "PER_PASSENGER") {
+        computedBasePrice = Math.round(totalPassengers * passengerRate * 100) / 100;
+      } else if (mode === "ADULT_CHILD") {
+        computedBasePrice = Math.round((adults * riderRate + children * childRate) * 100) / 100;
+      } else if (mode === "RIDER_PASSENGER_CHILD") {
+        const riders =
+          input.riders !== undefined
+            ? Math.max(0, Number(input.riders))
+            : Math.min(adults, packageQuantity);
+        const passengers =
+          input.passengers !== undefined
+            ? Math.max(0, Number(input.passengers))
+            : Math.max(0, adults - riders);
+        computedBasePrice =
+          Math.round((riders * riderRate + passengers * passengerRate + children * childRate) * 100) / 100;
+      }
     }
 
     // Tax calculation (if service pricing specifies taxRate, e.g. 7% VAT)
@@ -238,6 +339,7 @@ export const evaluateBookingPricing = async (
       packagePriceSnapshot: packagePrice,
       netPriceSnapshot: service.pricingType === "PER_PERSON" ? netPrice : computedNetPrice,
       pickupSurcharge,
+      payableOnDayTransferCharge,
       taxAmount,
       departureTime: resolvedDepartureTime,
       pickupLocation: resolvedPickupLocation,
@@ -313,6 +415,7 @@ export const evaluateBookingPricing = async (
     packagePriceSnapshot: null,
     netPriceSnapshot: null,
     pickupSurcharge,
+    payableOnDayTransferCharge,
     taxAmount,
     departureTime: resolvedDepartureTime,
     pickupLocation: resolvedPickupLocation,
