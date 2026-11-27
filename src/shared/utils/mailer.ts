@@ -12,6 +12,7 @@ export interface MailAttachment {
 
 export interface MailMessage {
   to: string;
+  replyTo?: string;
   subject: string;
   text: string;
   html?: string;
@@ -111,6 +112,7 @@ export const sendEmail = async (message: MailMessage): Promise<MailDeliveryResul
       const info = await transporter.sendMail({
         from: fromHeader,
         to: message.to,
+        ...(message.replyTo ? { replyTo: message.replyTo } : {}),
         subject: message.subject,
         text: message.text,
         html: message.html,
