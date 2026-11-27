@@ -18,7 +18,7 @@ const ACTIVE_STATUSES: PaymentRecordStatusValue[] = [
   "VERIFIED",
 ];
 
-const PAYABLE_BOOKING_STATUSES: ("PENDING" | "CONFIRMED")[] = ["PENDING", "CONFIRMED"];
+const PAYABLE_BOOKING_STATUSES: ("PENDING" | "CONFIRMED" | "IN_PROGRESS")[] = ["PENDING", "CONFIRMED", "IN_PROGRESS"];
 
 const paymentInclude = {
   customer: {

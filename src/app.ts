@@ -27,6 +27,7 @@ import customerRoutes from "./modules/customer/customerRoutes.js";
 import invoiceRoutes from "./modules/invoice/invoiceRoutes.js";
 import discountRoutes from "./modules/discount/discountRoutes.js";
 import eventRoutes from "./modules/event/eventRoutes.js";
+import contactRoutes from "./modules/contact/contactRoutes.js";
 import {
   publicAffiliateRouter,
   affiliatePortalRouter,
@@ -188,6 +189,8 @@ app.use("/api/v1", eventRoutes);
 app.use("/api/v1/affiliates", publicAffiliateRouter);
 app.use("/api/v1/affiliate", affiliatePortalRouter);
 app.use("/api/v1/admin/affiliates", adminAffiliateRouter);
+app.use("/api/v1/contact", contactRoutes);
+app.use("/api/contact", contactRoutes);
 app.use(errorHandler);
 
 export default app;

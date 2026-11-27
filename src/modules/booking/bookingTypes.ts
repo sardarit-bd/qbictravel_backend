@@ -1,5 +1,22 @@
 // REMOVE: import { Prisma } from "@prisma/client";
 
+export interface BookingPackageItemInput {
+  packageId: string;
+  quantity: number;
+  riders: number;
+}
+
+export interface BookingPackageItemSnapshot {
+  packageId: string;
+  name: string;
+  unitPrice: number;
+  netPrice: number | null;
+  quantity: number;
+  riders: number;
+  maxCapacity: number;
+  subtotal: number;
+}
+
 export interface CreateBookingInput {
   customerId: string;
   agentId?: string | null;
@@ -7,6 +24,7 @@ export interface CreateBookingInput {
   availabilityId?: string | null;
   packageId?: string | null;
   packageQuantity?: number;
+  packageItems?: BookingPackageItemInput[];
   timeSlotId?: string | null;
   pickupZoneId?: string | null;
   departureTime?: string | null;
@@ -31,6 +49,7 @@ export interface CreateStaffBookingInput {
   availabilityId?: string | null;
   packageId?: string | null;
   packageQuantity?: number;
+  packageItems?: BookingPackageItemInput[];
   timeSlotId?: string | null;
   pickupZoneId?: string | null;
   departureTime?: string | null;
@@ -58,6 +77,7 @@ export interface CreateGuestBookingInput {
   availabilityId?: string | null;
   packageId?: string | null;
   packageQuantity?: number;
+  packageItems?: BookingPackageItemInput[];
   timeSlotId?: string | null;
   pickupZoneId?: string | null;
   departureTime?: string | null;
@@ -122,6 +142,7 @@ export interface BookingResponse {
   availabilityId: string | null;
   packageId?: string | null;
   packageQuantity?: number;
+  packageItems?: BookingPackageItemInput[];
   timeSlotId?: string | null;
   pickupZoneId?: string | null;
   departureTime?: string | null;

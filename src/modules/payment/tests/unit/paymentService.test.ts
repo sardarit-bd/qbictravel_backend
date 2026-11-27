@@ -58,13 +58,19 @@ describe("paymentService.createPayment", () => {
     expect(repo.createPaymentIfNoneActive).not.toHaveBeenCalled();
   });
 
-  it.each(["AWAITING_APPROVAL", "CANCELLED", "FAILED", "COMPLETED", "IN_PROGRESS"])(
+  it.each(["AWAITING_APPROVAL", "CANCELLED", "FAILED", "COMPLETED"])(
     "returns 409 when the booking status is %s",
     async (status) => {
       repo.findBookingForPayment.mockResolvedValue(makeBooking({ status }));
       await expectAppError(paymentService.createPayment(CUSTOMER_ID, BOOKING_ID, { method: "CASH" }), 409);
     },
   );
+
+  it("allows payment creation when the booking status is IN_PROGRESS and unpaid", async () => {
+    repo.findBookingForPayment.mockResolvedValue(makeBooking({ status: "IN_PROGRESS" }));
+    const res = await paymentService.createPayment(CUSTOMER_ID, BOOKING_ID, { method: "CASH" });
+    expect(res.bookingId).toBe(BOOKING_ID);
+  });
 
   it("returns 409 when the booking still requires price approval", async () => {
     repo.findBookingForPayment.mockResolvedValue(makeBooking({ requiresApproval: true }));
