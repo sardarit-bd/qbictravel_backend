@@ -1,5 +1,11 @@
 import * as yup from "yup";
 
+const packageItemSchema = yup.object({
+  packageId: yup.string().uuid("Invalid package ID").required("Package ID is required"),
+  quantity: yup.number().integer("Quantity must be an integer").min(1, "At least 1 unit is required").max(20, "Maximum 20 units per model").required(),
+  riders: yup.number().integer("Riders must be an integer").min(1, "At least 1 rider is required").max(50, "Maximum 50 riders").required(),
+});
+
 export const createBookingSchema = yup.object({
   customerId: yup.string().uuid("Invalid customer ID").required("Customer ID is required"),
   agentId: yup.string().uuid("Invalid agent ID").optional(),
@@ -7,6 +13,7 @@ export const createBookingSchema = yup.object({
   availabilityId: yup.string().uuid("Invalid availability ID").optional(),
   packageId: yup.string().uuid("Invalid package ID").optional(),
   packageQuantity: yup.number().integer("Package quantity must be an integer").min(1, "At least 1 unit is required").max(20, "Maximum 20 units per booking").optional(),
+  packageItems: yup.array().of(packageItemSchema).max(20, "Maximum 20 models per booking").optional(),
   timeSlotId: yup.string().uuid("Invalid time slot ID").optional(),
   pickupZoneId: yup.string().uuid("Invalid pickup zone ID").optional(),
   departureTime: yup.string().trim().max(50).optional(),
@@ -44,6 +51,7 @@ export const createStaffBookingSchema = yup
     availabilityId: yup.string().uuid("Invalid availability ID").optional(),
     packageId: yup.string().uuid("Invalid package ID").optional(),
     packageQuantity: yup.number().integer("Package quantity must be an integer").min(1, "At least 1 unit is required").max(20, "Maximum 20 units per booking").optional(),
+    packageItems: yup.array().of(packageItemSchema).max(20, "Maximum 20 models per booking").optional(),
     timeSlotId: yup.string().uuid("Invalid time slot ID").optional(),
     pickupZoneId: yup.string().uuid("Invalid pickup zone ID").optional(),
     departureTime: yup.string().trim().max(50).optional(),

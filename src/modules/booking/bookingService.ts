@@ -61,6 +61,16 @@ export interface PricingEvaluationResult {
   pickupLocation: string | null;
   packageId: string | null;
   packageQuantity: number;
+  packageItems?: Array<{
+    packageId: string;
+    name: string;
+    unitPrice: number;
+    netPrice: number | null;
+    quantity: number;
+    riders: number;
+    maxCapacity: number;
+    subtotal: number;
+  }>;
   timeSlotId: string | null;
   pickupZoneId: string | null;
 }
@@ -70,6 +80,11 @@ export const evaluateBookingPricing = async (
   input: {
     packageId?: string | null;
     packageQuantity?: number;
+    packageItems?: Array<{
+      packageId: string;
+      quantity: number;
+      riders: number;
+    }>;
     timeSlotId?: string | null;
     pickupZoneId?: string | null;
     departureTime?: string | null;
@@ -183,7 +198,98 @@ export const evaluateBookingPricing = async (
 
   let resolvedPickupLocation = input.pickupLocation?.trim() || null;
 
-  // 3. Package-based (PER_PACKAGE) vs Per-person (PER_PERSON) calculation
+  // 3. Multi-model package selection (e.g. multiple Jet Ski models in one booking)
+  if (Array.isArray(input.packageItems) && input.packageItems.length > 0) {
+    const snapshots: NonNullable<PricingEvaluationResult["packageItems"]> = [];
+    let totalBasePrice = 0;
+    let totalNetPrice = 0;
+    let hasNetPrice = false;
+    let totalQuantity = 0;
+    let currency = "THB";
+
+    for (const item of input.packageItems) {
+      const pkg = service.packages.find((p) => p.id === item.packageId);
+      if (!pkg) {
+        throw new AppError(`Selected package (${item.packageId}) does not belong to this service`, 400);
+      }
+      if (!pkg.isActive) {
+        throw new AppError(`Selected package (${pkg.name}) is currently inactive`, 400);
+      }
+
+      const qty = Math.floor(Number(item.quantity));
+      if (!Number.isFinite(qty) || qty < 1 || qty > 20) {
+        throw new AppError(`Quantity for ${pkg.name} must be between 1 and 20`, 400);
+      }
+
+      const riders = Math.floor(Number(item.riders));
+      const modelMaxCapacity = pkg.maxCapacity * qty;
+      if (!Number.isFinite(riders) || riders < 1) {
+        throw new AppError(`At least 1 rider is required for ${pkg.name}`, 400);
+      }
+      if (riders > modelMaxCapacity) {
+        throw new AppError(
+          `${pkg.name} accommodates a maximum of ${modelMaxCapacity} riders across ${qty} unit(s) (${riders} requested)`,
+          400
+        );
+      }
+
+      const unitPrice = Number(pkg.sellingPrice);
+      const netPrice = pkg.netPrice != null ? Number(pkg.netPrice) : null;
+      const subtotal = Math.round(unitPrice * qty * 100) / 100;
+      currency = pkg.currency || currency;
+
+      totalBasePrice = Math.round((totalBasePrice + subtotal) * 100) / 100;
+      if (netPrice != null) {
+        hasNetPrice = true;
+        totalNetPrice = Math.round((totalNetPrice + netPrice * qty) * 100) / 100;
+      }
+      totalQuantity += qty;
+
+      snapshots.push({
+        packageId: pkg.id,
+        name: pkg.name,
+        unitPrice,
+        netPrice,
+        quantity: qty,
+        riders,
+        maxCapacity: pkg.maxCapacity,
+        subtotal,
+      });
+    }
+
+    let taxRate = 0;
+    const now = new Date();
+    const activePricing = service.pricing.find(
+      (p) => (!p.validFrom || p.validFrom <= now) && (!p.validTo || p.validTo >= now)
+    );
+    if (activePricing) {
+      taxRate = Number(activePricing.taxRate ?? 0);
+    }
+
+    const subtotal = Math.round((totalBasePrice + pickupSurcharge) * 100) / 100;
+    const taxAmount = taxRate > 0 ? Math.round(((subtotal * taxRate) / 100) * 100) / 100 : 0;
+    const finalPrice = Math.round((subtotal + taxAmount) * 100) / 100;
+
+    return {
+      currency,
+      basePrice: subtotal,
+      finalPrice,
+      packagePriceSnapshot: snapshots[0]?.unitPrice ?? null,
+      netPriceSnapshot: hasNetPrice ? totalNetPrice : null,
+      pickupSurcharge,
+      payableOnDayTransferCharge,
+      taxAmount,
+      departureTime: resolvedDepartureTime,
+      pickupLocation: resolvedPickupLocation,
+      packageId: snapshots[0]?.packageId ?? null,
+      packageQuantity: totalQuantity,
+      packageItems: snapshots,
+      timeSlotId: resolvedTimeSlotId,
+      pickupZoneId: resolvedPickupZoneId,
+    };
+  }
+
+  // 3b. Package-based (PER_PACKAGE) vs Per-person (PER_PERSON) calculation
   const isElephantService =
     service.pricingType === "PER_PERSON" ||
     (service as any).metadata?.editorType === "SIREY_ELEPHANTS" ||
@@ -449,6 +555,7 @@ export const createBooking = async (
   const evalPricing = await evaluateBookingPricing(input.serviceId, {
     packageId: input.packageId,
     packageQuantity: input.packageQuantity,
+    packageItems: input.packageItems,
     timeSlotId: input.timeSlotId,
     pickupZoneId: input.pickupZoneId,
     departureTime: input.departureTime,
@@ -633,6 +740,7 @@ export const createStaffBooking = async (
   const evalPricing = await evaluateBookingPricing(input.serviceId, {
     packageId: input.packageId,
     packageQuantity: input.packageQuantity,
+    packageItems: input.packageItems,
     timeSlotId: input.timeSlotId,
     pickupZoneId: input.pickupZoneId,
     departureTime: input.departureTime,
@@ -917,6 +1025,7 @@ export const createGuestBooking = async (
   const evalPricing = await evaluateBookingPricing(input.serviceId, {
     packageId: input.packageId,
     packageQuantity: input.packageQuantity,
+    packageItems: input.packageItems,
     timeSlotId: input.timeSlotId,
     pickupZoneId: input.pickupZoneId,
     departureTime: input.departureTime,
@@ -1603,6 +1712,7 @@ export const amendStaffBooking = async (
     travelDate?: string;
     packageId?: string;
     packageQuantity?: number;
+    packageItems?: Array<{ packageId: string; quantity: number; riders: number }>;
     timeSlotId?: string;
     pickupZoneId?: string;
     isPrivateTransfer?: boolean;
@@ -1719,6 +1829,7 @@ export const amendStaffBooking = async (
     const evalPricing = await evaluateBookingPricing(existing.serviceId, {
       packageId: targetPackageId,
       packageQuantity: targetPackageQuantity,
+      packageItems: input.packageItems,
       timeSlotId: targetTimeSlotId,
       pickupZoneId: targetPickupZoneId,
       departureTime: input.departureTime || existing.departureTime || undefined,
