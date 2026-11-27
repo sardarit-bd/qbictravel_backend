@@ -208,7 +208,7 @@ describe("PaymentLink Unit & Security Tests", () => {
       expect(result.paymentUrl).toContain(`/pay/${result.rawToken}`);
     });
 
-    it("rejects unauthorized staff who is neither creator nor assigned", async () => {
+    it("allows authorized staff to generate a payment link for another staff or admin booking, and rejects non-staff roles", async () => {
       vi.spyOn(paymentRepository, "findBookingForPayment").mockResolvedValue({
         id: "booking-staff-3",
         customerId: "cust-1",
@@ -222,9 +222,24 @@ describe("PaymentLink Unit & Security Tests", () => {
         finalPrice: 150 as any,
       } as any);
 
+      const fakeLink = {
+        id: "link-staff-3",
+        bookingId: "booking-staff-3",
+        tokenHash: "hashed",
+        status: "ACTIVE",
+        expiresAt: new Date(Date.now() + 7 * 86400 * 1000),
+      };
+      vi.spyOn(paymentRepository, "createOrUpdatePaymentLink").mockResolvedValue(fakeLink as any);
+
+      const result = await paymentService.generateStaffPaymentLink(
+        { id: "staff-other", role: "staff" },
+        "booking-staff-3"
+      );
+      expect(result.bookingId).toBe("booking-staff-3");
+
       await expect(
         paymentService.generateStaffPaymentLink(
-          { id: "staff-unrelated", role: "staff" },
+          { id: "customer-unrelated", role: "customer" },
           "booking-staff-3"
         )
       ).rejects.toThrow("You are not authorized to generate a payment link for this booking");
