@@ -707,9 +707,33 @@ export const updateServiceRecord = async (id: string, data: UpdateServiceInput):
   const { pricing, availability, packages, timeSlots, pickupZones, ...serviceData } = data;
 
   return db.$transaction(async (tx) => {
+    let mergedServiceData = { ...serviceData };
+    if (
+      serviceData.metadata !== undefined &&
+      serviceData.metadata !== null &&
+      typeof serviceData.metadata === "object" &&
+      !Array.isArray(serviceData.metadata)
+    ) {
+      const existing = await tx.service.findUnique({
+        where: { id },
+        select: { metadata: true },
+      });
+      const existingMeta =
+        existing?.metadata && typeof existing.metadata === "object" && !Array.isArray(existing.metadata)
+          ? (existing.metadata as Record<string, unknown>)
+          : {};
+      mergedServiceData = {
+        ...serviceData,
+        metadata: {
+          ...existingMeta,
+          ...(serviceData.metadata as Record<string, unknown>),
+        } as any,
+      };
+    }
+
     const updated = await tx.service.update({
       where: { id },
-      data: serviceData,
+      data: mergedServiceData,
     });
 
     if (pricing) {
