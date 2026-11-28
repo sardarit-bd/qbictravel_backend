@@ -26,9 +26,9 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             set -e
-            cd /var/www/qbictravel_backend
-            git fetch https://github.com/sardarit-bd/qbictravel_backend.git main
-            git reset --hard FETCH_HEAD
-            docker compose -f docker-compose.prod.yml build qbictravel-api
-            docker compose -f docker-compose.prod.yml up -d --force-recreate qbictravel-api
-            docker compose -f docker-compose.prod.yml ps
+            cd /var/www/express-template
+            git pull origin main
+            docker compose -f docker-compose.prod.yml build api
+            docker compose -f docker-compose.prod.yml run --rm api npx prisma migrate deploy
+            docker compose -f docker-compose.prod.yml run --rm api node dist/src/scripts/seedGlobalPickupZones.js
+            docker compose -f docker-compose.prod.yml up -d

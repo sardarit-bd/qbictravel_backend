@@ -27,6 +27,7 @@ import customerRoutes from "./modules/customer/customerRoutes.js";
 import invoiceRoutes from "./modules/invoice/invoiceRoutes.js";
 import discountRoutes from "./modules/discount/discountRoutes.js";
 import eventRoutes from "./modules/event/eventRoutes.js";
+import contactRoutes from "./modules/contact/contactRoutes.js";
 import { publicAffiliateRouter, affiliatePortalRouter, adminAffiliateRouter, } from "./modules/affiliate/affiliateRoutes.js";
 import { handleStripeWebhook, handlePayPalWebhook, handleOmiseWebhook } from "./modules/payment/paymentController.js";
 import { csrfProtectionMiddleware } from "./shared/middleware/csrfMiddleware.js";
@@ -115,6 +116,9 @@ app.post("/api/v1/webhooks/stripe", express.raw({ type: "application/json", limi
 app.post("/api/v1/webhooks/paypal", express.json({ limit: "2mb" }), handlePayPalWebhook);
 // 3c. Dedicated Omise Webhook raw body parser
 app.post("/api/v1/webhooks/omise", express.raw({ type: "application/json", limit: "2mb" }), handleOmiseWebhook);
+// 3d. Scoped 1MB JSON body parser for Admin Service & Product Builder draft revision routes
+// (rich-text HTML, 14+ pickup assignments, gallery URLs & alt text easily exceed the global 10kb limit)
+app.use("/api/v1/admin/services", express.json({ limit: "1mb" }));
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 app.use(helmet());
@@ -152,5 +156,7 @@ app.use("/api/v1", eventRoutes);
 app.use("/api/v1/affiliates", publicAffiliateRouter);
 app.use("/api/v1/affiliate", affiliatePortalRouter);
 app.use("/api/v1/admin/affiliates", adminAffiliateRouter);
+app.use("/api/v1/contact", contactRoutes);
+app.use("/api/contact", contactRoutes);
 app.use(errorHandler);
 export default app;

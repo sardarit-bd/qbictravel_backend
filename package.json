@@ -8,6 +8,8 @@
     "build": "prisma generate && tsc",
     "dev": "nodemon --exec tsx -r dotenv/config src/server.ts",
     "seed:admin": "tsx -r dotenv/config prisma/seed.ts",
+    "seed:pickup-zones": "node dist/src/scripts/seedGlobalPickupZones.js",
+    "seed:pickup-zones:dev": "tsx -r dotenv/config prisma/seed-global-pickup-zones.ts",
     "worker:outbox": "tsx -r dotenv/config src/modules/outbox/workerRunner.ts",
     "test": "vitest run",
     "test:unit": "vitest run src/modules/*/tests/unit",
