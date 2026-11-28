@@ -23,6 +23,15 @@ const isPrismaError = (err) => {
     return false;
 };
 const errorHandler = (err, req, res, next) => {
+    // 1a. Handle body-parser PayloadTooLargeError (HTTP 413)
+    const errRecord = err;
+    if (errRecord?.type === "entity.too.large" ||
+        errRecord?.name === "PayloadTooLargeError" ||
+        errRecord?.status === 413 ||
+        errRecord?.statusCode === 413) {
+        sendResponse(res, 413, false, "Request payload is too large. Please reduce the payload size and try again.");
+        return;
+    }
     // 1. If it's a known operational application error
     if (err instanceof AppError) {
         // Check if it's a Prisma / database leak
