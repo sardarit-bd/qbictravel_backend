@@ -274,6 +274,7 @@ export const findServiceById = async (id: string, includeUnpublished = false): P
   const where: any = { id };
   if (!includeUnpublished) {
     where.status = "PUBLISHED";
+    where.archivedAt = null;
   }
 
   const result = await db.service.findUnique({
@@ -284,6 +285,7 @@ export const findServiceById = async (id: string, includeUnpublished = false): P
       packages: { orderBy: { sortOrder: "asc" } },
       timeSlots: { orderBy: { sortOrder: "asc" } },
       pickupZones: { orderBy: { sortOrder: "asc" } },
+      pickupAssignments: { include: { pickupZone: true }, orderBy: { sortOrder: "asc" } },
       media: { orderBy: { createdAt: "desc" } },
     },
   });
@@ -299,9 +301,28 @@ export const findServiceById = async (id: string, includeUnpublished = false): P
     ? result.timeSlots
     : result.timeSlots.filter((t: any) => t.isActive);
 
-  const pickupZones = includeUnpublished
+  const legacyPickupZones = includeUnpublished
     ? result.pickupZones.map(mapPickupZoneRecord)
     : result.pickupZones.filter((z: any) => z.isActive).map(mapPickupZoneRecord);
+
+  // Resolve global pickup assignments with nullable overrides when present
+  const assignedPickupZones = ((result as any).pickupAssignments || [])
+    .filter((a: any) => includeUnpublished || (a.isActive && a.pickupZone?.isActive))
+    .map((a: any) =>
+      mapPickupZoneRecord({
+        ...a.pickupZone,
+        morningPickupTime: a.morningPickupTimeOverride ?? a.pickupZone.morningPickupTime,
+        afternoonPickupTime: a.afternoonPickupTimeOverride ?? a.pickupZone.afternoonPickupTime,
+        surchargeAmount: a.surchargeOverride ?? a.pickupZone.surchargeAmount,
+        privateTransferCharge:
+          a.privateTransferChargeOverride ?? a.pickupZone.privateTransferCharge,
+        isActive: a.isActive,
+        sortOrder: a.sortOrder,
+      })
+    );
+
+  const pickupZones =
+    assignedPickupZones.length > 0 ? assignedPickupZones : legacyPickupZones;
 
   // Map the nested pricing array to convert Decimal to number
   return {

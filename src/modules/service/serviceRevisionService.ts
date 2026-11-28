@@ -69,6 +69,22 @@ export const getOrCreateActiveRevision = async (serviceId: string, actorId?: str
     providerName: service.providerName,
     providerId: service.providerId,
     metadata: service.metadata ?? {},
+    pricing: service.pricing[0]
+      ? {
+          currency: service.pricing[0].currency,
+          basePrice: Number(service.pricing[0].basePrice),
+          discountedPrice:
+            service.pricing[0].discountedPrice != null
+              ? Number(service.pricing[0].discountedPrice)
+              : null,
+          taxRate: Number(service.pricing[0].taxRate),
+        }
+      : undefined,
+    availability: service.availability.map((a) => ({
+      date: a.date.toISOString().slice(0, 10),
+      isAvailable: a.isAvailable,
+      capacity: a.capacity,
+    })),
     packages: service.packages.map((p) => ({
       id: p.id,
       name: p.name,
