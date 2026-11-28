@@ -104,11 +104,15 @@ export const evaluateBookingPricing = async (
       packages: true,
       timeSlots: true,
       pickupZones: true,
+      pickupAssignments: { include: { pickupZone: true } },
     },
   });
 
   if (!service) {
     throw new AppError("Service not found", 404);
+  }
+  if ((service as any).archivedAt) {
+    throw new AppError("This service has been archived and is no longer available for new bookings", 409);
   }
 
   const adults = Math.max(1, Number(input.adults ?? 1));
@@ -146,7 +150,27 @@ export const evaluateBookingPricing = async (
   }> = Array.isArray(serviceMeta.zoneConfigs) ? serviceMeta.zoneConfigs : [];
 
   if (input.pickupZoneId) {
-    const zone = service.pickupZones.find((z) => z.id === input.pickupZoneId);
+    let zone: any = service.pickupZones.find((z) => z.id === input.pickupZoneId);
+    if (!zone) {
+      const assignment = ((service as any).pickupAssignments || []).find(
+        (a: any) => a.pickupZoneId === input.pickupZoneId || a.id === input.pickupZoneId
+      );
+      if (assignment && assignment.pickupZone) {
+        zone = {
+          ...assignment.pickupZone,
+          morningPickupTime:
+            assignment.morningPickupTimeOverride ?? assignment.pickupZone.morningPickupTime,
+          afternoonPickupTime:
+            assignment.afternoonPickupTimeOverride ?? assignment.pickupZone.afternoonPickupTime,
+          surchargeAmount:
+            assignment.surchargeOverride ?? assignment.pickupZone.surchargeAmount,
+          privateTransferCharge:
+            assignment.privateTransferChargeOverride ??
+            assignment.pickupZone.privateTransferCharge,
+          isActive: Boolean(assignment.isActive && assignment.pickupZone.isActive),
+        };
+      }
+    }
     if (!zone) {
       throw new AppError("Selected pickup zone does not belong to this service", 400);
     }
@@ -732,6 +756,9 @@ export const createStaffBooking = async (
   if (!service) {
     throw new AppError("Service not found", 404);
   }
+  if ((service as any).archivedAt) {
+    throw new AppError("This service has been archived and is no longer available for new bookings", 409);
+  }
   if (service.status !== "PUBLISHED") {
     throw new AppError("Cannot book unpublished tour", 400);
   }
@@ -1016,6 +1043,9 @@ export const createGuestBooking = async (
 
   if (!service) {
     throw new AppError("Service not found", 404);
+  }
+  if ((service as any).archivedAt) {
+    throw new AppError("This service has been archived and is no longer available for new bookings", 409);
   }
   if (service.status !== "PUBLISHED") {
     throw new AppError("Cannot book unpublished tour", 400);

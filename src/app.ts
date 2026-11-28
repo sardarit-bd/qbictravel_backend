@@ -146,6 +146,10 @@ app.post(
   handleOmiseWebhook,
 );
 
+// 3d. Scoped 1MB JSON body parser for Admin Service & Product Builder draft revision routes
+// (rich-text HTML, 14+ pickup assignments, gallery URLs & alt text easily exceed the global 10kb limit)
+app.use("/api/v1/admin/services", express.json({ limit: "1mb" }));
+
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 app.use(helmet());

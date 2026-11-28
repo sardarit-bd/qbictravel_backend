@@ -272,6 +272,16 @@ export type ServiceTimeSlot = Prisma.ServiceTimeSlotModel
  */
 export type PickupZone = Prisma.PickupZoneModel
 /**
+ * Model ServiceDraftRevision
+ * 
+ */
+export type ServiceDraftRevision = Prisma.ServiceDraftRevisionModel
+/**
+ * Model ServicePickupZoneAssignment
+ * 
+ */
+export type ServicePickupZoneAssignment = Prisma.ServicePickupZoneAssignmentModel
+/**
  * Model SystemSetting
  * 
  */

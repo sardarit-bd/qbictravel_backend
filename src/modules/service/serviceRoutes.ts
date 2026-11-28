@@ -5,6 +5,7 @@ import requirePermission from "../../shared/middleware/requirePermission.js";
 import requireRole from "../../shared/middleware/requireRole.js";
 
 import * as serviceController from "./serviceController.js";
+import * as serviceRevisionService from "./serviceRevisionService.js";
 import {
   createServiceSchema,
   updateServiceSchema,
@@ -578,6 +579,159 @@ router.delete(
   requirePermission("tours.edit"),
   validate(pickupZoneIdParamSchema, "params"),
   serviceController.deleteAdminPickupZone
+);
+
+// ==========================================
+// Simple Product Builder: Draft Revisions, Archive/Restore & Global Pickup Assignments
+// ==========================================
+
+router.post(
+  "/admin/services/:serviceId/revisions",
+  authMiddleware,
+  requirePermission("tours.edit"),
+  validate(serviceIdParamSchema, "params"),
+  async (req, res, next) => {
+    try {
+      const revision = await serviceRevisionService.getOrCreateActiveRevision(
+        String(req.params.serviceId),
+        (req as any).user?.id
+      );
+      return res.status(200).json({ success: true, data: revision });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+router.patch(
+  "/admin/services/:serviceId/revisions/:revisionId",
+  authMiddleware,
+  requirePermission("tours.edit"),
+  async (req, res, next) => {
+    try {
+      const updated = await serviceRevisionService.saveDraftRevision(
+        String(req.params.serviceId),
+        String(req.params.revisionId),
+        {
+          draftData: req.body?.draftData,
+          expectedVersion: Number(req.body?.expectedVersion),
+          actorId: (req as any).user?.id,
+        }
+      );
+      return res.status(200).json({ success: true, data: updated });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+router.post(
+  "/admin/services/:serviceId/revisions/:revisionId/publish",
+  authMiddleware,
+  requirePermission("tours.edit"),
+  async (req, res, next) => {
+    try {
+      const published = await serviceRevisionService.publishDraftRevision(
+        String(req.params.serviceId),
+        String(req.params.revisionId),
+        {
+          expectedVersion: req.body?.expectedVersion !== undefined ? Number(req.body.expectedVersion) : undefined,
+          expectedServiceVersion:
+            req.body?.expectedServiceVersion !== undefined ? Number(req.body.expectedServiceVersion) : undefined,
+          actorId: (req as any).user?.id,
+        }
+      );
+      return res.status(200).json({ success: true, data: published });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+router.post(
+  "/admin/services/:serviceId/revisions/:revisionId/discard",
+  authMiddleware,
+  requirePermission("tours.edit"),
+  async (req, res, next) => {
+    try {
+      const discarded = await serviceRevisionService.discardDraftRevision(
+        String(req.params.serviceId),
+        String(req.params.revisionId),
+        (req as any).user?.id
+      );
+      return res.status(200).json({ success: true, data: discarded });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+router.post(
+  "/admin/services/:serviceId/archive",
+  authMiddleware,
+  requirePermission("tours.edit"),
+  validate(serviceIdParamSchema, "params"),
+  async (req, res, next) => {
+    try {
+      const archived = await serviceRevisionService.archiveService(
+        String(req.params.serviceId),
+        (req as any).user?.id
+      );
+      return res.status(200).json({ success: true, data: archived });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+router.post(
+  "/admin/services/:serviceId/restore",
+  authMiddleware,
+  requirePermission("tours.edit"),
+  validate(serviceIdParamSchema, "params"),
+  async (req, res, next) => {
+    try {
+      const restored = await serviceRevisionService.restoreService(
+        String(req.params.serviceId),
+        (req as any).user?.id
+      );
+      return res.status(200).json({ success: true, data: restored });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+router.get(
+  "/admin/pickup-zones/global",
+  authMiddleware,
+  requirePermission("tours.view"),
+  async (_req, res, next) => {
+    try {
+      const zones = await serviceRevisionService.listGlobalPickupZones();
+      return res.status(200).json({ success: true, data: zones });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+router.put(
+  "/admin/services/:serviceId/pickup-assignments",
+  authMiddleware,
+  requirePermission("tours.edit"),
+  validate(serviceIdParamSchema, "params"),
+  async (req, res, next) => {
+    try {
+      const assignments = await serviceRevisionService.setServicePickupAssignments(
+        String(req.params.serviceId),
+        Array.isArray(req.body?.assignments) ? req.body.assignments : []
+      );
+      return res.status(200).json({ success: true, data: assignments });
+    } catch (err) {
+      return next(err);
+    }
+  }
 );
 
 export default router;

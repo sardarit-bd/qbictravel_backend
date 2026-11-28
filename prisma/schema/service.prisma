@@ -1,26 +1,33 @@
 model Service {
-  id           String                @id @default(uuid())
-  name         String
-  description  String?
-  type         ServiceType
-  status       ServiceStatus         @default(DRAFT)
-  pricingType  PricingModelType      @default(PER_PERSON)
-  providerName String?
-  providerId   String?
-  metadata     Json?
-  createdAt    DateTime              @default(now())
-  updatedAt    DateTime              @updatedAt
-  bookings     Booking[]
-  media        Media[]
-  availability ServiceAvailability[]
-  pricing      ServicePricing[]
-  packages     ServicePackage[]
-  timeSlots    ServiceTimeSlot[]
-  pickupZones  PickupZone[]
+  id                String                        @id @default(uuid())
+  name              String
+  description       String?
+  type              ServiceType
+  status            ServiceStatus                 @default(DRAFT)
+  pricingType       PricingModelType              @default(PER_PERSON)
+  providerName      String?
+  providerId        String?
+  metadata          Json?
+  version           Int                           @default(1)
+  archivedAt        DateTime?
+  createdById       String?
+  updatedById       String?
+  createdAt         DateTime                      @default(now())
+  updatedAt         DateTime                      @updatedAt
+  bookings          Booking[]
+  media             Media[]
+  availability      ServiceAvailability[]
+  pricing           ServicePricing[]
+  packages          ServicePackage[]
+  timeSlots         ServiceTimeSlot[]
+  pickupZones       PickupZone[]
+  revisions         ServiceDraftRevision[]
+  pickupAssignments ServicePickupZoneAssignment[]
 
   @@index([status])
   @@index([type])
   @@index([pricingType])
+  @@index([archivedAt])
   @@index([updatedAt(sort: Desc)])
   @@index([createdAt(sort: Desc)])
 }
@@ -111,12 +118,57 @@ model PickupZone {
   sortOrder             Int           @default(0)
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
-  service               Service?      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  service               Service?                      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   bookings              Booking[]
+  serviceAssignments    ServicePickupZoneAssignment[]
 
   @@index([serviceId])
   @@index([operatorName])
   @@index([isActive])
+}
+
+model ServiceDraftRevision {
+  id                 String              @id @default(uuid())
+  serviceId          String
+  draftData          Json
+  version            Int                 @default(1)
+  baseServiceVersion Int                 @default(1)
+  status             DraftRevisionStatus @default(ACTIVE)
+  createdById        String?
+  updatedById        String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  service            Service             @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+  @@index([status])
+  @@index([serviceId, status])
+}
+
+model ServicePickupZoneAssignment {
+  id                            String     @id @default(uuid())
+  serviceId                     String
+  pickupZoneId                  String
+  morningPickupTimeOverride     String?
+  afternoonPickupTimeOverride   String?
+  surchargeOverride             Decimal?   @db.Decimal(10, 2)
+  privateTransferChargeOverride Decimal?   @db.Decimal(10, 2)
+  isActive                      Boolean    @default(true)
+  sortOrder                     Int        @default(0)
+  createdAt                     DateTime   @default(now())
+  updatedAt                     DateTime   @updatedAt
+  service                       Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  pickupZone                    PickupZone @relation(fields: [pickupZoneId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, pickupZoneId])
+  @@index([serviceId])
+  @@index([pickupZoneId])
+}
+
+enum DraftRevisionStatus {
+  ACTIVE
+  APPLIED
+  DISCARDED
 }
 
 enum ServiceType {

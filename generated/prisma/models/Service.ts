@@ -20,8 +20,18 @@ export type ServiceModel = runtime.Types.Result.DefaultSelection<Prisma.$Service
 
 export type AggregateService = {
   _count: ServiceCountAggregateOutputType | null
+  _avg: ServiceAvgAggregateOutputType | null
+  _sum: ServiceSumAggregateOutputType | null
   _min: ServiceMinAggregateOutputType | null
   _max: ServiceMaxAggregateOutputType | null
+}
+
+export type ServiceAvgAggregateOutputType = {
+  version: number | null
+}
+
+export type ServiceSumAggregateOutputType = {
+  version: number | null
 }
 
 export type ServiceMinAggregateOutputType = {
@@ -33,6 +43,10 @@ export type ServiceMinAggregateOutputType = {
   pricingType: $Enums.PricingModelType | null
   providerName: string | null
   providerId: string | null
+  version: number | null
+  archivedAt: Date | null
+  createdById: string | null
+  updatedById: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -46,6 +60,10 @@ export type ServiceMaxAggregateOutputType = {
   pricingType: $Enums.PricingModelType | null
   providerName: string | null
   providerId: string | null
+  version: number | null
+  archivedAt: Date | null
+  createdById: string | null
+  updatedById: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,11 +78,23 @@ export type ServiceCountAggregateOutputType = {
   providerName: number
   providerId: number
   metadata: number
+  version: number
+  archivedAt: number
+  createdById: number
+  updatedById: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type ServiceAvgAggregateInputType = {
+  version?: true
+}
+
+export type ServiceSumAggregateInputType = {
+  version?: true
+}
 
 export type ServiceMinAggregateInputType = {
   id?: true
@@ -75,6 +105,10 @@ export type ServiceMinAggregateInputType = {
   pricingType?: true
   providerName?: true
   providerId?: true
+  version?: true
+  archivedAt?: true
+  createdById?: true
+  updatedById?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -88,6 +122,10 @@ export type ServiceMaxAggregateInputType = {
   pricingType?: true
   providerName?: true
   providerId?: true
+  version?: true
+  archivedAt?: true
+  createdById?: true
+  updatedById?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -102,6 +140,10 @@ export type ServiceCountAggregateInputType = {
   providerName?: true
   providerId?: true
   metadata?: true
+  version?: true
+  archivedAt?: true
+  createdById?: true
+  updatedById?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -145,6 +187,18 @@ export type ServiceAggregateArgs<ExtArgs extends runtime.Types.Extensions.Intern
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: ServiceAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: ServiceSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: ServiceMinAggregateInputType
@@ -175,6 +229,8 @@ export type ServiceGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   _count?: ServiceCountAggregateInputType | true
+  _avg?: ServiceAvgAggregateInputType
+  _sum?: ServiceSumAggregateInputType
   _min?: ServiceMinAggregateInputType
   _max?: ServiceMaxAggregateInputType
 }
@@ -189,9 +245,15 @@ export type ServiceGroupByOutputType = {
   providerName: string | null
   providerId: string | null
   metadata: runtime.JsonValue | null
+  version: number
+  archivedAt: Date | null
+  createdById: string | null
+  updatedById: string | null
   createdAt: Date
   updatedAt: Date
   _count: ServiceCountAggregateOutputType | null
+  _avg: ServiceAvgAggregateOutputType | null
+  _sum: ServiceSumAggregateOutputType | null
   _min: ServiceMinAggregateOutputType | null
   _max: ServiceMaxAggregateOutputType | null
 }
@@ -224,6 +286,10 @@ export type ServiceWhereInput = {
   providerName?: Prisma.StringNullableFilter<"Service"> | string | null
   providerId?: Prisma.StringNullableFilter<"Service"> | string | null
   metadata?: Prisma.JsonNullableFilter<"Service">
+  version?: Prisma.IntFilter<"Service"> | number
+  archivedAt?: Prisma.DateTimeNullableFilter<"Service"> | Date | string | null
+  createdById?: Prisma.StringNullableFilter<"Service"> | string | null
+  updatedById?: Prisma.StringNullableFilter<"Service"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Service"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Service"> | Date | string
   bookings?: Prisma.BookingListRelationFilter
@@ -233,6 +299,8 @@ export type ServiceWhereInput = {
   packages?: Prisma.ServicePackageListRelationFilter
   timeSlots?: Prisma.ServiceTimeSlotListRelationFilter
   pickupZones?: Prisma.PickupZoneListRelationFilter
+  revisions?: Prisma.ServiceDraftRevisionListRelationFilter
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentListRelationFilter
 }
 
 export type ServiceOrderByWithRelationInput = {
@@ -245,6 +313,10 @@ export type ServiceOrderByWithRelationInput = {
   providerName?: Prisma.SortOrderInput | Prisma.SortOrder
   providerId?: Prisma.SortOrderInput | Prisma.SortOrder
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
+  version?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  updatedById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   bookings?: Prisma.BookingOrderByRelationAggregateInput
@@ -254,6 +326,8 @@ export type ServiceOrderByWithRelationInput = {
   packages?: Prisma.ServicePackageOrderByRelationAggregateInput
   timeSlots?: Prisma.ServiceTimeSlotOrderByRelationAggregateInput
   pickupZones?: Prisma.PickupZoneOrderByRelationAggregateInput
+  revisions?: Prisma.ServiceDraftRevisionOrderByRelationAggregateInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentOrderByRelationAggregateInput
 }
 
 export type ServiceWhereUniqueInput = Prisma.AtLeast<{
@@ -269,6 +343,10 @@ export type ServiceWhereUniqueInput = Prisma.AtLeast<{
   providerName?: Prisma.StringNullableFilter<"Service"> | string | null
   providerId?: Prisma.StringNullableFilter<"Service"> | string | null
   metadata?: Prisma.JsonNullableFilter<"Service">
+  version?: Prisma.IntFilter<"Service"> | number
+  archivedAt?: Prisma.DateTimeNullableFilter<"Service"> | Date | string | null
+  createdById?: Prisma.StringNullableFilter<"Service"> | string | null
+  updatedById?: Prisma.StringNullableFilter<"Service"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Service"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Service"> | Date | string
   bookings?: Prisma.BookingListRelationFilter
@@ -278,6 +356,8 @@ export type ServiceWhereUniqueInput = Prisma.AtLeast<{
   packages?: Prisma.ServicePackageListRelationFilter
   timeSlots?: Prisma.ServiceTimeSlotListRelationFilter
   pickupZones?: Prisma.PickupZoneListRelationFilter
+  revisions?: Prisma.ServiceDraftRevisionListRelationFilter
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentListRelationFilter
 }, "id">
 
 export type ServiceOrderByWithAggregationInput = {
@@ -290,11 +370,17 @@ export type ServiceOrderByWithAggregationInput = {
   providerName?: Prisma.SortOrderInput | Prisma.SortOrder
   providerId?: Prisma.SortOrderInput | Prisma.SortOrder
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
+  version?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  updatedById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ServiceCountOrderByAggregateInput
+  _avg?: Prisma.ServiceAvgOrderByAggregateInput
   _max?: Prisma.ServiceMaxOrderByAggregateInput
   _min?: Prisma.ServiceMinOrderByAggregateInput
+  _sum?: Prisma.ServiceSumOrderByAggregateInput
 }
 
 export type ServiceScalarWhereWithAggregatesInput = {
@@ -310,6 +396,10 @@ export type ServiceScalarWhereWithAggregatesInput = {
   providerName?: Prisma.StringNullableWithAggregatesFilter<"Service"> | string | null
   providerId?: Prisma.StringNullableWithAggregatesFilter<"Service"> | string | null
   metadata?: Prisma.JsonNullableWithAggregatesFilter<"Service">
+  version?: Prisma.IntWithAggregatesFilter<"Service"> | number
+  archivedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Service"> | Date | string | null
+  createdById?: Prisma.StringNullableWithAggregatesFilter<"Service"> | string | null
+  updatedById?: Prisma.StringNullableWithAggregatesFilter<"Service"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Service"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Service"> | Date | string
 }
@@ -324,6 +414,10 @@ export type ServiceCreateInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingCreateNestedManyWithoutServiceInput
@@ -333,6 +427,8 @@ export type ServiceCreateInput = {
   packages?: Prisma.ServicePackageCreateNestedManyWithoutServiceInput
   timeSlots?: Prisma.ServiceTimeSlotCreateNestedManyWithoutServiceInput
   pickupZones?: Prisma.PickupZoneCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUncheckedCreateInput = {
@@ -345,6 +441,10 @@ export type ServiceUncheckedCreateInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutServiceInput
@@ -354,6 +454,8 @@ export type ServiceUncheckedCreateInput = {
   packages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutServiceInput
   timeSlots?: Prisma.ServiceTimeSlotUncheckedCreateNestedManyWithoutServiceInput
   pickupZones?: Prisma.PickupZoneUncheckedCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUpdateInput = {
@@ -366,6 +468,10 @@ export type ServiceUpdateInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUpdateManyWithoutServiceNestedInput
@@ -375,6 +481,8 @@ export type ServiceUpdateInput = {
   packages?: Prisma.ServicePackageUpdateManyWithoutServiceNestedInput
   timeSlots?: Prisma.ServiceTimeSlotUpdateManyWithoutServiceNestedInput
   pickupZones?: Prisma.PickupZoneUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateInput = {
@@ -387,6 +495,10 @@ export type ServiceUncheckedUpdateInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutServiceNestedInput
@@ -396,6 +508,8 @@ export type ServiceUncheckedUpdateInput = {
   packages?: Prisma.ServicePackageUncheckedUpdateManyWithoutServiceNestedInput
   timeSlots?: Prisma.ServiceTimeSlotUncheckedUpdateManyWithoutServiceNestedInput
   pickupZones?: Prisma.PickupZoneUncheckedUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceCreateManyInput = {
@@ -408,6 +522,10 @@ export type ServiceCreateManyInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -422,6 +540,10 @@ export type ServiceUpdateManyMutationInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -436,6 +558,10 @@ export type ServiceUncheckedUpdateManyInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -460,8 +586,16 @@ export type ServiceCountOrderByAggregateInput = {
   providerName?: Prisma.SortOrder
   providerId?: Prisma.SortOrder
   metadata?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  updatedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type ServiceAvgOrderByAggregateInput = {
+  version?: Prisma.SortOrder
 }
 
 export type ServiceMaxOrderByAggregateInput = {
@@ -473,6 +607,10 @@ export type ServiceMaxOrderByAggregateInput = {
   pricingType?: Prisma.SortOrder
   providerName?: Prisma.SortOrder
   providerId?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  updatedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -486,8 +624,16 @@ export type ServiceMinOrderByAggregateInput = {
   pricingType?: Prisma.SortOrder
   providerName?: Prisma.SortOrder
   providerId?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  updatedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type ServiceSumOrderByAggregateInput = {
+  version?: Prisma.SortOrder
 }
 
 export type ServiceCreateNestedOneWithoutBookingsInput = {
@@ -604,6 +750,34 @@ export type ServiceUpdateOneWithoutPickupZonesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ServiceUpdateToOneWithWhereWithoutPickupZonesInput, Prisma.ServiceUpdateWithoutPickupZonesInput>, Prisma.ServiceUncheckedUpdateWithoutPickupZonesInput>
 }
 
+export type ServiceCreateNestedOneWithoutRevisionsInput = {
+  create?: Prisma.XOR<Prisma.ServiceCreateWithoutRevisionsInput, Prisma.ServiceUncheckedCreateWithoutRevisionsInput>
+  connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutRevisionsInput
+  connect?: Prisma.ServiceWhereUniqueInput
+}
+
+export type ServiceUpdateOneRequiredWithoutRevisionsNestedInput = {
+  create?: Prisma.XOR<Prisma.ServiceCreateWithoutRevisionsInput, Prisma.ServiceUncheckedCreateWithoutRevisionsInput>
+  connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutRevisionsInput
+  upsert?: Prisma.ServiceUpsertWithoutRevisionsInput
+  connect?: Prisma.ServiceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ServiceUpdateToOneWithWhereWithoutRevisionsInput, Prisma.ServiceUpdateWithoutRevisionsInput>, Prisma.ServiceUncheckedUpdateWithoutRevisionsInput>
+}
+
+export type ServiceCreateNestedOneWithoutPickupAssignmentsInput = {
+  create?: Prisma.XOR<Prisma.ServiceCreateWithoutPickupAssignmentsInput, Prisma.ServiceUncheckedCreateWithoutPickupAssignmentsInput>
+  connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutPickupAssignmentsInput
+  connect?: Prisma.ServiceWhereUniqueInput
+}
+
+export type ServiceUpdateOneRequiredWithoutPickupAssignmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.ServiceCreateWithoutPickupAssignmentsInput, Prisma.ServiceUncheckedCreateWithoutPickupAssignmentsInput>
+  connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutPickupAssignmentsInput
+  upsert?: Prisma.ServiceUpsertWithoutPickupAssignmentsInput
+  connect?: Prisma.ServiceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ServiceUpdateToOneWithWhereWithoutPickupAssignmentsInput, Prisma.ServiceUpdateWithoutPickupAssignmentsInput>, Prisma.ServiceUncheckedUpdateWithoutPickupAssignmentsInput>
+}
+
 export type ServiceCreateWithoutBookingsInput = {
   id?: string
   name: string
@@ -614,6 +788,10 @@ export type ServiceCreateWithoutBookingsInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   media?: Prisma.MediaCreateNestedManyWithoutServiceInput
@@ -622,6 +800,8 @@ export type ServiceCreateWithoutBookingsInput = {
   packages?: Prisma.ServicePackageCreateNestedManyWithoutServiceInput
   timeSlots?: Prisma.ServiceTimeSlotCreateNestedManyWithoutServiceInput
   pickupZones?: Prisma.PickupZoneCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUncheckedCreateWithoutBookingsInput = {
@@ -634,6 +814,10 @@ export type ServiceUncheckedCreateWithoutBookingsInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   media?: Prisma.MediaUncheckedCreateNestedManyWithoutServiceInput
@@ -642,6 +826,8 @@ export type ServiceUncheckedCreateWithoutBookingsInput = {
   packages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutServiceInput
   timeSlots?: Prisma.ServiceTimeSlotUncheckedCreateNestedManyWithoutServiceInput
   pickupZones?: Prisma.PickupZoneUncheckedCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceCreateOrConnectWithoutBookingsInput = {
@@ -670,6 +856,10 @@ export type ServiceUpdateWithoutBookingsInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   media?: Prisma.MediaUpdateManyWithoutServiceNestedInput
@@ -678,6 +868,8 @@ export type ServiceUpdateWithoutBookingsInput = {
   packages?: Prisma.ServicePackageUpdateManyWithoutServiceNestedInput
   timeSlots?: Prisma.ServiceTimeSlotUpdateManyWithoutServiceNestedInput
   pickupZones?: Prisma.PickupZoneUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateWithoutBookingsInput = {
@@ -690,6 +882,10 @@ export type ServiceUncheckedUpdateWithoutBookingsInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   media?: Prisma.MediaUncheckedUpdateManyWithoutServiceNestedInput
@@ -698,6 +894,8 @@ export type ServiceUncheckedUpdateWithoutBookingsInput = {
   packages?: Prisma.ServicePackageUncheckedUpdateManyWithoutServiceNestedInput
   timeSlots?: Prisma.ServiceTimeSlotUncheckedUpdateManyWithoutServiceNestedInput
   pickupZones?: Prisma.PickupZoneUncheckedUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceCreateWithoutMediaInput = {
@@ -710,6 +908,10 @@ export type ServiceCreateWithoutMediaInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingCreateNestedManyWithoutServiceInput
@@ -718,6 +920,8 @@ export type ServiceCreateWithoutMediaInput = {
   packages?: Prisma.ServicePackageCreateNestedManyWithoutServiceInput
   timeSlots?: Prisma.ServiceTimeSlotCreateNestedManyWithoutServiceInput
   pickupZones?: Prisma.PickupZoneCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUncheckedCreateWithoutMediaInput = {
@@ -730,6 +934,10 @@ export type ServiceUncheckedCreateWithoutMediaInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutServiceInput
@@ -738,6 +946,8 @@ export type ServiceUncheckedCreateWithoutMediaInput = {
   packages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutServiceInput
   timeSlots?: Prisma.ServiceTimeSlotUncheckedCreateNestedManyWithoutServiceInput
   pickupZones?: Prisma.PickupZoneUncheckedCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceCreateOrConnectWithoutMediaInput = {
@@ -766,6 +976,10 @@ export type ServiceUpdateWithoutMediaInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUpdateManyWithoutServiceNestedInput
@@ -774,6 +988,8 @@ export type ServiceUpdateWithoutMediaInput = {
   packages?: Prisma.ServicePackageUpdateManyWithoutServiceNestedInput
   timeSlots?: Prisma.ServiceTimeSlotUpdateManyWithoutServiceNestedInput
   pickupZones?: Prisma.PickupZoneUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateWithoutMediaInput = {
@@ -786,6 +1002,10 @@ export type ServiceUncheckedUpdateWithoutMediaInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutServiceNestedInput
@@ -794,6 +1014,8 @@ export type ServiceUncheckedUpdateWithoutMediaInput = {
   packages?: Prisma.ServicePackageUncheckedUpdateManyWithoutServiceNestedInput
   timeSlots?: Prisma.ServiceTimeSlotUncheckedUpdateManyWithoutServiceNestedInput
   pickupZones?: Prisma.PickupZoneUncheckedUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceCreateWithoutAvailabilityInput = {
@@ -806,6 +1028,10 @@ export type ServiceCreateWithoutAvailabilityInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingCreateNestedManyWithoutServiceInput
@@ -814,6 +1040,8 @@ export type ServiceCreateWithoutAvailabilityInput = {
   packages?: Prisma.ServicePackageCreateNestedManyWithoutServiceInput
   timeSlots?: Prisma.ServiceTimeSlotCreateNestedManyWithoutServiceInput
   pickupZones?: Prisma.PickupZoneCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUncheckedCreateWithoutAvailabilityInput = {
@@ -826,6 +1054,10 @@ export type ServiceUncheckedCreateWithoutAvailabilityInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutServiceInput
@@ -834,6 +1066,8 @@ export type ServiceUncheckedCreateWithoutAvailabilityInput = {
   packages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutServiceInput
   timeSlots?: Prisma.ServiceTimeSlotUncheckedCreateNestedManyWithoutServiceInput
   pickupZones?: Prisma.PickupZoneUncheckedCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceCreateOrConnectWithoutAvailabilityInput = {
@@ -862,6 +1096,10 @@ export type ServiceUpdateWithoutAvailabilityInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUpdateManyWithoutServiceNestedInput
@@ -870,6 +1108,8 @@ export type ServiceUpdateWithoutAvailabilityInput = {
   packages?: Prisma.ServicePackageUpdateManyWithoutServiceNestedInput
   timeSlots?: Prisma.ServiceTimeSlotUpdateManyWithoutServiceNestedInput
   pickupZones?: Prisma.PickupZoneUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateWithoutAvailabilityInput = {
@@ -882,6 +1122,10 @@ export type ServiceUncheckedUpdateWithoutAvailabilityInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutServiceNestedInput
@@ -890,6 +1134,8 @@ export type ServiceUncheckedUpdateWithoutAvailabilityInput = {
   packages?: Prisma.ServicePackageUncheckedUpdateManyWithoutServiceNestedInput
   timeSlots?: Prisma.ServiceTimeSlotUncheckedUpdateManyWithoutServiceNestedInput
   pickupZones?: Prisma.PickupZoneUncheckedUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceCreateWithoutPricingInput = {
@@ -902,6 +1148,10 @@ export type ServiceCreateWithoutPricingInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingCreateNestedManyWithoutServiceInput
@@ -910,6 +1160,8 @@ export type ServiceCreateWithoutPricingInput = {
   packages?: Prisma.ServicePackageCreateNestedManyWithoutServiceInput
   timeSlots?: Prisma.ServiceTimeSlotCreateNestedManyWithoutServiceInput
   pickupZones?: Prisma.PickupZoneCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUncheckedCreateWithoutPricingInput = {
@@ -922,6 +1174,10 @@ export type ServiceUncheckedCreateWithoutPricingInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutServiceInput
@@ -930,6 +1186,8 @@ export type ServiceUncheckedCreateWithoutPricingInput = {
   packages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutServiceInput
   timeSlots?: Prisma.ServiceTimeSlotUncheckedCreateNestedManyWithoutServiceInput
   pickupZones?: Prisma.PickupZoneUncheckedCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceCreateOrConnectWithoutPricingInput = {
@@ -958,6 +1216,10 @@ export type ServiceUpdateWithoutPricingInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUpdateManyWithoutServiceNestedInput
@@ -966,6 +1228,8 @@ export type ServiceUpdateWithoutPricingInput = {
   packages?: Prisma.ServicePackageUpdateManyWithoutServiceNestedInput
   timeSlots?: Prisma.ServiceTimeSlotUpdateManyWithoutServiceNestedInput
   pickupZones?: Prisma.PickupZoneUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateWithoutPricingInput = {
@@ -978,6 +1242,10 @@ export type ServiceUncheckedUpdateWithoutPricingInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutServiceNestedInput
@@ -986,6 +1254,8 @@ export type ServiceUncheckedUpdateWithoutPricingInput = {
   packages?: Prisma.ServicePackageUncheckedUpdateManyWithoutServiceNestedInput
   timeSlots?: Prisma.ServiceTimeSlotUncheckedUpdateManyWithoutServiceNestedInput
   pickupZones?: Prisma.PickupZoneUncheckedUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceCreateWithoutPackagesInput = {
@@ -998,6 +1268,10 @@ export type ServiceCreateWithoutPackagesInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingCreateNestedManyWithoutServiceInput
@@ -1006,6 +1280,8 @@ export type ServiceCreateWithoutPackagesInput = {
   pricing?: Prisma.ServicePricingCreateNestedManyWithoutServiceInput
   timeSlots?: Prisma.ServiceTimeSlotCreateNestedManyWithoutServiceInput
   pickupZones?: Prisma.PickupZoneCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUncheckedCreateWithoutPackagesInput = {
@@ -1018,6 +1294,10 @@ export type ServiceUncheckedCreateWithoutPackagesInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutServiceInput
@@ -1026,6 +1306,8 @@ export type ServiceUncheckedCreateWithoutPackagesInput = {
   pricing?: Prisma.ServicePricingUncheckedCreateNestedManyWithoutServiceInput
   timeSlots?: Prisma.ServiceTimeSlotUncheckedCreateNestedManyWithoutServiceInput
   pickupZones?: Prisma.PickupZoneUncheckedCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceCreateOrConnectWithoutPackagesInput = {
@@ -1054,6 +1336,10 @@ export type ServiceUpdateWithoutPackagesInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUpdateManyWithoutServiceNestedInput
@@ -1062,6 +1348,8 @@ export type ServiceUpdateWithoutPackagesInput = {
   pricing?: Prisma.ServicePricingUpdateManyWithoutServiceNestedInput
   timeSlots?: Prisma.ServiceTimeSlotUpdateManyWithoutServiceNestedInput
   pickupZones?: Prisma.PickupZoneUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateWithoutPackagesInput = {
@@ -1074,6 +1362,10 @@ export type ServiceUncheckedUpdateWithoutPackagesInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutServiceNestedInput
@@ -1082,6 +1374,8 @@ export type ServiceUncheckedUpdateWithoutPackagesInput = {
   pricing?: Prisma.ServicePricingUncheckedUpdateManyWithoutServiceNestedInput
   timeSlots?: Prisma.ServiceTimeSlotUncheckedUpdateManyWithoutServiceNestedInput
   pickupZones?: Prisma.PickupZoneUncheckedUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceCreateWithoutTimeSlotsInput = {
@@ -1094,6 +1388,10 @@ export type ServiceCreateWithoutTimeSlotsInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingCreateNestedManyWithoutServiceInput
@@ -1102,6 +1400,8 @@ export type ServiceCreateWithoutTimeSlotsInput = {
   pricing?: Prisma.ServicePricingCreateNestedManyWithoutServiceInput
   packages?: Prisma.ServicePackageCreateNestedManyWithoutServiceInput
   pickupZones?: Prisma.PickupZoneCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUncheckedCreateWithoutTimeSlotsInput = {
@@ -1114,6 +1414,10 @@ export type ServiceUncheckedCreateWithoutTimeSlotsInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutServiceInput
@@ -1122,6 +1426,8 @@ export type ServiceUncheckedCreateWithoutTimeSlotsInput = {
   pricing?: Prisma.ServicePricingUncheckedCreateNestedManyWithoutServiceInput
   packages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutServiceInput
   pickupZones?: Prisma.PickupZoneUncheckedCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceCreateOrConnectWithoutTimeSlotsInput = {
@@ -1150,6 +1456,10 @@ export type ServiceUpdateWithoutTimeSlotsInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUpdateManyWithoutServiceNestedInput
@@ -1158,6 +1468,8 @@ export type ServiceUpdateWithoutTimeSlotsInput = {
   pricing?: Prisma.ServicePricingUpdateManyWithoutServiceNestedInput
   packages?: Prisma.ServicePackageUpdateManyWithoutServiceNestedInput
   pickupZones?: Prisma.PickupZoneUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateWithoutTimeSlotsInput = {
@@ -1170,6 +1482,10 @@ export type ServiceUncheckedUpdateWithoutTimeSlotsInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutServiceNestedInput
@@ -1178,6 +1494,8 @@ export type ServiceUncheckedUpdateWithoutTimeSlotsInput = {
   pricing?: Prisma.ServicePricingUncheckedUpdateManyWithoutServiceNestedInput
   packages?: Prisma.ServicePackageUncheckedUpdateManyWithoutServiceNestedInput
   pickupZones?: Prisma.PickupZoneUncheckedUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceCreateWithoutPickupZonesInput = {
@@ -1190,6 +1508,10 @@ export type ServiceCreateWithoutPickupZonesInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingCreateNestedManyWithoutServiceInput
@@ -1198,6 +1520,8 @@ export type ServiceCreateWithoutPickupZonesInput = {
   pricing?: Prisma.ServicePricingCreateNestedManyWithoutServiceInput
   packages?: Prisma.ServicePackageCreateNestedManyWithoutServiceInput
   timeSlots?: Prisma.ServiceTimeSlotCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUncheckedCreateWithoutPickupZonesInput = {
@@ -1210,6 +1534,10 @@ export type ServiceUncheckedCreateWithoutPickupZonesInput = {
   providerName?: string | null
   providerId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutServiceInput
@@ -1218,6 +1546,8 @@ export type ServiceUncheckedCreateWithoutPickupZonesInput = {
   pricing?: Prisma.ServicePricingUncheckedCreateNestedManyWithoutServiceInput
   packages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutServiceInput
   timeSlots?: Prisma.ServiceTimeSlotUncheckedCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceCreateOrConnectWithoutPickupZonesInput = {
@@ -1246,6 +1576,10 @@ export type ServiceUpdateWithoutPickupZonesInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUpdateManyWithoutServiceNestedInput
@@ -1254,6 +1588,8 @@ export type ServiceUpdateWithoutPickupZonesInput = {
   pricing?: Prisma.ServicePricingUpdateManyWithoutServiceNestedInput
   packages?: Prisma.ServicePackageUpdateManyWithoutServiceNestedInput
   timeSlots?: Prisma.ServiceTimeSlotUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateWithoutPickupZonesInput = {
@@ -1266,6 +1602,10 @@ export type ServiceUncheckedUpdateWithoutPickupZonesInput = {
   providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutServiceNestedInput
@@ -1274,6 +1614,248 @@ export type ServiceUncheckedUpdateWithoutPickupZonesInput = {
   pricing?: Prisma.ServicePricingUncheckedUpdateManyWithoutServiceNestedInput
   packages?: Prisma.ServicePackageUncheckedUpdateManyWithoutServiceNestedInput
   timeSlots?: Prisma.ServiceTimeSlotUncheckedUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedUpdateManyWithoutServiceNestedInput
+}
+
+export type ServiceCreateWithoutRevisionsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  type: $Enums.ServiceType
+  status?: $Enums.ServiceStatus
+  pricingType?: $Enums.PricingModelType
+  providerName?: string | null
+  providerId?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  bookings?: Prisma.BookingCreateNestedManyWithoutServiceInput
+  media?: Prisma.MediaCreateNestedManyWithoutServiceInput
+  availability?: Prisma.ServiceAvailabilityCreateNestedManyWithoutServiceInput
+  pricing?: Prisma.ServicePricingCreateNestedManyWithoutServiceInput
+  packages?: Prisma.ServicePackageCreateNestedManyWithoutServiceInput
+  timeSlots?: Prisma.ServiceTimeSlotCreateNestedManyWithoutServiceInput
+  pickupZones?: Prisma.PickupZoneCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentCreateNestedManyWithoutServiceInput
+}
+
+export type ServiceUncheckedCreateWithoutRevisionsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  type: $Enums.ServiceType
+  status?: $Enums.ServiceStatus
+  pricingType?: $Enums.PricingModelType
+  providerName?: string | null
+  providerId?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutServiceInput
+  media?: Prisma.MediaUncheckedCreateNestedManyWithoutServiceInput
+  availability?: Prisma.ServiceAvailabilityUncheckedCreateNestedManyWithoutServiceInput
+  pricing?: Prisma.ServicePricingUncheckedCreateNestedManyWithoutServiceInput
+  packages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutServiceInput
+  timeSlots?: Prisma.ServiceTimeSlotUncheckedCreateNestedManyWithoutServiceInput
+  pickupZones?: Prisma.PickupZoneUncheckedCreateNestedManyWithoutServiceInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedCreateNestedManyWithoutServiceInput
+}
+
+export type ServiceCreateOrConnectWithoutRevisionsInput = {
+  where: Prisma.ServiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ServiceCreateWithoutRevisionsInput, Prisma.ServiceUncheckedCreateWithoutRevisionsInput>
+}
+
+export type ServiceUpsertWithoutRevisionsInput = {
+  update: Prisma.XOR<Prisma.ServiceUpdateWithoutRevisionsInput, Prisma.ServiceUncheckedUpdateWithoutRevisionsInput>
+  create: Prisma.XOR<Prisma.ServiceCreateWithoutRevisionsInput, Prisma.ServiceUncheckedCreateWithoutRevisionsInput>
+  where?: Prisma.ServiceWhereInput
+}
+
+export type ServiceUpdateToOneWithWhereWithoutRevisionsInput = {
+  where?: Prisma.ServiceWhereInput
+  data: Prisma.XOR<Prisma.ServiceUpdateWithoutRevisionsInput, Prisma.ServiceUncheckedUpdateWithoutRevisionsInput>
+}
+
+export type ServiceUpdateWithoutRevisionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  status?: Prisma.EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
+  pricingType?: Prisma.EnumPricingModelTypeFieldUpdateOperationsInput | $Enums.PricingModelType
+  providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.BookingUpdateManyWithoutServiceNestedInput
+  media?: Prisma.MediaUpdateManyWithoutServiceNestedInput
+  availability?: Prisma.ServiceAvailabilityUpdateManyWithoutServiceNestedInput
+  pricing?: Prisma.ServicePricingUpdateManyWithoutServiceNestedInput
+  packages?: Prisma.ServicePackageUpdateManyWithoutServiceNestedInput
+  timeSlots?: Prisma.ServiceTimeSlotUpdateManyWithoutServiceNestedInput
+  pickupZones?: Prisma.PickupZoneUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUpdateManyWithoutServiceNestedInput
+}
+
+export type ServiceUncheckedUpdateWithoutRevisionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  status?: Prisma.EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
+  pricingType?: Prisma.EnumPricingModelTypeFieldUpdateOperationsInput | $Enums.PricingModelType
+  providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutServiceNestedInput
+  media?: Prisma.MediaUncheckedUpdateManyWithoutServiceNestedInput
+  availability?: Prisma.ServiceAvailabilityUncheckedUpdateManyWithoutServiceNestedInput
+  pricing?: Prisma.ServicePricingUncheckedUpdateManyWithoutServiceNestedInput
+  packages?: Prisma.ServicePackageUncheckedUpdateManyWithoutServiceNestedInput
+  timeSlots?: Prisma.ServiceTimeSlotUncheckedUpdateManyWithoutServiceNestedInput
+  pickupZones?: Prisma.PickupZoneUncheckedUpdateManyWithoutServiceNestedInput
+  pickupAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedUpdateManyWithoutServiceNestedInput
+}
+
+export type ServiceCreateWithoutPickupAssignmentsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  type: $Enums.ServiceType
+  status?: $Enums.ServiceStatus
+  pricingType?: $Enums.PricingModelType
+  providerName?: string | null
+  providerId?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  bookings?: Prisma.BookingCreateNestedManyWithoutServiceInput
+  media?: Prisma.MediaCreateNestedManyWithoutServiceInput
+  availability?: Prisma.ServiceAvailabilityCreateNestedManyWithoutServiceInput
+  pricing?: Prisma.ServicePricingCreateNestedManyWithoutServiceInput
+  packages?: Prisma.ServicePackageCreateNestedManyWithoutServiceInput
+  timeSlots?: Prisma.ServiceTimeSlotCreateNestedManyWithoutServiceInput
+  pickupZones?: Prisma.PickupZoneCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionCreateNestedManyWithoutServiceInput
+}
+
+export type ServiceUncheckedCreateWithoutPickupAssignmentsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  type: $Enums.ServiceType
+  status?: $Enums.ServiceStatus
+  pricingType?: $Enums.PricingModelType
+  providerName?: string | null
+  providerId?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: number
+  archivedAt?: Date | string | null
+  createdById?: string | null
+  updatedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutServiceInput
+  media?: Prisma.MediaUncheckedCreateNestedManyWithoutServiceInput
+  availability?: Prisma.ServiceAvailabilityUncheckedCreateNestedManyWithoutServiceInput
+  pricing?: Prisma.ServicePricingUncheckedCreateNestedManyWithoutServiceInput
+  packages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutServiceInput
+  timeSlots?: Prisma.ServiceTimeSlotUncheckedCreateNestedManyWithoutServiceInput
+  pickupZones?: Prisma.PickupZoneUncheckedCreateNestedManyWithoutServiceInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedCreateNestedManyWithoutServiceInput
+}
+
+export type ServiceCreateOrConnectWithoutPickupAssignmentsInput = {
+  where: Prisma.ServiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ServiceCreateWithoutPickupAssignmentsInput, Prisma.ServiceUncheckedCreateWithoutPickupAssignmentsInput>
+}
+
+export type ServiceUpsertWithoutPickupAssignmentsInput = {
+  update: Prisma.XOR<Prisma.ServiceUpdateWithoutPickupAssignmentsInput, Prisma.ServiceUncheckedUpdateWithoutPickupAssignmentsInput>
+  create: Prisma.XOR<Prisma.ServiceCreateWithoutPickupAssignmentsInput, Prisma.ServiceUncheckedCreateWithoutPickupAssignmentsInput>
+  where?: Prisma.ServiceWhereInput
+}
+
+export type ServiceUpdateToOneWithWhereWithoutPickupAssignmentsInput = {
+  where?: Prisma.ServiceWhereInput
+  data: Prisma.XOR<Prisma.ServiceUpdateWithoutPickupAssignmentsInput, Prisma.ServiceUncheckedUpdateWithoutPickupAssignmentsInput>
+}
+
+export type ServiceUpdateWithoutPickupAssignmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  status?: Prisma.EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
+  pricingType?: Prisma.EnumPricingModelTypeFieldUpdateOperationsInput | $Enums.PricingModelType
+  providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.BookingUpdateManyWithoutServiceNestedInput
+  media?: Prisma.MediaUpdateManyWithoutServiceNestedInput
+  availability?: Prisma.ServiceAvailabilityUpdateManyWithoutServiceNestedInput
+  pricing?: Prisma.ServicePricingUpdateManyWithoutServiceNestedInput
+  packages?: Prisma.ServicePackageUpdateManyWithoutServiceNestedInput
+  timeSlots?: Prisma.ServiceTimeSlotUpdateManyWithoutServiceNestedInput
+  pickupZones?: Prisma.PickupZoneUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUpdateManyWithoutServiceNestedInput
+}
+
+export type ServiceUncheckedUpdateWithoutPickupAssignmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  status?: Prisma.EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
+  pricingType?: Prisma.EnumPricingModelTypeFieldUpdateOperationsInput | $Enums.PricingModelType
+  providerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutServiceNestedInput
+  media?: Prisma.MediaUncheckedUpdateManyWithoutServiceNestedInput
+  availability?: Prisma.ServiceAvailabilityUncheckedUpdateManyWithoutServiceNestedInput
+  pricing?: Prisma.ServicePricingUncheckedUpdateManyWithoutServiceNestedInput
+  packages?: Prisma.ServicePackageUncheckedUpdateManyWithoutServiceNestedInput
+  timeSlots?: Prisma.ServiceTimeSlotUncheckedUpdateManyWithoutServiceNestedInput
+  pickupZones?: Prisma.PickupZoneUncheckedUpdateManyWithoutServiceNestedInput
+  revisions?: Prisma.ServiceDraftRevisionUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 
@@ -1289,6 +1871,8 @@ export type ServiceCountOutputType = {
   packages: number
   timeSlots: number
   pickupZones: number
+  revisions: number
+  pickupAssignments: number
 }
 
 export type ServiceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1299,6 +1883,8 @@ export type ServiceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   packages?: boolean | ServiceCountOutputTypeCountPackagesArgs
   timeSlots?: boolean | ServiceCountOutputTypeCountTimeSlotsArgs
   pickupZones?: boolean | ServiceCountOutputTypeCountPickupZonesArgs
+  revisions?: boolean | ServiceCountOutputTypeCountRevisionsArgs
+  pickupAssignments?: boolean | ServiceCountOutputTypeCountPickupAssignmentsArgs
 }
 
 /**
@@ -1360,6 +1946,20 @@ export type ServiceCountOutputTypeCountPickupZonesArgs<ExtArgs extends runtime.T
   where?: Prisma.PickupZoneWhereInput
 }
 
+/**
+ * ServiceCountOutputType without action
+ */
+export type ServiceCountOutputTypeCountRevisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ServiceDraftRevisionWhereInput
+}
+
+/**
+ * ServiceCountOutputType without action
+ */
+export type ServiceCountOutputTypeCountPickupAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ServicePickupZoneAssignmentWhereInput
+}
+
 
 export type ServiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1371,6 +1971,10 @@ export type ServiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   providerName?: boolean
   providerId?: boolean
   metadata?: boolean
+  version?: boolean
+  archivedAt?: boolean
+  createdById?: boolean
+  updatedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   bookings?: boolean | Prisma.Service$bookingsArgs<ExtArgs>
@@ -1380,6 +1984,8 @@ export type ServiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   packages?: boolean | Prisma.Service$packagesArgs<ExtArgs>
   timeSlots?: boolean | Prisma.Service$timeSlotsArgs<ExtArgs>
   pickupZones?: boolean | Prisma.Service$pickupZonesArgs<ExtArgs>
+  revisions?: boolean | Prisma.Service$revisionsArgs<ExtArgs>
+  pickupAssignments?: boolean | Prisma.Service$pickupAssignmentsArgs<ExtArgs>
   _count?: boolean | Prisma.ServiceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["service"]>
 
@@ -1393,6 +1999,10 @@ export type ServiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   providerName?: boolean
   providerId?: boolean
   metadata?: boolean
+  version?: boolean
+  archivedAt?: boolean
+  createdById?: boolean
+  updatedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["service"]>
@@ -1407,6 +2017,10 @@ export type ServiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   providerName?: boolean
   providerId?: boolean
   metadata?: boolean
+  version?: boolean
+  archivedAt?: boolean
+  createdById?: boolean
+  updatedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["service"]>
@@ -1421,11 +2035,15 @@ export type ServiceSelectScalar = {
   providerName?: boolean
   providerId?: boolean
   metadata?: boolean
+  version?: boolean
+  archivedAt?: boolean
+  createdById?: boolean
+  updatedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ServiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "type" | "status" | "pricingType" | "providerName" | "providerId" | "metadata" | "createdAt" | "updatedAt", ExtArgs["result"]["service"]>
+export type ServiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "type" | "status" | "pricingType" | "providerName" | "providerId" | "metadata" | "version" | "archivedAt" | "createdById" | "updatedById" | "createdAt" | "updatedAt", ExtArgs["result"]["service"]>
 export type ServiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bookings?: boolean | Prisma.Service$bookingsArgs<ExtArgs>
   media?: boolean | Prisma.Service$mediaArgs<ExtArgs>
@@ -1434,6 +2052,8 @@ export type ServiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   packages?: boolean | Prisma.Service$packagesArgs<ExtArgs>
   timeSlots?: boolean | Prisma.Service$timeSlotsArgs<ExtArgs>
   pickupZones?: boolean | Prisma.Service$pickupZonesArgs<ExtArgs>
+  revisions?: boolean | Prisma.Service$revisionsArgs<ExtArgs>
+  pickupAssignments?: boolean | Prisma.Service$pickupAssignmentsArgs<ExtArgs>
   _count?: boolean | Prisma.ServiceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ServiceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1449,6 +2069,8 @@ export type $ServicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     packages: Prisma.$ServicePackagePayload<ExtArgs>[]
     timeSlots: Prisma.$ServiceTimeSlotPayload<ExtArgs>[]
     pickupZones: Prisma.$PickupZonePayload<ExtArgs>[]
+    revisions: Prisma.$ServiceDraftRevisionPayload<ExtArgs>[]
+    pickupAssignments: Prisma.$ServicePickupZoneAssignmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1460,6 +2082,10 @@ export type $ServicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     providerName: string | null
     providerId: string | null
     metadata: runtime.JsonValue | null
+    version: number
+    archivedAt: Date | null
+    createdById: string | null
+    updatedById: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["service"]>
@@ -1863,6 +2489,8 @@ export interface Prisma__ServiceClient<T, Null = never, ExtArgs extends runtime.
   packages<T extends Prisma.Service$packagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$packagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServicePackagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   timeSlots<T extends Prisma.Service$timeSlotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$timeSlotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceTimeSlotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   pickupZones<T extends Prisma.Service$pickupZonesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$pickupZonesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PickupZonePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  revisions<T extends Prisma.Service$revisionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$revisionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceDraftRevisionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pickupAssignments<T extends Prisma.Service$pickupAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$pickupAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServicePickupZoneAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1901,6 +2529,10 @@ export interface ServiceFieldRefs {
   readonly providerName: Prisma.FieldRef<"Service", 'String'>
   readonly providerId: Prisma.FieldRef<"Service", 'String'>
   readonly metadata: Prisma.FieldRef<"Service", 'Json'>
+  readonly version: Prisma.FieldRef<"Service", 'Int'>
+  readonly archivedAt: Prisma.FieldRef<"Service", 'DateTime'>
+  readonly createdById: Prisma.FieldRef<"Service", 'String'>
+  readonly updatedById: Prisma.FieldRef<"Service", 'String'>
   readonly createdAt: Prisma.FieldRef<"Service", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Service", 'DateTime'>
 }
@@ -2461,6 +3093,54 @@ export type Service$pickupZonesArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.PickupZoneScalarFieldEnum | Prisma.PickupZoneScalarFieldEnum[]
+}
+
+/**
+ * Service.revisions
+ */
+export type Service$revisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ServiceDraftRevision
+   */
+  select?: Prisma.ServiceDraftRevisionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ServiceDraftRevision
+   */
+  omit?: Prisma.ServiceDraftRevisionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ServiceDraftRevisionInclude<ExtArgs> | null
+  where?: Prisma.ServiceDraftRevisionWhereInput
+  orderBy?: Prisma.ServiceDraftRevisionOrderByWithRelationInput | Prisma.ServiceDraftRevisionOrderByWithRelationInput[]
+  cursor?: Prisma.ServiceDraftRevisionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ServiceDraftRevisionScalarFieldEnum | Prisma.ServiceDraftRevisionScalarFieldEnum[]
+}
+
+/**
+ * Service.pickupAssignments
+ */
+export type Service$pickupAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ServicePickupZoneAssignment
+   */
+  select?: Prisma.ServicePickupZoneAssignmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ServicePickupZoneAssignment
+   */
+  omit?: Prisma.ServicePickupZoneAssignmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ServicePickupZoneAssignmentInclude<ExtArgs> | null
+  where?: Prisma.ServicePickupZoneAssignmentWhereInput
+  orderBy?: Prisma.ServicePickupZoneAssignmentOrderByWithRelationInput | Prisma.ServicePickupZoneAssignmentOrderByWithRelationInput[]
+  cursor?: Prisma.ServicePickupZoneAssignmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ServicePickupZoneAssignmentScalarFieldEnum | Prisma.ServicePickupZoneAssignmentScalarFieldEnum[]
 }
 
 /**

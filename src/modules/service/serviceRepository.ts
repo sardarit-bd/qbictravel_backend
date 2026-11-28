@@ -41,7 +41,7 @@ export const findPublishedServices = async (
   const skip = (page - 1) * limit;
 
   // Base published condition
-  const basePublishedWhere: any = { status: "PUBLISHED" };
+  const basePublishedWhere: any = { status: "PUBLISHED", archivedAt: null };
   if (query.type) {
     basePublishedWhere.type = query.type;
   }
@@ -274,6 +274,7 @@ export const findServiceById = async (id: string, includeUnpublished = false): P
   const where: any = { id };
   if (!includeUnpublished) {
     where.status = "PUBLISHED";
+    where.archivedAt = null;
   }
 
   const result = await db.service.findUnique({
@@ -284,6 +285,7 @@ export const findServiceById = async (id: string, includeUnpublished = false): P
       packages: { orderBy: { sortOrder: "asc" } },
       timeSlots: { orderBy: { sortOrder: "asc" } },
       pickupZones: { orderBy: { sortOrder: "asc" } },
+      pickupAssignments: { include: { pickupZone: true }, orderBy: { sortOrder: "asc" } },
       media: { orderBy: { createdAt: "desc" } },
     },
   });
@@ -299,9 +301,28 @@ export const findServiceById = async (id: string, includeUnpublished = false): P
     ? result.timeSlots
     : result.timeSlots.filter((t: any) => t.isActive);
 
-  const pickupZones = includeUnpublished
+  const legacyPickupZones = includeUnpublished
     ? result.pickupZones.map(mapPickupZoneRecord)
     : result.pickupZones.filter((z: any) => z.isActive).map(mapPickupZoneRecord);
+
+  // Resolve global pickup assignments with nullable overrides when present
+  const assignedPickupZones = ((result as any).pickupAssignments || [])
+    .filter((a: any) => includeUnpublished || (a.isActive && a.pickupZone?.isActive))
+    .map((a: any) =>
+      mapPickupZoneRecord({
+        ...a.pickupZone,
+        morningPickupTime: a.morningPickupTimeOverride ?? a.pickupZone.morningPickupTime,
+        afternoonPickupTime: a.afternoonPickupTimeOverride ?? a.pickupZone.afternoonPickupTime,
+        surchargeAmount: a.surchargeOverride ?? a.pickupZone.surchargeAmount,
+        privateTransferCharge:
+          a.privateTransferChargeOverride ?? a.pickupZone.privateTransferCharge,
+        isActive: a.isActive,
+        sortOrder: a.sortOrder,
+      })
+    );
+
+  const pickupZones =
+    assignedPickupZones.length > 0 ? assignedPickupZones : legacyPickupZones;
 
   // Map the nested pricing array to convert Decimal to number
   return {
@@ -748,27 +769,48 @@ export const createServiceRecord = async (data: CreateServiceInput): Promise<Ser
   }) as Promise<ServiceRecord>;
 };
 
-export const updateServiceRecord = async (id: string, data: UpdateServiceInput): Promise<ServiceRecord> => {
-  const { pricing, availability, packages, timeSlots, pickupZones, ...serviceData } = data;
+export const updateServiceRecord = async (
+  id: string,
+  data: UpdateServiceInput & { expectedVersion?: number; updatedById?: string }
+): Promise<ServiceRecord> => {
+  const { pricing, availability, packages, timeSlots, pickupZones, expectedVersion, updatedById, ...serviceData } = data;
 
   return db.$transaction(async (tx) => {
-    let mergedServiceData = { ...serviceData };
+    const existingService = await tx.service.findUnique({
+      where: { id },
+      select: { id: true, version: true, metadata: true, providerName: true },
+    });
+
+    if (!existingService) {
+      throw new AppError("Service not found", 404);
+    }
+
+    if (expectedVersion !== undefined && existingService.version !== expectedVersion) {
+      throw new AppError(
+        `Version conflict: expected version ${expectedVersion}, but current version is ${existingService.version}`,
+        409
+      );
+    }
+
+    let mergedServiceData: Record<string, any> = {
+      ...serviceData,
+      version: { increment: 1 },
+      ...(updatedById ? { updatedById } : {}),
+    };
     if (
       serviceData.metadata !== undefined &&
       serviceData.metadata !== null &&
       typeof serviceData.metadata === "object" &&
       !Array.isArray(serviceData.metadata)
     ) {
-      const existing = await tx.service.findUnique({
-        where: { id },
-        select: { metadata: true },
-      });
       const existingMeta =
-        existing?.metadata && typeof existing.metadata === "object" && !Array.isArray(existing.metadata)
-          ? (existing.metadata as Record<string, unknown>)
+        existingService.metadata &&
+        typeof existingService.metadata === "object" &&
+        !Array.isArray(existingService.metadata)
+          ? (existingService.metadata as Record<string, unknown>)
           : {};
       mergedServiceData = {
-        ...serviceData,
+        ...mergedServiceData,
         metadata: {
           ...existingMeta,
           ...(serviceData.metadata as Record<string, unknown>),
@@ -838,68 +880,164 @@ export const updateServiceRecord = async (id: string, data: UpdateServiceInput):
     }
 
     if (packages !== undefined) {
-      await tx.servicePackage.deleteMany({ where: { serviceId: id } });
+      const existingPackages = await tx.servicePackage.findMany({
+        where: { serviceId: id },
+        select: { id: true },
+      });
+      const existingPkgIds = new Set(existingPackages.map((p) => p.id));
+      const retainedPkgIds = new Set<string>();
+
       for (let i = 0; i < packages.length; i++) {
-        const pkg = packages[i];
-        await tx.servicePackage.create({
-          data: {
-            serviceId: id,
-            name: pkg.name,
-            description: pkg.description ?? null,
-            durationMinutes: pkg.durationMinutes,
-            boatSize: pkg.boatSize ?? null,
-            minPax: pkg.minPax ?? 1,
-            maxCapacity: pkg.maxCapacity,
-            sellingPrice: pkg.sellingPrice,
-            netPrice: pkg.netPrice != null ? pkg.netPrice : null,
-            currency: pkg.currency || "THB",
-            isActive: pkg.isActive ?? true,
-            sortOrder: pkg.sortOrder ?? i,
-          },
-        });
+        const pkg = packages[i] as any;
+        const pkgData = {
+          name: pkg.name,
+          description: pkg.description ?? null,
+          durationMinutes: Math.max(1, toSafeInt(pkg.durationMinutes, 60)),
+          boatSize: pkg.boatSize ?? null,
+          minPax: Math.max(1, toSafeInt(pkg.minPax, 1)),
+          maxCapacity: Math.max(1, toSafeInt(pkg.maxCapacity, 2)),
+          sellingPrice: toSafeNumber(pkg.sellingPrice, 0),
+          netPrice: toSafeNullableNumber(pkg.netPrice),
+          currency: pkg.currency || "THB",
+          isActive: pkg.isActive ?? true,
+          sortOrder: toSafeInt(pkg.sortOrder, i),
+        };
+
+        if (pkg.id) {
+          if (!existingPkgIds.has(pkg.id)) {
+            throw new AppError(`Package ${pkg.id} does not belong to this service`, 400);
+          }
+          retainedPkgIds.add(pkg.id);
+          await tx.servicePackage.update({
+            where: { id: pkg.id },
+            data: pkgData,
+          });
+        } else {
+          await tx.servicePackage.create({
+            data: { serviceId: id, ...pkgData },
+          });
+        }
+      }
+
+      for (const oldId of existingPkgIds) {
+        if (!retainedPkgIds.has(oldId)) {
+          const bookingCount = await tx.booking.count({ where: { packageId: oldId } });
+          if (bookingCount > 0) {
+            await tx.servicePackage.update({
+              where: { id: oldId },
+              data: { isActive: false },
+            });
+          } else {
+            await tx.servicePackage.delete({ where: { id: oldId } });
+          }
+        }
       }
     }
 
     if (timeSlots !== undefined) {
-      await tx.serviceTimeSlot.deleteMany({ where: { serviceId: id } });
+      const existingSlots = await tx.serviceTimeSlot.findMany({
+        where: { serviceId: id },
+        select: { id: true },
+      });
+      const existingSlotIds = new Set(existingSlots.map((s) => s.id));
+      const retainedSlotIds = new Set<string>();
+
       for (let i = 0; i < timeSlots.length; i++) {
-        const slot = timeSlots[i];
-        await tx.serviceTimeSlot.create({
-          data: {
-            serviceId: id,
-            name: slot.name,
-            departureTime: slot.departureTime,
-            capacity: slot.capacity ?? null,
-            isActive: slot.isActive ?? true,
-            sortOrder: slot.sortOrder ?? i,
-          },
-        });
+        const slot = timeSlots[i] as any;
+        const slotData = {
+          name: slot.name,
+          departureTime: slot.departureTime,
+          capacity: toSafeNullableInt(slot.capacity),
+          isActive: slot.isActive ?? true,
+          sortOrder: toSafeInt(slot.sortOrder, i),
+        };
+
+        if (slot.id) {
+          if (!existingSlotIds.has(slot.id)) {
+            throw new AppError(`TimeSlot ${slot.id} does not belong to this service`, 400);
+          }
+          retainedSlotIds.add(slot.id);
+          await tx.serviceTimeSlot.update({
+            where: { id: slot.id },
+            data: slotData,
+          });
+        } else {
+          await tx.serviceTimeSlot.create({
+            data: { serviceId: id, ...slotData },
+          });
+        }
+      }
+
+      for (const oldId of existingSlotIds) {
+        if (!retainedSlotIds.has(oldId)) {
+          const bookingCount = await tx.booking.count({ where: { timeSlotId: oldId } });
+          if (bookingCount > 0) {
+            await tx.serviceTimeSlot.update({
+              where: { id: oldId },
+              data: { isActive: false },
+            });
+          } else {
+            await tx.serviceTimeSlot.delete({ where: { id: oldId } });
+          }
+        }
       }
     }
 
     if (pickupZones !== undefined) {
-      await tx.pickupZone.deleteMany({ where: { serviceId: id } });
+      const existingZones = await tx.pickupZone.findMany({
+        where: { serviceId: id },
+        select: { id: true },
+      });
+      const existingZoneIds = new Set(existingZones.map((z) => z.id));
+      const retainedZoneIds = new Set<string>();
+
       for (let i = 0; i < pickupZones.length; i++) {
-        const zone = pickupZones[i];
-        await tx.pickupZone.create({
-          data: {
-            serviceId: id,
-            operatorName: zone.operatorName ?? updated.providerName ?? null,
-            zoneName: zone.zoneName,
-            description: zone.description ?? null,
-            morningPickupTime: zone.morningPickupTime ?? null,
-            afternoonPickupTime: zone.afternoonPickupTime ?? null,
-            hasPrivateTransfer: zone.hasPrivateTransfer ?? false,
-            privateTransferCharge: zone.privateTransferCharge != null ? zone.privateTransferCharge : null,
-            morningPierArrival: zone.morningPierArrival ?? "08:30 AM",
-            afternoonPierArrival: zone.afternoonPierArrival ?? "12:30 PM",
-            surchargeAmount: zone.surchargeAmount ?? 0,
-            surchargeUnit: zone.surchargeUnit || "PER_BOOKING",
-            currency: zone.currency || "THB",
-            isActive: zone.isActive ?? true,
-            sortOrder: zone.sortOrder ?? i,
-          },
-        });
+        const zone = pickupZones[i] as any;
+        const zoneData = {
+          operatorName: zone.operatorName ?? updated.providerName ?? null,
+          zoneName: zone.zoneName,
+          description: zone.description ?? null,
+          morningPickupTime: zone.morningPickupTime ?? null,
+          afternoonPickupTime: zone.afternoonPickupTime ?? null,
+          hasPrivateTransfer: Boolean(zone.hasPrivateTransfer),
+          privateTransferCharge: toSafeNullableNumber(zone.privateTransferCharge),
+          morningPierArrival: zone.morningPierArrival ?? "08:30 AM",
+          afternoonPierArrival: zone.afternoonPierArrival ?? "12:30 PM",
+          surchargeAmount: toSafeNumber(zone.surchargeAmount, 0),
+          surchargeUnit: zone.surchargeUnit || "PER_BOOKING",
+          currency: zone.currency || "THB",
+          isActive: zone.isActive ?? true,
+          sortOrder: toSafeInt(zone.sortOrder, i),
+        };
+
+        if (zone.id) {
+          if (!existingZoneIds.has(zone.id)) {
+            throw new AppError(`PickupZone ${zone.id} does not belong to this service`, 400);
+          }
+          retainedZoneIds.add(zone.id);
+          await tx.pickupZone.update({
+            where: { id: zone.id },
+            data: zoneData,
+          });
+        } else {
+          await tx.pickupZone.create({
+            data: { serviceId: id, ...zoneData },
+          });
+        }
+      }
+
+      for (const oldId of existingZoneIds) {
+        if (!retainedZoneIds.has(oldId)) {
+          const bookingCount = await tx.booking.count({ where: { pickupZoneId: oldId } });
+          if (bookingCount > 0) {
+            await tx.pickupZone.update({
+              where: { id: oldId },
+              data: { isActive: false },
+            });
+          } else {
+            await tx.pickupZone.delete({ where: { id: oldId } });
+          }
+        }
       }
     }
 
