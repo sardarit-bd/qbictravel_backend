@@ -110,6 +110,9 @@ export const evaluateBookingPricing = async (
   if (!service) {
     throw new AppError("Service not found", 404);
   }
+  if ((service as any).archivedAt) {
+    throw new AppError("This service has been archived and is no longer available for new bookings", 409);
+  }
 
   const adults = Math.max(1, Number(input.adults ?? 1));
   const children = Math.max(0, Number(input.children ?? 0));
@@ -732,6 +735,9 @@ export const createStaffBooking = async (
   if (!service) {
     throw new AppError("Service not found", 404);
   }
+  if ((service as any).archivedAt) {
+    throw new AppError("This service has been archived and is no longer available for new bookings", 409);
+  }
   if (service.status !== "PUBLISHED") {
     throw new AppError("Cannot book unpublished tour", 400);
   }
@@ -1016,6 +1022,9 @@ export const createGuestBooking = async (
 
   if (!service) {
     throw new AppError("Service not found", 404);
+  }
+  if ((service as any).archivedAt) {
+    throw new AppError("This service has been archived and is no longer available for new bookings", 409);
   }
   if (service.status !== "PUBLISHED") {
     throw new AppError("Cannot book unpublished tour", 400);

@@ -97,6 +97,8 @@ export const ModelName = {
   ServicePackage: 'ServicePackage',
   ServiceTimeSlot: 'ServiceTimeSlot',
   PickupZone: 'PickupZone',
+  ServiceDraftRevision: 'ServiceDraftRevision',
+  ServicePickupZoneAssignment: 'ServicePickupZoneAssignment',
   SystemSetting: 'SystemSetting',
   SettingAuditLog: 'SettingAuditLog',
   User: 'User'
@@ -795,6 +797,10 @@ export const ServiceScalarFieldEnum = {
   providerName: 'providerName',
   providerId: 'providerId',
   metadata: 'metadata',
+  version: 'version',
+  archivedAt: 'archivedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -888,6 +894,39 @@ export const PickupZoneScalarFieldEnum = {
 } as const
 
 export type PickupZoneScalarFieldEnum = (typeof PickupZoneScalarFieldEnum)[keyof typeof PickupZoneScalarFieldEnum]
+
+
+export const ServiceDraftRevisionScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
+  draftData: 'draftData',
+  version: 'version',
+  baseServiceVersion: 'baseServiceVersion',
+  status: 'status',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceDraftRevisionScalarFieldEnum = (typeof ServiceDraftRevisionScalarFieldEnum)[keyof typeof ServiceDraftRevisionScalarFieldEnum]
+
+
+export const ServicePickupZoneAssignmentScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
+  pickupZoneId: 'pickupZoneId',
+  morningPickupTimeOverride: 'morningPickupTimeOverride',
+  afternoonPickupTimeOverride: 'afternoonPickupTimeOverride',
+  surchargeOverride: 'surchargeOverride',
+  privateTransferChargeOverride: 'privateTransferChargeOverride',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServicePickupZoneAssignmentScalarFieldEnum = (typeof ServicePickupZoneAssignmentScalarFieldEnum)[keyof typeof ServicePickupZoneAssignmentScalarFieldEnum]
 
 
 export const SystemSettingScalarFieldEnum = {

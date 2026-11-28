@@ -443,6 +443,8 @@ export const ModelName = {
   ServicePackage: 'ServicePackage',
   ServiceTimeSlot: 'ServiceTimeSlot',
   PickupZone: 'PickupZone',
+  ServiceDraftRevision: 'ServiceDraftRevision',
+  ServicePickupZoneAssignment: 'ServicePickupZoneAssignment',
   SystemSetting: 'SystemSetting',
   SettingAuditLog: 'SettingAuditLog',
   User: 'User'
@@ -461,7 +463,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "affiliate" | "affiliateLink" | "affiliateClick" | "affiliateBookingAttribution" | "affiliateCommission" | "affiliatePayout" | "affiliateSettings" | "affiliateAuditEvent" | "agentProfile" | "passwordResetToken" | "revokedToken" | "session" | "refreshToken" | "emailVerificationToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "staffDiscountRequest" | "staffDiscountAuditEvent" | "guestBookingSnapshot" | "guestBookingToken" | "bookingClaimAudit" | "invoice" | "commissionRule" | "commissionRuleAuditLog" | "commission" | "commissionAdjustment" | "media" | "mediaUploadAuth" | "notificationSetting" | "notification" | "notificationPreference" | "payment" | "stripeWebhookEvent" | "outboxMessage" | "paymentRefund" | "paymentLink" | "permission" | "staffPermission" | "service" | "serviceAvailability" | "servicePricing" | "servicePackage" | "serviceTimeSlot" | "pickupZone" | "systemSetting" | "settingAuditLog" | "user"
+    modelProps: "affiliate" | "affiliateLink" | "affiliateClick" | "affiliateBookingAttribution" | "affiliateCommission" | "affiliatePayout" | "affiliateSettings" | "affiliateAuditEvent" | "agentProfile" | "passwordResetToken" | "revokedToken" | "session" | "refreshToken" | "emailVerificationToken" | "pricingRule" | "booking" | "priceApproval" | "bookingHistory" | "staffDiscountRequest" | "staffDiscountAuditEvent" | "guestBookingSnapshot" | "guestBookingToken" | "bookingClaimAudit" | "invoice" | "commissionRule" | "commissionRuleAuditLog" | "commission" | "commissionAdjustment" | "media" | "mediaUploadAuth" | "notificationSetting" | "notification" | "notificationPreference" | "payment" | "stripeWebhookEvent" | "outboxMessage" | "paymentRefund" | "paymentLink" | "permission" | "staffPermission" | "service" | "serviceAvailability" | "servicePricing" | "servicePackage" | "serviceTimeSlot" | "pickupZone" | "serviceDraftRevision" | "servicePickupZoneAssignment" | "systemSetting" | "settingAuditLog" | "user"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3869,6 +3871,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ServiceDraftRevision: {
+      payload: Prisma.$ServiceDraftRevisionPayload<ExtArgs>
+      fields: Prisma.ServiceDraftRevisionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ServiceDraftRevisionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceDraftRevisionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ServiceDraftRevisionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceDraftRevisionPayload>
+        }
+        findFirst: {
+          args: Prisma.ServiceDraftRevisionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceDraftRevisionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ServiceDraftRevisionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceDraftRevisionPayload>
+        }
+        findMany: {
+          args: Prisma.ServiceDraftRevisionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceDraftRevisionPayload>[]
+        }
+        create: {
+          args: Prisma.ServiceDraftRevisionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceDraftRevisionPayload>
+        }
+        createMany: {
+          args: Prisma.ServiceDraftRevisionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ServiceDraftRevisionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceDraftRevisionPayload>[]
+        }
+        delete: {
+          args: Prisma.ServiceDraftRevisionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceDraftRevisionPayload>
+        }
+        update: {
+          args: Prisma.ServiceDraftRevisionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceDraftRevisionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ServiceDraftRevisionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ServiceDraftRevisionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ServiceDraftRevisionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceDraftRevisionPayload>[]
+        }
+        upsert: {
+          args: Prisma.ServiceDraftRevisionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceDraftRevisionPayload>
+        }
+        aggregate: {
+          args: Prisma.ServiceDraftRevisionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateServiceDraftRevision>
+        }
+        groupBy: {
+          args: Prisma.ServiceDraftRevisionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceDraftRevisionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ServiceDraftRevisionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceDraftRevisionCountAggregateOutputType> | number
+        }
+      }
+    }
+    ServicePickupZoneAssignment: {
+      payload: Prisma.$ServicePickupZoneAssignmentPayload<ExtArgs>
+      fields: Prisma.ServicePickupZoneAssignmentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ServicePickupZoneAssignmentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePickupZoneAssignmentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ServicePickupZoneAssignmentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePickupZoneAssignmentPayload>
+        }
+        findFirst: {
+          args: Prisma.ServicePickupZoneAssignmentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePickupZoneAssignmentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ServicePickupZoneAssignmentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePickupZoneAssignmentPayload>
+        }
+        findMany: {
+          args: Prisma.ServicePickupZoneAssignmentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePickupZoneAssignmentPayload>[]
+        }
+        create: {
+          args: Prisma.ServicePickupZoneAssignmentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePickupZoneAssignmentPayload>
+        }
+        createMany: {
+          args: Prisma.ServicePickupZoneAssignmentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ServicePickupZoneAssignmentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePickupZoneAssignmentPayload>[]
+        }
+        delete: {
+          args: Prisma.ServicePickupZoneAssignmentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePickupZoneAssignmentPayload>
+        }
+        update: {
+          args: Prisma.ServicePickupZoneAssignmentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePickupZoneAssignmentPayload>
+        }
+        deleteMany: {
+          args: Prisma.ServicePickupZoneAssignmentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ServicePickupZoneAssignmentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ServicePickupZoneAssignmentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePickupZoneAssignmentPayload>[]
+        }
+        upsert: {
+          args: Prisma.ServicePickupZoneAssignmentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServicePickupZoneAssignmentPayload>
+        }
+        aggregate: {
+          args: Prisma.ServicePickupZoneAssignmentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateServicePickupZoneAssignment>
+        }
+        groupBy: {
+          args: Prisma.ServicePickupZoneAssignmentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServicePickupZoneAssignmentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ServicePickupZoneAssignmentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServicePickupZoneAssignmentCountAggregateOutputType> | number
+        }
+      }
+    }
     SystemSetting: {
       payload: Prisma.$SystemSettingPayload<ExtArgs>
       fields: Prisma.SystemSettingFieldRefs
@@ -4807,6 +4957,10 @@ export const ServiceScalarFieldEnum = {
   providerName: 'providerName',
   providerId: 'providerId',
   metadata: 'metadata',
+  version: 'version',
+  archivedAt: 'archivedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -4900,6 +5054,39 @@ export const PickupZoneScalarFieldEnum = {
 } as const
 
 export type PickupZoneScalarFieldEnum = (typeof PickupZoneScalarFieldEnum)[keyof typeof PickupZoneScalarFieldEnum]
+
+
+export const ServiceDraftRevisionScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
+  draftData: 'draftData',
+  version: 'version',
+  baseServiceVersion: 'baseServiceVersion',
+  status: 'status',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceDraftRevisionScalarFieldEnum = (typeof ServiceDraftRevisionScalarFieldEnum)[keyof typeof ServiceDraftRevisionScalarFieldEnum]
+
+
+export const ServicePickupZoneAssignmentScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
+  pickupZoneId: 'pickupZoneId',
+  morningPickupTimeOverride: 'morningPickupTimeOverride',
+  afternoonPickupTimeOverride: 'afternoonPickupTimeOverride',
+  surchargeOverride: 'surchargeOverride',
+  privateTransferChargeOverride: 'privateTransferChargeOverride',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServicePickupZoneAssignmentScalarFieldEnum = (typeof ServicePickupZoneAssignmentScalarFieldEnum)[keyof typeof ServicePickupZoneAssignmentScalarFieldEnum]
 
 
 export const SystemSettingScalarFieldEnum = {
@@ -5548,6 +5735,20 @@ export type ListEnumSurchargeUnitFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'DraftRevisionStatus'
+ */
+export type EnumDraftRevisionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DraftRevisionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'DraftRevisionStatus[]'
+ */
+export type ListEnumDraftRevisionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DraftRevisionStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'UserRole'
  */
 export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
@@ -5785,6 +5986,8 @@ export type GlobalOmitConfig = {
   servicePackage?: Prisma.ServicePackageOmit
   serviceTimeSlot?: Prisma.ServiceTimeSlotOmit
   pickupZone?: Prisma.PickupZoneOmit
+  serviceDraftRevision?: Prisma.ServiceDraftRevisionOmit
+  servicePickupZoneAssignment?: Prisma.ServicePickupZoneAssignmentOmit
   systemSetting?: Prisma.SystemSettingOmit
   settingAuditLog?: Prisma.SettingAuditLogOmit
   user?: Prisma.UserOmit

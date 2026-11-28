@@ -953,6 +953,23 @@ export type EnumSurchargeUnitWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumSurchargeUnitFilter<$PrismaModel>
 }
 
+export type EnumDraftRevisionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.DraftRevisionStatus | Prisma.EnumDraftRevisionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DraftRevisionStatus[] | Prisma.ListEnumDraftRevisionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DraftRevisionStatus[] | Prisma.ListEnumDraftRevisionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDraftRevisionStatusFilter<$PrismaModel> | $Enums.DraftRevisionStatus
+}
+
+export type EnumDraftRevisionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DraftRevisionStatus | Prisma.EnumDraftRevisionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DraftRevisionStatus[] | Prisma.ListEnumDraftRevisionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DraftRevisionStatus[] | Prisma.ListEnumDraftRevisionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDraftRevisionStatusWithAggregatesFilter<$PrismaModel> | $Enums.DraftRevisionStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDraftRevisionStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDraftRevisionStatusFilter<$PrismaModel>
+}
+
 export type EnumUserRoleFilter<$PrismaModel = never> = {
   equals?: $Enums.UserRole | Prisma.EnumUserRoleFieldRefInput<$PrismaModel>
   in?: $Enums.UserRole[] | Prisma.ListEnumUserRoleFieldRefInput<$PrismaModel>
@@ -1883,6 +1900,23 @@ export type NestedEnumSurchargeUnitWithAggregatesFilter<$PrismaModel = never> = 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumSurchargeUnitFilter<$PrismaModel>
   _max?: Prisma.NestedEnumSurchargeUnitFilter<$PrismaModel>
+}
+
+export type NestedEnumDraftRevisionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.DraftRevisionStatus | Prisma.EnumDraftRevisionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DraftRevisionStatus[] | Prisma.ListEnumDraftRevisionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DraftRevisionStatus[] | Prisma.ListEnumDraftRevisionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDraftRevisionStatusFilter<$PrismaModel> | $Enums.DraftRevisionStatus
+}
+
+export type NestedEnumDraftRevisionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DraftRevisionStatus | Prisma.EnumDraftRevisionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DraftRevisionStatus[] | Prisma.ListEnumDraftRevisionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DraftRevisionStatus[] | Prisma.ListEnumDraftRevisionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDraftRevisionStatusWithAggregatesFilter<$PrismaModel> | $Enums.DraftRevisionStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDraftRevisionStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDraftRevisionStatusFilter<$PrismaModel>
 }
 
 export type NestedEnumUserRoleFilter<$PrismaModel = never> = {

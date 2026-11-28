@@ -330,6 +330,7 @@ export type PickupZoneWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"PickupZone"> | Date | string
   service?: Prisma.XOR<Prisma.ServiceNullableScalarRelationFilter, Prisma.ServiceWhereInput> | null
   bookings?: Prisma.BookingListRelationFilter
+  serviceAssignments?: Prisma.ServicePickupZoneAssignmentListRelationFilter
 }
 
 export type PickupZoneOrderByWithRelationInput = {
@@ -353,6 +354,7 @@ export type PickupZoneOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   service?: Prisma.ServiceOrderByWithRelationInput
   bookings?: Prisma.BookingOrderByRelationAggregateInput
+  serviceAssignments?: Prisma.ServicePickupZoneAssignmentOrderByRelationAggregateInput
 }
 
 export type PickupZoneWhereUniqueInput = Prisma.AtLeast<{
@@ -379,6 +381,7 @@ export type PickupZoneWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"PickupZone"> | Date | string
   service?: Prisma.XOR<Prisma.ServiceNullableScalarRelationFilter, Prisma.ServiceWhereInput> | null
   bookings?: Prisma.BookingListRelationFilter
+  serviceAssignments?: Prisma.ServicePickupZoneAssignmentListRelationFilter
 }, "id">
 
 export type PickupZoneOrderByWithAggregationInput = {
@@ -451,6 +454,7 @@ export type PickupZoneCreateInput = {
   updatedAt?: Date | string
   service?: Prisma.ServiceCreateNestedOneWithoutPickupZonesInput
   bookings?: Prisma.BookingCreateNestedManyWithoutPickupZoneInput
+  serviceAssignments?: Prisma.ServicePickupZoneAssignmentCreateNestedManyWithoutPickupZoneInput
 }
 
 export type PickupZoneUncheckedCreateInput = {
@@ -473,6 +477,7 @@ export type PickupZoneUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutPickupZoneInput
+  serviceAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedCreateNestedManyWithoutPickupZoneInput
 }
 
 export type PickupZoneUpdateInput = {
@@ -495,6 +500,7 @@ export type PickupZoneUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   service?: Prisma.ServiceUpdateOneWithoutPickupZonesNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutPickupZoneNestedInput
+  serviceAssignments?: Prisma.ServicePickupZoneAssignmentUpdateManyWithoutPickupZoneNestedInput
 }
 
 export type PickupZoneUncheckedUpdateInput = {
@@ -517,6 +523,7 @@ export type PickupZoneUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutPickupZoneNestedInput
+  serviceAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedUpdateManyWithoutPickupZoneNestedInput
 }
 
 export type PickupZoneCreateManyInput = {
@@ -671,6 +678,11 @@ export type PickupZoneSumOrderByAggregateInput = {
   sortOrder?: Prisma.SortOrder
 }
 
+export type PickupZoneScalarRelationFilter = {
+  is?: Prisma.PickupZoneWhereInput
+  isNot?: Prisma.PickupZoneWhereInput
+}
+
 export type PickupZoneCreateNestedOneWithoutBookingsInput = {
   create?: Prisma.XOR<Prisma.PickupZoneCreateWithoutBookingsInput, Prisma.PickupZoneUncheckedCreateWithoutBookingsInput>
   connectOrCreate?: Prisma.PickupZoneCreateOrConnectWithoutBookingsInput
@@ -733,6 +745,20 @@ export type EnumSurchargeUnitFieldUpdateOperationsInput = {
   set?: $Enums.SurchargeUnit
 }
 
+export type PickupZoneCreateNestedOneWithoutServiceAssignmentsInput = {
+  create?: Prisma.XOR<Prisma.PickupZoneCreateWithoutServiceAssignmentsInput, Prisma.PickupZoneUncheckedCreateWithoutServiceAssignmentsInput>
+  connectOrCreate?: Prisma.PickupZoneCreateOrConnectWithoutServiceAssignmentsInput
+  connect?: Prisma.PickupZoneWhereUniqueInput
+}
+
+export type PickupZoneUpdateOneRequiredWithoutServiceAssignmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.PickupZoneCreateWithoutServiceAssignmentsInput, Prisma.PickupZoneUncheckedCreateWithoutServiceAssignmentsInput>
+  connectOrCreate?: Prisma.PickupZoneCreateOrConnectWithoutServiceAssignmentsInput
+  upsert?: Prisma.PickupZoneUpsertWithoutServiceAssignmentsInput
+  connect?: Prisma.PickupZoneWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PickupZoneUpdateToOneWithWhereWithoutServiceAssignmentsInput, Prisma.PickupZoneUpdateWithoutServiceAssignmentsInput>, Prisma.PickupZoneUncheckedUpdateWithoutServiceAssignmentsInput>
+}
+
 export type PickupZoneCreateWithoutBookingsInput = {
   id?: string
   operatorName?: string | null
@@ -752,6 +778,7 @@ export type PickupZoneCreateWithoutBookingsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   service?: Prisma.ServiceCreateNestedOneWithoutPickupZonesInput
+  serviceAssignments?: Prisma.ServicePickupZoneAssignmentCreateNestedManyWithoutPickupZoneInput
 }
 
 export type PickupZoneUncheckedCreateWithoutBookingsInput = {
@@ -773,6 +800,7 @@ export type PickupZoneUncheckedCreateWithoutBookingsInput = {
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  serviceAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedCreateNestedManyWithoutPickupZoneInput
 }
 
 export type PickupZoneCreateOrConnectWithoutBookingsInput = {
@@ -810,6 +838,7 @@ export type PickupZoneUpdateWithoutBookingsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   service?: Prisma.ServiceUpdateOneWithoutPickupZonesNestedInput
+  serviceAssignments?: Prisma.ServicePickupZoneAssignmentUpdateManyWithoutPickupZoneNestedInput
 }
 
 export type PickupZoneUncheckedUpdateWithoutBookingsInput = {
@@ -831,6 +860,7 @@ export type PickupZoneUncheckedUpdateWithoutBookingsInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedUpdateManyWithoutPickupZoneNestedInput
 }
 
 export type PickupZoneCreateWithoutServiceInput = {
@@ -852,6 +882,7 @@ export type PickupZoneCreateWithoutServiceInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingCreateNestedManyWithoutPickupZoneInput
+  serviceAssignments?: Prisma.ServicePickupZoneAssignmentCreateNestedManyWithoutPickupZoneInput
 }
 
 export type PickupZoneUncheckedCreateWithoutServiceInput = {
@@ -873,6 +904,7 @@ export type PickupZoneUncheckedCreateWithoutServiceInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutPickupZoneInput
+  serviceAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedCreateNestedManyWithoutPickupZoneInput
 }
 
 export type PickupZoneCreateOrConnectWithoutServiceInput = {
@@ -925,6 +957,110 @@ export type PickupZoneScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"PickupZone"> | Date | string
 }
 
+export type PickupZoneCreateWithoutServiceAssignmentsInput = {
+  id?: string
+  operatorName?: string | null
+  zoneName: string
+  description?: string | null
+  morningPickupTime?: string | null
+  afternoonPickupTime?: string | null
+  hasPrivateTransfer?: boolean
+  privateTransferCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: string | null
+  afternoonPierArrival?: string | null
+  surchargeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  surchargeUnit?: $Enums.SurchargeUnit
+  currency?: string
+  isActive?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  service?: Prisma.ServiceCreateNestedOneWithoutPickupZonesInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutPickupZoneInput
+}
+
+export type PickupZoneUncheckedCreateWithoutServiceAssignmentsInput = {
+  id?: string
+  serviceId?: string | null
+  operatorName?: string | null
+  zoneName: string
+  description?: string | null
+  morningPickupTime?: string | null
+  afternoonPickupTime?: string | null
+  hasPrivateTransfer?: boolean
+  privateTransferCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: string | null
+  afternoonPierArrival?: string | null
+  surchargeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  surchargeUnit?: $Enums.SurchargeUnit
+  currency?: string
+  isActive?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutPickupZoneInput
+}
+
+export type PickupZoneCreateOrConnectWithoutServiceAssignmentsInput = {
+  where: Prisma.PickupZoneWhereUniqueInput
+  create: Prisma.XOR<Prisma.PickupZoneCreateWithoutServiceAssignmentsInput, Prisma.PickupZoneUncheckedCreateWithoutServiceAssignmentsInput>
+}
+
+export type PickupZoneUpsertWithoutServiceAssignmentsInput = {
+  update: Prisma.XOR<Prisma.PickupZoneUpdateWithoutServiceAssignmentsInput, Prisma.PickupZoneUncheckedUpdateWithoutServiceAssignmentsInput>
+  create: Prisma.XOR<Prisma.PickupZoneCreateWithoutServiceAssignmentsInput, Prisma.PickupZoneUncheckedCreateWithoutServiceAssignmentsInput>
+  where?: Prisma.PickupZoneWhereInput
+}
+
+export type PickupZoneUpdateToOneWithWhereWithoutServiceAssignmentsInput = {
+  where?: Prisma.PickupZoneWhereInput
+  data: Prisma.XOR<Prisma.PickupZoneUpdateWithoutServiceAssignmentsInput, Prisma.PickupZoneUncheckedUpdateWithoutServiceAssignmentsInput>
+}
+
+export type PickupZoneUpdateWithoutServiceAssignmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  operatorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoneName?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  morningPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasPrivateTransfer?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  privateTransferCharge?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  surchargeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  surchargeUnit?: Prisma.EnumSurchargeUnitFieldUpdateOperationsInput | $Enums.SurchargeUnit
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service?: Prisma.ServiceUpdateOneWithoutPickupZonesNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutPickupZoneNestedInput
+}
+
+export type PickupZoneUncheckedUpdateWithoutServiceAssignmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  operatorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoneName?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  morningPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPickupTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasPrivateTransfer?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  privateTransferCharge?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  morningPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  afternoonPierArrival?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  surchargeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  surchargeUnit?: Prisma.EnumSurchargeUnitFieldUpdateOperationsInput | $Enums.SurchargeUnit
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutPickupZoneNestedInput
+}
+
 export type PickupZoneCreateManyServiceInput = {
   id?: string
   operatorName?: string | null
@@ -964,6 +1100,7 @@ export type PickupZoneUpdateWithoutServiceInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUpdateManyWithoutPickupZoneNestedInput
+  serviceAssignments?: Prisma.ServicePickupZoneAssignmentUpdateManyWithoutPickupZoneNestedInput
 }
 
 export type PickupZoneUncheckedUpdateWithoutServiceInput = {
@@ -985,6 +1122,7 @@ export type PickupZoneUncheckedUpdateWithoutServiceInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutPickupZoneNestedInput
+  serviceAssignments?: Prisma.ServicePickupZoneAssignmentUncheckedUpdateManyWithoutPickupZoneNestedInput
 }
 
 export type PickupZoneUncheckedUpdateManyWithoutServiceInput = {
@@ -1014,10 +1152,12 @@ export type PickupZoneUncheckedUpdateManyWithoutServiceInput = {
 
 export type PickupZoneCountOutputType = {
   bookings: number
+  serviceAssignments: number
 }
 
 export type PickupZoneCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bookings?: boolean | PickupZoneCountOutputTypeCountBookingsArgs
+  serviceAssignments?: boolean | PickupZoneCountOutputTypeCountServiceAssignmentsArgs
 }
 
 /**
@@ -1035,6 +1175,13 @@ export type PickupZoneCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.E
  */
 export type PickupZoneCountOutputTypeCountBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.BookingWhereInput
+}
+
+/**
+ * PickupZoneCountOutputType without action
+ */
+export type PickupZoneCountOutputTypeCountServiceAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ServicePickupZoneAssignmentWhereInput
 }
 
 
@@ -1059,6 +1206,7 @@ export type PickupZoneSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   updatedAt?: boolean
   service?: boolean | Prisma.PickupZone$serviceArgs<ExtArgs>
   bookings?: boolean | Prisma.PickupZone$bookingsArgs<ExtArgs>
+  serviceAssignments?: boolean | Prisma.PickupZone$serviceAssignmentsArgs<ExtArgs>
   _count?: boolean | Prisma.PickupZoneCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pickupZone"]>
 
@@ -1131,6 +1279,7 @@ export type PickupZoneOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type PickupZoneInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   service?: boolean | Prisma.PickupZone$serviceArgs<ExtArgs>
   bookings?: boolean | Prisma.PickupZone$bookingsArgs<ExtArgs>
+  serviceAssignments?: boolean | Prisma.PickupZone$serviceAssignmentsArgs<ExtArgs>
   _count?: boolean | Prisma.PickupZoneCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PickupZoneIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1145,6 +1294,7 @@ export type $PickupZonePayload<ExtArgs extends runtime.Types.Extensions.Internal
   objects: {
     service: Prisma.$ServicePayload<ExtArgs> | null
     bookings: Prisma.$BookingPayload<ExtArgs>[]
+    serviceAssignments: Prisma.$ServicePickupZoneAssignmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1561,6 +1711,7 @@ export interface Prisma__PickupZoneClient<T, Null = never, ExtArgs extends runti
   readonly [Symbol.toStringTag]: "PrismaPromise"
   service<T extends Prisma.PickupZone$serviceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PickupZone$serviceArgs<ExtArgs>>): Prisma.Prisma__ServiceClient<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   bookings<T extends Prisma.PickupZone$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PickupZone$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  serviceAssignments<T extends Prisma.PickupZone$serviceAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PickupZone$serviceAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServicePickupZoneAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2049,6 +2200,30 @@ export type PickupZone$bookingsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.BookingScalarFieldEnum | Prisma.BookingScalarFieldEnum[]
+}
+
+/**
+ * PickupZone.serviceAssignments
+ */
+export type PickupZone$serviceAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ServicePickupZoneAssignment
+   */
+  select?: Prisma.ServicePickupZoneAssignmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ServicePickupZoneAssignment
+   */
+  omit?: Prisma.ServicePickupZoneAssignmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ServicePickupZoneAssignmentInclude<ExtArgs> | null
+  where?: Prisma.ServicePickupZoneAssignmentWhereInput
+  orderBy?: Prisma.ServicePickupZoneAssignmentOrderByWithRelationInput | Prisma.ServicePickupZoneAssignmentOrderByWithRelationInput[]
+  cursor?: Prisma.ServicePickupZoneAssignmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ServicePickupZoneAssignmentScalarFieldEnum | Prisma.ServicePickupZoneAssignmentScalarFieldEnum[]
 }
 
 /**

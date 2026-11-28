@@ -294,6 +294,15 @@ export const RefundStatus = {
 export type RefundStatus = (typeof RefundStatus)[keyof typeof RefundStatus]
 
 
+export const DraftRevisionStatus = {
+  ACTIVE: 'ACTIVE',
+  APPLIED: 'APPLIED',
+  DISCARDED: 'DISCARDED'
+} as const
+
+export type DraftRevisionStatus = (typeof DraftRevisionStatus)[keyof typeof DraftRevisionStatus]
+
+
 export const ServiceType = {
   HOTEL: 'HOTEL',
   PACKAGE: 'PACKAGE',
